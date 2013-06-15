@@ -201,9 +201,6 @@ public class Index {
 
     /**
      * Search inside the index
-     *
-     * @param query the full text query
-     * @param args (optional) if set, contains query parameters
      */
     public JSONObject search(Query params) throws AlgoliaException {
     	String paramsString = params.getQueryString();

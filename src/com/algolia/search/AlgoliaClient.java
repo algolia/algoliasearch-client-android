@@ -61,17 +61,17 @@ public class AlgoliaClient {
      * @param apiKey a valid API key for the service
      * @param hostsArray the list of hosts that you have received for the service
      */
-	public AlgoliaClient(String applicationID, String apiKey, List<String> hostsArray) throws AlgoliaException {
+	public AlgoliaClient(String applicationID, String apiKey, List<String> hostsArray) {
 		if (applicationID == null || applicationID.length() == 0) {
-			throw new AlgoliaException("AlgoliaSearch requires an applicationID.");
+			throw new RuntimeException("AlgoliaSearch requires an applicationID.");
 		}
 		this.applicationID = applicationID;
 		if (apiKey == null || apiKey.length() == 0) {
-			throw new AlgoliaException("AlgoliaSearch requires an apiKey.");
+			throw new RuntimeException("AlgoliaSearch requires an apiKey.");
 		}
 		this.apiKey = apiKey;
 		if (hostsArray == null || hostsArray.size() == 0) {
-			throw new AlgoliaException("AlgoliaSearch requires a list of hostnames.");
+			throw new RuntimeException("AlgoliaSearch requires a list of hostnames.");
 		}
 		this.hostsArray = hostsArray;
 		// randomize elements of hostsArray (act as a kind of load-balancer)
@@ -104,7 +104,7 @@ public class AlgoliaClient {
      *
      * @param indexName the name of index
      */
-    public Index initIndex(String indexName) throws AlgoliaException {
+    public Index initIndex(String indexName) {
     	return new Index(this, indexName);
     }
 
@@ -155,7 +155,6 @@ public class AlgoliaClient {
     
     protected JSONObject _getRequest(String url) throws AlgoliaException {
 		for (String host : this.hostsArray) {
-			System.out.println("https://" + host + url);
 			HttpGet httpGet = new HttpGet("https://" + host + url);
 			httpGet.setHeader("X-Algolia-Application-Id", this.applicationID);
 			httpGet.setHeader("X-Algolia-API-Key", this.apiKey);
