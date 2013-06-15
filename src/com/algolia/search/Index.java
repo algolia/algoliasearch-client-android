@@ -37,24 +37,30 @@ import org.json.JSONObject;
  * You should use AlgoliaClient.initIndex(indexName) to retrieve this object
  */
 public class Index {
-	private AlgoliaClient client;
-	private String indexName;
-	
-	/**
+    private AlgoliaClient client;
+    private String indexName;
+    private String originalIndexName;
+    
+    /**
      * Index initialization (You should not call this initialized yourself)
      * @param applicationID the application ID you have in your admin interface
      * @param apiKey a valid API key for the service
      * @param hostsArray the list of hosts that you have received for the service
      */
-	protected Index(AlgoliaClient client, String indexName) {
-		try {
-			this.client = client;
-			this.indexName = URLEncoder.encode(indexName, "UTF-8");
-		} catch (UnsupportedEncodingException e) {
-			throw new RuntimeException(e);
-		}
-	}
-    
+    protected Index(AlgoliaClient client, String indexName) {
+        try {
+            this.client = client;
+            this.indexName = URLEncoder.encode(indexName, "UTF-8");
+            this.originalIndexName = indexName;
+        } catch (UnsupportedEncodingException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public String getIndexName() {
+        return originalIndexName;
+    }
+
     /**
      * Add an object in this index
      * 
@@ -62,7 +68,7 @@ public class Index {
      *  The object is represented by an associative array
     */
     public JSONObject addObject(String obj) throws AlgoliaException {
-    	return client._postRequest("/1/indexes/" + indexName, obj);
+        return client._postRequest("/1/indexes/" + indexName, obj);
     }
    
     /**
@@ -74,12 +80,12 @@ public class Index {
      * (if the attribute already exist the old object will be overwrite)
      */
     public JSONObject addObject(String obj, String objectID) throws AlgoliaException {
-    	try {
-    		return client._putRequest("/1/indexes/" + indexName + "/" + URLEncoder.encode(objectID, "UTF-8"), obj);
-    	} catch (UnsupportedEncodingException e) {
-			throw new RuntimeException(e);
-		}
-	}
+        try {
+            return client._putRequest("/1/indexes/" + indexName + "/" + URLEncoder.encode(objectID, "UTF-8"), obj);
+        } catch (UnsupportedEncodingException e) {
+            throw new RuntimeException(e);
+        }
+    }
     
     /**
      * Add several objects
@@ -87,20 +93,20 @@ public class Index {
      * @param objects contains an array of objects to add. If the object contains an objectID
      */
     public JSONObject addObjects(List<JSONObject> objects) throws AlgoliaException {
-    	try {
-	    	JSONArray array = new JSONArray();
-	    	for (JSONObject obj : objects) {
-	    		JSONObject action = new JSONObject();
-	    		action.put("action", "addObject");
-	    		action.put("body",obj);
-	    		array.put(action);
-	    	}
-	    	JSONObject content = new JSONObject();
-	    	content.put("requests", array);
-	    	return client._postRequest("/1/indexes/" + indexName + "/batch", content.toString());
-    	} catch (JSONException e) {
-    		throw new AlgoliaException(e.getMessage());
-    	}
+        try {
+            JSONArray array = new JSONArray();
+            for (JSONObject obj : objects) {
+                JSONObject action = new JSONObject();
+                action.put("action", "addObject");
+                action.put("body",obj);
+                array.put(action);
+            }
+            JSONObject content = new JSONObject();
+            content.put("requests", array);
+            return client._postRequest("/1/indexes/" + indexName + "/batch", content.toString());
+        } catch (JSONException e) {
+            throw new AlgoliaException(e.getMessage());
+        }
     }
 
     /**
@@ -109,11 +115,11 @@ public class Index {
      * @param objectID the unique identifier of the object to retrieve
      */
     public JSONObject getObject(String objectID) throws AlgoliaException {
-    	try {
-	        return client._getRequest("/1/indexes/" + indexName + "/" + URLEncoder.encode(objectID, "UTF-8"));
-    	} catch (UnsupportedEncodingException e) {
-			throw new RuntimeException(e);
-		}
+        try {
+            return client._getRequest("/1/indexes/" + indexName + "/" + URLEncoder.encode(objectID, "UTF-8"));
+        } catch (UnsupportedEncodingException e) {
+            throw new RuntimeException(e);
+        }
     }
     
     /**
@@ -123,18 +129,18 @@ public class Index {
      * @param attributesToRetrieve, contains the list of attributes to retrieve as a string separated by ","
      */
     public JSONObject getObject(String objectID,  List<String> attributesToRetrieve) throws AlgoliaException {
-    	try {
-	    	StringBuilder params = new StringBuilder();
-    		params.append("?attributes=");
-    		for (int i = 0; i < attributesToRetrieve.size(); ++i) {
-    			if (i > 0)
-    				params.append(",");
-    			params.append(URLEncoder.encode(attributesToRetrieve.get(i), "UTF-8"));
-    		}
-        	return client._getRequest("/1/indexes/" + indexName + "/" + URLEncoder.encode(objectID, "UTF-8") + params.toString());
-    	} catch (UnsupportedEncodingException e) {
-			throw new RuntimeException(e);
-		}
+        try {
+            StringBuilder params = new StringBuilder();
+            params.append("?attributes=");
+            for (int i = 0; i < attributesToRetrieve.size(); ++i) {
+                if (i > 0)
+                    params.append(",");
+                params.append(URLEncoder.encode(attributesToRetrieve.get(i), "UTF-8"));
+            }
+            return client._getRequest("/1/indexes/" + indexName + "/" + URLEncoder.encode(objectID, "UTF-8") + params.toString());
+        } catch (UnsupportedEncodingException e) {
+            throw new RuntimeException(e);
+        }
     }
     /**
      * Update partially an object (only update attributes passed in argument)
@@ -143,11 +149,11 @@ public class Index {
      *  object must contains an objectID attribute
      */
     public JSONObject partialUpdateObject(String partialObject, String objectID) throws AlgoliaException {
-    	try {
-    		return client._postRequest("/1/indexes/" + indexName + "/" + URLEncoder.encode(objectID, "UTF-8") + "/partial", partialObject);
-    	} catch (UnsupportedEncodingException e) {
-			throw new RuntimeException(e);
-		}
+        try {
+            return client._postRequest("/1/indexes/" + indexName + "/" + URLEncoder.encode(objectID, "UTF-8") + "/partial", partialObject);
+        } catch (UnsupportedEncodingException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     /**
@@ -156,11 +162,11 @@ public class Index {
      * @param object contains the object to save
      */
     public JSONObject saveObject(String object, String objectID) throws AlgoliaException {
-    	try {
-    		return client._putRequest("/1/indexes/" + indexName + "/" + URLEncoder.encode(objectID, "UTF-8"), object);
-    	} catch (UnsupportedEncodingException e) {
-			throw new RuntimeException(e);
-		}
+        try {
+            return client._putRequest("/1/indexes/" + indexName + "/" + URLEncoder.encode(objectID, "UTF-8"), object);
+        } catch (UnsupportedEncodingException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     /**
@@ -169,21 +175,21 @@ public class Index {
      * @param objects contains an array of objects to update (each object must contains an objectID attribute)
      */
     public JSONObject saveObjects(List<JSONObject> objects) throws AlgoliaException {
-    	try {
-	    	JSONArray array = new JSONArray();
-	    	for (JSONObject obj : objects) {
-	    		JSONObject action = new JSONObject();
-	    		action.put("action", "updateObject");
-	    		action.put("objectID", obj.getString("objectID"));
-	    		action.put("body",obj);
-	    		array.put(action);
-	    	}
-	    	JSONObject content = new JSONObject();
-	    	content.put("requests", array);
-	    	return client._postRequest("/1/indexes/" + indexName + "/batch", content.toString());
-    	} catch (JSONException e) {
-    		throw new AlgoliaException(e.getMessage());
-    	}
+        try {
+            JSONArray array = new JSONArray();
+            for (JSONObject obj : objects) {
+                JSONObject action = new JSONObject();
+                action.put("action", "updateObject");
+                action.put("objectID", obj.getString("objectID"));
+                action.put("body",obj);
+                array.put(action);
+            }
+            JSONObject content = new JSONObject();
+            content.put("requests", array);
+            return client._postRequest("/1/indexes/" + indexName + "/batch", content.toString());
+        } catch (JSONException e) {
+            throw new AlgoliaException(e.getMessage());
+        }
     }
 
     /**
@@ -192,22 +198,22 @@ public class Index {
      * @param objectID the unique identifier of object to delete
      */
     public JSONObject deleteObject(String objectID) throws AlgoliaException {
-    	try {
-    		return client._deleteRequest("/1/indexes/" + indexName + "/" + URLEncoder.encode(objectID, "UTF-8"));
-    	} catch (UnsupportedEncodingException e) {
-			throw new RuntimeException(e);
-		}
+        try {
+            return client._deleteRequest("/1/indexes/" + indexName + "/" + URLEncoder.encode(objectID, "UTF-8"));
+        } catch (UnsupportedEncodingException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     /**
      * Search inside the index
      */
     public JSONObject search(Query params) throws AlgoliaException {
-    	String paramsString = params.getQueryString();
-    	if (paramsString.length() > 0)
-    		return client._getRequest("/1/indexes/" + indexName + "?" + paramsString);
-    	else
-    		return client._getRequest("/1/indexes/" + indexName);
+        String paramsString = params.getQueryString();
+        if (paramsString.length() > 0)
+            return client._getRequest("/1/indexes/" + indexName + "?" + paramsString);
+        else
+            return client._getRequest("/1/indexes/" + indexName);
     }
 
     /**
@@ -218,28 +224,28 @@ public class Index {
      * @param timeBeforeRetry the time in milliseconds before retry (default = 100ms)
      */
     public void waitTask(String taskID) throws AlgoliaException {
-    	try {
-	        while (true) {
-	        	JSONObject obj = client._getRequest("/1/indexes/" + indexName + "/task/" + URLEncoder.encode(taskID, "UTF-8"));
-	            if (obj.getString("status").equals("published"))
-	            	return;
-	            try {
-	            	Thread.sleep(1000);
-	            } catch (InterruptedException e) {
-	            }
-	        }
-    	} catch (JSONException e) {
-    		throw new AlgoliaException(e.getMessage());
-    	} catch (UnsupportedEncodingException e) {
-			throw new RuntimeException(e);
-		}
+        try {
+            while (true) {
+                JSONObject obj = client._getRequest("/1/indexes/" + indexName + "/task/" + URLEncoder.encode(taskID, "UTF-8"));
+                if (obj.getString("status").equals("published"))
+                    return;
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException e) {
+                }
+            }
+        } catch (JSONException e) {
+            throw new AlgoliaException(e.getMessage());
+        } catch (UnsupportedEncodingException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     /**
      * Get settings of this index
      */
     public JSONObject getSettings() throws AlgoliaException {
-    	return client._getRequest("/1/indexes/" + indexName + "/settings");
+        return client._getRequest("/1/indexes/" + indexName + "/settings");
     }
 
     /**
@@ -272,6 +278,6 @@ public class Index {
      *    by asc (ascending order) or desc (descending order) operator.
      */
     public JSONObject setSettings(String settings) throws AlgoliaException {
-    	return client._putRequest("/1/indexes/" + indexName + "/settings", settings);
+        return client._putRequest("/1/indexes/" + indexName + "/settings", settings);
     }
 }

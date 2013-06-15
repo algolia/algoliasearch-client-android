@@ -24,10 +24,10 @@ package com.algolia.search;
  */
 public class AlgoliaException extends Exception {
 
-	public AlgoliaException(String message) {
+    public AlgoliaException(String message) {
         super(message);
     }
-	
-	private static final long serialVersionUID = 1L;
+    
+    private static final long serialVersionUID = 1L;
 
 }
