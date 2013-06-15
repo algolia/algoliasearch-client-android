@@ -205,7 +205,7 @@ public class Index {
      * @param query the full text query
      * @param args (optional) if set, contains query parameters
      */
-    public JSONObject search(QueryParameters params) throws AlgoliaException {
+    public JSONObject search(Query params) throws AlgoliaException {
     	String paramsString = params.getQueryString();
     	if (paramsString.length() > 0)
     		return client._getRequest("/1/indexes/" + indexName + "?" + paramsString);

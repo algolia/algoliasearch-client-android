@@ -27,25 +27,25 @@ Without any prior-configuration, you can index the 13 US's biggest cities in the
 Index index = client.initIndex("cities");
 
 index.addObject("{ \"name\": \"New York City\", \"population\": 8175133 }");
-index.addObject("{ \"name\": \"Los Angeles\", \"population\": 3792621 }");
-index.addObject("{ \"name\": \"Chicago\", \"population\": 2695598 }");
-index.addObject("{ \"name\": \"Houston\", \"population\": 2099451 }");
-index.addObject("{ \"name\": \"Philadelphia\", \"population\": 1526006 }");
-index.addObject("{ \"name\": \"Phoenix\", \"population\": 1445632 }");
-index.addObject("{ \"name\": \"San Antonio\", \"population\": 1327407 }");
-index.addObject("{ \"name\": \"San Diego\", \"population\": 1307402 }");
-index.addObject("{ \"name\": \"Dallas\", \"population\": 1197816 }");
-index.addObject("{ \"name\": \"San Jose\", \"population\": 945942 }");
-index.addObject("{ \"name\": \"Indianapolis\", \"population\": 829718 }");
-index.addObject("{ \"name\": \"Jacksonville\", \"population\": 821784 }");      
+index.addObject("{ \"name\": \"Los Angeles\",   \"population\": 3792621 }");
+index.addObject("{ \"name\": \"Chicago\",       \"population\": 2695598 }");
+index.addObject("{ \"name\": \"Houston\",       \"population\": 2099451 }");
+index.addObject("{ \"name\": \"Philadelphia\",  \"population\": 1526006 }");
+index.addObject("{ \"name\": \"Phoenix\",       \"population\": 1445632 }");
+index.addObject("{ \"name\": \"San Antonio\",   \"population\": 1327407 }");
+index.addObject("{ \"name\": \"San Diego\",     \"population\": 1307402 }");
+index.addObject("{ \"name\": \"Dallas\",        \"population\": 1197816 }");
+index.addObject("{ \"name\": \"San Jose\",      \"population\": 945942 }");
+index.addObject("{ \"name\": \"Indianapolis\",  \"population\": 829718 }");
+index.addObject("{ \"name\": \"Jacksonville\",  \"population\": 821784 }");     
 index.addObject("{ \"name\": \"San Francisco\", \"population\": 805235 }");
 ```
 Objects added can be any valid JSON.
 
 You can then start to search for a city name (even with typos):
 ```java
-System.out.println(index.search(new QueryParameters("san fran")));
-System.out.println(index.search(new QueryParameters("loz anqel")));
+System.out.println(index.search(new Query("san fran")));
+System.out.println(index.search(new Query("loz anqel")));
 ```
 
 Settings can be customized to tune the index behavior. For example you can add a custom sort by population to the already good out-of-the-box relevance to raise bigger cities above smaller ones. To update the settings, use the following code:
@@ -55,7 +55,7 @@ index.setSettings("{ \"customRanking\": [\"desc(population)\", \"asc(name)\"]}")
 
 And then search for all cities that start with an "s":
 ```java
-System.out.println(index.search(new QueryParameters("s")));
+System.out.println(index.search(new Query("s")));
 ```
 
 Search 
@@ -63,7 +63,7 @@ Search
 > **Opening note:** If you are building a web application, you may be more interested in using our [javascript client](https://github.com/algolia/algoliasearch-client-js) to send queries. It brings two benefits: (i) your users get a better response time by avoiding to go threw your servers, and (ii) it will offload your servers of unnecessary tasks.
 
 To perform a search, you just need to initialize the index and perform a call to the search function.<br/>
-You can use the following optional arguments on QueryParameters class:
+You can use the following optional arguments on Query class:
 
  * **setAttributesToRetrieve**: specify the list of attribute names to retrieve.<br/>By default all attributes are retrieved.
  * **setAttributesToHighlight**: specify the list of attribute names to highlight.<br/>By default indexed attributes are highlighted.
@@ -78,8 +78,8 @@ You can use the following optional arguments on QueryParameters class:
 
 ```java
 Index index = client.initIndex("MyIndexName");
-System.out.println(index.search(new QueryParameters("query string")));
-System.out.println(index.search(new QueryParameters("query string").
+System.out.println(index.search(new Query("query string")));
+System.out.println(index.search(new Query("query string").
                 setAttributesToRetrieve(Arrays.asList("population")).
                 setNbHitsPerPage(50)));
 ```
