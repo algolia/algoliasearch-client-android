@@ -14,7 +14,7 @@ To setup your project, follow these steps:
 
 ```java
   AlgoliaClient client = new AlgoliaClient("YourApplicationID", "YourAPIKey", 
-                                           Arrays.asList("user-1.algolia.io", "user-2.algolia.io", "user-30.algolia.io"));
+                                           Arrays.asList("user-1.algolia.io", "user-2.algolia.io", "user-3.algolia.io"));
 ```
 
 
