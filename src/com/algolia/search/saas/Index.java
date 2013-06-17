@@ -162,7 +162,7 @@ public class Index {
      * Get an object from this index
      * 
      * @param objectID the unique identifier of the object to retrieve
-     * @param attributesToRetrieve, contains the list of attributes to retrieve as a string separated by ","
+     * @param attributesToRetrieve, contains the list of attributes to retrieve.
      */
     public JSONObject getObject(String objectID,  List<String> attributesToRetrieve) throws AlgoliaException {
         try {
