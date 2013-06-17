@@ -1,4 +1,4 @@
-package com.algolia.search;
+package com.algolia.search.saas;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
@@ -34,10 +34,10 @@ import org.json.JSONObject;
 
 /**
  * Contains all the functions related to one index
- * You should use AlgoliaClient.initIndex(indexName) to retrieve this object
+ * You should use APIClient.initIndex(indexName) to retrieve this object
  */
 public class Index {
-    private AlgoliaClient client;
+    private APIClient client;
     private String indexName;
     private String originalIndexName;
     
@@ -47,7 +47,7 @@ public class Index {
      * @param apiKey a valid API key for the service
      * @param hostsArray the list of hosts that you have received for the service
      */
-    protected Index(AlgoliaClient client, String indexName) {
+    protected Index(APIClient client, String indexName) {
         try {
             this.client = client;
             this.indexName = URLEncoder.encode(indexName, "UTF-8");

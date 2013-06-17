@@ -1,4 +1,4 @@
-package com.algolia.search;
+package com.algolia.search.saas;
 
 /*
  * Copyright (c) 2013 Algolia

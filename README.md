@@ -13,8 +13,8 @@ To setup your project, follow these steps:
  3. Initialize the client with your ApplicationID, API-Key and list of hostnames (you can find all of them on your Algolia account)
 
 ```java
-  AlgoliaClient client = new AlgoliaClient("YourApplicationID", "YourAPIKey", 
-                                           Arrays.asList("user-1.algolia.io", "user-2.algolia.io", "user-3.algolia.io"));
+  APIClient client = new APIClient("YourApplicationID", "YourAPIKey", 
+                                   Arrays.asList("user-1.algolia.io", "user-2.algolia.io", "user-3.algolia.io"));
 ```
 
 
