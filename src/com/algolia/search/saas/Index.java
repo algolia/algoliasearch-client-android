@@ -45,9 +45,6 @@ public class Index {
     
     /**
      * Index initialization (You should not call this initialized yourself)
-     * @param applicationID the application ID you have in your admin interface
-     * @param apiKey a valid API key for the service
-     * @param hostsArray the list of hosts that you have received for the service
      */
     protected Index(APIClient client, String indexName) {
         try {
