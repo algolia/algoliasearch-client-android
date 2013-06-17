@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 import java.util.Collections;
+import java.net.URLEncoder;
 import java.util.List;
 
 import org.apache.http.HttpResponse;
@@ -83,7 +84,7 @@ public class AlgoliaClient {
      * List all existing indexes
      * return an JSON Object in the form:
      * { "items": [ {"name": "contacts", "createdAt": "2013-01-18T15:33:13.556Z"},
-     *              {"name": "notes", "createdAt": "2013-01-18T15:33:13.556Z"}]��}
+     *              {"name": "notes", "createdAt": "2013-01-18T15:33:13.556Z"}]}
      */
     public JSONObject listIndexes() throws AlgoliaException {
         return _getRequest("/1/indexes/");
@@ -96,7 +97,11 @@ public class AlgoliaClient {
      * return an object containing a "deletedAt" attribute
      */
     public JSONObject deleteIndex(String indexName) throws AlgoliaException {
-        return _deleteRequest("/1/indexes/" + indexName);
+        try {
+            return _deleteRequest("/1/indexes/" + URLEncoder.encode(indexName, "UTF-8"));
+        } catch (UnsupportedEncodingException e) {
+            throw new RuntimeException(e);
+        }
     }
   
     /**
