@@ -115,7 +115,7 @@ public class Index {
     /**
      * Add several objects
      * 
-     * @param objects contains an array of objects to add. If the object contains an objectID
+     * @param objects contains an array of objects to add.
      */
     public JSONObject addObjects(List<JSONObject> objects) throws AlgoliaException {
         try {
