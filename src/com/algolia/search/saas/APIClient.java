@@ -1,4 +1,4 @@
-package com.algolia.search;
+package com.algolia.search.saas;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -50,7 +50,7 @@ import org.json.JSONTokener;
  * You should instantiate a Client object with your ApplicationID, ApiKey and Hosts 
  * to start using Algolia Search API
  */
-public class AlgoliaClient {
+public class APIClient {
     private String applicationID;
     private String apiKey;
     private List<String> hostsArray;
@@ -62,7 +62,7 @@ public class AlgoliaClient {
      * @param apiKey a valid API key for the service
      * @param hostsArray the list of hosts that you have received for the service
      */
-    public AlgoliaClient(String applicationID, String apiKey, List<String> hostsArray) {
+    public APIClient(String applicationID, String apiKey, List<String> hostsArray) {
         if (applicationID == null || applicationID.length() == 0) {
             throw new RuntimeException("AlgoliaSearch requires an applicationID.");
         }

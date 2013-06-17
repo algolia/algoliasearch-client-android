@@ -14,8 +14,8 @@ To setup your project, follow these steps:
  3. Make your Activity class implements the `IndexListener` interface to be able to use the asynchronous methods.
 
 ```java
-  AlgoliaClient client = new AlgoliaClient("YourApplicationID", "YourAPIKey", 
-                                           Arrays.asList("user-1.algolia.io", "user-2.algolia.io", "user-3.algolia.io"));
+  API client = new APIClient("YourApplicationID", "YourAPIKey", 
+                             Arrays.asList("user-1.algolia.io", "user-2.algolia.io", "user-3.algolia.io"));
 ```
 
 
