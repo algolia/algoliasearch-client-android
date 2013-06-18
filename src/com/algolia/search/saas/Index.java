@@ -139,6 +139,7 @@ public class Index {
             throw new RuntimeException(e);
         }
     }
+    
     /**
      * Update partially an object (only update attributes passed in argument)
      * 
@@ -218,7 +219,6 @@ public class Index {
      * All server task are asynchronous and you can check with this method that the task is published.
      *
      * @param taskID the id of the task returned by server
-     * @param timeBeforeRetry the time in milliseconds before retry (default = 100ms)
      */
     public void waitTask(String taskID) throws AlgoliaException {
         try {
