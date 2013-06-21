@@ -28,8 +28,19 @@ import java.util.List;
  */
 
 public class Query {
+    public enum QueryType
+    {
+    	/// all query words are interpreted as prefixes (default behavior).
+    	PREFIX_ALL,
+    	/// only the last word is interpreted as a prefix. This option is recommended if you have a lot of content to speedup the processing.
+    	PREFIX_LAST,
+    	/// no query word is interpreted as a prefix. This option is not recommended.
+    	PREFIX_NONE
+    }
+    
     protected List<String> attributes;
     protected List<String> attributesToHighlight;
+    protected List<String> attributesToSnippet;
     protected int minWordSizeForApprox1;
     protected int minWordSizeForApprox2;
     protected boolean getRankingInfo;
@@ -39,6 +50,7 @@ public class Query {
     protected String insideBoundingBox;
     protected String aroundLatLong;
     protected String query;
+    protected QueryType queryType;
     
     public Query(String query) {
         minWordSizeForApprox1 = 3;
@@ -47,6 +59,7 @@ public class Query {
         page = 0;
         hitsPerPage = 20;
         this.query = query;
+        queryType = QueryType.PREFIX_ALL;
     }
     
     public Query() {
@@ -55,6 +68,16 @@ public class Query {
         getRankingInfo = false;
         page = 0;
         hitsPerPage = 20;
+        queryType = QueryType.PREFIX_ALL;
+    }
+    
+    /**
+     *  Select how the query words are interpreted:
+     */
+    public Query setQueryType(QueryType type)
+    {
+    	this.queryType = type;
+    	return this;
     }
     
     /**
@@ -84,6 +107,15 @@ public class Query {
         return this;
     }
 
+    /**
+     * Specify the list of attribute names to Snippet alongside the number of words to return (syntax is 'attributeName:nbWords').
+     * By default no snippet is computed.
+     */
+    public Query setAttributesToSnippet(List<String> attributes) {
+        this.attributesToSnippet = attributes;
+        return this;
+    }
+    
     /**
      * Specify the minimum number of characters in a query word to accept one typo in this word. 
      * Defaults to 3.
@@ -180,6 +212,18 @@ public class Query {
                     first = false;
                 }
             }
+            if (attributesToSnippet != null) {
+                if (stringBuilder.length() > 0)
+                    stringBuilder.append('&');
+                stringBuilder.append("attributesToSnippet=");
+                boolean first = true;
+                for (String attr : this.attributesToSnippet) {
+                    if (!first)
+                        stringBuilder.append(',');
+                    stringBuilder.append(URLEncoder.encode(attr, "UTF-8"));
+                    first = false;
+                }
+            }
             if (minWordSizeForApprox1 != 3) {
                 if (stringBuilder.length() > 0)
                     stringBuilder.append('&');
@@ -229,6 +273,21 @@ public class Query {
                     stringBuilder.append('&');
                 stringBuilder.append("query=");
                 stringBuilder.append(URLEncoder.encode(query, "UTF-8"));
+            }
+            switch (queryType) {
+            case PREFIX_ALL:
+            	break;
+            case PREFIX_LAST:
+            	if (stringBuilder.length() > 0)
+                    stringBuilder.append('&');
+                stringBuilder.append("queryType=prefixLast");
+
+            	break;
+            case PREFIX_NONE:
+            	if (stringBuilder.length() > 0)
+                    stringBuilder.append('&');
+                stringBuilder.append("queryType=prefixNone");
+            	break;
             }
         } catch (UnsupportedEncodingException e) {
             throw new RuntimeException(e);
