@@ -15,7 +15,9 @@ To setup your project, follow these steps:
 
 ```java
   API client = new APIClient("YourApplicationID", "YourAPIKey", 
-      Arrays.asList("YourHostname-1.algolia.io", "YourHostname-2.algolia.io", "YourHostname-3.algolia.io"));
+                             Arrays.asList("YourHostname-1.algolia.io", 
+                                           "YourHostname-2.algolia.io", 
+                                           "YourHostname-3.algolia.io"));
 ```
 
 
