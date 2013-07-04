@@ -4,6 +4,27 @@ Algolia Search API Client for Java
 This Java client let you easily use the Algolia Search API from your Java Application.
 The service is currently in Beta, you can request an invite on our [website](http://www.algolia.com/pricing/).
 
+Table of Content
+-------------
+**Get started**
+
+1. [Setup](#setup) 
+1. [Quick Start](#quick-start)
+
+**Commands reference**
+
+1. [Search](#search)
+1. [Add a new object](#add-a-new-object-in-the-index)
+1. [Update an object](#update-an-existing-object-in-the-index)
+1. [Get an object](#get-an-object)
+1. [Delete an object](#delete-an-object)
+1. [Index settings](#index-settings)
+1. [List indexes](#list-indexes)
+1. [Delete an index](#delete-an-index)
+1. [Wait indexing](#wait-indexing)
+1. [Batch writes](#batch-writes)
+1. [Security / User API Keys](#security--user-api-keys)
+
 Setup
 -------------
 To setup your project, follow these steps:
@@ -18,7 +39,6 @@ To setup your project, follow these steps:
                                                  "YourHostname-2.algolia.io", 
                                                  "YourHostname-3.algolia.io"));
 ```
-
 
 Quick Start
 -------------
@@ -60,15 +80,15 @@ And then search for all cities that start with an "s":
 System.out.println(index.search(new Query("s")));
 ```
 
-Search 
+Search
 -------------
 > **Opening note:** If you are building a web application, you may be more interested in using our [javascript client](https://github.com/algolia/algoliasearch-client-js) to send queries. It brings two benefits: (i) your users get a better response time by avoiding to go threw your servers, and (ii) it will offload your servers of unnecessary tasks.
 
 To perform a search, you just need to initialize the index and perform a call to the search function.<br/>
 You can use the following optional arguments on Query class:
 
- * **setAttributesToRetrieve**: specify the list of attribute names to retrieve.<br/>By default all attributes are retrieved.
- * **setAttributesToHighlight**: specify the list of attribute names to highlight.<br/>By default indexed attributes are highlighted.
+  * **setAttributesToRetrieve**: specify the list of attribute names to retrieve.<br/>By default all attributes are retrieved.
+ * **setAttributesToHighlight**: specify the list of attribute names to highlight.<br/>By default indexed attributes are highlighted. Numerical attributes cannot be highlighted. A **matchLevel** is returned for each highlighted attribute and can contain: "full" if all the query terms were found in the attribute, "partial" if only some of the query terms were found, or "none" if none of the query terms were found.
  * **setAttributesToSnippet**: specify the list of attributes to snippet alongside the number of words to return (syntax is 'attributeName:nbWords'). <br/>By default no snippet is computed.
  * **setMinWordSizeToAllowOneTypo**: the minimum number of characters in a query word to accept one typo in this word.<br/>Defaults to 3.
  * **setMinWordSizeToAllowTwoTypos**: the minimum number of characters in a query word to accept two typos in this word.<br/>Defaults to 7.
@@ -199,19 +219,21 @@ You can retrieve all settings using the `getSettings` function. The result will 
  * **attributesToHighlight**: (array of strings) default list of attributes to highlight.
  * **attributesToSnippet**: (array of strings) default list of attributes to snippet alongside the number of words to return (syntax is 'attributeName:nbWords')<br/>By default no snippet is computed.
  * **attributesToIndex**: (array of strings) the list of fields you want to index.<br/>By default all textual attributes of your objects are indexed, but you should update it to get optimal results.<br/>This parameter has two important uses:
- * *Limit the attributes to index*.<br/>For example if you store a binary image in base64, you want to store it and be able to retrieve it but you don't want to search in the base64 string.
- * *Control part of the ranking*.<br/>Matches in attributes at the beginning of the list will be considered more important than matches in attributes further down the list. 
- * **ranking**: (array of strings) controls the way results are sorted.<br/>We have four available criteria: 
+  * *Limits the attributes to index*.<br/>For example if you store a binary image in base64, you want to store it and be able to retrieve it but you don't want to search in the base64 string.
+  * *Controls part of the ranking*.<br/>Matches in attributes at the beginning of the list will be considered more important than matches in attributes further down the list. 
+ * **ranking**: (array of strings) controls the way hits are sorted.<br/>We have five available criteria:
   * **typo**: sort according to number of typos,
-  * **geo**: sort according to decreassing distance when performing a geo-location based search,
-  * **position**: sort according to the proximity of query words in the object, 
-  * **custom**: sort according to a user defined formula set in **customRanking** attribute.<br/>The standard order is ["typo", "geo", position", "custom"]
+  * **geo**: sort according to decreasing distance when performing a geo-location based search,
+  * **proximity**: sort according to the proximity of query words in hits, 
+  * **attribute**: sort according to the order of attributes defined by **attributesToIndex**,
+  * **custom**: sort according to a user defined formula set in **customRanking** attribute.
+  <br/>The default order is `["typo", "geo", "proximity", "attribute", "custom"]`. We strongly recommend to keep this configuration.
+ * **customRanking**: (array of strings) lets you specify part of the ranking.<br/>The syntax of this condition is an array of strings containing attributes prefixed by asc (ascending order) or desc (descending order) operator.
+ For example `"customRanking" => ["desc(population)", "asc(name)"]`
  * **queryType**: select how the query words are interpreted:
   * **prefixAll**: all query words are interpreted as prefixes (default behavior).
   * **prefixLast**: only the last word is interpreted as a prefix. This option is recommended if you have a lot of content to speedup the processing.
   * **prefixNone**: no query word is interpreted as a prefix. This option is not recommended.
- * **customRanking**: (array of strings) lets you specify part of the ranking.<br/>The syntax of this condition is an array of strings containing attributes prefixed by asc (ascending order) or desc (descending order) operator.
- For example `"customRanking" => ["desc(population)", "asc(name)"]`
 
 You can easily retrieve settings or update them:
 
@@ -222,3 +244,115 @@ System.out.println(index.getSettings());
 ```java
 index.setSettings("{ \"customRanking\": [\"desc(population)\", \"asc(name)\"]}");
 ```
+
+List indexes
+-------------
+You can list all your indexes with their associated information (number of entries, disk size, etc.) with the `listIndexes` method:
+
+```java
+client.listIndexes()
+```
+
+Delete an index
+-------------
+You can delete an index using its name:
+
+```java
+client.deleteIndex("cities")
+```
+
+Wait indexing
+-------------
+
+All write operations return a `taskID` when the job is securely stored on our infrastructure but not when the job is published in your index. Even if it's extremely fast, you can easily ensure indexing is complete using the `waitTask` method on the `taskID` returned by a write operation.
+
+For example, to wait for indexing of a new object:
+```java
+JSONObject res = index.addObject("{ \"name\": \"San Francisco\", \"population\": 805235 }");
+index.waitTask(String.valueOf(res.getLong("objectID")));
+```
+
+If you want to ensure multiple objects have been indexed, you can only check the biggest taskID.
+
+Batch writes
+-------------
+
+You may want to perform multiple operations with a single API call to reduce latency.
+We expose two methods to perform batches:
+ * `addObjects`: add an array of objects using automatic `objectID` assignement,
+ * `saveObjects`: add or update an array of objects that contain an `objectID` attribute.
+
+Example using automatic `objectID` assignement:
+```java
+List<JSONObject> array = new ArrayList<JSONObject>();
+array.add(new JSONObject("{ \"name\": \"San Francisco\", \"population\": 805235 }"));
+array.add(new JSONObject("{ \"name\": \"Los Angeles\", \"population\": 3792621 }"));
+index.addObjects(array);
+```
+
+Example with user defined `objectID` (add or update):
+```java
+List<JSONObject> array = new ArrayList<JSONObject>();
+array.add(new JSONObject("{ \"name\": \"San Francisco\", \"population\": 805235, \"objectID\": \"SFO\" }"));
+array.add(new JSONObject("{ \"name\": \"Los Angeles\", \"population\": 3792621, \"objectID\": \"LA\" }"));
+index.saveObjects(array);
+```
+
+Security / User API Keys
+-------------
+
+The admin API key provides full control of all your indexes. 
+You can also generate user API keys to control security. 
+These API keys can be restricted to a set of operations or/and restricted to a given index.
+
+To list existing keys, you can use `listUserKeys` method:
+```java
+// Lists global API Keys
+client.listUserKeys()
+// Lists API Keys that can access only to this index
+index.listUserKeys()
+```
+
+Each key is defined by a set of rights that specify the authorized actions. The different rights are:
+ * **search**: allows to search,
+ * **addObject**: allows to add/update an object in the index,
+ * **deleteObject**: allows to delete an existing object,
+ * **deleteIndex**: allows to delete index content,
+ * **settings**: allows to get index settings,
+ * **editSettings**: allows to change index settings.
+
+Example of API Key creation:
+```java
+// Creates a new global API key that can only perform search actions
+JSONObject res = client.addUserKey(Arrays.asList("search"));
+System.out.println("Key: " + res.getString("key"));
+// Creates a new API key that can only perform search action on this index
+JSONObject res = index.addUserKey(Arrays.asList("search"));
+System.out.println("Key: " + res.getString("key"));
+```
+You can also create a temporary API key that will be valid only for a specific period of time (in seconds):
+```java
+// Creates a new global API key that is valid for 300 seconds
+JSONObject res = client.addUserKey(Arrays.asList("search"), 300);
+System.out.println("Key: " + res.getString("key"));
+// Creates a new index specific API key valid for 300 seconds
+JSONObject res = index.addUserKey(Arrays.asList("search"), 300);
+System.out.println("Key: " + res.getString("key"));
+```
+
+Get the rights of a given key:
+```java
+// Gets the rights of a global key
+client.getUserKeyACL("f420238212c54dcfad07ea0aa6d5c45f");
+// Gets the rights of an index specific key
+index.getUserKeyACL("71671c38001bf3ac857bc82052485107");
+```
+
+Delete an existing key:
+```java
+// Deletes a global key
+client.deleteUserKey("f420238212c54dcfad07ea0aa6d5c45f");
+// Deletes an index specific key
+index.deleteUserKey("71671c38001bf3ac857bc82052485107");
+```
+

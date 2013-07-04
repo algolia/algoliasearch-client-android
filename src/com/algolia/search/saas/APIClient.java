@@ -2,10 +2,11 @@ package com.algolia.search.saas;
 
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
-import java.util.Collections;
 import java.net.URLEncoder;
+import java.util.Collections;
 import java.util.List;
 
 import org.apache.http.HttpResponse;
@@ -140,8 +141,7 @@ public class APIClient {
      * @param acls the list of ACL for this key. Defined by an array of strings that 
      * can contains the following values:
      *   - search: allow to search (https and http)
-     *   - addObject: allows to add a new object in the index (https only)
-     *   - updateObject : allows to change content of an existing object (https only)
+     *   - addObject: allows to add/update an object in the index (https only)
      *   - deleteObject : allows to delete an existing object (https only)
      *   - deleteIndex : allows to delete index content (https only)
      *   - settings : allows to get index settings (https only)
@@ -152,6 +152,31 @@ public class APIClient {
         JSONObject jsonObject = new JSONObject();
         try {
             jsonObject.put("acl", array);
+        } catch (JSONException e) {
+            throw new RuntimeException(e);
+        }
+        return _postRequest("/1/keys", jsonObject.toString());
+    }
+    
+    /**
+     * Create a new user key
+     *
+     * @param acls the list of ACL for this key. Defined by an array of strings that 
+     * can contains the following values:
+     *   - search: allow to search (https and http)
+     *   - addObject: allows to add/update an object in the index (https only)
+     *   - deleteObject : allows to delete an existing object (https only)
+     *   - deleteIndex : allows to delete index content (https only)
+     *   - settings : allows to get index settings (https only)
+     *   - editSettings : allows to change index settings (https only)
+     * @param validity the number of seconds after which the key will be automatically removed (0 means no time limit for this key)
+     */
+    public JSONObject addUserKey(List<String> acls, int validity) throws AlgoliaException {
+        JSONArray array = new JSONArray(acls);
+        JSONObject jsonObject = new JSONObject();
+        try {
+            jsonObject.put("acl", array);
+            jsonObject.put("validity", validity);
         } catch (JSONException e) {
             throw new RuntimeException(e);
         }
@@ -174,10 +199,16 @@ public class APIClient {
                 }
                 if (code == 503)
                     continue;
-                BufferedReader reader = new BufferedReader(new InputStreamReader(response.getEntity().getContent(), "UTF-8"));
+                InputStream istream = response.getEntity().getContent();
+                InputStreamReader is = new InputStreamReader(istream, "UTF-8");
+                BufferedReader reader = new BufferedReader(is);
                 String json = reader.readLine();
                 JSONTokener tokener = new JSONTokener(json);
-                return new JSONObject(tokener);
+                JSONObject res = new JSONObject(tokener);
+                reader.close();
+                is.close();
+                is.close();
+                return res;
             } catch (IOException e) {
                 // on error continue on the next host
             } catch (JSONException e) {
@@ -203,10 +234,16 @@ public class APIClient {
                 }
                 if (code == 503)
                     continue;
-                BufferedReader reader = new BufferedReader(new InputStreamReader(response.getEntity().getContent(), "UTF-8"));
+                InputStream istream = response.getEntity().getContent();
+                InputStreamReader is = new InputStreamReader(istream, "UTF-8");
+                BufferedReader reader = new BufferedReader(is);
                 String json = reader.readLine();
                 JSONTokener tokener = new JSONTokener(json);
-                return new JSONObject(tokener);
+                JSONObject res = new JSONObject(tokener);
+                reader.close();
+                is.close();
+                is.close();
+                return res;
             } catch (IOException e) {
                 // on error continue on the next host
             } catch (JSONException e) {
@@ -241,10 +278,16 @@ public class APIClient {
                 }
                 if (code == 503)
                     continue;
-                BufferedReader reader = new BufferedReader(new InputStreamReader(response.getEntity().getContent(), "UTF-8"));
+                InputStream istream = response.getEntity().getContent();
+                InputStreamReader is = new InputStreamReader(istream, "UTF-8");
+                BufferedReader reader = new BufferedReader(is);
                 String json = reader.readLine();
                 JSONTokener tokener = new JSONTokener(json);
-                return new JSONObject(tokener);
+                JSONObject res = new JSONObject(tokener);
+                reader.close();
+                is.close();
+                is.close();
+                return res;
             } catch (IOException e) {
                 // on error continue on the next host
             } catch (JSONException e) {
@@ -279,10 +322,16 @@ public class APIClient {
                 }
                 if (code == 503)
                     continue;
-                BufferedReader reader = new BufferedReader(new InputStreamReader(response.getEntity().getContent(), "UTF-8"));
+                InputStream istream = response.getEntity().getContent();
+                InputStreamReader is = new InputStreamReader(istream, "UTF-8");
+                BufferedReader reader = new BufferedReader(is);
                 String json = reader.readLine();
                 JSONTokener tokener = new JSONTokener(json);
-                return new JSONObject(tokener);
+                JSONObject res = new JSONObject(tokener);
+                reader.close();
+                is.close();
+                is.close();
+                return res;
             } catch (IOException e) {
                 // on error continue on the next host
             } catch (JSONException e) {

@@ -277,4 +277,73 @@ public class Index {
     public JSONObject setSettings(String settings) throws AlgoliaException {
         return client._putRequest("/1/indexes/" + indexName + "/settings", settings);
     }
+    
+    /**
+     * List all existing user keys with their associated ACLs
+     */
+    public JSONObject listUserKeys() throws AlgoliaException {
+        return client._getRequest("/1/indexes/" + indexName + "/keys");
+    }
+
+    /**
+     * Get ACL of a user key
+     */
+    public JSONObject getUserKeyACL(String key) throws AlgoliaException {
+        return client._getRequest("/1/indexes/" + indexName + "/keys/" + key);
+    }
+
+    /**
+     * Delete an existing user key
+     */
+    public JSONObject deleteUserKey(String key) throws AlgoliaException {
+        return client._deleteRequest("/1/indexes/" + indexName + "/keys/" + key);
+    }
+
+    /**
+     * Create a new user key
+     *
+     * @param acls the list of ACL for this key. Defined by an array of strings that 
+     * can contains the following values:
+     *   - search: allow to search (https and http)
+     *   - addObject: allows to add/update an object in the index (https only)
+     *   - deleteObject : allows to delete an existing object (https only)
+     *   - deleteIndex : allows to delete index content (https only)
+     *   - settings : allows to get index settings (https only)
+     *   - editSettings : allows to change index settings (https only)
+     */
+    public JSONObject addUserKey(List<String> acls) throws AlgoliaException {
+        JSONArray array = new JSONArray(acls);
+        JSONObject jsonObject = new JSONObject();
+        try {
+            jsonObject.put("acl", array);
+        } catch (JSONException e) {
+            throw new RuntimeException(e);
+        }
+        return client._postRequest("/1/indexes/" + indexName + "/keys", jsonObject.toString());
+    }
+    
+    /**
+     * Create a new user key
+     *
+     * @param acls the list of ACL for this key. Defined by an array of strings that 
+     * can contains the following values:
+     *   - search: allow to search (https and http)
+     *   - addObject: allows to add/update an object in the index (https only)
+     *   - deleteObject : allows to delete an existing object (https only)
+     *   - deleteIndex : allows to delete index content (https only)
+     *   - settings : allows to get index settings (https only)
+     *   - editSettings : allows to change index settings (https only)
+     * @param validity the number of seconds after which the key will be automatically removed (0 means no time limit for this key)
+     */
+    public JSONObject addUserKey(List<String> acls, int validity) throws AlgoliaException {
+        JSONArray array = new JSONArray(acls);
+        JSONObject jsonObject = new JSONObject();
+        try {
+            jsonObject.put("acl", array);
+            jsonObject.put("validity", validity);
+        } catch (JSONException e) {
+            throw new RuntimeException(e);
+        }
+        return client._postRequest("/1/indexes/" + indexName + "/keys", jsonObject.toString());
+    }
 }
