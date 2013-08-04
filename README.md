@@ -31,14 +31,11 @@ Setup
 To setup your project, follow these steps:
 
  1. Download and add files in `src` folder to your project
- 2. Initialize the client with your ApplicationID, API-Key and list of hostnames (you can find all of them on your Algolia account)
+ 2. Initialize the client with your ApplicationID and API-Key(you can find all of them on your Algolia account)
  3. Make your Activity class implements the `IndexListener` interface to be able to use the asynchronous methods.
 
 ```java
-  API client = new APIClient("YourApplicationID", "YourAPIKey", 
-                             Arrays.asList("YourHostname-1.algolia.io", 
-                                           "YourHostname-2.algolia.io", 
-                                           "YourHostname-3.algolia.io"));
+  API client = new APIClient("YourApplicationID", "YourAPIKey");
 ```
 
 
