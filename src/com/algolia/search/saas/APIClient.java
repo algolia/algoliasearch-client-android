@@ -6,6 +6,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -56,6 +57,31 @@ public class APIClient {
     private String apiKey;
     private List<String> hostsArray;
     private DefaultHttpClient httpClient;
+    
+    /**
+     * Algolia Search initialization
+     * @param applicationID the application ID you have in your admin interface
+     * @param apiKey a valid API key for the service
+     */
+    public APIClient(String applicationID, String apiKey) {
+        if (applicationID == null || applicationID.length() == 0) {
+            throw new RuntimeException("AlgoliaSearch requires an applicationID.");
+        }
+        this.applicationID = applicationID;
+        if (apiKey == null || apiKey.length() == 0) {
+            throw new RuntimeException("AlgoliaSearch requires an apiKey.");
+        }
+        this.apiKey = apiKey;
+        if (hostsArray == null || hostsArray.size() == 0) {
+            throw new RuntimeException("AlgoliaSearch requires a list of hostnames.");
+        }
+        this.hostsArray = Arrays.asList(applicationID + "-1.algolia.io", 
+						        		applicationID + "-2.algolia.io", 
+						        		applicationID + "-3.algolia.io");
+        // randomize elements of hostsArray (act as a kind of load-balancer)
+        Collections.shuffle(hostsArray);
+        httpClient = new DefaultHttpClient();
+    }
     
     /**
      * Algolia Search initialization
