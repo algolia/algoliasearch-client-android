@@ -41,40 +41,39 @@ Quick Start
 -------------
 This quick start is a 30 seconds tutorial where you can discover how to index and search objects.
 
-Without any prior-configuration, you can index the 13 US's biggest cities in the ```cities``` index with the following code:
+Without any prior-configuration, you can index some contacts in the ```contacts``` index with the following code:
 ```java
-Index index = client.initIndex("cities");
-
-index.addObject("{ \"name\": \"New York City\", \"population\": 8175133 }");
-index.addObject("{ \"name\": \"Los Angeles\",   \"population\": 3792621 }");
-index.addObject("{ \"name\": \"Chicago\",       \"population\": 2695598 }");
-index.addObject("{ \"name\": \"Houston\",       \"population\": 2099451 }");
-index.addObject("{ \"name\": \"Philadelphia\",  \"population\": 1526006 }");
-index.addObject("{ \"name\": \"Phoenix\",       \"population\": 1445632 }");
-index.addObject("{ \"name\": \"San Antonio\",   \"population\": 1327407 }");
-index.addObject("{ \"name\": \"San Diego\",     \"population\": 1307402 }");
-index.addObject("{ \"name\": \"Dallas\",        \"population\": 1197816 }");
-index.addObject("{ \"name\": \"San Jose\",      \"population\": 945942 }");
-index.addObject("{ \"name\": \"Indianapolis\",  \"population\": 829718 }");
-index.addObject("{ \"name\": \"Jacksonville\",  \"population\": 821784 }");     
-index.addObject("{ \"name\": \"San Francisco\", \"population\": 805235 }");
-```
-Objects added can be any valid JSON.
-
-You can then start to search for a city name (even with typos):
-```java
-System.out.println(index.search(new Query("san fran")));
-System.out.println(index.search(new Query("loz anqel")));
+Index index = client.initIndex("contacts");
+index.addObject("{ \"firstname\": \"Jimmie\", \"lastname\": \"Barninger\", \"followers\":93, \"company\": \"California Paint\" }");
+index.addObject("{ \"firstname\": \"Warren\", \"lastname\": \"Speach\",    \"followers\"42, \"company\": \"Norwalk Crmc\" }");
 ```
 
-Settings can be customized to tune the index behavior. For example you can add a custom sort by population to the already good out-of-the-box relevance to raise bigger cities above smaller ones. To update the settings, use the following code:
+You can then start to search for a contact firstname, lastname, company, ... (even with typos):
 ```java
-index.setSettings("{ \"customRanking\": [\"desc(population)\", \"asc(name)\"]}");
+// search by firstname
+System.out.println(index.search(new Query("jimmie")));
+// search a firstname with typo
+System.out.println(index.search(new Query("jimie")));
+// search for a company
+System.out.println(index.search(new Query("california paint")));
+// search for a firstname & company
+System.out.println(index.search(new Query("jimmie paint")));
 ```
 
-And then search for all cities that start with an "s":
-```java
-System.out.println(index.search(new Query("s")));
+Settings can be customized to tune the search behavior. For example you can add a custom sort by number of followers to the already good out-of-the-box relevance:
+```ruby
+index.setSettingsASync("{ \"customRanking\": [\"desc(followers)\"]}", this);
+```
+You can also configure the list of attributes you want to index by order of importance (first = most important):
+```ruby
+index.setSettingsASync("{ \"attributesToIndex\": [\"lastname\", \"firstname\", \"company\"]}", this);
+
+```
+
+Since the engine is designed to suggest results as you type, you'll generally search by prefix. In this case the order of attributes is very important to decide which hit is the best:
+```ruby
+System.out.println(index.search(new Query("or")));
+System.out.println(index.search(new Query("jim")));
 ```
 
 Search
@@ -101,40 +100,68 @@ You can use the following optional arguments on Query class:
  * **setTags**: filter the query by a set of tags. You can AND tags by separating them by commas. To OR tags, you must add parentheses. For example, `tag1,(tag2,tag3)` means *tag1 AND (tag2 OR tag3)*.<br/>At indexing, tags should be added in the _tags attribute of objects (for example `{"_tags":["tag1","tag2"]}` )
 
 ```java
-Index index = client.initIndex("MyIndexName");
-System.out.println(index.search(new Query("query string")));
-System.out.println(index.search(new Query("query string").
-                setAttributesToRetrieve(Arrays.asList("population")).
-                setNbHitsPerPage(50)));
+Index index = client.initIndex("contacts");
+index.searchASync(new Query("query string"), this);
+index.searchASync(new Query("query string").
+                  setAttributesToRetrieve(Arrays.asList("firstname", "lastname")).
+                  setNbHitsPerPage(50), this);
 ```
 
 The server response will look like:
 
 ```javascript
 {
-    "hits":[
-            { "name": "Betty Jane Mccamey",
-              "company": "Vita Foods Inc.",
-              "email": "betty@mccamey.com",
-              "objectID": "6891Y2usk0",
-              "_highlightResult": {"name": {"value": "Betty <em>Jan</em>e Mccamey", "matchLevel": "full"}, 
-                                   "company": {"value": "Vita Foods Inc.", "matchLevel": "none"},
-                                   "email": {"value": "betty@mccamey.com", "matchLevel": "none"} }
-            },
-            { "name": "Gayla Geimer Dan", 
-              "company": "Ortman Mccain Co", 
-              "email": "gayla@geimer.com", 
-              "objectID": "ap78784310" 
-              "_highlightResult": {"name": {"value": "Gayla Geimer <em>Dan</em>", "matchLevel": "full" },
-                                   "company": {"value": "Ortman Mccain Co", "matchLevel": "none" },
-                                   "email": {"highlighted": "gayla@geimer.com", "matchLevel": "none" } }
-            }],
-    "page":0,
-    "nbHits":2,
-    "nbPages":1,
-    "hitsPerPage:":20,
-    "processingTimeMS":1,
-    "query":"jan"
+  "hits": [
+    {
+      "firstname": "Jimmie",
+      "lastname": "Barninger",
+      "company": "California Paint & Wlpaper Str",
+      "address": "Box #-4038",
+      "city": "Modesto",
+      "county": "Stanislaus",
+      "state": "CA",
+      "zip": "95352",
+      "phone": "209-525-7568",
+      "fax": "209-525-4389",
+      "email": "jimmie@barninger.com",
+      "web": "http://www.jimmiebarninger.com",
+      "followers": 3947,
+      "objectID": "433",
+      "_highlightResult": {
+        "firstname": {
+          "value": "<em>Jimmie</em>",
+          "matchLevel": "partial"
+        },
+        "lastname": {
+          "value": "Barninger",
+          "matchLevel": "none"
+        },
+        "company": {
+          "value": "California <em>Paint</em> & Wlpaper Str",
+          "matchLevel": "partial"
+        },
+        "address": {
+          "value": "Box #-4038",
+          "matchLevel": "none"
+        },
+        "city": {
+          "value": "Modesto",
+          "matchLevel": "none"
+        },
+        "email": {
+          "value": "<em>jimmie</em>@barninger.com",
+          "matchLevel": "partial"
+        }
+      }
+    }
+  ],
+  "page": 0,
+  "nbHits": 1,
+  "nbPages": 1,
+  "hitsPerPage": 20,
+  "processingTimeMS": 1,
+  "query": "jimmie paint",
+  "params": "query=jimmie+paint&"
 }
 ```
 
@@ -152,14 +179,14 @@ Objects are schema less, you don't need any configuration to start indexing. The
 Example with automatic `objectID` assignement:
 
 ```java
-JSONObject obj = index.addObject("{ \"name\": \"San Francisco\", \"population\": 805235 }");
+JSONObject obj = index.addObject("{ \"firstname\": \"Jimmie\", \"lastname\": \"Barninger\" }");
 System.out.println(obj.getString("objectID"));
 ```
 
 Example with manual `objectID` assignement:
 
 ```java
-JSONObject obj = index.addObject("{ \"name\": \"San Francisco\", \"population\": 805235 }", "myID");
+JSONObject obj = index.addObject("{ \"firstname\": \"Jimmie\", \"lastname\": \"Barninger\" }", "myID");
 System.out.println(obj.getString("objectID"));
 ```
 
@@ -174,13 +201,13 @@ You have two options to update an existing object:
 Example to replace all the content of an existing object:
 
 ```java
-index.saveObject("{ \"name\": \"Los Angeles\", \"population\": 3792621 }", "myID");
+index.saveObject("{ \"firstname\": \"Jimmie\", \"lastname\": \"Barninger\", \"city":\"New York\" }", "myID");
 ```
 
 Example to update only the population attribute of an existing object:
 
 ```java
-index.partialUpdateObject("{ \"population\": 3792621 }", "myID");
+index.partialUpdateObject("{ \"city":\"San Francisco\" }", "myID");
 ```
 
 Get an object
@@ -191,8 +218,8 @@ You can easily retrieve an object using its `objectID` and optionnaly a list of 
 ```java
 // Retrieves all attributes
 index.getObject("myID");
-// Retrieves only the name attribute
-index.getObject("myID", Arrays.asList("name"));
+// Retrieves only the firstname attribute
+index.getObject("myID", Arrays.asList("firstname"));
 ```
 
 Delete an object
@@ -240,7 +267,7 @@ System.out.println(index.getSettings());
 ```
 
 ```java
-index.setSettings("{ \"customRanking\": [\"desc(population)\", \"asc(name)\"]}");
+index.setSettings("{ \"customRanking\": [\"desc(followers)\"]}");
 ```
 
 List indexes
@@ -256,7 +283,7 @@ Delete an index
 You can delete an index using its name:
 
 ```java
-client.deleteIndex("cities")
+client.deleteIndex("contacts")
 ```
 
 Wait indexing
@@ -266,7 +293,7 @@ All write operations return a `taskID` when the job is securely stored on our in
 
 For example, to wait for indexing of a new object:
 ```java
-JSONObject res = index.addObject("{ \"name\": \"San Francisco\", \"population\": 805235 }");
+JSONObject res = index.addObject("{ \"firstname\": \"Jimmie\", \"lastname\": \"Barninger\"}");
 index.waitTask(String.valueOf(res.getLong("objectID")));
 ```
 
@@ -283,16 +310,16 @@ We expose two methods to perform batches:
 Example using automatic `objectID` assignement:
 ```java
 List<JSONObject> array = new ArrayList<JSONObject>();
-array.add(new JSONObject("{ \"name\": \"San Francisco\", \"population\": 805235 }"));
-array.add(new JSONObject("{ \"name\": \"Los Angeles\", \"population\": 3792621 }"));
+array.add(new JSONObject("{ \"firstname\": \"Jimmie\", \"lastname\": \"Barninger\"}"));
+array.add(new JSONObject("{ \"firstname\": \"Warren\", \"lastname\": \"Speach\"}"));
 index.addObjects(array);
 ```
 
 Example with user defined `objectID` (add or update):
 ```java
 List<JSONObject> array = new ArrayList<JSONObject>();
-array.add(new JSONObject("{ \"name\": \"San Francisco\", \"population\": 805235, \"objectID\": \"SFO\" }"));
-array.add(new JSONObject("{ \"name\": \"Los Angeles\", \"population\": 3792621, \"objectID\": \"LA\" }"));
+array.add(new JSONObject("{ \"firstname\": \"Jimmie\", \"lastname\": \"Barninger\", \"objectID\": \"SFO\" }"));
+array.add(new JSONObject("{ \"firstname\": \"Warren\", \"lastname\": \"Speach\", \"objectID\": \"LA\" }"));
 index.saveObjects(array);
 ```
 
