@@ -35,7 +35,7 @@ To setup your project, follow these steps:
  3. Make your Activity class implements the `IndexListener` interface to be able to use the asynchronous methods.
 
 ```java
-  API client = new APIClient("YourApplicationID", "YourAPIKey");
+  APIClient client = new APIClient("YourApplicationID", "YourAPIKey");
 ```
 
 
@@ -43,57 +43,46 @@ Quick Start
 -------------
 This quick start is a 30 seconds tutorial where you can discover how to index and search objects.
 
-Without any prior-configuration, you can index the 13 US's biggest cities in the ```cities``` index with the following code:
+Without any prior-configuration, you can index some contacts in the ```contacts``` index with the following code:
 ```java
-public class MainActivity extends Activity implements IndexListener {
-
-  @Override
-  protected void onCreate(Bundle savedInstanceState) {
-    
-    super.onCreate(savedInstanceState);
-    setContentView(R.layout.activity_main);
-
-    Index index = client.initIndex("cities");
-
-    index.addObjectASync("{ \"name\": \"New York City\", \"population\": 8175133 }", this);
-    index.addObjectASync("{ \"name\": \"Los Angeles\",   \"population\": 3792621 }", this);
-    index.addObjectASync("{ \"name\": \"Chicago\",       \"population\": 2695598 }", this);
-    index.addObjectASync("{ \"name\": \"Houston\",       \"population\": 2099451 }", this);
-    index.addObjectASync("{ \"name\": \"Philadelphia\",  \"population\": 1526006 }", this);
-    index.addObjectASync("{ \"name\": \"Phoenix\",       \"population\": 1445632 }", this);
-    index.addObjectASync("{ \"name\": \"San Antonio\",   \"population\": 1327407 }", this);
-    index.addObjectASync("{ \"name\": \"San Diego\",     \"population\": 1307402 }", this);
-    index.addObjectASync("{ \"name\": \"Dallas\",        \"population\": 1197816 }", this);
-    index.addObjectASync("{ \"name\": \"San Jose\",      \"population\": 945942 }", this);
-    index.addObjectASync("{ \"name\": \"Indianapolis\",  \"population\": 829718 }", this);
-    index.addObjectASync("{ \"name\": \"Jacksonville\",  \"population\": 821784 }", this);
-    index.addObjectASync("{ \"name\": \"San Francisco\", \"population\": 805235 }", this);
-  }
+Index index = client.initIndex("contacts");
+index.addObjectASync("{ \"firstname\": \"Jimmie\", \"lastname\": \"Barninger\", \"followers\":93, \"company\": \"California Paint\" }", this);
+index.addObjectASync("{ \"firstname\": \"Warren\", \"lastname\": \"Speach\",    \"followers\"42, \"company\": \"Norwalk Crmc\" }", this);
 ```
-Objects added can be any valid JSON.
 
-You can then start to search for a city name (even with typos):
+You can then start to search for a contact firstname, lastname, company, ... (even with typos):
 ```java
-index.searchASync(new Query("san fran"), this);
-index.searchASync(new Query("loz anqel"), this);
+// search by firstname
+index.searchASync(new Query("jimmie"), this);
+// search a firstname with typo
+index.searchASync(new Query("jimie"), this);
+// search for a company
+index.searchASync(new Query("california paint"), this);
+// search for a firstname & company
+index.searchASync(new Query("jimmie paint"), this);
 ```
 
 You will get search results in the searchResult callback of your Activity:
 ```java
 @Override
 public void searchResult(Index index, Query query, JSONObject results) {
-  System.out.println(results.toString());   
+  Log.d("search", results.toString());
 }
+
+Settings can be customized to tune the search behavior. For example you can add a custom sort by number of followers to the already good out-of-the-box relevance:
+```ruby
+index.setSettingsASync("{ \"customRanking\": [\"desc(followers)\"]}", this);
+```
+You can also configure the list of attributes you want to index by order of importance (first = most important):
+```ruby
+index.setSettingsASync("{ \"attributesToIndex\": [\"lastname\", \"firstname\", \"company\"]}", this);
+
 ```
 
-Settings can be customized to tune the index behavior. For example you can add a custom sort by population to the already good out-of-the-box relevance to raise bigger cities above smaller ones. To update the settings, use the following code:
-```java
-index.setSettingsASync("{ \"customRanking\": [\"desc(population)\", \"asc(name)\"]}", this);
-```
-
-And then search for all cities that start with an "s":
-```java
-index.searchASync(new Query("s"), this);
+Since the engine is designed to suggest results as you type, you'll generally search by prefix. In this case the order of attributes is very important to decide which hit is the best:
+```ruby
+index.searchASync(new Query("or"), this);
+index.searchASync(new Query("jim"), this);
 ```
 
 Search
@@ -119,10 +108,10 @@ You can use the following optional arguments on Query class:
  * **setTags**: filter the query by a set of tags. You can AND tags by separating them by commas. To OR tags, you must add parentheses. For example, `tag1,(tag2,tag3)` means *tag1 AND (tag2 OR tag3)*.<br/>At indexing, tags should be added in the _tags attribute of objects (for example `{"_tags":["tag1","tag2"]}` )
 
 ```java
-Index index = client.initIndex("MyIndexName");
+Index index = client.initIndex("contacts");
 index.searchASync(new Query("query string"), this);
 index.searchASync(new Query("query string").
-                  setAttributesToRetrieve(Arrays.asList("population")).
+                  setAttributesToRetrieve(Arrays.asList("firstname", "lastname")).
                   setNbHitsPerPage(50), this);
 ```
 
@@ -130,29 +119,57 @@ The server response in the searchResult callback will look like:
 
 ```javascript
 {
-    "hits":[
-            { "name": "Betty Jane Mccamey",
-              "company": "Vita Foods Inc.",
-              "email": "betty@mccamey.com",
-              "objectID": "6891Y2usk0",
-              "_highlightResult": {"name": {"value": "Betty <em>Jan</em>e Mccamey", "matchLevel": "full"}, 
-                                   "company": {"value": "Vita Foods Inc.", "matchLevel": "none"},
-                                   "email": {"value": "betty@mccamey.com", "matchLevel": "none"} }
-            },
-            { "name": "Gayla Geimer Dan", 
-              "company": "Ortman Mccain Co", 
-              "email": "gayla@geimer.com", 
-              "objectID": "ap78784310" 
-              "_highlightResult": {"name": {"value": "Gayla Geimer <em>Dan</em>", "matchLevel": "full" },
-                                   "company": {"value": "Ortman Mccain Co", "matchLevel": "none" },
-                                   "email": {"highlighted": "gayla@geimer.com", "matchLevel": "none" } }
-            }],
-    "page":0,
-    "nbHits":2,
-    "nbPages":1,
-    "hitsPerPage:":20,
-    "processingTimeMS":1,
-    "query":"jan"
+  "hits": [
+    {
+      "firstname": "Jimmie",
+      "lastname": "Barninger",
+      "company": "California Paint & Wlpaper Str",
+      "address": "Box #-4038",
+      "city": "Modesto",
+      "county": "Stanislaus",
+      "state": "CA",
+      "zip": "95352",
+      "phone": "209-525-7568",
+      "fax": "209-525-4389",
+      "email": "jimmie@barninger.com",
+      "web": "http://www.jimmiebarninger.com",
+      "followers": 3947,
+      "objectID": "433",
+      "_highlightResult": {
+        "firstname": {
+          "value": "<em>Jimmie</em>",
+          "matchLevel": "partial"
+        },
+        "lastname": {
+          "value": "Barninger",
+          "matchLevel": "none"
+        },
+        "company": {
+          "value": "California <em>Paint</em> & Wlpaper Str",
+          "matchLevel": "partial"
+        },
+        "address": {
+          "value": "Box #-4038",
+          "matchLevel": "none"
+        },
+        "city": {
+          "value": "Modesto",
+          "matchLevel": "none"
+        },
+        "email": {
+          "value": "<em>jimmie</em>@barninger.com",
+          "matchLevel": "partial"
+        }
+      }
+    }
+  ],
+  "page": 0,
+  "nbHits": 1,
+  "nbPages": 1,
+  "hitsPerPage": 20,
+  "processingTimeMS": 1,
+  "query": "jimmie paint",
+  "params": "query=jimmie+paint&"
 }
 ```
 
@@ -170,7 +187,7 @@ Objects are schema less, you don't need any configuration to start indexing. The
 Example with automatic `objectID` assignement:
 
 ```java
-index.addObjectASync("{ \"name\": \"San Francisco\", \"population\": 805235 }", this);
+index.addObjectASync("{ \"firstname\": \"Jimmie\", \"lastname\": \"Barninger\" }", this);
 ```
 
 You will get the assigned objectID in the `addObjectResult` callback of IndexListener interface:
@@ -184,7 +201,7 @@ public void addObjectResult(Index index, String object, JSONObject result) {
 Example with manual `objectID` assignement:
 
 ```java
-index.addObjectASync("{ \"name\": \"San Francisco\", \"population\": 805235 }", "myID", this);
+index.addObjectASync("{ \"firstname\": \"Jimmie\", \"lastname\": \"Barninger\" }", "myID", this);
 ```
 
 Update an existing object in the Index
@@ -198,13 +215,13 @@ You have two options to update an existing object:
 Example to replace all the content of an existing object:
 
 ```java
-index.saveObjectASync("{ \"name\": \"Los Angeles\", \"population\": 3792621 }", "myID", this);
+index.saveObjectASync("{ \"firstname\": \"Jimmie\", \"lastname\": \"Barninger\", \"city":\"New York\" }", "myID", this);
 ```
 
-Example to update only the population attribute of an existing object:
+Example to update only the city attribute of an existing object:
 
 ```java
-index.partialUpdateObjectASync("{ \"population\": 3792621 }", "myID", this);
+index.partialUpdateObjectASync("{ \"city":\"San Francisco\" }", "myID", this);
 ```
 
 Get an object
@@ -215,8 +232,8 @@ You can easily retrieve an object using its `objectID` and optionnaly a list of 
 ```java
 // Retrieves all attributes
 index.getObjectASync("myID", this);
-// Retrieves only the name attribute
-index.getObjectASync("myID", Arrays.asList("name"), this);
+// Retrieves only the firstname attribute
+index.getObjectASync("myID", Arrays.asList("firstname"), this);
 ```
 
 Delete an object
@@ -272,7 +289,7 @@ public void getSettingsResult(Index index, JSONObject result) {
 ```
 
 ```java
-index.setSettingsASync("{ \"customRanking\": [\"desc(population)\", \"asc(name)\"]}", this);
+index.setSettingsASync("{ \"customRanking\": [\"desc(followers)\"]}", this);
 ```
 
 List indexes
@@ -288,7 +305,7 @@ Delete an index
 You can delete an index using its name:
 
 ```java
-client.deleteIndex("cities")
+client.deleteIndex("contacts")
 ```
 
 Wait indexing
@@ -298,7 +315,7 @@ All write operations return a `taskID` when the job is securely stored on our in
 
 For example, to wait for indexing of a new object:
 ```java
-JSONObject res = index.addObject("{ \"name\": \"San Francisco\", \"population\": 805235 }");
+JSONObject res = index.addObject("{ \"firstname\": \"Jimmie\", \"lastname\": \"Barninger\"}");
 index.waitTask(String.valueOf(res.getLong("objectID")));
 ```
 
@@ -315,16 +332,16 @@ We expose two methods to perform batches:
 Example using automatic `objectID` assignement:
 ```java
 List<JSONObject> array = new ArrayList<JSONObject>();
-array.add(new JSONObject("{ \"name\": \"San Francisco\", \"population\": 805235 }"));
-array.add(new JSONObject("{ \"name\": \"Los Angeles\", \"population\": 3792621 }"));
+array.add(new JSONObject("{ \"firstname\": \"Jimmie\", \"lastname\": \"Barninger\"}"));
+array.add(new JSONObject("{ \"firstname\": \"Warren\", \"lastname\": \"Speach\"}"));
 index.addObjects(array);
 ```
 
 Example with user defined `objectID` (add or update):
 ```java
 List<JSONObject> array = new ArrayList<JSONObject>();
-array.add(new JSONObject("{ \"name\": \"San Francisco\", \"population\": 805235, \"objectID\": \"SFO\" }"));
-array.add(new JSONObject("{ \"name\": \"Los Angeles\", \"population\": 3792621, \"objectID\": \"LA\" }"));
+array.add(new JSONObject("{ \"firstname\": \"Jimmie\", \"lastname\": \"Barninger\", \"objectID\": \"SFO\" }"));
+array.add(new JSONObject("{ \"firstname\": \"Warren\", \"lastname\": \"Speach\", \"objectID\": \"LA\" }"));
 index.saveObjects(array);
 ```
 
