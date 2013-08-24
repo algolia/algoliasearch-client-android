@@ -68,19 +68,19 @@ You will get search results in the searchResult callback of your Activity:
 public void searchResult(Index index, Query query, JSONObject results) {
   Log.d("search", results.toString());
 }
+```
 
 Settings can be customized to tune the search behavior. For example you can add a custom sort by number of followers to the already good out-of-the-box relevance:
-```ruby
+```java
 index.setSettingsASync("{ \"customRanking\": [\"desc(followers)\"]}", this);
 ```
 You can also configure the list of attributes you want to index by order of importance (first = most important):
-```ruby
+```java
 index.setSettingsASync("{ \"attributesToIndex\": [\"lastname\", \"firstname\", \"company\"]}", this);
-
 ```
 
 Since the engine is designed to suggest results as you type, you'll generally search by prefix. In this case the order of attributes is very important to decide which hit is the best:
-```ruby
+```java
 index.searchASync(new Query("or"), this);
 index.searchASync(new Query("jim"), this);
 ```
