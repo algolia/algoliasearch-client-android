@@ -29,7 +29,7 @@ Setup
 -------------
 To setup your project, follow these steps:
 
- 1. Download and add files in `src` folder to your project
+ 1. [Download](https://github.com/algolia/algoliasearch-client-java/archive/master.zip) and add files in `src` folder to your project
  2. Add [JSON-Java](https://github.com/douglascrockford/JSON-java) and [Apache HttpClient](http://hc.apache.org/downloads.cgi) to your project
  3. Initialize the client with your ApplicationID and API-Key(you can find all of them on your Algolia account)
 
