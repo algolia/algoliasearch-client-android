@@ -31,7 +31,7 @@ Setup
 To setup your project, follow these steps:
 
  1. [Download](https://github.com/algolia/algoliasearch-client-android/archive/master.zip) and add files in `src` folder to your project
- 2. Initialize the client with your ApplicationID and API-Key(you can find all of them on your Algolia account)
+ 2. Initialize the client with your ApplicationID and API-Key. You can find all of them on [your Algolia account](http://www.algolia.com/users/edit).
  3. Make your Activity class implements the `IndexListener` interface to be able to use the asynchronous methods.
 
 ```java
