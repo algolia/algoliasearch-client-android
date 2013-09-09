@@ -292,6 +292,8 @@ public class Index {
      * @param objectID the unique identifier of object to delete
      */
     public JSONObject deleteObject(String objectID) throws AlgoliaException {
+        if (objectID.length() == 0 || objectID == null)
+            throw new AlgoliaException("Invalid objectID");
         try {
             return client._deleteRequest("/1/indexes/" + indexName + "/" + URLEncoder.encode(objectID, "UTF-8"));
         } catch (UnsupportedEncodingException e) {
