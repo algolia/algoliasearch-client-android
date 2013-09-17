@@ -72,9 +72,6 @@ public class APIClient {
             throw new RuntimeException("AlgoliaSearch requires an apiKey.");
         }
         this.apiKey = apiKey;
-        if (hostsArray == null || hostsArray.size() == 0) {
-            throw new RuntimeException("AlgoliaSearch requires a list of hostnames.");
-        }
         this.hostsArray = Arrays.asList(applicationID + "-1.algolia.io", 
 						        		applicationID + "-2.algolia.io", 
 						        		applicationID + "-3.algolia.io");
@@ -130,7 +127,59 @@ public class APIClient {
             throw new RuntimeException(e);
         }
     }
-  
+    
+    /**
+     * Move an existing index.
+     * @param srcIndexName the name of index to copy.
+     * @param dstIndexName the new index name that will contains a copy of srcIndexName (destination will be overriten if it already exist).
+     */
+    public JSONObject moveIndex(String srcIndexName, String dstIndexName) throws AlgoliaException {
+    	try {
+	        JSONObject content = new JSONObject();
+	        content.put("operation", "move");
+	        content.put("destination", dstIndexName);
+	        return _postRequest("/1/indexes/" + URLEncoder.encode(srcIndexName, "UTF-8") + "/operation", content.toString()); 	
+    	} catch (UnsupportedEncodingException e) {
+    		throw new RuntimeException(e);
+    	} catch (JSONException e) {
+            throw new AlgoliaException(e.getMessage());
+        }
+    }
+    
+    /**
+     * Copy an existing index.
+     * @param srcIndexName the name of index to copy.
+     * @param dstIndexName the new index name that will contains a copy of srcIndexName (destination will be overriten if it already exist).
+     */
+    public JSONObject copyIndex(String srcIndexName, String dstIndexName) throws AlgoliaException {
+    	try {
+	        JSONObject content = new JSONObject();
+	        content.put("operation", "copy");
+	        content.put("destination", dstIndexName);
+	        return _postRequest("/1/indexes/" + URLEncoder.encode(srcIndexName, "UTF-8") + "/operation", content.toString()); 	
+    	} catch (UnsupportedEncodingException e) {
+    		throw new RuntimeException(e);
+    	} catch (JSONException e) {
+            throw new AlgoliaException(e.getMessage());
+        }
+    }
+    
+    /**
+     * Return 10 last log entries.
+     */
+    public JSONObject getLogs() throws AlgoliaException {
+    	 return _getRequest("/1/logs");
+    }
+
+    /**
+     * Return last logs entries.
+     * @param offset Specify the first entry to retrieve (0-based, 0 is the most recent log entry).
+     * @param length Specify the maximum number of entries to retrieve starting at offset. Maximum allowed value: 1000.
+     */
+    public JSONObject getLogs(int offset, int length) throws AlgoliaException {
+    	 return _getRequest("/1/logs?offset=" + offset + "&length=" + length);
+    }
+    
     /**
      * Get the index object initialized (no server call needed for initialization)
      *
