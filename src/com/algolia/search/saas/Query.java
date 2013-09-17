@@ -47,6 +47,7 @@ public class Query {
     protected int page;
     protected int hitsPerPage;
     protected String tags;
+    protected String numerics;
     protected String insideBoundingBox;
     protected String aroundLatLong;
     protected String query;
@@ -186,6 +187,16 @@ public class Query {
         return this;
     }
     
+    /**
+     * Add a list of numeric filters separated by a comma. 
+     * The syntax of one filter is `attributeName` followed by `operand` followed by `value. Supported operands are `<`, `<=`, `=`, `>` and `>=`. 
+     * You can have multiple conditions on one attribute like for example `numerics=price>100,price<1000`.
+     */
+    public Query setNumerics(String numerics) {
+    	this.numerics = numerics;
+    	return this;
+    }
+    
     protected String getQueryString() {
         StringBuilder stringBuilder = new StringBuilder();
         
@@ -258,6 +269,12 @@ public class Query {
                     stringBuilder.append('&');
                 stringBuilder.append("tags=");
                 stringBuilder.append(URLEncoder.encode(tags, "UTF-8"));
+            }
+            if (numerics != null) {
+            	if (stringBuilder.length() > 0)
+            		stringBuilder.append('&');
+            	stringBuilder.append("numerics=");
+            	stringBuilder.append(URLEncoder.encode(numerics, "UTF-8"));
             }
             if (insideBoundingBox != null) {
                 if (stringBuilder.length() > 0)
