@@ -237,6 +237,7 @@ public class Index {
             throw new AlgoliaException(e.getMessage());
         }
     }
+    
     /**
      * Delete an object from the index 
      * 
