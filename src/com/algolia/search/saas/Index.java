@@ -214,6 +214,30 @@ public class Index {
     }
 
     /**
+     * Override the content of several objects
+     * 
+     * @param objects contains an array of objects to update (each object must contains an objectID attribute)
+     */
+    public JSONObject saveObjects(JSONArray inputArray) throws AlgoliaException {
+        try {
+            JSONArray array = new JSONArray();
+            for(int n = 0; n < inputArray.length(); n++)
+            {
+            	JSONObject obj = inputArray.getJSONObject(n);
+                JSONObject action = new JSONObject();
+                action.put("action", "updateObject");
+                action.put("objectID", obj.getString("objectID"));
+                action.put("body", obj);
+                array.put(action);
+            }
+            JSONObject content = new JSONObject();
+            content.put("requests", array);
+            return client._postRequest("/1/indexes/" + indexName + "/batch", content.toString());
+        } catch (JSONException e) {
+            throw new AlgoliaException(e.getMessage());
+        }
+    }
+    /**
      * Delete an object from the index 
      * 
      * @param objectID the unique identifier of object to delete
