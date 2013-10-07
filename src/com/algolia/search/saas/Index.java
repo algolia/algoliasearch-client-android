@@ -107,6 +107,29 @@ public class Index {
     }
 
     /**
+     * Add several objects
+     * 
+     * @param objects contains an array of objects to add.
+     */
+    public JSONObject addObjects(JSONArray inputArray) throws AlgoliaException {
+        try {
+            JSONArray array = new JSONArray();
+            for(int n = 0; n < inputArray.length(); n++)
+            {
+                JSONObject action = new JSONObject();
+                action.put("action", "addObject");
+                action.put("body", inputArray.getJSONObject(n));
+                array.put(action);
+            }
+            JSONObject content = new JSONObject();
+            content.put("requests", array);
+            return client._postRequest("/1/indexes/" + indexName + "/batch", content.toString());
+        } catch (JSONException e) {
+            throw new AlgoliaException(e.getMessage());
+        }
+    }
+
+    /**
      * Get an object from this index
      * 
      * @param objectID the unique identifier of the object to retrieve
