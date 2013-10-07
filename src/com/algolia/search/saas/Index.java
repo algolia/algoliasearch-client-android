@@ -146,6 +146,40 @@ public class Index {
     }
     
     /**
+     * Add several objects
+     * 
+     * @param objects contains an array of objects to add.
+     */
+    public JSONObject addObjects(JSONArray inputArray) throws AlgoliaException {
+        try {
+            JSONArray array = new JSONArray();
+            for(int n = 0; n < inputArray.length(); n++)
+            {
+                JSONObject action = new JSONObject();
+                action.put("action", "addObject");
+                action.put("body", inputArray.getJSONObject(n));
+                array.put(action);
+            }
+            JSONObject content = new JSONObject();
+            content.put("requests", array);
+            return client._postRequest("/1/indexes/" + indexName + "/batch", content.toString());
+        } catch (JSONException e) {
+            throw new AlgoliaException(e.getMessage());
+        }
+    }
+    
+    /**
+     * Add several objects asynchronously
+     * 
+     * @param objects contains an array of objects to add. If the object contains an objectID
+     * @param listener the listener that will receive the result or error. If the listener is an instance of Activity, the result will be received directly on UIthread
+     */
+    public void addObjectsASync(JSONArray objects, IndexListener listener) {
+        ASyncIndexTaskParams params = new ASyncIndexTaskParams(listener, ASyncIndexTaskKind.AddObjects2, objects);
+        new ASyncIndexTask().execute(params);
+    }
+    
+    /**
      * Get an object from this index
      * 
      * @param objectID the unique identifier of the object to retrieve
@@ -283,6 +317,42 @@ public class Index {
      */
     public void saveObjectsASync(List<JSONObject> objects, IndexListener listener) {
         ASyncIndexTaskParams params = new ASyncIndexTaskParams(listener, ASyncIndexTaskKind.SaveObjects, objects);
+        new ASyncIndexTask().execute(params);
+    }
+    
+    /**
+     * Override the content of several objects
+     * 
+     * @param objects contains an array of objects to update (each object must contains an objectID attribute)
+     */
+    public JSONObject saveObjects(JSONArray inputArray) throws AlgoliaException {
+        try {
+            JSONArray array = new JSONArray();
+            for(int n = 0; n < inputArray.length(); n++)
+            {
+            	JSONObject obj = inputArray.getJSONObject(n);
+                JSONObject action = new JSONObject();
+                action.put("action", "updateObject");
+                action.put("objectID", obj.getString("objectID"));
+                action.put("body", obj);
+                array.put(action);
+            }
+            JSONObject content = new JSONObject();
+            content.put("requests", array);
+            return client._postRequest("/1/indexes/" + indexName + "/batch", content.toString());
+        } catch (JSONException e) {
+            throw new AlgoliaException(e.getMessage());
+        }
+    }
+    
+    /**
+     * Override the content of several objects asynchronously
+     * 
+     * @param objects contains an array of objects to update (each object must contains an objectID attribute)
+     * @param listener the listener that will receive the result or error. If the listener is an instance of Activity, the result will be received directly on UIthread
+     */
+    public void saveObjectsASync(JSONArray objects, IndexListener listener) {
+        ASyncIndexTaskParams params = new ASyncIndexTaskParams(listener, ASyncIndexTaskKind.SaveObjects2, objects);
         new ASyncIndexTask().execute(params);
     }
     
@@ -503,8 +573,10 @@ public class Index {
         GetObject,
         AddObject,
         AddObjects,
+        AddObjects2,
         SaveObject,
         SaveObjects,
+        SaveObjects2,
         PartialSaveObject,
         DeleteObject,
         WaitTask,
@@ -521,6 +593,7 @@ public class Index {
         public String objectID;
         public String objectContent;
         public List<JSONObject> objects;
+        public JSONArray objects2;
         public List<String> attributesToRetrieve;
         
         public ASyncIndexTaskParams(IndexListener listener, Query query) {
@@ -542,6 +615,12 @@ public class Index {
             this.listener = listener;
             this.kind = kind;
             this.objects = objects;
+        }
+        public ASyncIndexTaskParams(IndexListener listener, ASyncIndexTaskKind kind, JSONArray objects)
+        {
+            this.listener = listener;
+            this.kind = kind;
+            this.objects2 = objects;
         }
         public ASyncIndexTaskParams(IndexListener listener, String objectID, List<String> attributesToRetrieve)
         {
@@ -578,6 +657,9 @@ public class Index {
             case AddObjects:
                 p.listener.addObjectsResult(Index.this, p.objects, res);
                 break;
+            case AddObjects2:
+            	p.listener.addObjectsResult(Index.this, p.objects2, res);
+            	break;
             case WaitTask:
                 p.listener.waitTaskResult(Index.this, p.objectID);
                 break;
@@ -587,6 +669,9 @@ public class Index {
             case SaveObjects:
                 p.listener.saveObjectsResult(Index.this, p.objects, res);
                 break;
+            case SaveObjects2:
+            	p.listener.saveObjectsResult(Index.this, p.objects2, res);
+            	break;
             case DeleteObject:
                 p.listener.deleteObjectResult(Index.this, p.objectID, res);
                 break;
@@ -630,6 +715,14 @@ public class Index {
                     return null;
                 }
                 break;
+            case AddObjects2:
+            	try {
+            		res = addObjects(p.objects2);
+            	} catch (AlgoliaException e) {
+            		p.listener.addObjectsError(Index.this, p.objects2, e);
+            		return null;
+            	}
+            	break;
             case WaitTask:
                 try {
                     waitTask(p.objectID);
@@ -651,6 +744,14 @@ public class Index {
                     res = saveObjects(p.objects);
                 } catch (AlgoliaException e) {
                     p.listener.saveObjectsError(Index.this, p.objects, e);
+                    return null;
+                }
+                break;
+            case SaveObjects2:
+                try {
+                    res = saveObjects(p.objects2);
+                } catch (AlgoliaException e) {
+                    p.listener.saveObjectsError(Index.this, p.objects2, e);
                     return null;
                 }
                 break;

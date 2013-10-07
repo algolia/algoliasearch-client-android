@@ -2,6 +2,7 @@ package com.algolia.search.saas;
 
 import java.util.List;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 
@@ -54,6 +55,16 @@ public interface IndexListener {
     public void addObjectsError(Index index, List<JSONObject> objects, AlgoliaException e);
     
     /**
+     * Asynchronously receive result of Index.saveObjectsASync method.
+     */
+    public void addObjectsResult(Index index, JSONArray objects, JSONObject result);
+    
+    /**
+     * Asynchronously receive error of Index.saveObjectsASync method.
+     */
+    public void addObjectsError(Index index, JSONArray objects, AlgoliaException e);
+    
+    /**
      * Asynchronously receive result of Index.searchASync method.
      */
     public void searchResult(Index index, Query query, JSONObject results);
@@ -82,6 +93,7 @@ public interface IndexListener {
      * Asynchronously receive error of Index.saveObjectASync methods.
      */
     public void saveObjectError(Index index, String object, String objectID, AlgoliaException e);
+  
     
     /**
      * Asynchronously receive result of Index.saveObjectsASync method.
@@ -92,6 +104,16 @@ public interface IndexListener {
      * Asynchronously receive error of Index.saveObjectsASync method.
      */
     public void saveObjectsError(Index index, List<JSONObject> objects, AlgoliaException e);
+   
+    /**
+     * Asynchronously receive result of Index.saveObjectsASync method.
+     */
+    public void saveObjectsResult(Index index, JSONArray objects, JSONObject result);
+    
+    /**
+     * Asynchronously receive error of Index.saveObjectsASync method.
+     */
+    public void saveObjectsError(Index index, JSONArray objects, AlgoliaException e);
     
     /**
      * Asynchronously receive result of Index.partialUpdateObjectASync method.
