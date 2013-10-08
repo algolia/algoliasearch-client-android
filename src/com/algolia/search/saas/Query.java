@@ -60,7 +60,7 @@ public class Query {
         page = 0;
         hitsPerPage = 20;
         this.query = query;
-        queryType = QueryType.PREFIX_ALL;
+        queryType = QueryType.PREFIX_LAST;
     }
     
     public Query() {
@@ -293,12 +293,11 @@ public class Query {
             }
             switch (queryType) {
             case PREFIX_ALL:
-            	break;
-            case PREFIX_LAST:
             	if (stringBuilder.length() > 0)
                     stringBuilder.append('&');
-                stringBuilder.append("queryType=prefixLast");
-
+                stringBuilder.append("queryType=prefixAll");
+            	break;
+            case PREFIX_LAST:
             	break;
             case PREFIX_NONE:
             	if (stringBuilder.length() > 0)
