@@ -473,10 +473,13 @@ public class Index {
      *       - Control part of the ranking (see the ranking parameter for full explanation). 
      *         Matches in attributes at the beginning of the list will be considered more important than matches 
      *         in attributes further down the list.
+     *         In one attribute, matching text at the beginning of the attribute will be considered more important 
+     *         than text after, you can disable this behavior if you add your attribute inside 
+     *         unordered(AttributeName), for example attributesToIndex:["title", "unordered(text)"].
      *  - ranking: (array of strings) controls the way results are sorted. 
      *     We have four available criteria: 
      *       - typo sort according to number of typos, 
-     *       - geo: sort according to decreassing distance when performing a geo-location based search,
+     *       - geo: sort according to decreasing distance when performing a geo-location based search,
      *       - proximity: sort according to the proximity of query words in hits, 
      *       - attribute: sort according to the order of attributes defined by **attributesToIndex**,
      *       - exact: sort according to the number of words that are matched identical to query word (and not as a prefix),

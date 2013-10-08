@@ -30,9 +30,9 @@ import java.util.List;
 public class Query {
     public enum QueryType
     {
-    	/// all query words are interpreted as prefixes (default behavior).
+    	/// all query words are interpreted as prefixes.
     	PREFIX_ALL,
-    	/// only the last word is interpreted as a prefix. This option is recommended if you have a lot of content to speedup the processing.
+    	/// only the last word is interpreted as a prefix (default behavior).
     	PREFIX_LAST,
     	/// no query word is interpreted as a prefix. This option is not recommended.
     	PREFIX_NONE
