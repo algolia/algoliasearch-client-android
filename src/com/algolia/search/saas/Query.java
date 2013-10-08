@@ -238,13 +238,13 @@ public class Query {
             if (minWordSizeForApprox1 != 3) {
                 if (stringBuilder.length() > 0)
                     stringBuilder.append('&');
-                stringBuilder.append("minWordSizeForApprox1=");
+                stringBuilder.append("minWordSizefor1Typo=");
                 stringBuilder.append(minWordSizeForApprox1);
             }
             if (minWordSizeForApprox2 != 7) {
                 if (stringBuilder.length() > 0)
                     stringBuilder.append('&');
-                stringBuilder.append("minWordSizeForApprox2=");
+                stringBuilder.append("minWordSizefor2Typos=");
                 stringBuilder.append(minWordSizeForApprox2);
             }
             if (getRankingInfo) {
