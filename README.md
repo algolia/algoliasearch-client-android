@@ -62,12 +62,12 @@ index.addObject(new JSONObject()
       .put("firstname", "Jimmie")
       .put("lastname", "Barninger")
       .put("followers", 93)
-      .put("company", "California Paint").toString());
+      .put("company", "California Paint"));
 index.addObject(new JSONObject()
       .put("firstname", "Warren")
       .put("lastname", "Speach")
       .put("followers", 42)
-      .put("company", "Norwalk Crmc").toString());
+      .put("company", "Norwalk Crmc"));
 ```
 
 You can then start to search for a contact firstname, lastname, company, ... (even with typos):
@@ -91,7 +91,7 @@ You can also configure the list of attributes you want to index by order of impo
 index.setSettingsASync(new JSONObject()
       .append("attributesToIndex", "lastname")
       .append("attributesToIndex", "firstname")
-      .append("attributesToIndex", "company").toString(), this);
+      .append("attributesToIndex", "company"), this);
 
 ```
 
@@ -208,7 +208,7 @@ Example with automatic `objectID` assignement:
 ```java
 JSONObject obj = index.addObject(new JSONObject()
       .put("firstname", "Jimmie")
-      .put("lastname", "Barninger").toString());
+      .put("lastname", "Barninger"));
 System.out.println(obj.getString("objectID"));
 ```
 
@@ -217,7 +217,7 @@ Example with manual `objectID` assignement:
 ```java
 JSONObject obj = index.addObject(new JSONObject()
       .put("firstname", "Jimmie")
-      .put("lastname", "Barninger").toString(), "myID");
+      .put("lastname", "Barninger"), "myID");
 System.out.println(obj.getString("objectID"));
 ```
 
@@ -235,13 +235,13 @@ Example to replace all the content of an existing object:
 index.saveObject(new JSONObject()
       .put("firstname", "Jimmie")
       .put("lastname", "Barninger")
-      .put("city", "New York").toString(), "myID");
+      .put("city", "New York"), "myID");
 ```
 
 Example to update only the population attribute of an existing object:
 
 ```java
-index.partialUpdateObject(new JSONObject().put("city", "San Francisco").toString(), "myID");
+index.partialUpdateObject(new JSONObject().put("city", "San Francisco"), "myID");
 ```
 
 Get an object
@@ -327,7 +327,7 @@ All write operations return a `taskID` when the job is securely stored on our in
 
 For example, to wait for indexing of a new object:
 ```java
-JSONObject res = index.addObject(new JSONObject().put("firstname", "Jimmie").put("lastname", "Barninger").toString());
+JSONObject res = index.addObject(new JSONObject().put("firstname", "Jimmie").put("lastname", "Barninger"));
 index.waitTask(String.valueOf(res.getLong("objectID")));
 ```
 

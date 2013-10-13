@@ -42,7 +42,7 @@ public class Index {
     private String originalIndexName;
     
     /**
-     * Index initialization (You should not call this initialized yourself)
+     * Index initialization (You should not call this yourself)
      */
     protected Index(APIClient client, String indexName) {
         try {
@@ -54,6 +54,9 @@ public class Index {
         }
     }
 
+    /**
+     * @return the underlying index name
+     */
     public String getIndexName() {
         return originalIndexName;
     }
@@ -61,24 +64,22 @@ public class Index {
     /**
      * Add an object in this index
      * 
-     * @param content contains the object to add inside the index. 
-     *  The object is represented by an associative array
+     * @param obj the object to add
     */
-    public JSONObject addObject(String obj) throws AlgoliaException {
-        return client._postRequest("/1/indexes/" + indexName, obj);
+    public JSONObject addObject(JSONObject obj) throws AlgoliaException {
+        return client._postRequest("/1/indexes/" + indexName, obj.toString());
     }
    
     /**
-     * Add an object in this index
+     * Add an object in this index with a uniq identifier
      * 
-     * @param content contains the object to add inside the index. 
-     *  The object is represented by an associative array
-     * @param objectID an objectID you want to attribute to this object 
-     * (if the attribute already exist the old object will be overwrite)
+     * @param obj the object to add
+     * @param objectID the objectID associated to this object 
+     * (if this objectID already exist the old object will be overriden)
      */
-    public JSONObject addObject(String obj, String objectID) throws AlgoliaException {
+    public JSONObject addObject(JSONObject obj, String objectID) throws AlgoliaException {
         try {
-            return client._putRequest("/1/indexes/" + indexName + "/" + URLEncoder.encode(objectID, "UTF-8"), obj);
+            return client._putRequest("/1/indexes/" + indexName + "/" + URLEncoder.encode(objectID, "UTF-8"), obj.toString());
         } catch (UnsupportedEncodingException e) {
             throw new RuntimeException(e);
         }
@@ -87,7 +88,7 @@ public class Index {
     /**
      * Add several objects
      * 
-     * @param objects contains an array of objects to add.
+     * @param objects the array of objects to add
      */
     public JSONObject addObjects(List<JSONObject> objects) throws AlgoliaException {
         try {
@@ -109,7 +110,7 @@ public class Index {
     /**
      * Add several objects
      * 
-     * @param objects contains an array of objects to add.
+     * @param objects the array of objects to add
      */
     public JSONObject addObjects(JSONArray inputArray) throws AlgoliaException {
         try {
@@ -148,7 +149,7 @@ public class Index {
      * @param objectID the unique identifier of the object to retrieve
      * @param attributesToRetrieve, contains the list of attributes to retrieve.
      */
-    public JSONObject getObject(String objectID,  List<String> attributesToRetrieve) throws AlgoliaException {
+    public JSONObject getObject(String objectID, List<String> attributesToRetrieve) throws AlgoliaException {
         try {
             StringBuilder params = new StringBuilder();
             params.append("?attributes=");
@@ -166,12 +167,11 @@ public class Index {
     /**
      * Update partially an object (only update attributes passed in argument)
      * 
-     * @param partialObject contains the object attributes to override, the 
-     *  object must contains an objectID attribute
+     * @param partialObject the object to override
      */
-    public JSONObject partialUpdateObject(String partialObject, String objectID) throws AlgoliaException {
+    public JSONObject partialUpdateObject(JSONObject partialObject, String objectID) throws AlgoliaException {
         try {
-            return client._postRequest("/1/indexes/" + indexName + "/" + URLEncoder.encode(objectID, "UTF-8") + "/partial", partialObject);
+            return client._postRequest("/1/indexes/" + indexName + "/" + URLEncoder.encode(objectID, "UTF-8") + "/partial", partialObject.toString());
         } catch (UnsupportedEncodingException e) {
             throw new RuntimeException(e);
         }
@@ -180,11 +180,11 @@ public class Index {
     /**
      * Override the content of object
      * 
-     * @param object contains the object to save
+     * @param object the object to update
      */
-    public JSONObject saveObject(String object, String objectID) throws AlgoliaException {
+    public JSONObject saveObject(JSONObject object, String objectID) throws AlgoliaException {
         try {
-            return client._putRequest("/1/indexes/" + indexName + "/" + URLEncoder.encode(objectID, "UTF-8"), object);
+            return client._putRequest("/1/indexes/" + indexName + "/" + URLEncoder.encode(objectID, "UTF-8"), object.toString());
         } catch (UnsupportedEncodingException e) {
             throw new RuntimeException(e);
         }
@@ -193,7 +193,7 @@ public class Index {
     /**
      * Override the content of several objects
      * 
-     * @param objects contains an array of objects to update (each object must contains an objectID attribute)
+     * @param objects the array of objects to update (each object must contains an objectID attribute)
      */
     public JSONObject saveObjects(List<JSONObject> objects) throws AlgoliaException {
         try {
@@ -216,7 +216,7 @@ public class Index {
     /**
      * Override the content of several objects
      * 
-     * @param objects contains an array of objects to update (each object must contains an objectID attribute)
+     * @param objects the array of objects to update (each object must contains an objectID attribute)
      */
     public JSONObject saveObjects(JSONArray inputArray) throws AlgoliaException {
         try {
@@ -329,8 +329,8 @@ public class Index {
      *    The syntax of this condition is an array of strings containing attributes prefixed 
      *    by asc (ascending order) or desc (descending order) operator.
      */
-    public JSONObject setSettings(String settings) throws AlgoliaException {
-        return client._putRequest("/1/indexes/" + indexName + "/settings", settings);
+    public JSONObject setSettings(JSONObject settings) throws AlgoliaException {
+        return client._putRequest("/1/indexes/" + indexName + "/settings", settings.toString());
     }
     
     /**
