@@ -36,7 +36,7 @@ If you're using Maven, add the following dependency and repository to your pom f
 <dependency>
     <groupId>com.algolia</groupId>
     <artifactId>algoliasearch</artifactId>
-    <version>1.0.0</version>
+    <version>1.1.0</version>
 </dependency>
 <repository>
     <id>algoliasearch</id>
