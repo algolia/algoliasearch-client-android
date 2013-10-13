@@ -58,8 +58,16 @@ This quick start is a 30 seconds tutorial where you can discover how to index an
 Without any prior-configuration, you can index some contacts in the ```contacts``` index with the following code:
 ```java
 Index index = client.initIndex("contacts");
-index.addObject("{ \"firstname\": \"Jimmie\", \"lastname\": \"Barninger\", \"followers\":93, \"company\": \"California Paint\" }");
-index.addObject("{ \"firstname\": \"Warren\", \"lastname\": \"Speach\",    \"followers\"42, \"company\": \"Norwalk Crmc\" }");
+index.addObject(new JSONObject()
+      .put("firstname", "Jimmie")
+      .put("lastname", "Barninger")
+      .put("followers", 93)
+      .put("company", "California Paint").toString());
+index.addObject(new JSONObject()
+      .put("firstname", "Warren")
+      .put("lastname", "Speach")
+      .put("followers", 42)
+      .put("company", "Norwalk Crmc").toString());
 ```
 
 You can then start to search for a contact firstname, lastname, company, ... (even with typos):
@@ -76,11 +84,14 @@ System.out.println(index.search(new Query("jimmie paint")));
 
 Settings can be customized to tune the search behavior. For example you can add a custom sort by number of followers to the already good out-of-the-box relevance:
 ```ruby
-index.setSettingsASync("{ \"customRanking\": [\"desc(followers)\"]}", this);
+index.setSettingsASync(new JSONObject().append("customRanking", "desc(followers)"), this);
 ```
 You can also configure the list of attributes you want to index by order of importance (first = most important):
 ```ruby
-index.setSettingsASync("{ \"attributesToIndex\": [\"lastname\", \"firstname\", \"company\"]}", this);
+index.setSettingsASync(new JSONObject()
+      .append("attributesToIndex", "lastname")
+      .append("attributesToIndex", "firstname")
+      .append("attributesToIndex", "company").toString(), this);
 
 ```
 
@@ -195,14 +206,18 @@ Objects are schema less, you don't need any configuration to start indexing. The
 Example with automatic `objectID` assignement:
 
 ```java
-JSONObject obj = index.addObject("{ \"firstname\": \"Jimmie\", \"lastname\": \"Barninger\" }");
+JSONObject obj = index.addObject(new JSONObject()
+      .put("firstname", "Jimmie")
+      .put("lastname", "Barninger").toString());
 System.out.println(obj.getString("objectID"));
 ```
 
 Example with manual `objectID` assignement:
 
 ```java
-JSONObject obj = index.addObject("{ \"firstname\": \"Jimmie\", \"lastname\": \"Barninger\" }", "myID");
+JSONObject obj = index.addObject(new JSONObject()
+      .put("firstname", "Jimmie")
+      .put("lastname", "Barninger").toString(), "myID");
 System.out.println(obj.getString("objectID"));
 ```
 
@@ -217,13 +232,16 @@ You have two options to update an existing object:
 Example to replace all the content of an existing object:
 
 ```java
-index.saveObject("{ \"firstname\": \"Jimmie\", \"lastname\": \"Barninger\", \"city":\"New York\" }", "myID");
+index.saveObject(new JSONObject()
+      .put("firstname", "Jimmie")
+      .put("lastname", "Barninger")
+      .put("city", "New York").toString(), "myID");
 ```
 
 Example to update only the population attribute of an existing object:
 
 ```java
-index.partialUpdateObject("{ \"city":\"San Francisco\" }", "myID");
+index.partialUpdateObject(new JSONObject().put("city", "San Francisco").toString(), "myID");
 ```
 
 Get an object
@@ -283,7 +301,7 @@ System.out.println(index.getSettings());
 ```
 
 ```java
-index.setSettings("{ \"customRanking\": [\"desc(followers)\"]}");
+index.setSettings(new JSONObject().append("customRanking", "desc(followers)"));
 ```
 
 List indexes
@@ -309,7 +327,7 @@ All write operations return a `taskID` when the job is securely stored on our in
 
 For example, to wait for indexing of a new object:
 ```java
-JSONObject res = index.addObject("{ \"firstname\": \"Jimmie\", \"lastname\": \"Barninger\"}");
+JSONObject res = index.addObject(new JSONObject().put("firstname", "Jimmie").put("lastname", "Barninger").toString());
 index.waitTask(String.valueOf(res.getLong("objectID")));
 ```
 
@@ -326,16 +344,16 @@ We expose two methods to perform batches:
 Example using automatic `objectID` assignement:
 ```java
 List<JSONObject> array = new ArrayList<JSONObject>();
-array.add(new JSONObject("{ \"firstname\": \"Jimmie\", \"lastname\": \"Barninger\"}"));
-array.add(new JSONObject("{ \"firstname\": \"Warren\", \"lastname\": \"Speach\"}"));
+array.add(new JSONObject().put("firstname", "Jimmie").put("lastname", "Barninger"));
+array.add(new JSONObject().put("firstname", "Warren").put("lastname", "Speach"));
 index.addObjects(array);
 ```
 
 Example with user defined `objectID` (add or update):
 ```java
 List<JSONObject> array = new ArrayList<JSONObject>();
-array.add(new JSONObject("{ \"firstname\": \"Jimmie\", \"lastname\": \"Barninger\", \"objectID\": \"SFO\" }"));
-array.add(new JSONObject("{ \"firstname\": \"Warren\", \"lastname\": \"Speach\", \"objectID\": \"LA\" }"));
+array.add(new JSONObject().put("firstname", "Jimmie").put("lastname", "Barninger").put("objectID", "SFO"));
+array.add(new JSONObject().put("firstname", "Warren").put("lastname", "Speach").put("objectID", "LA"));
 index.saveObjects(array);
 ```
 
