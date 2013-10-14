@@ -32,14 +32,13 @@ Setup
 -------------
 To setup your project, follow these steps:
 
- 1. [Download](https://github.com/algolia/algoliasearch-client-android/archive/master.zip) and add files in `src` folder to your project
+ 1. Download [latest algoliasearch-client-android-*.jar](https://github.com/algolia/algoliasearch-client-android/tree/master/dist) and add it to your project's dependencies.
  2. Initialize the client with your ApplicationID and API-Key. You can find all of them on [your Algolia account](http://www.algolia.com/users/edit).
  3. Make your Activity class implements the `IndexListener` interface to be able to use the asynchronous methods.
 
 ```java
   APIClient client = new APIClient("YourApplicationID", "YourAPIKey");
 ```
-
 
 Quick Start
 -------------
@@ -48,8 +47,16 @@ This quick start is a 30 seconds tutorial where you can discover how to index an
 Without any prior-configuration, you can index some contacts in the ```contacts``` index with the following code:
 ```java
 Index index = client.initIndex("contacts");
-index.addObjectASync("{ \"firstname\": \"Jimmie\", \"lastname\": \"Barninger\", \"followers\":93, \"company\": \"California Paint\" }", this);
-index.addObjectASync("{ \"firstname\": \"Warren\", \"lastname\": \"Speach\",    \"followers\"42, \"company\": \"Norwalk Crmc\" }", this);
+index.addObjectASync(new JSONObject()
+      .put("firstname", "Jimmie")
+      .put("lastname", "Barninger")
+      .put("followers", 93)
+      .put("company", "California Paint"), this);
+index.addObjectASync(new JSONObject()
+      .put("firstname", "Warren")
+      .put("lastname", "Speach")
+      .put("followers", 42)
+      .put("company", "Norwalk Crmc"), this);
 ```
 
 You can then start to search for a contact firstname, lastname, company, ... (even with typos):
@@ -74,11 +81,14 @@ public void searchResult(Index index, Query query, JSONObject results) {
 
 Settings can be customized to tune the search behavior. For example you can add a custom sort by number of followers to the already good out-of-the-box relevance:
 ```java
-index.setSettingsASync("{ \"customRanking\": [\"desc(followers)\"]}", this);
+index.setSettingsASync(new JSONObject().append("customRanking", "desc(followers)"), this);
 ```
 You can also configure the list of attributes you want to index by order of importance (first = most important):
 ```java
-index.setSettingsASync("{ \"attributesToIndex\": [\"lastname\", \"firstname\", \"company\"]}", this);
+index.setSettingsASync(new JSONObject()
+      .append("attributesToIndex", "lastname")
+      .append("attributesToIndex", "firstname")
+      .append("attributesToIndex", "company"), this);
 ```
 
 Since the engine is designed to suggest results as you type, you'll generally search by prefix. In this case the order of attributes is very important to decide which hit is the best:
@@ -191,7 +201,9 @@ Objects are schema less, you don't need any configuration to start indexing. The
 Example with automatic `objectID` assignement:
 
 ```java
-index.addObjectASync("{ \"firstname\": \"Jimmie\", \"lastname\": \"Barninger\" }", this);
+index.addObjectASync(new JSONObject()
+      .put("firstname", "Jimmie")
+      .put("lastname", "Barninger"), this);
 ```
 
 You will get the assigned objectID in the `addObjectResult` callback of IndexListener interface:
@@ -205,7 +217,9 @@ public void addObjectResult(Index index, String object, JSONObject result) {
 Example with manual `objectID` assignement:
 
 ```java
-index.addObjectASync("{ \"firstname\": \"Jimmie\", \"lastname\": \"Barninger\" }", "myID", this);
+index.addObjectASync(new JSONObject()
+      .put("firstname", "Jimmie")
+      .put("lastname", "Barninger"), "myID", this);
 ```
 
 Update an existing object in the Index
@@ -219,7 +233,10 @@ You have two options to update an existing object:
 Example to replace all the content of an existing object:
 
 ```java
-index.saveObjectASync("{ \"firstname\": \"Jimmie\", \"lastname\": \"Barninger\", \"city":\"New York\" }", "myID", this);
+index.saveObjectASync(new JSONObject()
+      .put("firstname", "Jimmie")
+      .put("lastname", "Barninger")
+      .put("city", "New York"), "myID", this);
 ```
 
 Example to update only the city attribute of an existing object:
@@ -293,7 +310,7 @@ public void getSettingsResult(Index index, JSONObject result) {
 ```
 
 ```java
-index.setSettingsASync("{ \"customRanking\": [\"desc(followers)\"]}", this);
+index.setSettingsASync(new JSONObject().append("customRanking", "desc(followers)"), this);
 ```
 
 List indexes
@@ -319,7 +336,7 @@ All write operations return a `taskID` when the job is securely stored on our in
 
 For example, to wait for indexing of a new object:
 ```java
-JSONObject res = index.addObject("{ \"firstname\": \"Jimmie\", \"lastname\": \"Barninger\"}");
+JSONObject res = index.addObject(new JSONObject().put("firstname", "Jimmie").put("lastname", "Barninger"));
 index.waitTask(String.valueOf(res.getLong("objectID")));
 ```
 
@@ -336,16 +353,16 @@ We expose two methods to perform batches:
 Example using automatic `objectID` assignement:
 ```java
 List<JSONObject> array = new ArrayList<JSONObject>();
-array.add(new JSONObject("{ \"firstname\": \"Jimmie\", \"lastname\": \"Barninger\"}"));
-array.add(new JSONObject("{ \"firstname\": \"Warren\", \"lastname\": \"Speach\"}"));
+array.add(new JSONObject().put("firstname", "Jimmie").put("lastname", "Barninger"));
+array.add(new JSONObject().put("firstname", "Warren").put("lastname", "Speach"));
 index.addObjects(array);
 ```
 
 Example with user defined `objectID` (add or update):
 ```java
 List<JSONObject> array = new ArrayList<JSONObject>();
-array.add(new JSONObject("{ \"firstname\": \"Jimmie\", \"lastname\": \"Barninger\", \"objectID\": \"SFO\" }"));
-array.add(new JSONObject("{ \"firstname\": \"Warren\", \"lastname\": \"Speach\", \"objectID\": \"LA\" }"));
+array.add(new JSONObject().put("firstname", "Jimmie").put("lastname", "Barninger").put("objectID", "SFO"));
+array.add(new JSONObject().put("firstname", "Warren").put("lastname", "Speach").put("objectID", "LA"));
 index.saveObjects(array);
 ```
 
