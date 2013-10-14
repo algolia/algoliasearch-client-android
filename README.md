@@ -84,14 +84,14 @@ System.out.println(index.search(new Query("jimmie paint")));
 
 Settings can be customized to tune the search behavior. For example you can add a custom sort by number of followers to the already good out-of-the-box relevance:
 ```ruby
-index.setSettingsASync(new JSONObject().append("customRanking", "desc(followers)"), this);
+index.setSettings(new JSONObject().append("customRanking", "desc(followers)"));
 ```
 You can also configure the list of attributes you want to index by order of importance (first = most important):
 ```ruby
-index.setSettingsASync(new JSONObject()
+index.setSettings(new JSONObject()
       .append("attributesToIndex", "lastname")
       .append("attributesToIndex", "firstname")
-      .append("attributesToIndex", "company"), this);
+      .append("attributesToIndex", "company"));
 
 ```
 
@@ -128,10 +128,10 @@ You can use the following optional arguments on Query class:
 
 ```java
 Index index = client.initIndex("contacts");
-index.searchASync(new Query("query string"), this);
-index.searchASync(new Query("query string").
-                  setAttributesToRetrieve(Arrays.asList("firstname", "lastname")).
-                  setNbHitsPerPage(50), this);
+System.out.println(index.search(new Query("query string")));
+System.out.println(index.search(new Query("query string").
+             setAttributesToRetrieve(Arrays.asList("firstname", "lastname")).
+             setNbHitsPerPage(50)));
 ```
 
 The server response will look like:
