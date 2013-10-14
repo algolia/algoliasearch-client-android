@@ -1,0 +1,22 @@
+apply plugin: 'java'
+apply plugin: 'eclipse'
+
+sourceCompatibility = 1.5
+version = '1.1.0'
+
+jar {
+    manifest {
+        attributes 'Implementation-Title': 'Algolia Search API Client for Android', 'Implementation-Version': version
+    }
+    destinationDir  file('dist')
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    compile group: 'org.apache.httpcomponents', name: 'httpclient', version: '4.3'
+    compile group: 'org.json', name: 'json', version: '20090211'
+    compile group: 'com.google.android', name: 'android', version: '4.1.1.4'
+}

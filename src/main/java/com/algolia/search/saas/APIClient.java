@@ -5,18 +5,19 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.net.URLEncoder;
 
 import org.apache.http.HttpResponse;
+import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpDelete;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpPut;
 import org.apache.http.entity.StringEntity;
-import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.message.BasicHeader;
 import org.apache.http.protocol.HTTP;
 import org.json.JSONArray;
@@ -53,10 +54,10 @@ import org.json.JSONTokener;
  * to start using Algolia Search API
  */
 public class APIClient {
-    private String applicationID;
-    private String apiKey;
-    private List<String> hostsArray;
-    private DefaultHttpClient httpClient;
+    private final String applicationID;
+    private final String apiKey;
+    private final List<String> hostsArray;
+    private final HttpClient httpClient;
     
     /**
      * Algolia Search initialization
@@ -64,20 +65,9 @@ public class APIClient {
      * @param apiKey a valid API key for the service
      */
     public APIClient(String applicationID, String apiKey) {
-        if (applicationID == null || applicationID.length() == 0) {
-            throw new RuntimeException("AlgoliaSearch requires an applicationID.");
-        }
-        this.applicationID = applicationID;
-        if (apiKey == null || apiKey.length() == 0) {
-            throw new RuntimeException("AlgoliaSearch requires an apiKey.");
-        }
-        this.apiKey = apiKey;
-        this.hostsArray = Arrays.asList(applicationID + "-1.algolia.io", 
+        this(applicationID, apiKey, Arrays.asList(applicationID + "-1.algolia.io", 
 						        		applicationID + "-2.algolia.io", 
-						        		applicationID + "-3.algolia.io");
-        // randomize elements of hostsArray (act as a kind of load-balancer)
-        Collections.shuffle(hostsArray);
-        httpClient = new DefaultHttpClient();
+						        		applicationID + "-3.algolia.io"));
     }
     
     /**
@@ -98,10 +88,10 @@ public class APIClient {
         if (hostsArray == null || hostsArray.size() == 0) {
             throw new RuntimeException("AlgoliaSearch requires a list of hostnames.");
         }
-        this.hostsArray = hostsArray;
         // randomize elements of hostsArray (act as a kind of load-balancer)
         Collections.shuffle(hostsArray);
-        httpClient = new DefaultHttpClient();
+        this.hostsArray = hostsArray;
+        httpClient = HttpClientBuilder.create().build();
     }
     
     /**

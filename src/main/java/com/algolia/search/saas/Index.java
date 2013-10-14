@@ -63,24 +63,22 @@ public class Index {
     /**
      * Add an object in this index
      * 
-     * @param content contains the object to add inside the index. 
-     *  The object is represented by an associative array
+     * @param obj the object to add. 
     */
-    public JSONObject addObject(String obj) throws AlgoliaException {
-        return client._postRequest("/1/indexes/" + indexName, obj);
+    public JSONObject addObject(JSONObject obj) throws AlgoliaException {
+        return client._postRequest("/1/indexes/" + indexName, obj.toString());
     }
    
     /**
      * Add an object in this index
      * 
-     * @param content contains the object to add inside the index. 
-     *  The object is represented by an associative array
+     * @param obj the object to add. 
      * @param objectID an objectID you want to attribute to this object 
      * (if the attribute already exist the old object will be overwrite)
      */
-    public JSONObject addObject(String obj, String objectID) throws AlgoliaException {
+    public JSONObject addObject(JSONObject obj, String objectID) throws AlgoliaException {
         try {
-            return client._putRequest("/1/indexes/" + indexName + "/" + URLEncoder.encode(objectID, "UTF-8"), obj);
+            return client._putRequest("/1/indexes/" + indexName + "/" + URLEncoder.encode(objectID, "UTF-8"), obj.toString());
         } catch (UnsupportedEncodingException e) {
             throw new RuntimeException(e);
         }
@@ -89,11 +87,11 @@ public class Index {
     /**
      * Add an object in this index asynchronously
      * 
-     * @param content contains the object to add inside the index. 
+     * @param obj the object to add. 
      *  The object is represented by an associative array
      * @param listener the listener that will receive the result or error. If the listener is an instance of Activity, the result will be received directly on UIthread
      */
-    public void addObjectASync(String obj, IndexListener listener) {
+    public void addObjectASync(JSONObject obj, IndexListener listener) {
         ASyncIndexTaskParams params = new ASyncIndexTaskParams(listener, ASyncIndexTaskKind.AddObject, null, obj);
         new ASyncIndexTask().execute(params);
     }
@@ -101,13 +99,13 @@ public class Index {
     /**
      * Add an object in this index asynchronously
      * 
-     * @param content contains the object to add inside the index. 
+     * @param obj the object to add. 
      *  The object is represented by an associative array
      * @param objectID an objectID you want to attribute to this object 
      * (if the attribute already exist the old object will be overwrite)
      * @param listener the listener that will receive the result or error. If the listener is an instance of Activity, the result will be received directly on UIthread
      */
-    public void addObjectASync(String obj, String objectID, IndexListener listener)  {
+    public void addObjectASync(JSONObject obj, String objectID, IndexListener listener)  {
         ASyncIndexTaskParams params = new ASyncIndexTaskParams(listener, ASyncIndexTaskKind.AddObject, objectID, obj);
         new ASyncIndexTask().execute(params);
     }
@@ -239,12 +237,11 @@ public class Index {
     /**
      * Update partially an object (only update attributes passed in argument)
      * 
-     * @param partialObject contains the object attributes to override, the 
-     *  object must contains an objectID attribute
+     * @param partialObject the object attributes to override
      */
-    public JSONObject partialUpdateObject(String partialObject, String objectID) throws AlgoliaException {
+    public JSONObject partialUpdateObject(JSONObject partialObject, String objectID) throws AlgoliaException {
         try {
-            return client._postRequest("/1/indexes/" + indexName + "/" + URLEncoder.encode(objectID, "UTF-8") + "/partial", partialObject);
+            return client._postRequest("/1/indexes/" + indexName + "/" + URLEncoder.encode(objectID, "UTF-8") + "/partial", partialObject.toString());
         } catch (UnsupportedEncodingException e) {
             throw new RuntimeException(e);
         }
@@ -253,11 +250,11 @@ public class Index {
     /**
      * Update partially an object asynchronously (only update attributes passed in argument)
      * 
-     * @param partialObject contains the object attributes to override, the 
+     * @param partialObject the object attributes to override, the 
      *  object must contains an objectID attribute
      * @param listener the listener that will receive the result or error. If the listener is an instance of Activity, the result will be received directly on UIthread
      */
-    public void partialUpdateObjectASync(String partialObject, String objectID, IndexListener listener) {
+    public void partialUpdateObjectASync(JSONObject partialObject, String objectID, IndexListener listener) {
         ASyncIndexTaskParams params = new ASyncIndexTaskParams(listener, ASyncIndexTaskKind.PartialSaveObject, objectID, partialObject);
         new ASyncIndexTask().execute(params);
     }
@@ -265,11 +262,11 @@ public class Index {
     /**
      * Override the content of object
      * 
-     * @param object contains the object to save
+     * @param object the object to save
      */
-    public JSONObject saveObject(String object, String objectID) throws AlgoliaException {
+    public JSONObject saveObject(JSONObject object, String objectID) throws AlgoliaException {
         try {
-            return client._putRequest("/1/indexes/" + indexName + "/" + URLEncoder.encode(objectID, "UTF-8"), object);
+            return client._putRequest("/1/indexes/" + indexName + "/" + URLEncoder.encode(objectID, "UTF-8"), object.toString());
         } catch (UnsupportedEncodingException e) {
             throw new RuntimeException(e);
         }
@@ -278,10 +275,10 @@ public class Index {
     /**
      * Override the content of object asynchronously
      * 
-     * @param object contains the object to save
+     * @param object the object to save
      * @param listener the listener that will receive the result or error. If the listener is an instance of Activity, the result will be received directly on UIthread
      */
-    public void saveObjectASync(String object, String objectID, IndexListener listener) {
+    public void saveObjectASync(JSONObject object, String objectID, IndexListener listener) {
         ASyncIndexTaskParams params = new ASyncIndexTaskParams(listener, ASyncIndexTaskKind.SaveObject, objectID, object);
         new ASyncIndexTask().execute(params);
     }
@@ -289,7 +286,7 @@ public class Index {
     /**
      * Override the content of several objects
      * 
-     * @param objects contains an array of objects to update (each object must contains an objectID attribute)
+     * @param objects an array of objects to update (each object must contains an objectID attribute)
      */
     public JSONObject saveObjects(List<JSONObject> objects) throws AlgoliaException {
         try {
@@ -489,15 +486,15 @@ public class Index {
      *    The syntax of this condition is an array of strings containing attributes prefixed 
      *    by asc (ascending order) or desc (descending order) operator.
      */
-    public JSONObject setSettings(String settings) throws AlgoliaException {
-        return client._putRequest("/1/indexes/" + indexName + "/settings", settings);
+    public JSONObject setSettings(JSONObject settings) throws AlgoliaException {
+        return client._putRequest("/1/indexes/" + indexName + "/settings", settings.toString());
     }
     
     /**
      * Set settings for this index asynchronously
      * @param listener the listener that will receive the result or error. If the listener is an instance of Activity, the result will be received directly on UIthread
      */
-    public void setSettingsASync(String settings, IndexListener listener) {
+    public void setSettingsASync(JSONObject settings, IndexListener listener) {
         ASyncIndexTaskParams params = new ASyncIndexTaskParams(listener, ASyncIndexTaskKind.SetSettings, null, settings);
         new ASyncIndexTask().execute(params);
     }
@@ -594,7 +591,7 @@ public class Index {
         public Query query;
         public ASyncIndexTaskKind kind;
         public String objectID;
-        public String objectContent;
+        public JSONObject objectContent;
         public List<JSONObject> objects;
         public JSONArray objects2;
         public List<String> attributesToRetrieve;
@@ -605,7 +602,7 @@ public class Index {
             this.kind = ASyncIndexTaskKind.Query;
         }
         
-        public ASyncIndexTaskParams(IndexListener listener, ASyncIndexTaskKind kind, String objectID, String content)
+        public ASyncIndexTaskParams(IndexListener listener, ASyncIndexTaskKind kind, String objectID, JSONObject content)
         {
             this.listener = listener;
             this.kind = kind;
@@ -694,7 +691,6 @@ public class Index {
                 p.listener.setSettingsResult(Index.this, p.objectContent, res);
                 break;
             }
-            
         }
         
         @Override

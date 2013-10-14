@@ -37,12 +37,12 @@ public interface IndexListener {
     /**
      * Asynchronously receive result of Index.saveObjectASync methods.
      */
-    public void addObjectResult(Index index, String object, JSONObject result);
+    public void addObjectResult(Index index, JSONObject object, JSONObject result);
     
     /**
      * Asynchronously receive error of Index.saveObjectASync methods.
      */
-    public void addObjectError(Index index, String object, AlgoliaException e);
+    public void addObjectError(Index index, JSONObject object, AlgoliaException e);
     
     /**
      * Asynchronously receive result of Index.saveObjectsASync method.
@@ -87,12 +87,12 @@ public interface IndexListener {
     /**
      * Asynchronously receive result of Index.saveObjectASync methods.
      */
-    public void saveObjectResult(Index index, String object, String objectID, JSONObject result);
+    public void saveObjectResult(Index index, JSONObject object, String objectID, JSONObject result);
     
     /**
      * Asynchronously receive error of Index.saveObjectASync methods.
      */
-    public void saveObjectError(Index index, String object, String objectID, AlgoliaException e);
+    public void saveObjectError(Index index, JSONObject object, String objectID, AlgoliaException e);
   
     
     /**
@@ -118,12 +118,12 @@ public interface IndexListener {
     /**
      * Asynchronously receive result of Index.partialUpdateObjectASync method.
      */
-    public void partialUpdateResult(Index index, String object, String objectID, JSONObject result);
+    public void partialUpdateResult(Index index, JSONObject object, String objectID, JSONObject result);
     
     /**
      * Asynchronously receive error of Index.partialUpdateObjectASync method.
      */
-    public void partialUpdateError(Index index, String object, String objectID, AlgoliaException e);
+    public void partialUpdateError(Index index, JSONObject object, String objectID, AlgoliaException e);
     
     /**
      * Asynchronously receive result of Index.getObjectASync method.
@@ -158,10 +158,10 @@ public interface IndexListener {
     /**
      * Asynchronously receive result of Index.setSettingsASync method.
      */
-    public void setSettingsResult(Index index, String settings, JSONObject result);
+    public void setSettingsResult(Index index, JSONObject settings, JSONObject result);
     
     /**
      * Asynchronously receive error of Index.setSettingsASync method.
      */
-    public void setSettingsError(Index index, String settings, AlgoliaException e);
+    public void setSettingsError(Index index, JSONObject settings, AlgoliaException e);
 }
