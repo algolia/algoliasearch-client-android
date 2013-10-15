@@ -11,13 +11,12 @@ import java.util.Collections;
 import java.util.List;
 
 import org.apache.http.HttpResponse;
-import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpDelete;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpPut;
 import org.apache.http.entity.StringEntity;
-import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicHeader;
 import org.apache.http.protocol.HTTP;
 import org.json.JSONArray;
@@ -57,7 +56,7 @@ public class APIClient {
     private final String applicationID;
     private final String apiKey;
     private final List<String> hostsArray;
-    private final HttpClient httpClient;
+    private final DefaultHttpClient httpClient;
     
     /**
      * Algolia Search initialization
@@ -91,7 +90,7 @@ public class APIClient {
         // randomize elements of hostsArray (act as a kind of load-balancer)
         Collections.shuffle(hostsArray);
         this.hostsArray = hostsArray;
-        httpClient = HttpClientBuilder.create().build();
+        httpClient = new DefaultHttpClient();
     }
     
     /**
