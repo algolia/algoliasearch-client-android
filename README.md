@@ -32,7 +32,7 @@ Setup
 -------------
 To setup your project, follow these steps:
 
- 1. Download [latest algoliasearch-client-android-*.jar](https://github.com/algolia/algoliasearch-client-android/tree/master/dist) and add it to your project's dependencies.
+ 1. Download [latest algoliasearch-client-android-*.jar](https://github.com/algolia/algoliasearch-client-android/tree/master/dist) and add it to the lib folder of your project.
  2. Initialize the client with your ApplicationID and API-Key. You can find all of them on [your Algolia account](http://www.algolia.com/users/edit).
  3. Make your Activity class implements the `IndexListener` interface to be able to use the asynchronous methods.
 
