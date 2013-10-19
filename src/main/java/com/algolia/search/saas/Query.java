@@ -170,6 +170,17 @@ public class Query {
     }
     
     /**
+     *  Search for entries around a given latitude/longitude. 
+     *  @param radius set the maximum distance in meters.
+     *  @param precision set the precision for ranking (for example if you set precision=100, two objects that are distant of less than 100m will be considered as identical for "geo" ranking parameter).
+     *  Note: at indexing, geoloc of an object should be set with _geoloc attribute containing lat and lng attributes (for example {"_geoloc":{"lat":48.853409, "lng":2.348800}})
+     */
+    public Query aroundLatitudeLongitude(float latitude, float longitude, int radius, int precision) {
+        aroundLatLong = "aroundLatLng=" + latitude + "," + longitude + "&aroundRadius=" + radius + "&aroundPrecision=" + precision;
+        return this;
+    }
+    
+    /**
      *  Search for entries inside a given area defined by the two extreme points of a rectangle.
      *    At indexing, geoloc of an object should be set with _geoloc attribute containing lat and lng attributes (for example {"_geoloc":{"lat":48.853409, "lng":2.348800}})
      */
