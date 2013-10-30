@@ -1,10 +1,11 @@
 package com.algolia.search.saas;
 
-import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URLEncoder;
 import java.util.Arrays;
 import java.util.Collections;
@@ -13,9 +14,11 @@ import java.util.List;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpDelete;
+import org.apache.http.client.methods.HttpEntityEnclosingRequestBase;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpPut;
+import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicHeader;
@@ -101,7 +104,7 @@ public class APIClient {
      *              {"name": "notes", "createdAt": "2013-01-18T15:33:13.556Z"}]}
      */
     public JSONObject listIndexes() throws AlgoliaException {
-        return _getRequest("/1/indexes/");
+        return getRequest("/1/indexes/");
     }
 
     /**
@@ -112,7 +115,7 @@ public class APIClient {
      */
     public JSONObject deleteIndex(String indexName) throws AlgoliaException {
         try {
-            return _deleteRequest("/1/indexes/" + URLEncoder.encode(indexName, "UTF-8"));
+            return deleteRequest("/1/indexes/" + URLEncoder.encode(indexName, "UTF-8"));
         } catch (UnsupportedEncodingException e) {
             throw new RuntimeException(e);
         }
@@ -128,7 +131,7 @@ public class APIClient {
 	        JSONObject content = new JSONObject();
 	        content.put("operation", "move");
 	        content.put("destination", dstIndexName);
-	        return _postRequest("/1/indexes/" + URLEncoder.encode(srcIndexName, "UTF-8") + "/operation", content.toString()); 	
+	        return postRequest("/1/indexes/" + URLEncoder.encode(srcIndexName, "UTF-8") + "/operation", content.toString()); 	
     	} catch (UnsupportedEncodingException e) {
     		throw new RuntimeException(e);
     	} catch (JSONException e) {
@@ -146,7 +149,7 @@ public class APIClient {
 	        JSONObject content = new JSONObject();
 	        content.put("operation", "copy");
 	        content.put("destination", dstIndexName);
-	        return _postRequest("/1/indexes/" + URLEncoder.encode(srcIndexName, "UTF-8") + "/operation", content.toString()); 	
+	        return postRequest("/1/indexes/" + URLEncoder.encode(srcIndexName, "UTF-8") + "/operation", content.toString()); 	
     	} catch (UnsupportedEncodingException e) {
     		throw new RuntimeException(e);
     	} catch (JSONException e) {
@@ -158,7 +161,7 @@ public class APIClient {
      * Return 10 last log entries.
      */
     public JSONObject getLogs() throws AlgoliaException {
-    	 return _getRequest("/1/logs");
+    	 return getRequest("/1/logs");
     }
 
     /**
@@ -167,7 +170,7 @@ public class APIClient {
      * @param length Specify the maximum number of entries to retrieve starting at offset. Maximum allowed value: 1000.
      */
     public JSONObject getLogs(int offset, int length) throws AlgoliaException {
-    	 return _getRequest("/1/logs?offset=" + offset + "&length=" + length);
+    	 return getRequest("/1/logs?offset=" + offset + "&length=" + length);
     }
     
     /**
@@ -183,21 +186,21 @@ public class APIClient {
      * List all existing user keys with their associated ACLs
      */
     public JSONObject listUserKeys() throws AlgoliaException {
-        return _getRequest("/1/keys");
+        return getRequest("/1/keys");
     }
 
     /**
      * Get ACL of a user key
      */
     public JSONObject getUserKeyACL(String key) throws AlgoliaException {
-        return _getRequest("/1/keys/" + key);
+        return getRequest("/1/keys/" + key);
     }
 
     /**
      * Delete an existing user key
      */
     public JSONObject deleteUserKey(String key) throws AlgoliaException {
-        return _deleteRequest("/1/keys/" + key);
+        return deleteRequest("/1/keys/" + key);
     }
 
     /**
@@ -220,7 +223,7 @@ public class APIClient {
         } catch (JSONException e) {
             throw new RuntimeException(e);
         }
-        return _postRequest("/1/keys", jsonObject.toString());
+        return postRequest("/1/keys", jsonObject.toString());
     }
     
     /**
@@ -245,164 +248,108 @@ public class APIClient {
         } catch (JSONException e) {
             throw new RuntimeException(e);
         }
-        return _postRequest("/1/keys", jsonObject.toString());
+        return postRequest("/1/keys", jsonObject.toString());
     }
     
-    protected JSONObject _getRequest(String url) throws AlgoliaException {
-        for (String host : this.hostsArray) {
-            HttpGet httpGet = new HttpGet("https://" + host + url);
-            httpGet.setHeader("X-Algolia-Application-Id", this.applicationID);
-            httpGet.setHeader("X-Algolia-API-Key", this.apiKey);
+    private static enum Method {
+        GET, POST, PUT, DELETE, OPTIONS, TRACE, HEAD;
+    }
+    
+    protected JSONObject getRequest(String url) throws AlgoliaException {
+    	return _request(Method.GET, url, null);
+    }
+    
+    protected JSONObject deleteRequest(String url) throws AlgoliaException {
+    	return _request(Method.DELETE, url, null);
+    }
+    
+    protected JSONObject postRequest(String url, String obj) throws AlgoliaException {
+    	return _request(Method.POST, url, obj);
+    }
+    
+    protected JSONObject putRequest(String url, String obj) throws AlgoliaException {
+    	return _request(Method.PUT, url, obj);
+    }
+    
+    private JSONObject _request(Method m, String url, String json) throws AlgoliaException {
+    	HttpRequestBase req;
+
+    	// for each host
+    	for (String host : this.hostsArray) {
+        	switch (m) {
+    		case DELETE:
+    			req = new HttpDelete();
+    			break;
+    		case GET:
+    			req = new HttpGet();
+    			break;
+    		case POST:
+    			req = new HttpPost();
+    			break;
+    		case PUT:
+    			req = new HttpPut();
+    			break;
+    		default:
+    			throw new IllegalArgumentException("Method " + m + " is not supported");
+        	}
+
+            // set URL
             try {
-                HttpResponse response = httpClient.execute(httpGet);
-                int code = response.getStatusLine().getStatusCode();
-                if (code == 403) {
-                    throw new AlgoliaException("Invalid Application-ID or API-Key");
-                }
-                if (code == 404) {
-                    throw new AlgoliaException("Resource does not exist");
-                }
-                if (code == 503)
-                    continue;
-                InputStream istream = response.getEntity().getContent();
-                InputStreamReader is = new InputStreamReader(istream, "UTF-8");
-                BufferedReader reader = new BufferedReader(is);
-                String json = reader.readLine();
-                JSONTokener tokener = new JSONTokener(json);
-                JSONObject res = new JSONObject(tokener);
-                reader.close();
-                is.close();
-                is.close();
-                return res;
-            } catch (IOException e) {
-                // on error continue on the next host
-            } catch (JSONException e) {
-                throw new AlgoliaException("JSON decode error:" + e.getMessage());
-            }
-        }
-        throw new AlgoliaException("Hosts unreachable");
-    }
-    
-    protected JSONObject _deleteRequest(String url) throws AlgoliaException {
-        for (String host : this.hostsArray) {
-            HttpDelete httpDelete = new HttpDelete("https://" + host + url);
-            httpDelete.setHeader("X-Algolia-Application-Id", this.applicationID);
-            httpDelete.setHeader("X-Algolia-API-Key", this.apiKey);
-            try {
-                HttpResponse response = httpClient.execute(httpDelete);
-                int code = response.getStatusLine().getStatusCode();
-                if (code == 403) {
-                    throw new AlgoliaException("Invalid Application-ID or API-Key");
-                }
-                if (code == 404) {
-                    throw new AlgoliaException("Resource does not exist");
-                }
-                if (code == 503)
-                    continue;
-                InputStream istream = response.getEntity().getContent();
-                InputStreamReader is = new InputStreamReader(istream, "UTF-8");
-                BufferedReader reader = new BufferedReader(is);
-                String json = reader.readLine();
-                JSONTokener tokener = new JSONTokener(json);
-                JSONObject res = new JSONObject(tokener);
-                reader.close();
-                is.close();
-                is.close();
-                return res;
-            } catch (IOException e) {
-                // on error continue on the next host
-            } catch (JSONException e) {
-                throw new AlgoliaException("JSON decode error:" + e.getMessage());
-            }
-        }
-        throw new AlgoliaException("Hosts unreachable");
-    }
-    
-    protected JSONObject _postRequest(String url, String obj) throws AlgoliaException {
-        for (String host : this.hostsArray) {
-            HttpPost httpPost = new HttpPost("https://" + host + url);
-            httpPost.setHeader("X-Algolia-Application-Id", this.applicationID);
-            httpPost.setHeader("X-Algolia-API-Key", this.apiKey);
-            httpPost.setHeader("Content-type", "application/json");
+    			req.setURI(new URI("https://" + host + url));
+    		} catch (URISyntaxException e) {
+    			// never reached
+    			throw new IllegalStateException(e);
+    		}
+        	
+        	// set auth headers
+        	req.setHeader("X-Algolia-Application-Id", this.applicationID);
+            req.setHeader("X-Algolia-API-Key", this.apiKey);
             
+            // set JSON entity
+            if (json != null) {
+            	if (!(req instanceof HttpEntityEnclosingRequestBase)) {
+            		throw new IllegalArgumentException("Method " + m + " cannot enclose entity");
+            	}
+	            req.setHeader("Content-type", "application/json");
+	            try {
+	                StringEntity se = new StringEntity(json, "UTF-8"); 
+	                se.setContentEncoding(new BasicHeader(HTTP.CONTENT_TYPE, "application/json"));
+	                ((HttpEntityEnclosingRequestBase) req).setEntity(se); 
+	            } catch (UnsupportedEncodingException e) {
+	                throw new AlgoliaException("Invalid JSON Object: " + json);
+	            }
+            }
+
+            HttpResponse response;
             try {
-                StringEntity se = new StringEntity(obj, "UTF-8"); 
-                se.setContentEncoding(new BasicHeader(HTTP.CONTENT_TYPE, "application/json"));
-                httpPost.setEntity(se); 
-            } catch (UnsupportedEncodingException e) {
-                throw new AlgoliaException("Invalid JSON Object: " + obj);
+            	response = httpClient.execute(req);
+            } catch (IOException e) {
+            	// on error continue on the next host
+            	continue;
+            }
+            int code = response.getStatusLine().getStatusCode();
+            if (code == 403) {
+            	consumeQuietly(response.getEntity());
+                throw new AlgoliaException("Invalid Application-ID or API-Key");
+            }
+            if (code == 404) {
+            	consumeQuietly(response.getEntity());
+                throw new AlgoliaException("Resource does not exist");
+            }
+            if (code == 503) {
+            	consumeQuietly(response.getEntity());
+            	// and continue
+                continue;
             }
             try {
-                HttpResponse response = httpClient.execute(httpPost);
-                int code = response.getStatusLine().getStatusCode();
-                if (code == 403) {
-                    throw new AlgoliaException("Invalid Application-ID or API-Key");
-                }
-                if (code == 404) {
-                    throw new AlgoliaException("Resource does not exist");
-                }
-                if (code == 503)
-                    continue;
-                InputStream istream = response.getEntity().getContent();
-                InputStreamReader is = new InputStreamReader(istream, "UTF-8");
-                BufferedReader reader = new BufferedReader(is);
-                String json = reader.readLine();
-                JSONTokener tokener = new JSONTokener(json);
+            	InputStream istream = response.getEntity().getContent();
+            	InputStreamReader is = new InputStreamReader(istream, "UTF-8");
+                JSONTokener tokener = new JSONTokener(is);
                 JSONObject res = new JSONObject(tokener);
-                reader.close();
-                is.close();
                 is.close();
                 return res;
             } catch (IOException e) {
-                // on error continue on the next host
-            } catch (JSONException e) {
-                throw new AlgoliaException("JSON decode error:" + e.getMessage());
-            }
-        }
-        throw new AlgoliaException("Hosts unreachable");
-    }
-    
-    protected JSONObject _putRequest(String url, String obj) throws AlgoliaException {
-        for (String host : this.hostsArray) {
-            HttpPut httpPut = new HttpPut("https://" + host + url);
-            httpPut.setHeader("X-Algolia-Application-Id", this.applicationID);
-            httpPut.setHeader("X-Algolia-API-Key", this.apiKey);
-            httpPut.setHeader("Content-type", "application/json");
-            
-            try {
-                StringEntity se = new StringEntity(obj, "UTF-8"); 
-                se.setContentEncoding(new BasicHeader(HTTP.CONTENT_TYPE, "application/json"));
-                httpPut.setEntity(se); 
-            } catch (UnsupportedEncodingException e) {
-                throw new AlgoliaException("Invalid JSON Object: " + obj);
-            }
-            try {
-                HttpResponse response = httpClient.execute(httpPut);
-                int code = response.getStatusLine().getStatusCode();
-                if (code == 403) {
-                	consumeQuietly(response.getEntity());
-                    throw new AlgoliaException("Invalid Application-ID or API-Key");
-                }
-                if (code == 404) {
-                	consumeQuietly(response.getEntity());
-                    throw new AlgoliaException("Resource does not exist");
-                }
-                if (code == 503) {
-                	consumeQuietly(response.getEntity());
-                    continue;
-                }
-                InputStream istream = response.getEntity().getContent();
-                InputStreamReader is = new InputStreamReader(istream, "UTF-8");
-                BufferedReader reader = new BufferedReader(is);
-                String json = reader.readLine();
-                JSONTokener tokener = new JSONTokener(json);
-                JSONObject res = new JSONObject(tokener);
-                reader.close();
-                is.close();
-                is.close();
-                return res;
-            } catch (IOException e) {
-                // on error continue on the next host
+            	continue;
             } catch (JSONException e) {
                 throw new AlgoliaException("JSON decode error:" + e.getMessage());
             }
