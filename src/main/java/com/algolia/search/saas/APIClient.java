@@ -20,6 +20,7 @@ import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.message.BasicHeader;
 import org.apache.http.protocol.HTTP;
+import org.apache.http.util.EntityUtils;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -257,13 +258,17 @@ public class APIClient {
                 HttpResponse response = httpClient.execute(httpGet);
                 int code = response.getStatusLine().getStatusCode();
                 if (code == 403) {
+                	EntityUtils.consumeQuietly(response.getEntity()); 
                     throw new AlgoliaException("Invalid Application-ID or API-Key");
                 }
                 if (code == 404) {
+                	EntityUtils.consumeQuietly(response.getEntity());
                     throw new AlgoliaException("Resource does not exist");
                 }
-                if (code == 503)
+                if (code == 503) {
+                	EntityUtils.consumeQuietly(response.getEntity());
                     continue;
+                }
                 InputStream istream = response.getEntity().getContent();
                 InputStreamReader is = new InputStreamReader(istream, "UTF-8");
                 BufferedReader reader = new BufferedReader(is);
