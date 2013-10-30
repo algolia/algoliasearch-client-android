@@ -10,6 +10,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
+import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpDelete;
 import org.apache.http.client.methods.HttpGet;
@@ -379,13 +380,17 @@ public class APIClient {
                 HttpResponse response = httpClient.execute(httpPut);
                 int code = response.getStatusLine().getStatusCode();
                 if (code == 403) {
+                	consumeQuietly(response.getEntity());
                     throw new AlgoliaException("Invalid Application-ID or API-Key");
                 }
                 if (code == 404) {
+                	consumeQuietly(response.getEntity());
                     throw new AlgoliaException("Resource does not exist");
                 }
-                if (code == 503)
+                if (code == 503) {
+                	consumeQuietly(response.getEntity());
                     continue;
+                }
                 InputStream istream = response.getEntity().getContent();
                 InputStreamReader is = new InputStreamReader(istream, "UTF-8");
                 BufferedReader reader = new BufferedReader(is);
@@ -403,5 +408,27 @@ public class APIClient {
             }
         }
         throw new AlgoliaException("Hosts unreachable");
+    }
+    
+    /**
+     * Ensures that the entity content is fully consumed and the content stream, if exists,
+     * is closed.
+     *
+     * @param entity
+     */
+    private void consumeQuietly(final HttpEntity entity) {
+        if (entity == null) {
+            return;
+        }
+        try {
+	        if (entity.isStreaming()) {
+	            InputStream instream = entity.getContent();
+	            if (instream != null) {
+	                instream.close();
+	            }
+	        }
+        } catch (IOException e) {
+        	// not fatal
+        }
     }
 }
