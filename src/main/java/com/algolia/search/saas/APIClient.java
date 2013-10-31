@@ -13,6 +13,7 @@ import java.util.List;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
+import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.methods.HttpDelete;
 import org.apache.http.client.methods.HttpEntityEnclosingRequestBase;
 import org.apache.http.client.methods.HttpGet;
@@ -58,6 +59,8 @@ import org.json.JSONTokener;
  * to start using Algolia Search API
  */
 public class APIClient {
+    private final static int HTTP_TIMEOUT_MS = 30000;
+    
     private final String applicationID;
     private final String apiKey;
     private final List<String> hostsArray;
@@ -321,6 +324,9 @@ public class APIClient {
 	                throw new AlgoliaException("Invalid JSON Object: " + json);
 	            }
             }
+            
+            RequestConfig config = RequestConfig.custom().setSocketTimeout(HTTP_TIMEOUT_MS).setConnectTimeout(HTTP_TIMEOUT_MS).build();
+            req.setConfig(config);
 
             HttpResponse response;
             try {
