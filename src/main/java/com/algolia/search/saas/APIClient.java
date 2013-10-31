@@ -57,6 +57,8 @@ import org.json.JSONTokener;
  * to start using Algolia Search API
  */
 public class APIClient {
+    private final static int HTTP_TIMEOUT_MS = 30000;
+    
     private final String applicationID;
     private final String apiKey;
     private final List<String> hostsArray;
@@ -319,6 +321,9 @@ public class APIClient {
 	                throw new AlgoliaException("Invalid JSON Object: " + json);
 	            }
             }
+            
+            httpClient.getParams().setParameter("http.socket.timeout", HTTP_TIMEOUT_MS);
+            httpClient.getParams().setParameter("http.connection.timeout", HTTP_TIMEOUT_MS);
 
             HttpResponse response;
             try {
