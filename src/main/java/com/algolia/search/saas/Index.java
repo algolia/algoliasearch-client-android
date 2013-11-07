@@ -299,7 +299,7 @@ public class Index {
      * Delete the index content without removing settings and index specific API keys.
      */
     public JSONObject clearIndex() throws AlgoliaException {
-        return client.postRequest("/1/indexes/" + indexName + "/clear");
+        return client.postRequest("/1/indexes/" + indexName + "/clear", "");
     }
     
     /**
