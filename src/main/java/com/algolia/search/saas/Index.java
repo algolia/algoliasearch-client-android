@@ -296,6 +296,13 @@ public class Index {
     }
 
     /**
+     * Delete the index content without removing settings and index specific API keys.
+     */
+    public JSONObject clearIndex() throws AlgoliaException {
+        return client.postRequest("/1/indexes/" + indexName + "/clear");
+    }
+    
+    /**
      * Set settings for this index
      * 
      * @param settigns the settings object that can contains :
@@ -389,13 +396,17 @@ public class Index {
      *   - settings : allows to get index settings (https only)
      *   - editSettings : allows to change index settings (https only)
      * @param validity the number of seconds after which the key will be automatically removed (0 means no time limit for this key)
+     * @param maxQueriesPerIPPerHour Specify the maximum number of API calls allowed from an IP address per hour.  Defaults to 0 (no rate limit).
+     * @param maxHitsPerQuery Specify the maximum number of hits this API key can retrieve in one call. Defaults to 0 (unlimited) 
      */
-    public JSONObject addUserKey(List<String> acls, int validity) throws AlgoliaException {
+    public JSONObject addUserKey(List<String> acls, int validity, int maxQueriesPerIPPerHour, int maxHitsPerQuery) throws AlgoliaException {
         JSONArray array = new JSONArray(acls);
         JSONObject jsonObject = new JSONObject();
         try {
             jsonObject.put("acl", array);
             jsonObject.put("validity", validity);
+            jsonObject.put("maxQueriesPerIPPerHour", maxQueriesPerIPPerHour);
+            jsonObject.put("maxHitsPerQuery", maxHitsPerQuery);
         } catch (JSONException e) {
             throw new RuntimeException(e);
         }

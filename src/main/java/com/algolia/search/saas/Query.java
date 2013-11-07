@@ -4,6 +4,8 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.List;
 
+import org.json.JSONArray;
+
 /*
  * Copyright (c) 2013 Algolia
  * http://www.algolia.com/
@@ -52,6 +54,9 @@ public class Query {
     protected String aroundLatLong;
     protected String query;
     protected QueryType queryType;
+    protected String optionalWords;
+    protected String facets;
+    protected String facetsFilter;
     
     public Query(String query) {
         minWordSizeForApprox1 = 3;
@@ -190,10 +195,59 @@ public class Query {
     }
     
     /**
+     * Set the list of words that should be considered as optional when found in the query. 
+     * @param words The list of optional words, comma separated.
+     */
+    public Query setOptionalWords(String words) {
+    	this.optionalWords = words;
+    	return this;
+    }
+    
+    /**
+     * Set the list of words that should be considered as optional when found in the query. 
+     * @param words The list of optional words.
+     */
+    public Query setOptionalWords(List<String> words) {
+    	StringBuilder builder = new StringBuilder();
+    	for (String word : words) {
+    		builder.append(word);
+    		builder.append(",");
+    	}
+    	this.optionalWords = builder.toString();
+    	return this;
+    }
+ 
+    /**
+     * Filter the query by a list of facets. Each facet is encoded as `attributeName:value`. For example: `["category:Book","author:John%20Doe"].
+     */
+    public Query setFacetsFilter(List<String> facets) {
+    	JSONArray obj = new JSONArray();
+    	for (String facet : facets) {
+    		obj.put(facet);
+    	}
+    	this.facetsFilter = obj.toString();
+    	return this;
+    }
+    
+    /**
+     * List of object attributes that you want to use for faceting. <br/>
+     * Only attributes that have been added in **attributesForFaceting** index setting can be used in this parameter. 
+     * You can also use `*` to perform faceting on all attributes specified in **attributesForFaceting**.
+     */
+    public Query setFacets(List<String> facets) {
+    	JSONArray obj = new JSONArray();
+    	for (String facet : facets) {
+    		obj.put(facet);
+    	}
+    	this.facets = obj.toString();
+    	return this;
+    }
+    
+    /**
      * Filter the query by a set of tags. You can AND tags by separating them by commas. To OR tags, you must add parentheses. For example tag1,(tag2,tag3) means tag1 AND (tag2 OR tag3).
      * At indexing, tags should be added in the _tags attribute of objects (for example {"_tags":["tag1","tag2"]} )
      */
-    public Query setTags(String tags) {
+    public Query setTagsFilter(String tags) {
         this.tags = tags;
         return this;
     }
@@ -203,8 +257,26 @@ public class Query {
      * The syntax of one filter is `attributeName` followed by `operand` followed by `value. Supported operands are `<`, `<=`, `=`, `>` and `>=`. 
      * You can have multiple conditions on one attribute like for example `numerics=price>100,price<1000`.
      */
-    public Query setNumerics(String numerics) {
+    public Query setNumericsFilter(String numerics) {
     	this.numerics = numerics;
+    	return this;
+    }
+    
+    /**
+     * Add a list of numeric filters separated by a comma. 
+     * The syntax of one filter is `attributeName` followed by `operand` followed by `value. Supported operands are `<`, `<=`, `=`, `>` and `>=`. 
+     * You can have multiple conditions on one attribute like for example `numerics=price>100,price<1000`.
+     */
+    public Query setNumericsFilter(List<String> numerics) {
+    	StringBuilder builder = new StringBuilder();
+    	boolean first = true;
+    	for (String n : numerics) {
+    		if (!first)
+    			builder.append(",");
+    		builder.append(n);
+    		first = false;
+    	}
+    	this.numerics = builder.toString();
     	return this;
     }
     
@@ -301,6 +373,24 @@ public class Query {
                     stringBuilder.append('&');
                 stringBuilder.append("query=");
                 stringBuilder.append(URLEncoder.encode(query, "UTF-8"));
+            }
+            if (facets != null) {
+                if (stringBuilder.length() > 0)
+                    stringBuilder.append('&');
+                stringBuilder.append("facets");
+                stringBuilder.append(URLEncoder.encode(facets, "UTF-8"));
+            }
+            if (facetsFilter != null) {
+                if (stringBuilder.length() > 0)
+                    stringBuilder.append('&');
+                stringBuilder.append("facetsFilter");
+                stringBuilder.append(URLEncoder.encode(facetsFilter, "UTF-8"));
+            }
+            if (optionalWords != null) {
+            	if (stringBuilder.length() > 0)
+                    stringBuilder.append('&');
+                stringBuilder.append("optionalWords=");
+                stringBuilder.append(URLEncoder.encode(optionalWords, "UTF-8"));
             }
             switch (queryType) {
             case PREFIX_ALL:
