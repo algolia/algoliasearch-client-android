@@ -56,7 +56,7 @@ public class Query {
     protected QueryType queryType;
     protected String optionalWords;
     protected String facets;
-    protected String facetsFilter;
+    protected String facetFilters;
     
     public Query(String query) {
         minWordSizeForApprox1 = 3;
@@ -220,12 +220,12 @@ public class Query {
     /**
      * Filter the query by a list of facets. Each facet is encoded as `attributeName:value`. For example: `["category:Book","author:John%20Doe"].
      */
-    public Query setFacetsFilter(List<String> facets) {
+    public Query setFacetFilters(List<String> facets) {
     	JSONArray obj = new JSONArray();
     	for (String facet : facets) {
     		obj.put(facet);
     	}
-    	this.facetsFilter = obj.toString();
+    	this.facetFilters = obj.toString();
     	return this;
     }
     
@@ -247,7 +247,7 @@ public class Query {
      * Filter the query by a set of tags. You can AND tags by separating them by commas. To OR tags, you must add parentheses. For example tag1,(tag2,tag3) means tag1 AND (tag2 OR tag3).
      * At indexing, tags should be added in the _tags attribute of objects (for example {"_tags":["tag1","tag2"]} )
      */
-    public Query setTagsFilter(String tags) {
+    public Query setTagFilters(String tags) {
         this.tags = tags;
         return this;
     }
@@ -257,7 +257,7 @@ public class Query {
      * The syntax of one filter is `attributeName` followed by `operand` followed by `value. Supported operands are `<`, `<=`, `=`, `>` and `>=`. 
      * You can have multiple conditions on one attribute like for example `numerics=price>100,price<1000`.
      */
-    public Query setNumericsFilter(String numerics) {
+    public Query setNumericFilters(String numerics) {
     	this.numerics = numerics;
     	return this;
     }
@@ -267,7 +267,7 @@ public class Query {
      * The syntax of one filter is `attributeName` followed by `operand` followed by `value. Supported operands are `<`, `<=`, `=`, `>` and `>=`. 
      * You can have multiple conditions on one attribute like for example `numerics=price>100,price<1000`.
      */
-    public Query setNumericsFilter(List<String> numerics) {
+    public Query setNumericFilters(List<String> numerics) {
     	StringBuilder builder = new StringBuilder();
     	boolean first = true;
     	for (String n : numerics) {
@@ -350,13 +350,13 @@ public class Query {
             if (tags != null) {
                 if (stringBuilder.length() > 0)
                     stringBuilder.append('&');
-                stringBuilder.append("tags=");
+                stringBuilder.append("tagFilters=");
                 stringBuilder.append(URLEncoder.encode(tags, "UTF-8"));
             }
             if (numerics != null) {
             	if (stringBuilder.length() > 0)
             		stringBuilder.append('&');
-            	stringBuilder.append("numerics=");
+            	stringBuilder.append("numericFilters=");
             	stringBuilder.append(URLEncoder.encode(numerics, "UTF-8"));
             }
             if (insideBoundingBox != null) {
@@ -380,11 +380,11 @@ public class Query {
                 stringBuilder.append("facets");
                 stringBuilder.append(URLEncoder.encode(facets, "UTF-8"));
             }
-            if (facetsFilter != null) {
+            if (facetFilters != null) {
                 if (stringBuilder.length() > 0)
                     stringBuilder.append('&');
-                stringBuilder.append("facetsFilter");
-                stringBuilder.append(URLEncoder.encode(facetsFilter, "UTF-8"));
+                stringBuilder.append("facetFilters");
+                stringBuilder.append(URLEncoder.encode(facetFilters, "UTF-8"));
             }
             if (optionalWords != null) {
             	if (stringBuilder.length() > 0)
