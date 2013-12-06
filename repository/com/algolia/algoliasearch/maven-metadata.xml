@@ -3,7 +3,7 @@
   <groupId>com.algolia</groupId>
   <artifactId>algoliasearch</artifactId>
   <versioning>
-    <release>1.1.8</release>
+    <release>1.1.9</release>
     <versions>
       <version>1.0.0</version>
       <version>1.1.0</version>
@@ -15,7 +15,8 @@
       <version>$</version>
       <version>1.1.7</version>
       <version>1.1.8</version>
+      <version>1.1.9</version>
     </versions>
-    <lastUpdated>20131206092249</lastUpdated>
+    <lastUpdated>20131206092857</lastUpdated>
   </versioning>
 </metadata>
