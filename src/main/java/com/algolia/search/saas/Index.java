@@ -178,6 +178,31 @@ public class Index {
     }
 
     /**
+     * Partially Override the content of several objects
+     * 
+     * @param objects the array of objects to update (each object must contains an objectID attribute)
+     */
+    public JSONObject partialUpdateObjects(JSONArray inputArray) throws AlgoliaException {
+        try {
+            JSONArray array = new JSONArray();
+            for(int n = 0; n < inputArray.length(); n++)
+            {
+            	JSONObject obj = inputArray.getJSONObject(n);
+                JSONObject action = new JSONObject();
+                action.put("action", "partialUpdateObject");
+                action.put("objectID", obj.getString("objectID"));
+                action.put("body", obj);
+                array.put(action);
+            }
+            JSONObject content = new JSONObject();
+            content.put("requests", array);
+            return client.postRequest("/1/indexes/" + indexName + "/batch", content.toString());
+        } catch (JSONException e) {
+            throw new AlgoliaException(e.getMessage());
+        }
+    }
+    
+    /**
      * Override the content of object
      * 
      * @param object the object to update
@@ -264,6 +289,27 @@ public class Index {
             return client.getRequest("/1/indexes/" + indexName);
     }
 
+    /**
+     * Browse all index content
+     *
+     * @param page Pagination parameter used to select the page to retrieve.
+     *             Page is zero-based and defaults to 0. Thus, to retrieve the 10th page you need to set page=9
+     */
+    public JSONObject browse(int page) throws AlgoliaException {
+        return client.getRequest("/1/indexes/" + indexName + "/browse?page=" + page);
+    }
+
+    /**
+     * Browse all index content
+     *
+     * @param page Pagination parameter used to select the page to retrieve.
+     *             Page is zero-based and defaults to 0. Thus, to retrieve the 10th page you need to set page=9
+     * @param hitsPerPage: Pagination parameter used to select the number of hits per page. Defaults to 1000.
+     */
+    public JSONObject browse(int page, int hitsPerPage) throws AlgoliaException {
+        return client.getRequest("/1/indexes/" + indexName + "/browse?page=" + page + "&hitsPerPage=" + hitsPerPage);
+    }
+    
     /**
      * Wait the publication of a task on the server. 
      * All server task are asynchronous and you can check with this method that the task is published.
