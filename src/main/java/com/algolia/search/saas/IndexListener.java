@@ -126,6 +126,26 @@ public interface IndexListener {
     public void partialUpdateError(Index index, JSONObject object, String objectID, AlgoliaException e);
     
     /**
+     * Asynchronously receive result of Index.partialUpdateObjectsASync method.
+     */
+    public void partialUpdateObjectsResult(Index index, List<JSONObject> objects, JSONObject result);
+    
+    /**
+     * Asynchronously receive error of Index.partialUpdateObjectsASync method.
+     */
+    public void partialUpdateObjectsError(Index index, List<JSONObject> objects, AlgoliaException e);
+   
+    /**
+     * Asynchronously receive result of Index.partialUpdateObjectsASync method.
+     */
+    public void partialUpdateObjectsResult(Index index, JSONArray objects, JSONObject result);
+    
+    /**
+     * Asynchronously receive error of Index.partialUpdateObjectsASync method.
+     */
+    public void partialUpdateObjectsError(Index index, JSONArray objects, AlgoliaException e);
+    
+    /**
      * Asynchronously receive result of Index.getObjectASync method.
      */
     public void getObjectResult(Index index, String objectID, JSONObject result);

@@ -260,6 +260,76 @@ public class Index {
     }
     
     /**
+     * Partially Override the content of several objects
+     * 
+     * @param objects the array of objects to update (each object must contains an objectID attribute)
+     */
+    public JSONObject partialUpdateObjects(JSONArray inputArray) throws AlgoliaException {
+        try {
+            JSONArray array = new JSONArray();
+            for(int n = 0; n < inputArray.length(); n++)
+            {
+            	JSONObject obj = inputArray.getJSONObject(n);
+                JSONObject action = new JSONObject();
+                action.put("action", "partialUpdateObject");
+                action.put("objectID", obj.getString("objectID"));
+                action.put("body", obj);
+                array.put(action);
+            }
+            JSONObject content = new JSONObject();
+            content.put("requests", array);
+            return client.postRequest("/1/indexes/" + indexName + "/batch", content.toString());
+        } catch (JSONException e) {
+            throw new AlgoliaException(e.getMessage());
+        }
+    }
+    
+    /**
+     * Override the content of several objects asynchronously
+     * 
+     * @param objects contains an array of objects to update (each object must contains an objectID attribute)
+     * @param listener the listener that will receive the result or error. If the listener is an instance of Activity, the result will be received directly on UIthread
+     */
+    public void partialUpdateObjectsASync(JSONArray objects, IndexListener listener) {
+        ASyncIndexTaskParams params = new ASyncIndexTaskParams(listener, ASyncIndexTaskKind.PartialSaveObjects2, objects);
+        new ASyncIndexTask().execute(params);
+    }
+    
+    /**
+     * Partially Override the content of several objects
+     * 
+     * @param objects the array of objects to update (each object must contains an objectID attribute)
+     */
+    public JSONObject partialUpdateObjects(List<JSONObject> objects) throws AlgoliaException {
+        try {
+            JSONArray array = new JSONArray();
+            for (JSONObject obj : objects) {
+                JSONObject action = new JSONObject();
+                action.put("action", "partialUpdateObject");
+                action.put("objectID", obj.getString("objectID"));
+                action.put("body",obj);
+                array.put(action);
+            }
+            JSONObject content = new JSONObject();
+            content.put("requests", array);
+            return client.postRequest("/1/indexes/" + indexName + "/batch", content.toString());
+        } catch (JSONException e) {
+            throw new AlgoliaException(e.getMessage());
+        }
+    }
+
+    /**
+     * Partially Override the content of several objects asynchronously
+     * 
+     * @param objects contains an array of objects to update (each object must contains an objectID attribute)
+     * @param listener the listener that will receive the result or error. If the listener is an instance of Activity, the result will be received directly on UIthread
+     */
+    public void partialUpdateObjectsASync(List<JSONObject> objects, IndexListener listener) {
+        ASyncIndexTaskParams params = new ASyncIndexTaskParams(listener, ASyncIndexTaskKind.PartialSaveObjects, objects);
+        new ASyncIndexTask().execute(params);
+    }
+    
+    /**
      * Override the content of object
      * 
      * @param object the object to save
@@ -591,6 +661,28 @@ public class Index {
         return client.postRequest("/1/indexes/" + indexName + "/keys", jsonObject.toString());
     }
     
+
+    /**
+     * Browse all index content
+     *
+     * @param page Pagination parameter used to select the page to retrieve.
+     *             Page is zero-based and defaults to 0. Thus, to retrieve the 10th page you need to set page=9
+     */
+    public JSONObject browse(int page) throws AlgoliaException {
+        return client.getRequest("/1/indexes/" + indexName + "/browse?page=" + page);
+    }
+
+    /**
+     * Browse all index content
+     *
+     * @param page Pagination parameter used to select the page to retrieve.
+     *             Page is zero-based and defaults to 0. Thus, to retrieve the 10th page you need to set page=9
+     * @param hitsPerPage: Pagination parameter used to select the number of hits per page. Defaults to 1000.
+     */
+    public JSONObject browse(int page, int hitsPerPage) throws AlgoliaException {
+        return client.getRequest("/1/indexes/" + indexName + "/browse?page=" + page + "&hitsPerPage=" + hitsPerPage);
+    }
+    
     private enum ASyncIndexTaskKind
     {
         GetObject,
@@ -601,6 +693,8 @@ public class Index {
         SaveObjects,
         SaveObjects2,
         PartialSaveObject,
+        PartialSaveObjects,
+        PartialSaveObjects2,
         DeleteObject,
         WaitTask,
         Query,
@@ -701,6 +795,12 @@ public class Index {
             case PartialSaveObject:
                 p.listener.partialUpdateResult(Index.this, p.objectContent, p.objectID, res);
                 break;
+            case PartialSaveObjects:
+            	p.listener.partialUpdateObjectsResult(Index.this, p.objects, res);
+            	break;
+            case PartialSaveObjects2:
+            	p.listener.partialUpdateObjectsResult(Index.this, p.objects2, res);
+            	break;
             case GetObject:
                 p.listener.getObjectResult(Index.this, p.objectID, res);
                 break;
@@ -793,6 +893,22 @@ public class Index {
                     return null;
                 }
                 break;
+            case PartialSaveObjects:
+            	try {
+                    res = partialUpdateObjects(p.objects);
+                } catch (AlgoliaException e) {
+                    p.listener.partialUpdateObjectsError(Index.this, p.objects, e);
+                    return null;
+                }
+            	break;
+            case PartialSaveObjects2:
+            	try {
+                    res = partialUpdateObjects(p.objects2);
+                } catch (AlgoliaException e) {
+                    p.listener.partialUpdateObjectsError(Index.this, p.objects2, e);
+                    return null;
+                }
+            	break;
             case GetObject:
                 try {
                     if (p.attributesToRetrieve == null) {
