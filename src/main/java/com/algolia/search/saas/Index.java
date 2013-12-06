@@ -203,6 +203,29 @@ public class Index {
     }
     
     /**
+     * Override the content of several objects
+     * 
+     * @param objects the array of objects to update (each object must contains an objectID attribute)
+     */
+    public JSONObject partialUpdateObjects(List<JSONObject> objects) throws AlgoliaException {
+        try {
+            JSONArray array = new JSONArray();
+            for (JSONObject obj : objects) {
+                JSONObject action = new JSONObject();
+                action.put("action", "partialUpdateObject");
+                action.put("objectID", obj.getString("objectID"));
+                action.put("body",obj);
+                array.put(action);
+            }
+            JSONObject content = new JSONObject();
+            content.put("requests", array);
+            return client.postRequest("/1/indexes/" + indexName + "/batch", content.toString());
+        } catch (JSONException e) {
+            throw new AlgoliaException(e.getMessage());
+        }
+    }
+
+    /**
      * Override the content of object
      * 
      * @param object the object to update
