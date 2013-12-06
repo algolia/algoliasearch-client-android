@@ -203,7 +203,7 @@ public class Index {
     }
     
     /**
-     * Override the content of several objects
+     * Partially Override the content of several objects
      * 
      * @param objects the array of objects to update (each object must contains an objectID attribute)
      */
