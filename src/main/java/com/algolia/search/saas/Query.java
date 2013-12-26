@@ -377,13 +377,13 @@ public class Query {
             if (facets != null) {
                 if (stringBuilder.length() > 0)
                     stringBuilder.append('&');
-                stringBuilder.append("facets");
+                stringBuilder.append("facets=");
                 stringBuilder.append(URLEncoder.encode(facets, "UTF-8"));
             }
             if (facetsFilter != null) {
                 if (stringBuilder.length() > 0)
                     stringBuilder.append('&');
-                stringBuilder.append("facetFilters");
+                stringBuilder.append("facetFilters=");
                 stringBuilder.append(URLEncoder.encode(facetsFilter, "UTF-8"));
             }
             if (optionalWords != null) {
