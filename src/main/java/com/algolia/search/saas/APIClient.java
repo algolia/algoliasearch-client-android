@@ -65,6 +65,9 @@ public class APIClient {
     private final String apiKey;
     private final List<String> hostsArray;
     private final HttpClient httpClient;
+    private String forwardRateLimitAPIKey;
+    private String forwardEndUserIP;
+    private String forwardAdminAPIKey;
     
     /**
      * Algolia Search initialization
@@ -84,6 +87,7 @@ public class APIClient {
      * @param hostsArray the list of hosts that you have received for the service
      */
     public APIClient(String applicationID, String apiKey, List<String> hostsArray) {
+    	forwardRateLimitAPIKey = forwardAdminAPIKey = forwardEndUserIP = null;
         if (applicationID == null || applicationID.length() == 0) {
             throw new RuntimeException("AlgoliaSearch requires an applicationID.");
         }
@@ -99,6 +103,27 @@ public class APIClient {
         Collections.shuffle(hostsArray);
         this.hostsArray = hostsArray;
         httpClient = HttpClientBuilder.create().build();
+    }
+    
+    /**
+     * Allow to use IP rate limit when you have a proxy between end-user and Algolia.
+     * This option will set the X-Forwarded-For HTTP header with the client IP and the X-Forwarded-API-Key with the API Key having rate limits.
+     * @param adminAPIKey the admin API Key you can find in your dashboard
+     * @param endUserIP the end user IP (you can use both IPV4 or IPV6 syntax)
+     * @param rateLimitAPIKey the API key on which you have a rate limit
+     */
+    public void enableRateLimitForward(String adminAPIKey, String endUserIP, String rateLimitAPIKey)
+    {
+    	this.forwardAdminAPIKey = adminAPIKey;
+    	this.forwardEndUserIP = endUserIP;
+    	this.forwardRateLimitAPIKey = rateLimitAPIKey;
+    }
+    
+    /**
+     * Disable IP rate limit enabled with enableRateLimitForward() function
+     */
+    public void disableRateLimitForward() {
+        forwardAdminAPIKey = forwardEndUserIP = forwardRateLimitAPIKey = null;
     }
     
     /**
@@ -311,9 +336,16 @@ public class APIClient {
     			throw new IllegalStateException(e);
     		}
         	
+            
         	// set auth headers
         	req.setHeader("X-Algolia-Application-Id", this.applicationID);
-            req.setHeader("X-Algolia-API-Key", this.apiKey);
+        	if (forwardAdminAPIKey == null) {
+        		req.setHeader("X-Algolia-API-Key", this.apiKey);
+        	} else {
+        		req.setHeader("X-Algolia-API-Key", this.forwardAdminAPIKey);
+        		req.setHeader("X-Forwarded-For", this.forwardEndUserIP);
+        		req.setHeader("X-Forwarded-API-Key", this.forwardRateLimitAPIKey);
+        	}
             
             // set JSON entity
             if (json != null) {

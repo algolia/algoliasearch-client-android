@@ -46,6 +46,7 @@ public class Query {
     protected int minWordSizeForApprox1;
     protected int minWordSizeForApprox2;
     protected boolean getRankingInfo;
+    protected boolean distinct;
     protected int page;
     protected int hitsPerPage;
     protected String tags;
@@ -62,6 +63,7 @@ public class Query {
         minWordSizeForApprox1 = 3;
         minWordSizeForApprox2 = 7;
         getRankingInfo = false;
+        distinct = false;
         page = 0;
         hitsPerPage = 20;
         this.query = query;
@@ -72,6 +74,7 @@ public class Query {
         minWordSizeForApprox1 = 3;
         minWordSizeForApprox2 = 7;
         getRankingInfo = false;
+        distinct = false;
         page = 0;
         hitsPerPage = 20;
         queryType = QueryType.PREFIX_ALL;
@@ -120,6 +123,19 @@ public class Query {
     public Query setAttributesToSnippet(List<String> attributes) {
         this.attributesToSnippet = attributes;
         return this;
+    }
+    
+    /**
+     * 
+     * @param If set to true, enable the distinct feature (disabled by default) if the attributeForDistinct index setting is set. 
+     *   This feature is similar to the SQL "distinct" keyword: when enabled in a query with the distinct=1 parameter, 
+     *   all hits containing a duplicate value for the attributeForDistinct attribute are removed from results. 
+     *   For example, if the chosen attribute is show_name and several hits have the same value for show_name, then only the best 
+     *   one is kept and others are removed.
+     */
+    public Query enableDistinct(boolean distinct) {
+    	this.distinct = distinct;
+    	return this;
     }
     
     /**
@@ -334,6 +350,11 @@ public class Query {
                 if (stringBuilder.length() > 0)
                     stringBuilder.append('&');
                 stringBuilder.append("getRankingInfo=1");
+            }
+            if (distinct) {
+            	if (stringBuilder.length() > 0)
+                    stringBuilder.append('&');
+                stringBuilder.append("distinct=1");
             }
             if (page > 0) {
                 if (stringBuilder.length() > 0)
