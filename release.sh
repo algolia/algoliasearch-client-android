@@ -1,6 +1,6 @@
 #!/bin/sh
-mvn2 release:prepare
-mvn2 release:perform
+mvn release:prepare
+mvn release:perform
 cp -R target/checkout/repository .
 git add .
 echo "Your now need to perform:"
