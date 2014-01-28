@@ -2,6 +2,7 @@ Algolia Search API Client for Java
 ==================
 
 
+
 [Algolia Search](http://www.algolia.com) is a search API that provides hosted full-text, numerical and faceted search.
 Algolia’s Search API makes it easy to deliver a great search experience in your apps & websites providing:
 
@@ -14,18 +15,22 @@ Algolia’s Search API makes it easy to deliver a great search experience in you
  * 99.99% SLA
  * first-class data security
 
-This Java client let you easily use the Algolia Search API from your Java Application.
+This Java client let you easily use the Algolia Search API from your Java Application. It wraps [Algolia's REST API](http://www.algolia.com/doc/rest_api).
+
+
 
 Table of Content
 -------------
 **Get started**
 
-1. [Setup](#setup) 
+1. [Setup](#setup)
 1. [Quick Start](#quick-start)
+
 
 **Commands reference**
 
 1. [Search](#search)
+
 1. [Add a new object](#add-a-new-object-in-the-index)
 1. [Update an object](#update-an-existing-object-in-the-index)
 1. [Get an object](#get-an-object)
@@ -41,11 +46,12 @@ Table of Content
 1. [Backup / Retrieve all index content](#backup--retrieve-all-index-content)
 1. [Logs](#logs)
 
+
+
 Setup
 -------------
-
+To setup your project, follow these steps:
 If you're using Maven, add the following dependency and repository to your pom file:
-
 ```xml
 <dependency>
     <groupId>com.algolia</groupId>
@@ -67,6 +73,7 @@ Initialize the client with your ApplicationID and API-Key. You can find all of t
 
 Quick Start
 -------------
+
 This quick start is a 30 seconds tutorial where you can discover how to index and search objects.
 
 Without any prior-configuration, you can index some contacts in the ```contacts``` index with the following code:
@@ -97,11 +104,12 @@ System.out.println(index.search(new Query("jimmie paint")));
 ```
 
 Settings can be customized to tune the search behavior. For example you can add a custom sort by number of followers to the already good out-of-the-box relevance:
-```ruby
+```java
 index.setSettings(new JSONObject().append("customRanking", "desc(followers)"));
 ```
+
 You can also configure the list of attributes you want to index by order of importance (first = most important):
-```ruby
+```java
 index.setSettings(new JSONObject()
       .append("attributesToIndex", "lastname")
       .append("attributesToIndex", "firstname")
@@ -110,27 +118,30 @@ index.setSettings(new JSONObject()
 ```
 
 Since the engine is designed to suggest results as you type, you'll generally search by prefix. In this case the order of attributes is very important to decide which hit is the best:
-```ruby
+```java
 System.out.println(index.search(new Query("or")));
 System.out.println(index.search(new Query("jim")));
 ```
 
+
+
+
 Search
 -------------
-> **Opening note:** If you are building a web application, you may be more interested in using our [javascript client](https://github.com/algolia/algoliasearch-client-js) to send queries. It brings two benefits: (i) your users get a better response time by avoiding to go through your servers, and (ii) it will offload your servers of unnecessary tasks.
+ **Opening note:** If you are building a web application, you may be more interested in using our [javascript client](https://github.com/algolia/algoliasearch-client-js) to send queries. It brings two benefits: (i) your users get a better response time by avoiding to go through your servers, and (ii) it will offload your servers of unnecessary tasks.
 
-To perform a search, you just need to initialize the index and perform a call to the search function.<br/>
-You can use the following optional arguments on Query class:
+To perform a search, you just need to initialize the index and perform a call to the search function.
 
+You can use the following optional arguments:
 
 ### Query parameters
 
 #### Full Text Search parameters
 
- * **setQueryString**: The instant-search query string, all words of the query are interpreted as prefixes (for example "John Mc" will match "John Mccamey" and "Johnathan Mccamey"). If no query parameter is set, retrieves all objects.
+ * **setQueryString**: (string) The instant-search query string, all words of the query are interpreted as prefixes (for example "John Mc" will match "John Mccamey" and "Johnathan Mccamey"). If no query parameter is set, retrieves all objects.
  * **setQueryType**: select how the query words are interpreted, it can be one of the following value:
   * **PREFIX_ALL**: all query words are interpreted as prefixes,
-  * **PREFIX_LAST**: only the last word is interpreted as a prefix (default behavior),
+  * **PREFIX_ALL**: only the last word is interpreted as a prefix (default behavior),
   * **PREFIX_NONE**: no query word is interpreted as a prefix. This option is not recommended.
  * **setOptionalWords**: a string that contains the list of words that should be considered as optional when found in the query. The list of words is comma separated.
  * **setMinWordSizeToAllowOneTypo**: the minimum number of characters in a query word to accept one typo in this word.<br/>Defaults to 3.
@@ -138,16 +149,18 @@ You can use the following optional arguments on Query class:
 
 #### Pagination parameters
 
- * **setPage**: (integer) Pagination parameter used to select the page to retrieve.<br/>Page is zero-based and defaults to 0. Thus, to retrieve the 10th page you need to set `page=9`
- * **setNbHitsPerPage**: (integer) Pagination parameter used to select the number of hits per page. Defaults to 20.
+ * **setNbHitsPerPage**: (integer) Pagination parameter used to select the page to retrieve.<br/>Page is zero-based and defaults to 0. Thus, to retrieve the 10th page you need to set `page=9`
+ * **setPage**: (integer) Pagination parameter used to select the number of hits per page. Defaults to 20.
 
 #### Geo-search parameters
 
  * **aroundLatitudeLongitude(float, float, int)**: search for entries around a given latitude/longitude.<br/>You specify the maximum distance in meters with the **radius** parameter (in meters).<br/>At indexing, you should specify geoloc of an object with the _geoloc attribute (in the form `{"_geoloc":{"lat":48.853409, "lng":2.348800}}`)
  * **aroundLatitudeLongitude(flot, float, int, int)**: search for entries around a given latitude/longitude with a given precision for ranking (for example if you set precision=100, two objects that are distant of less than 100m will be considered as identical for "geo" ranking parameter).
- * **insideBoundingBox**: search entries inside a given area defined by the two extreme points of a rectangle (defined by 4 floats: p1Lat,p1Lng,p2Lat,p2Lng).<br/>For example `insideBoundingBox(47.3165, 4.9665, 47.3424, 5.0201)`).<br/>At indexing, you should specify geoloc of an object with the _geoloc attribute (in the form `{"_geoloc":{"lat":48.853409, "lng":2.348800}}`)
+
+ * **insideBoundingBox**: search entries inside a given area defined by the two extreme points of a rectangle (defined by 4 floats: p1Lat,p1Lng,p2Lat,p2Lng).<br/>For example `insideBoundingBox=47.3165,4.9665,47.3424,5.0201`).<br/>At indexing, you should specify geoloc of an object with the _geoloc attribute (in the form `{"_geoloc":{"lat":48.853409, "lng":2.348800}}`)
 
 #### Parameters to control results content
+
  * **setAttributesToRetrieve**: The list of object attributes you want to retrieve (let you minimize the answer size). By default, all attributes are retrieved. You can also use `*` to retrieve all values when an **attributesToRetrieve** setting is specified for your index.
  * **setAttributesToHighlight**: The list of attributes you want to highlight according to the query. If an attribute has no match for the query, the raw value is returned. By default all indexed text attributes are highlighted. You can use `*` if you want to highlight all textual attributes. Numerical attributes are not highlighted. A matchLevel is returned for each highlighted attribute and can contain:
   * **full**: if all the query terms were found in the attribute,
@@ -156,16 +169,17 @@ You can use the following optional arguments on Query class:
  * **setAttributesToSnippet**: The list of attributes to snippet alongside the number of words to return (syntax is `attributeName:nbWords`). By default no snippet is computed.
  * **getRankingInfo**: if set to true, the result hits will contain ranking information in **_rankingInfo** attribute.
 
+
 #### Numeric search parameters
  * **setNumericFilters**: a string that contains the list of numeric filters you want to apply separated by a comma. The syntax of one filter is `attributeName` followed by `operand` followed by `value`. Supported operands are `<`, `<=`, `=`, `>` and `>=`. 
  You can have multiple conditions on one attribute like for example `numericFilters=price>100,price<1000`. You can also use a string array encoding (for example `numericFilters: ["price>100","price<1000"]`).
 
- #### Category search parameters
+#### Category search parameters
  * **setTagFilters**: filter the query by a set of tags. You can AND tags by separating them by commas. To OR tags, you must add parentheses. For example, `tags=tag1,(tag2,tag3)` means *tag1 AND (tag2 OR tag3)*. You can also use a string array encoding, for example `tagFilters: ["tag1",["tag2","tag3"]]` means *tag1 AND (tag2 OR tag3)*.<br/>At indexing, tags should be added in the **_tags** attribute of objects (for example `{"_tags":["tag1","tag2"]}`). 
 
 #### Faceting parameters
- * **setFacetFilters**: filter the query by a list of facets. Each facet is encoded as `attributeName:value`. For example: `["category:Book","author:John%20Doe"]`).
- * **setFacets**: List of object attributes that you want to use for faceting. <br/>Only attributes that have been added in **attributesForFaceting** index setting can be used in this parameter. You can also use `*` to perform faceting on all attributes specified in **attributesForFaceting**.
+ * **setFacetFilters**: filter the query by a list of facets. Facets are separated by commas and each facet is encoded as `attributeName:value`. For example: `facetFilters=category:Book,author:John%20Doe`. You can also use a string array encoding (for example `["category:Book","author:John%20Doe"]`).
+ * **setFacets**: List of object attributes that you want to use for faceting. <br/>Attributes are separated with a comma (for example `"category,author"` ). You can also use a JSON string array encoding (for example `["category","author"]` ). Only attributes that have been added in **attributesForFaceting** index setting can be used in this parameter. You can also use `*` to perform faceting on all attributes specified in **attributesForFaceting**.
 
 #### Distinct parameter
  * **setDistinct**: If set to true, enable the distinct feature (disabled by default) if the `attributeForDistinct` index setting is set. This feature is similar to the SQL "distinct" keyword: when enabled in a query with the `distinct=1` parameter, all hits containing a duplicate value for the attributeForDistinct attribute are removed from results. For example, if the chosen attribute is `show_name` and several hits have the same value for `show_name`, then only the best one is kept and others are removed.
@@ -213,6 +227,7 @@ The server response will look like:
 }
 ```
 
+
 Add a new object in the Index
 -------------
 
@@ -259,7 +274,7 @@ index.saveObject(new JSONObject()
       .put("city", "New York"), "myID");
 ```
 
-Example to update only the population attribute of an existing object:
+Example to update only the city attribute of an existing object:
 
 ```java
 index.partialUpdateObject(new JSONObject().put("city", "San Francisco"), "myID");
@@ -291,6 +306,7 @@ Index Settings
 
 You can retrieve all settings using the `getSettings` function. The result will contains the following attributes:
 
+
 #### Indexing parameters
  * **attributesToIndex**: (array of strings) the list of fields you want to index.<br/>If set to null, all textual and numerical attributes of your objects are indexed, but you should update it to get optimal results.<br/>This parameter has two important uses:
   * *Limit the attributes to index*.<br/>For example if you store a binary image in base64, you want to store it and be able to retrieve it but you don't want to search in the base64 string.
@@ -312,6 +328,7 @@ For example `"customRanking" => ["desc(population)", "asc(name)"]`
   * **prefixAll**: all query words are interpreted as prefixes,
   * **prefixLast**: only the last word is interpreted as a prefix (default behavior),
   * **prefixNone**: no query word is interpreted as a prefix. This option is not recommended.
+ * **slaves**: The list of indexes on which you want to replicate all write operations. In order to get response times in milliseconds, we pre-compute part of the ranking during indexing. If you want to use different ranking configurations depending of the use-case, you need to create one index per ranking configuration. This option enables you to perform write operations only on this index, and to automatically update slave indexes with the same operations.
 
 #### Default query parameters (can be overwrite by query)
  * **minWordSizefor1Typo**: (integer) the minimum number of characters to accept one typo (default = 3).
@@ -325,6 +342,7 @@ For example `"customRanking" => ["desc(population)", "asc(name)"]`
  * **optionalWords**: (array of strings) Specify a list of words that should be considered as optional when found in the query.
 
 You can easily retrieve settings or update them:
+
 
 ```java
 System.out.println(index.getSettings());
@@ -361,7 +379,7 @@ index.clearIndex();
 Wait indexing
 -------------
 
-All write operations return a `taskID` when the job is securely stored on our infrastructure but not when the job is published in your index. Even if it's extremely fast, you can easily ensure indexing is complete using the `waitTask` method on the `taskID` returned by a write operation.
+All write operations return a `taskID` when the job is securely stored on our infrastructure but not when the job is published in your index. Even if it's extremely fast, you can easily ensure indexing is complete using the `waitTask` method on the `taskID` returned by a write operation. 
 
 For example, to wait for indexing of a new object:
 ```java
@@ -369,15 +387,16 @@ JSONObject res = index.addObject(new JSONObject().put("firstname", "Jimmie").put
 index.waitTask(String.valueOf(res.getLong("objectID")));
 ```
 
+
 If you want to ensure multiple objects have been indexed, you can only check the biggest taskID.
 
 Batch writes
 -------------
 
-You may want to perform multiple operations with a single API call to reduce latency.
-We expose two methods to perform batches:
- * `addObjects`: add an array of objects using automatic `objectID` assignement,
- * `saveObjects`: add or update an array of objects that contain an `objectID` attribute.
+You may want to perform multiple operations with one API call to reduce latency.
+We expose three methods to perform batch:
+ * `addObjects`: add an array of object using automatic `objectID` assignement
+ * `saveObjects`: add or update an array of object that contains an `objectID` attribute
  * `partialUpdateObjects`: partially update an array of objects that contain an `objectID` attribute (only specified attributes will be updated, other will remain unchanged)
 
 Example using automatic `objectID` assignement:
@@ -403,6 +422,8 @@ array.add(new JSONObject().put("firstname", "Jimmie").put("objectID", "SFO"));
 array.add(new JSONObject().put("firstname", "Warren").put("objectID", "LA"));
 index.partialUpdateObjects(array);
 ```
+
+
 
 Security / User API Keys
 -------------
@@ -437,12 +458,15 @@ System.out.println("Key: " + res.getString("key"));
 JSONObject res = index.addUserKey(Arrays.asList("search"));
 System.out.println("Key: " + res.getString("key"));
 ```
+
 You can also create an API Key with advanced restrictions:
 
  * Add a validity period: the key will be valid only for a specific period of time (in seconds),
+ * Specify the maximum number of API calls allowed from an IP address per hour. Each time an API call is performed with this key, a check is performed. If the IP at the origin of the call did more than this number of calls in the last hour, a 403 code is returned. Defaults to 0 (no rate limit). This parameter can be used to protect you from attempts at retrieving your entire content by massively querying the index.
+
 
   Note: If you are sending the query through your servers, you must use the `enableRateLimitForward("TheAdminAPIKey", "EndUserIP", "APIKeyWithRateLimit")` function to enable rate-limit.
- * Specify the maximum number of API calls allowed from an IP address per hour. Each time an API call is performed with this key, a check is performed. If the IP at the origin of the call did more than this number of calls in the last hour, a 403 code is returned. Defaults to 0 (no rate limit). This parameter can be used to protect you from attempts at retrieving your entire content by massively querying the index.
+
  * Specify the maximum number of hits this API key can retrieve in one call. Defaults to 0 (unlimited). This parameter can be used to protect you from attempts at retrieving your entire content by massively querying the index.
 
 ```java
@@ -529,4 +553,8 @@ client.getLogs();
 // Get last 100 log entries
 client.getLogs(0, 100);
 ```
+
+
+
+
 
