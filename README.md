@@ -2,6 +2,7 @@ Algolia Search API Client for Android
 ==================
 
 
+
 [Algolia Search](http://www.algolia.com) is a search API that provides hosted full-text, numerical and faceted search.
 Algolia’s Search API makes it easy to deliver a great search experience in your apps & websites providing:
 
@@ -14,18 +15,22 @@ Algolia’s Search API makes it easy to deliver a great search experience in you
  * 99.99% SLA
  * first-class data security
 
-This Android API client is based on our [Java API client](https://github.com/algolia/algoliasearch-client-java) and  includes an easy to use asynchronous API to avoid networks calls on UI Thread.
+This Android client let you easily use the Algolia Search API from your Android Application. It wraps [Algolia's REST API](http://www.algolia.com/doc/rest_api).
+It is based on our [Java API client](https://github.com/algolia/algoliasearch-client-java) and  includes an easy to use asynchronous API to avoid networks calls on UI Thread.
+
 
 Table of Content
 -------------
 **Get started**
 
-1. [Setup](#setup) 
+1. [Setup](#setup)
 1. [Quick Start](#quick-start)
+
 
 **Commands reference**
 
 1. [Search](#search)
+
 1. [Add a new object](#add-a-new-object-in-the-index)
 1. [Update an object](#update-an-existing-object-in-the-index)
 1. [Get an object](#get-an-object)
@@ -41,9 +46,12 @@ Table of Content
 1. [Backup / Retrieve all index content](#backup--retrieve-all-index-content)
 1. [Logs](#logs)
 
+
+
 Setup
 -------------
 To setup your project, follow these steps:
+
 
  1. Download [latest algoliasearch-client-android-*.jar](https://github.com/algolia/algoliasearch-client-android/tree/master/dist) and add it to the lib folder of your project.
  2. Initialize the client with your ApplicationID and API-Key. You can find all of them on [your Algolia account](http://www.algolia.com/users/edit).
@@ -55,6 +63,7 @@ To setup your project, follow these steps:
 
 Quick Start
 -------------
+
 This quick start is a 30 seconds tutorial where you can discover how to index and search objects.
 
 Without any prior-configuration, you can index some contacts in the ```contacts``` index with the following code:
@@ -96,6 +105,7 @@ Settings can be customized to tune the search behavior. For example you can add 
 ```java
 index.setSettingsASync(new JSONObject().append("customRanking", "desc(followers)"), this);
 ```
+
 You can also configure the list of attributes you want to index by order of importance (first = most important):
 ```java
 index.setSettingsASync(new JSONObject()
@@ -110,20 +120,25 @@ index.searchASync(new Query("or"), this);
 index.searchASync(new Query("jim"), this);
 ```
 
+
+
+
 Search
 -------------
 
-To perform a search, you just need to initialize the index and perform a call to the search function.<br/>
-You can use the following optional arguments on Query class:
+
+To perform a search, you just need to initialize the index and perform a call to the search function.
+
+You can use the following optional arguments:
 
 ### Query parameters
 
 #### Full Text Search parameters
 
- * **setQueryString**: The instant-search query string, all words of the query are interpreted as prefixes (for example "John Mc" will match "John Mccamey" and "Johnathan Mccamey"). If no query parameter is set, retrieves all objects.
+ * **setQueryString**: (string) The instant-search query string, all words of the query are interpreted as prefixes (for example "John Mc" will match "John Mccamey" and "Johnathan Mccamey"). If no query parameter is set, retrieves all objects.
  * **setQueryType**: select how the query words are interpreted, it can be one of the following value:
   * **PREFIX_ALL**: all query words are interpreted as prefixes,
-  * **PREFIX_LAST**: only the last word is interpreted as a prefix (default behavior),
+  * **PREFIX_ALL**: only the last word is interpreted as a prefix (default behavior),
   * **PREFIX_NONE**: no query word is interpreted as a prefix. This option is not recommended.
  * **setOptionalWords**: a string that contains the list of words that should be considered as optional when found in the query. The list of words is comma separated.
  * **setMinWordSizeToAllowOneTypo**: the minimum number of characters in a query word to accept one typo in this word.<br/>Defaults to 3.
@@ -138,9 +153,11 @@ You can use the following optional arguments on Query class:
 
  * **aroundLatitudeLongitude(float, float, int)**: search for entries around a given latitude/longitude.<br/>You specify the maximum distance in meters with the **radius** parameter (in meters).<br/>At indexing, you should specify geoloc of an object with the _geoloc attribute (in the form `{"_geoloc":{"lat":48.853409, "lng":2.348800}}`)
  * **aroundLatitudeLongitude(flot, float, int, int)**: search for entries around a given latitude/longitude with a given precision for ranking (for example if you set precision=100, two objects that are distant of less than 100m will be considered as identical for "geo" ranking parameter).
- * **insideBoundingBox**: search entries inside a given area defined by the two extreme points of a rectangle (defined by 4 floats: p1Lat,p1Lng,p2Lat,p2Lng).<br/>For example `insideBoundingBox(47.3165, 4.9665, 47.3424, 5.0201)`).<br/>At indexing, you should specify geoloc of an object with the _geoloc attribute (in the form `{"_geoloc":{"lat":48.853409, "lng":2.348800}}`)
+
+ * **insideBoundingBox**: search entries inside a given area defined by the two extreme points of a rectangle (defined by 4 floats: p1Lat,p1Lng,p2Lat,p2Lng).<br/>For example `insideBoundingBox=47.3165,4.9665,47.3424,5.0201`).<br/>At indexing, you should specify geoloc of an object with the _geoloc attribute (in the form `{"_geoloc":{"lat":48.853409, "lng":2.348800}}`)
 
 #### Parameters to control results content
+
  * **setAttributesToRetrieve**: The list of object attributes you want to retrieve (let you minimize the answer size). By default, all attributes are retrieved. You can also use `*` to retrieve all values when an **attributesToRetrieve** setting is specified for your index.
  * **setAttributesToHighlight**: The list of attributes you want to highlight according to the query. If an attribute has no match for the query, the raw value is returned. By default all indexed text attributes are highlighted. You can use `*` if you want to highlight all textual attributes. Numerical attributes are not highlighted. A matchLevel is returned for each highlighted attribute and can contain:
   * **full**: if all the query terms were found in the attribute,
@@ -149,16 +166,17 @@ You can use the following optional arguments on Query class:
  * **setAttributesToSnippet**: The list of attributes to snippet alongside the number of words to return (syntax is `attributeName:nbWords`). By default no snippet is computed.
  * **getRankingInfo**: if set to true, the result hits will contain ranking information in **_rankingInfo** attribute.
 
+
 #### Numeric search parameters
  * **setNumericFilters**: a string that contains the list of numeric filters you want to apply separated by a comma. The syntax of one filter is `attributeName` followed by `operand` followed by `value`. Supported operands are `<`, `<=`, `=`, `>` and `>=`. 
  You can have multiple conditions on one attribute like for example `numericFilters=price>100,price<1000`. You can also use a string array encoding (for example `numericFilters: ["price>100","price<1000"]`).
 
- #### Category search parameters
+#### Category search parameters
  * **setTagFilters**: filter the query by a set of tags. You can AND tags by separating them by commas. To OR tags, you must add parentheses. For example, `tags=tag1,(tag2,tag3)` means *tag1 AND (tag2 OR tag3)*. You can also use a string array encoding, for example `tagFilters: ["tag1",["tag2","tag3"]]` means *tag1 AND (tag2 OR tag3)*.<br/>At indexing, tags should be added in the **_tags** attribute of objects (for example `{"_tags":["tag1","tag2"]}`). 
 
 #### Faceting parameters
- * **setFacetFilters**: filter the query by a list of facets. Each facet is encoded as `attributeName:value`. For example: `["category:Book","author:John%20Doe"]`).
- * **setFacets**: List of object attributes that you want to use for faceting. <br/>Only attributes that have been added in **attributesForFaceting** index setting can be used in this parameter. You can also use `*` to perform faceting on all attributes specified in **attributesForFaceting**.
+ * **setFacetFilters**: filter the query by a list of facets. Facets are separated by commas and each facet is encoded as `attributeName:value`. For example: `facetFilters=category:Book,author:John%20Doe`. You can also use a string array encoding (for example `["category:Book","author:John%20Doe"]`).
+ * **setFacets**: List of object attributes that you want to use for faceting. <br/>Attributes are separated with a comma (for example `"category,author"` ). You can also use a JSON string array encoding (for example `["category","author"]` ). Only attributes that have been added in **attributesForFaceting** index setting can be used in this parameter. You can also use `*` to perform faceting on all attributes specified in **attributesForFaceting**.
 
 #### Distinct parameter
  * **setDistinct**: If set to true, enable the distinct feature (disabled by default) if the `attributeForDistinct` index setting is set. This feature is similar to the SQL "distinct" keyword: when enabled in a query with the `distinct=1` parameter, all hits containing a duplicate value for the attributeForDistinct attribute are removed from results. For example, if the chosen attribute is `show_name` and several hits have the same value for `show_name`, then only the best one is kept and others are removed.
@@ -171,7 +189,7 @@ index.searchASync(new Query("query string").
                   setNbHitsPerPage(50), this);
 ```
 
-The server response in the searchResult callback will look like:
+The server response will look like:
 
 ```javascript
 {
@@ -206,6 +224,7 @@ The server response in the searchResult callback will look like:
 }
 ```
 
+
 Add a new object in the Index
 -------------
 
@@ -229,7 +248,7 @@ You will get the assigned objectID in the `addObjectResult` callback of IndexLis
 ```java
 @Override
 public void addObjectResult(Index index, String object, JSONObject result) {
-  System.out.println(result.getString("objectID"));
+  Log.d("debug", result.getString("objectID"));
 }
 ```
 
@@ -290,6 +309,7 @@ Index Settings
 
 You can retrieve all settings using the `getSettings` function. The result will contains the following attributes:
 
+
 #### Indexing parameters
  * **attributesToIndex**: (array of strings) the list of fields you want to index.<br/>If set to null, all textual and numerical attributes of your objects are indexed, but you should update it to get optimal results.<br/>This parameter has two important uses:
   * *Limit the attributes to index*.<br/>For example if you store a binary image in base64, you want to store it and be able to retrieve it but you don't want to search in the base64 string.
@@ -311,6 +331,7 @@ For example `"customRanking" => ["desc(population)", "asc(name)"]`
   * **prefixAll**: all query words are interpreted as prefixes,
   * **prefixLast**: only the last word is interpreted as a prefix (default behavior),
   * **prefixNone**: no query word is interpreted as a prefix. This option is not recommended.
+ * **slaves**: The list of indexes on which you want to replicate all write operations. In order to get response times in milliseconds, we pre-compute part of the ranking during indexing. If you want to use different ranking configurations depending of the use-case, you need to create one index per ranking configuration. This option enables you to perform write operations only on this index, and to automatically update slave indexes with the same operations.
 
 #### Default query parameters (can be overwrite by query)
  * **minWordSizefor1Typo**: (integer) the minimum number of characters to accept one typo (default = 3).
@@ -333,7 +354,7 @@ You will get the index settings in the getSettingsResult callbacl of IndexListen
 ```java
 @Override
 public void getSettingsResult(Index index, JSONObject result) {
-  System.out.println(result.toString());    
+  Log.d("debug", result.toString());    
 }  
 ```
 
@@ -346,7 +367,7 @@ List indexes
 You can list all your indexes with their associated information (number of entries, disk size, etc.) with the `listIndexes` method:
 
 ```java
-client.listIndexes()
+client.listIndexes();
 ```
 
 Delete an index
@@ -354,7 +375,7 @@ Delete an index
 You can delete an index using its name:
 
 ```java
-client.deleteIndex("contacts")
+client.deleteIndex("contacts");
 ```
 
 Clear an index
@@ -368,7 +389,7 @@ index.clearIndex();
 Wait indexing
 -------------
 
-All write operations return a `taskID` when the job is securely stored on our infrastructure but not when the job is published in your index. Even if it's extremely fast, you can easily ensure indexing is complete using the `waitTask` method on the `taskID` returned by a write operation.
+All write operations return a `taskID` when the job is securely stored on our infrastructure but not when the job is published in your index. Even if it's extremely fast, you can easily ensure indexing is complete using the `waitTask` method on the `taskID` returned by a write operation. 
 
 For example, to wait for indexing of a new object:
 ```java
@@ -376,15 +397,16 @@ JSONObject res = index.addObject(new JSONObject().put("firstname", "Jimmie").put
 index.waitTask(String.valueOf(res.getLong("objectID")));
 ```
 
+
 If you want to ensure multiple objects have been indexed, you can only check the biggest taskID.
 
 Batch writes
 -------------
 
-You may want to perform multiple operations with a single API call to reduce latency.
-We expose two methods to perform batches:
- * `addObjects`: add an array of objects using automatic `objectID` assignement,
- * `saveObjects`: add or update an array of objects that contain an `objectID` attribute.
+You may want to perform multiple operations with one API call to reduce latency.
+We expose three methods to perform batch:
+ * `addObjects`: add an array of object using automatic `objectID` assignement
+ * `saveObjects`: add or update an array of object that contains an `objectID` attribute
  * `partialUpdateObjects`: partially update an array of objects that contain an `objectID` attribute (only specified attributes will be updated, other will remain unchanged)
 
 Example using automatic `objectID` assignement:
@@ -411,6 +433,8 @@ array.add(new JSONObject().put("firstname", "Warren").put("objectID", "LA"));
 index.partialUpdateObjects(array);
 ```
 
+
+
 Security / User API Keys
 -------------
 
@@ -421,9 +445,9 @@ These API keys can be restricted to a set of operations or/and restricted to a g
 To list existing keys, you can use `listUserKeys` method:
 ```java
 // Lists global API Keys
-client.listUserKeys()
+client.listUserKeys();
 // Lists API Keys that can access only to this index
-index.listUserKeys()
+index.listUserKeys();
 ```
 
 Each key is defined by a set of rights that specify the authorized actions. The different rights are:
@@ -439,25 +463,26 @@ Example of API Key creation:
 ```java
 // Creates a new global API key that can only perform search actions
 JSONObject res = client.addUserKey(Arrays.asList("search"));
-Log.d("Debug", res.getString("key"));
+Log.d("debug", "Key: " + res.getString("key"));
 // Creates a new API key that can only perform search action on this index
 JSONObject res = index.addUserKey(Arrays.asList("search"));
-Log.d("Debug", res.getString("key"));
+Log.d("debug", "Key: " + res.getString("key"));
 ```
 
 You can also create an API Key with advanced restrictions:
 
  * Add a validity period: the key will be valid only for a specific period of time (in seconds),
  * Specify the maximum number of API calls allowed from an IP address per hour. Each time an API call is performed with this key, a check is performed. If the IP at the origin of the call did more than this number of calls in the last hour, a 403 code is returned. Defaults to 0 (no rate limit). This parameter can be used to protect you from attempts at retrieving your entire content by massively querying the index.
+
  * Specify the maximum number of hits this API key can retrieve in one call. Defaults to 0 (unlimited). This parameter can be used to protect you from attempts at retrieving your entire content by massively querying the index.
 
- ```java
+```java
 // Creates a new global API key that is valid for 300 seconds
 JSONObject res = client.addUserKey(Arrays.asList("search"), 300, 0, 0);
-Log.d("Debug", res.getString("key"));
+Log.d("debug", "Key: " + res.getString("key"));
 // Creates a new index specific API key valid for 300 seconds, with a rate limit of 100 calls per hour per IP and a maximum of 20 hits
 JSONObject res = index.addUserKey(Arrays.asList("search"), 300, 100, 20);
-Log.d("Debug", res.getString("key"));
+Log.d("debug", "Key: " + res.getString("key"));
 ```
 
 Get the rights of a given key:
@@ -535,3 +560,8 @@ client.getLogs();
 // Get last 100 log entries
 client.getLogs(0, 100);
 ```
+
+
+
+
+
