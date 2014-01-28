@@ -67,6 +67,7 @@ If you're using Maven, add the following dependency and repository to your pom f
 
 Initialize the client with your ApplicationID and API-Key. You can find all of them on [your Algolia account](http://www.algolia.com/users/edit):
 
+
 ```java
   APIClient client = new APIClient("YourApplicationID", "YourAPIKey");
 ```
@@ -149,8 +150,8 @@ You can use the following optional arguments:
 
 #### Pagination parameters
 
- * **setNbHitsPerPage**: (integer) Pagination parameter used to select the page to retrieve.<br/>Page is zero-based and defaults to 0. Thus, to retrieve the 10th page you need to set `page=9`
- * **setPage**: (integer) Pagination parameter used to select the number of hits per page. Defaults to 20.
+ * **setPage**: (integer) Pagination parameter used to select the page to retrieve.<br/>Page is zero-based and defaults to 0. Thus, to retrieve the 10th page you need to set `page=9`
+ * **setNbHitsPerPage**: (integer) Pagination parameter used to select the number of hits per page. Defaults to 20.
 
 #### Geo-search parameters
 
