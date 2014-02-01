@@ -86,6 +86,38 @@ public class Index {
     }
     
     /**
+     * Custom batch
+     * 
+     * @param actions the array of actions
+     * @throws AlgoliaException 
+     */
+    public JSONObject batch(JSONArray actions) throws AlgoliaException {
+	    try {
+	    	JSONObject content = new JSONObject();
+	    	content.put("requests", actions);
+	    	return client.postRequest("/1/indexes/" + indexName + "/batch", content.toString());
+	    } catch (JSONException e) {
+	        throw new AlgoliaException(e.getMessage());
+	    }
+    }
+    
+    /**
+     * Custom batch
+     * 
+     * @param actions the array of actions
+     * @throws AlgoliaException 
+     */
+    public JSONObject batch(List<JSONObject> actions) throws AlgoliaException {
+	    try {
+	    	JSONObject content = new JSONObject();
+	    	content.put("requests", actions);
+	    	return client.postRequest("/1/indexes/" + indexName + "/batch", content.toString());
+	    } catch (JSONException e) {
+	        throw new AlgoliaException(e.getMessage());
+	    }
+    }
+    
+    /**
      * Add several objects
      * 
      * @param objects the array of objects to add
@@ -99,9 +131,7 @@ public class Index {
                 action.put("body",obj);
                 array.put(action);
             }
-            JSONObject content = new JSONObject();
-            content.put("requests", array);
-            return client.postRequest("/1/indexes/" + indexName + "/batch", content.toString());
+            return batch(array);
         } catch (JSONException e) {
             throw new AlgoliaException(e.getMessage());
         }
@@ -122,9 +152,7 @@ public class Index {
                 action.put("body", inputArray.getJSONObject(n));
                 array.put(action);
             }
-            JSONObject content = new JSONObject();
-            content.put("requests", array);
-            return client.postRequest("/1/indexes/" + indexName + "/batch", content.toString());
+            return batch(array);
         } catch (JSONException e) {
             throw new AlgoliaException(e.getMessage());
         }
@@ -194,9 +222,7 @@ public class Index {
                 action.put("body", obj);
                 array.put(action);
             }
-            JSONObject content = new JSONObject();
-            content.put("requests", array);
-            return client.postRequest("/1/indexes/" + indexName + "/batch", content.toString());
+            return batch(array);
         } catch (JSONException e) {
             throw new AlgoliaException(e.getMessage());
         }
@@ -217,9 +243,7 @@ public class Index {
                 action.put("body",obj);
                 array.put(action);
             }
-            JSONObject content = new JSONObject();
-            content.put("requests", array);
-            return client.postRequest("/1/indexes/" + indexName + "/batch", content.toString());
+            return batch(array);
         } catch (JSONException e) {
             throw new AlgoliaException(e.getMessage());
         }
@@ -253,9 +277,7 @@ public class Index {
                 action.put("body",obj);
                 array.put(action);
             }
-            JSONObject content = new JSONObject();
-            content.put("requests", array);
-            return client.postRequest("/1/indexes/" + indexName + "/batch", content.toString());
+            return batch(array);
         } catch (JSONException e) {
             throw new AlgoliaException(e.getMessage());
         }
@@ -278,9 +300,7 @@ public class Index {
                 action.put("body", obj);
                 array.put(action);
             }
-            JSONObject content = new JSONObject();
-            content.put("requests", array);
-            return client.postRequest("/1/indexes/" + indexName + "/batch", content.toString());
+            return batch(array);
         } catch (JSONException e) {
             throw new AlgoliaException(e.getMessage());
         }
