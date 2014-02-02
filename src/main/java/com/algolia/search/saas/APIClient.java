@@ -336,7 +336,6 @@ public class APIClient {
     			throw new IllegalStateException(e);
     		}
         	
-            
         	// set auth headers
         	req.setHeader("X-Algolia-Application-Id", this.applicationID);
         	if (forwardAdminAPIKey == null) {
@@ -372,31 +371,36 @@ public class APIClient {
             	// on error continue on the next host
             	continue;
             }
-            int code = response.getStatusLine().getStatusCode();
-            if (code == 403) {
-            	EntityUtils.consumeQuietly(response.getEntity());
-                throw new AlgoliaException("Invalid Application-ID or API-Key");
-            }
-            if (code == 404) {
-            	EntityUtils.consumeQuietly(response.getEntity());
-                throw new AlgoliaException("Resource does not exist");
-            }
-            if (code == 503) {
-            	EntityUtils.consumeQuietly(response.getEntity());
-            	// and continue
-                continue;
-            }
             try {
-            	InputStream istream = response.getEntity().getContent();
-            	InputStreamReader is = new InputStreamReader(istream, "UTF-8");
-                JSONTokener tokener = new JSONTokener(is);
-                JSONObject res = new JSONObject(tokener);
-                is.close();
-                return res;
-            } catch (IOException e) {
-            	continue;
-            } catch (JSONException e) {
-                throw new AlgoliaException("JSON decode error:" + e.getMessage());
+                int code = response.getStatusLine().getStatusCode();
+                if (code == 403) {
+                	EntityUtils.consumeQuietly(response.getEntity());
+                    throw new AlgoliaException("Invalid Application-ID or API-Key");
+                }
+                if (code == 404) {
+                	EntityUtils.consumeQuietly(response.getEntity());
+                    throw new AlgoliaException("Resource does not exist");
+                }
+                if (code == 503) {
+                	EntityUtils.consumeQuietly(response.getEntity());
+                	// and continue
+                    continue;
+                }
+                try {
+                    InputStream istream = response.getEntity().getContent();
+                    InputStreamReader is = new InputStreamReader(istream, "UTF-8");
+                    JSONTokener tokener = new JSONTokener(is);
+                    JSONObject res = new JSONObject(tokener);
+                    is.close();
+                    return res;
+                } catch (IOException e) {
+                	continue;
+                } catch (JSONException e) {
+                    //System.out.println(response.getEntity().getContent().read);
+                    throw new AlgoliaException("JSON decode error:" + e.getMessage());
+                }
+            } finally {
+                req.releaseConnection();
             }
         }
         throw new AlgoliaException("Hosts unreachable");
