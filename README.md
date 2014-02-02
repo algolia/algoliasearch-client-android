@@ -3,6 +3,8 @@ Algolia Search API Client for Java
 
 
 
+
+
 [Algolia Search](http://www.algolia.com) is a search API that provides hosted full-text, numerical and faceted search.
 Algolia’s Search API makes it easy to deliver a great search experience in your apps & websites providing:
 
@@ -17,6 +19,8 @@ Algolia’s Search API makes it easy to deliver a great search experience in you
 
 This Java client let you easily use the Algolia Search API from your Java Application. It wraps [Algolia's REST API](http://www.algolia.com/doc/rest_api).
 
+[![Build Status](https://travis-ci.org/algolia/algoliasearch-client-java.png?branch=master)](https://travis-ci.org/algolia/algoliasearch-client-java)
+
 
 
 Table of Content
@@ -30,7 +34,6 @@ Table of Content
 **Commands reference**
 
 1. [Search](#search)
-
 1. [Add a new object](#add-a-new-object-in-the-index)
 1. [Update an object](#update-an-existing-object-in-the-index)
 1. [Get an object](#get-an-object)
@@ -48,15 +51,18 @@ Table of Content
 
 
 
+
+
 Setup
 -------------
 To setup your project, follow these steps:
+
 If you're using Maven, add the following dependency and repository to your pom file:
 ```xml
 <dependency>
     <groupId>com.algolia</groupId>
     <artifactId>algoliasearch</artifactId>
-    <version>1.1.7</version>
+    <version>[1.1.11,]</version>
 </dependency>
 <repository>
     <id>algoliasearch</id>
@@ -68,9 +74,12 @@ If you're using Maven, add the following dependency and repository to your pom f
 Initialize the client with your ApplicationID and API-Key. You can find all of them on [your Algolia account](http://www.algolia.com/users/edit):
 
 
+
 ```java
   APIClient client = new APIClient("YourApplicationID", "YourAPIKey");
 ```
+
+
 
 Quick Start
 -------------
@@ -127,6 +136,9 @@ System.out.println(index.search(new Query("jim")));
 
 
 
+
+
+
 Search
 -------------
  **Opening note:** If you are building a web application, you may be more interested in using our [javascript client](https://github.com/algolia/algoliasearch-client-js) to send queries. It brings two benefits: (i) your users get a better response time by avoiding to go through your servers, and (ii) it will offload your servers of unnecessary tasks.
@@ -179,7 +191,7 @@ You can use the following optional arguments:
  * **setTagFilters**: filter the query by a set of tags. You can AND tags by separating them by commas. To OR tags, you must add parentheses. For example, `tags=tag1,(tag2,tag3)` means *tag1 AND (tag2 OR tag3)*. You can also use a string array encoding, for example `tagFilters: ["tag1",["tag2","tag3"]]` means *tag1 AND (tag2 OR tag3)*.<br/>At indexing, tags should be added in the **_tags** attribute of objects (for example `{"_tags":["tag1","tag2"]}`). 
 
 #### Faceting parameters
- * **setFacetFilters**: filter the query by a list of facets. Facets are separated by commas and each facet is encoded as `attributeName:value`. For example: `facetFilters=category:Book,author:John%20Doe`. You can also use a string array encoding (for example `["category:Book","author:John%20Doe"]`).
+ * **setFacetFilters**: filter the query by a list of facets. Facets are separated by commas and each facet is encoded as `attributeName:value`. To OR facets, you must add parentheses. For example: `facetFilters=(category:Book,category:Movie),author:John%20Doe`. You can also use a string array encoding (for example `[["category:Book","category:Movie"],"author:John%20Doe"]`).
  * **setFacets**: List of object attributes that you want to use for faceting. <br/>Attributes are separated with a comma (for example `"category,author"` ). You can also use a JSON string array encoding (for example `["category","author"]` ). Only attributes that have been added in **attributesForFaceting** index setting can be used in this parameter. You can also use `*` to perform faceting on all attributes specified in **attributesForFaceting**.
 
 #### Distinct parameter
@@ -227,6 +239,7 @@ The server response will look like:
   "params": "query=jimmie+paint&attributesToRetrieve=firstname,lastname&hitsPerPage=50"
 }
 ```
+
 
 
 Add a new object in the Index
