@@ -19,7 +19,7 @@ Algolia’s Search API makes it easy to deliver a great search experience in you
 
 This Java client let you easily use the Algolia Search API from your Java Application. It wraps [Algolia's REST API](http://www.algolia.com/doc/rest_api).
 
-[![Build Status](https://travis-ci.org/algolia/algoliasearch-client-java.png?branch=master)](https://travis-ci.org/algolia/algoliasearch-client-java)[![GitHub version](https://badge.fury.io/gh/algolia%2Falgoliasearch-client-java.png)](http://badge.fury.io/gh/algolia%2Falgoliasearch-client-java)
+[![Build Status](https://travis-ci.org/algolia/algoliasearch-client-java.png?branch=master)](https://travis-ci.org/algolia/algoliasearch-client-java) [![GitHub version](https://badge.fury.io/gh/algolia%2Falgoliasearch-client-java.png)](http://badge.fury.io/gh/algolia%2Falgoliasearch-client-java) [![Coverage Status](https://coveralls.io/repos/algolia/algoliasearch-client-java/badge.png)](https://coveralls.io/r/algolia/algoliasearch-client-java)
 
 
 
