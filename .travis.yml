@@ -3,7 +3,8 @@ jdk:
 - oraclejdk7
 - openjdk6
 - openjdk7
-- oraclejdk7
+after_success:
+ - mvn -e -X clean test jacoco:report coveralls:jacoco
 env:
   global:
   - secure: ADyKd6xA3UZ5yLdTzhkO3XlGF2CCkjtyVqJXykTvCTjm4ogSLw0EZ61XNDgkwAXgYbI67VRBbLZoSBD8W0qrFxCu6zjIHSApX2iB9+hRUi1y9Jk5pWmTJWDjuw1ByUyis/Tfo8Q4zNvFeGBAGgj4uWJtODcpqfqozagvMLycRI0=
