@@ -7,6 +7,9 @@
 	<name>Algolia Search Client</name>
 	<description>Java client for Algolia Search API</description>
 	<url>https://github.com/algolia/algoliasearch-client-java</url>
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+	</properties>
 	<licenses>
 		<license>
 			<name>The MIT License</name>
