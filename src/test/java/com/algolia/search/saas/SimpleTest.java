@@ -4,9 +4,12 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+
+import javax.naming.ldap.UnsolicitedNotificationEvent;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -20,6 +23,8 @@ import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 import org.junit.runners.MethodSorters;
 
+import com.algolia.search.saas.Query.QueryType;
+
 @RunWith(JUnit4.class)
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class SimpleTest {
@@ -30,8 +35,8 @@ public class SimpleTest {
 
     public static String safe_name(String name) {
     	if (System.getenv("TRAVIS") != null) {
-    		String id = System.getenv("TRAVIS_JOB_NUMBER");
-    		return name + "_travis" + id;
+    		String[] id = System.getenv("TRAVIS_JOB_NUMBER").split(",");
+    		return name + "_travis" + id[id.length - 1];
     	}
     	return name;
     	
@@ -132,6 +137,7 @@ public class SimpleTest {
     
     @Test
     public void test07_addObject() throws AlgoliaException, JSONException {
+    	assertEquals(indexName, index.getIndexName());
     	JSONObject task = index.addObject(new JSONObject()
         .put("firstname", "Jimmie")
         .put("lastname", "Barninger")
@@ -189,7 +195,7 @@ public class SimpleTest {
         .put("followers", 93)
         .put("company", "California Paint"), "a/go/?à");
     	index.waitTask(task.getString("taskID"));
-    	JSONObject object = index.getObject("a/go/?à", Arrays.asList("lastname"));
+    	JSONObject object = index.getObject("a/go/?à", Arrays.asList("lastname", "firstname"));
     	assertEquals("Barninger", object.getString("lastname"));
     }
     
@@ -243,6 +249,17 @@ public class SimpleTest {
     }
     
     @Test
+    public void test15_addObjectsList() throws JSONException, AlgoliaException {
+    	JSONArray array = new JSONArray();
+    	array.put(new JSONObject().put("firstname", "Jimmie").put("lastname", "Barninger"));
+    	array.put(new JSONObject().put("firstname", "Warren").put("lastname", "Speach"));
+    	JSONObject task = index.addObjects(array);
+    	index.waitTask(task.getString("taskID"));
+    	JSONObject res = index.search(new Query(""));
+    	assertEquals(2, res.getInt("nbHits"));
+    }
+    
+    @Test
     public void test16_saveObjects() throws JSONException, AlgoliaException {
     	List<JSONObject> array = new ArrayList<JSONObject>();
     	array.add(new JSONObject().put("firstname", "Jimmie").put("lastname", "Barninger").put("objectID", "a/go/?à"));
@@ -263,6 +280,22 @@ public class SimpleTest {
     	array = new ArrayList<JSONObject>();
     	array.add(new JSONObject().put("firstname", "Roger").put("objectID", "a/go/?à"));
     	array.add(new JSONObject().put("firstname", "Robert").put("objectID", "a/go/ià"));
+    	task = index.partialUpdateObjects(array);
+    	index.waitTask(task.getString("taskID"));
+    	JSONObject res = index.search(new Query("Ro"));
+    	assertEquals(2, res.getInt("nbHits"));
+    }
+    
+    @Test
+    public void test17_partialUpdateObjectsList() throws JSONException, AlgoliaException {
+    	JSONArray array = new JSONArray();
+    	array.put(new JSONObject().put("firstname", "Jimmie").put("lastname", "Barninger").put("objectID", "a/go/?à"));
+    	array.put(new JSONObject().put("firstname", "Warren").put("lastname", "Speach").put("objectID", "a/go/ià"));
+    	JSONObject task = index.saveObjects(array);
+    	index.waitTask(task.getString("taskID"));
+    	array = new JSONArray();
+    	array.put(new JSONObject().put("firstname", "Roger").put("objectID", "a/go/?à"));
+    	array.put(new JSONObject().put("firstname", "Robert").put("objectID", "a/go/ià"));
     	task = index.partialUpdateObjects(array);
     	index.waitTask(task.getString("taskID"));
     	JSONObject res = index.search(new Query("Ro"));
@@ -306,7 +339,20 @@ public class SimpleTest {
     	task = client.moveIndex(indexName, indexName + "2");
     	Index newIndex = client.initIndex(indexName + "2");
     	newIndex.waitTask(task.getString("taskID"));
-    	JSONObject res = newIndex.search(new Query("jimie"));
+    	Query query = new Query();
+    	query.setQueryType(QueryType.PREFIX_ALL);
+    	query.setQueryString("jimye");
+    	query.setAttributesToRetrieve(Arrays.asList("firstname"));
+    	query.setAttributesToHighlight(new ArrayList<String>());
+    	query.setAttributesToSnippet(new ArrayList<String>());
+    	query.enableDistinct(false);
+    	query.setMinWordSizeToAllowOneTypo(1);
+    	query.setMinWordSizeToAllowTwoTypos(2);
+    	query.getRankingInfo(true);
+    	query.setPage(0);
+    	query.setNbHitsPerPage(1);
+    	assertTrue(!query.getQueryString().equals(""));
+    	JSONObject res = newIndex.search(query);
     	assertEquals(1, res.getInt("nbHits"));
     	try {
     		index.search(new Query("jimie"));
@@ -345,12 +391,103 @@ public class SimpleTest {
     	index.waitTask(task.getString("taskID"));
     	JSONObject res = index.browse(0);
     	assertEquals(1, res.getInt("nbHits"));
+    	res = index.browse(0, 1);
+    	assertEquals(1, res.getInt("nbHits"));
     }
     
     @Test
     public void test23_logs() throws AlgoliaException, JSONException {
     	JSONObject res = client.getLogs();
     	assertTrue(res.getJSONArray("logs").length() > 0);
+    	res = client.getLogs(0, 1);
+    	assertTrue(res.getJSONArray("logs").length() == 1);
+    }
+    
+    @Test
+    public void test24_EmptyAPPID() {
+    	try {
+    		new APIClient(null, "algolia");
+    		assertTrue(false);
+    	}
+    	catch (RuntimeException e){
+    		assertTrue(true);
+    	}
+    }
+    
+    @Test
+    public void test25_EmptyAPPKEY() {
+    	try {
+    		new APIClient("algolia", null);
+    		assertTrue(false);
+    	}
+    	catch (RuntimeException e){
+    		assertTrue(true);
+    	}
+    }
+    
+    @Test
+    public void test26_EmptyHost() {
+    	try {
+    		new APIClient("algolia", "algolia", new ArrayList<String>());
+    		assertTrue(false);
+    	}
+    	catch (RuntimeException e){
+    		assertTrue(true);
+    	}
+    }
+    
+    @Test
+    public void test27_headerDisableRateLimit() throws AlgoliaException, JSONException {
+    	client.disableRateLimitForward();
+    	JSONObject task = index.addObject(new JSONObject()
+        .put("firstname", "Jimmie")
+        .put("lastname", "Barninger")
+        .put("followers", 93)
+        .put("company", "California Paint"));
+    	index.waitTask(task.getString("taskID"));
+    	JSONObject res = index.search(new Query());
+    	assertEquals(1, res.getInt("nbHits"));
+    }
+    
+    @Test
+    public void test29_user_keyLimit() throws AlgoliaException, JSONException {
+    	JSONObject newKey = client.addUserKey(Arrays.asList("search"), 0, 2, 2);
+    	assertTrue(!newKey.getString("key").equals(""));
+    	JSONObject res = client.listUserKeys();
+    	assertTrue(isPresent(res.getJSONArray("keys"), newKey.getString("key"), "value"));
+    	index.deleteUserKey(newKey.getString("key"));
+    }
+    
+    @Test
+    public void test30_user_key_indexLimit() throws AlgoliaException, JSONException {
+    	JSONObject newKey = index.addUserKey(Arrays.asList("search"), 0, 2, 2);
+    	assertTrue(!newKey.getString("key").equals(""));
+    	JSONObject res = index.listUserKeys();
+    	assertTrue(isPresent(res.getJSONArray("keys"), newKey.getString("key"), "value"));
+    	index.deleteUserKey(newKey.getString("key"));
+    }
+    
+    @Test
+    public void test31_InvalidKey() {
+    	try {
+    		APIClient client = new APIClient("unreach", "test"); 
+    		client.listIndexes();
+    		assertTrue(false);
+    	}
+    	catch (AlgoliaException e) {
+    		assertTrue(true);
+    	}
+    }
+    
+    @Test
+    public void test32_InvalidObjectID() {
+    	try {
+    		index.deleteObject("");
+    		assertTrue(false);
+    	}
+    	catch (AlgoliaException e) {
+    		assertTrue(true);
+    	}
     }
 
 }
