@@ -146,7 +146,7 @@ public class APIClient {
         try {
             return deleteRequest("/1/indexes/" + URLEncoder.encode(indexName, "UTF-8"));
         } catch (UnsupportedEncodingException e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException(e); // $COVERAGE-IGNORE$
         }
     }
   
@@ -162,9 +162,9 @@ public class APIClient {
 	        content.put("destination", dstIndexName);
 	        return postRequest("/1/indexes/" + URLEncoder.encode(srcIndexName, "UTF-8") + "/operation", content.toString()); 	
     	} catch (UnsupportedEncodingException e) {
-    		throw new RuntimeException(e);
+    		throw new RuntimeException(e); // $COVERAGE-IGNORE$
     	} catch (JSONException e) {
-    		throw new AlgoliaException(e.getMessage());
+    		throw new AlgoliaException(e.getMessage()); // $COVERAGE-IGNORE$
     	}
     }
     
@@ -180,9 +180,9 @@ public class APIClient {
 	        content.put("destination", dstIndexName);
 	        return postRequest("/1/indexes/" + URLEncoder.encode(srcIndexName, "UTF-8") + "/operation", content.toString()); 	
     	} catch (UnsupportedEncodingException e) {
-    		throw new RuntimeException(e);
+    		throw new RuntimeException(e); // $COVERAGE-IGNORE$
     	} catch (JSONException e) {
-    		throw new AlgoliaException(e.getMessage());
+    		throw new AlgoliaException(e.getMessage()); // $COVERAGE-IGNORE$
     	}   	
     }
     
@@ -250,7 +250,7 @@ public class APIClient {
         try {
             jsonObject.put("acl", array);
         } catch (JSONException e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException(e); // $COVERAGE-IGNORE$
         }
         return postRequest("/1/keys", jsonObject.toString());
     }
@@ -280,7 +280,7 @@ public class APIClient {
             jsonObject.put("maxHitsPerQuery", maxHitsPerQuery);
             
         } catch (JSONException e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException(e); // $COVERAGE-IGNORE$
         }
         return postRequest("/1/keys", jsonObject.toString());
     }
@@ -357,7 +357,7 @@ public class APIClient {
 	                se.setContentEncoding(new BasicHeader(HTTP.CONTENT_TYPE, "application/json"));
 	                ((HttpEntityEnclosingRequestBase) req).setEntity(se); 
 	            } catch (UnsupportedEncodingException e) {
-	                throw new AlgoliaException("Invalid JSON Object: " + json);
+	                throw new AlgoliaException("Invalid JSON Object: " + json); // $COVERAGE-IGNORE$
 	            }
             }
             
