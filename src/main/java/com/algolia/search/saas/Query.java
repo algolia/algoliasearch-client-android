@@ -173,10 +173,20 @@ public class Query {
     /**
      *  Set the number of hits per page. Defaults to 10.
      */
-    public Query setNbHitsPerPage(int nbHitsPerPage) {
+    public Query setHitsPerPage(int nbHitsPerPage) {
         this.hitsPerPage = nbHitsPerPage;
         return this;
     }
+    
+    /**
+     *  Set the number of hits per page. Defaults to 10.
+     *  @deprecated Use {@code setHitsPerPage}
+     */
+    @Deprecated
+    public Query setNbHitsPerPage(int nbHitsPerPage) {
+        return setHitsPerPage(nbHitsPerPage);
+    }
+
     
     /**
      *  Search for entries around a given latitude/longitude. 
