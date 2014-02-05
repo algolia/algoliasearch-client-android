@@ -58,6 +58,7 @@ public class Query {
     protected String optionalWords;
     protected String facets;
     protected String facetFilters;
+    protected int maxNumberOfFacets;
     
     public Query(String query) {
         minWordSizeForApprox1 = 3;
@@ -68,6 +69,7 @@ public class Query {
         hitsPerPage = 20;
         this.query = query;
         queryType = QueryType.PREFIX_LAST;
+        maxNumberOfFacets = -1;
     }
     
     public Query() {
@@ -78,6 +80,7 @@ public class Query {
         page = 0;
         hitsPerPage = 20;
         queryType = QueryType.PREFIX_ALL;
+        maxNumberOfFacets = -1;
     }
     
     /**
@@ -268,6 +271,14 @@ public class Query {
     }
     
     /**
+     * Limit the number of facet values returned for each facet.
+     */
+    public Query setMaxNumberOfFacets(int n) {
+        this.maxNumberOfFacets = n;
+        return this;
+    }
+
+    /**
      * Filter the query by a set of tags. You can AND tags by separating them by commas. To OR tags, you must add parentheses. For example tag1,(tag2,tag3) means tag1 AND (tag2 OR tag3).
      * At indexing, tags should be added in the _tags attribute of objects (for example {"_tags":["tag1","tag2"]} )
      */
@@ -406,14 +417,20 @@ public class Query {
             if (facets != null) {
                 if (stringBuilder.length() > 0)
                     stringBuilder.append('&');
-                stringBuilder.append("facets");
+                stringBuilder.append("facets=");
                 stringBuilder.append(URLEncoder.encode(facets, "UTF-8"));
             }
             if (facetFilters != null) {
                 if (stringBuilder.length() > 0)
                     stringBuilder.append('&');
-                stringBuilder.append("facetFilters");
+                stringBuilder.append("facetFilters=");
                 stringBuilder.append(URLEncoder.encode(facetFilters, "UTF-8"));
+            }
+            if (maxNumberOfFacets > 0) {
+                if (stringBuilder.length() > 0)
+                    stringBuilder.append('&');
+                stringBuilder.append("maxNumberOfFacets=");
+                stringBuilder.append(maxNumberOfFacets);
             }
             if (optionalWords != null) {
             	if (stringBuilder.length() > 0)
