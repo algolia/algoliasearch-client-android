@@ -29,13 +29,13 @@ Table of Content
 
 1. [Setup](#setup)
 1. [Quick Start](#quick-start)
-
+1. [Online documentation](#online-documentation)
 
 **Commands reference**
 
-1. [Search](#search)
 1. [Add a new object](#add-a-new-object-in-the-index)
 1. [Update an object](#update-an-existing-object-in-the-index)
+1. [Search](#search)
 1. [Get an object](#get-an-object)
 1. [Delete an object](#delete-an-object)
 1. [Index settings](#index-settings)
@@ -136,8 +136,81 @@ System.out.println(index.search(new Query("jim")));
 
 
 
+Online Documentation
+----------------
+
+Check our [online documentation](http://www.algolia.com/doc):
+ * [Initial Import](http://www.algolia.com/doc#InitialImport)
+ * [Ranking &amp; Relevance](http://www.algolia.com/doc#RankingRelevance)
+ * [Settings](http://www.algolia.com/doc#Settings)
+ * [Search](http://www.algolia.com/doc#Search)
+ * [Incremental Updates](http://www.algolia.com/doc#IncrementalUpdates)
+ * [Reindexing](http://www.algolia.com/doc#Reindexing)
+ * [Numeric-Search](http://www.algolia.com/doc#Numeric-Search)
+ * [Category-Search](http://www.algolia.com/doc#Category-Search)
+ * [Faceting](http://www.algolia.com/doc#Faceting)
+ * [Geo-Search](http://www.algolia.com/doc#Geo-Search)
+ * [Security](http://www.algolia.com/doc#Security)
+ * [Indexing Several Types](http://www.algolia.com/doc#IndexingSeveralTypes)
+ * [REST API](http://www.algolia.com/doc/rest)
 
 
+
+
+
+
+
+Add a new object in the Index
+-------------
+
+Each entry in an index has a unique identifier called `objectID`. You have two ways to add en entry in the index:
+
+ 1. Using automatic `objectID` assignement, you will be able to retrieve it in the answer.
+ 2. Passing your own `objectID`
+
+You don't need to explicitely create an index, it will be automatically created the first time you add an object.
+Objects are schema less, you don't need any configuration to start indexing. The settings section provide details about advanced settings.
+
+Example with automatic `objectID` assignement:
+
+```java
+JSONObject obj = index.addObject(new JSONObject()
+      .put("firstname", "Jimmie")
+      .put("lastname", "Barninger"));
+System.out.println(obj.getString("objectID"));
+```
+
+Example with manual `objectID` assignement:
+
+```java
+JSONObject obj = index.addObject(new JSONObject()
+      .put("firstname", "Jimmie")
+      .put("lastname", "Barninger"), "myID");
+System.out.println(obj.getString("objectID"));
+```
+
+Update an existing object in the Index
+-------------
+
+You have two options to update an existing object:
+
+ 1. Replace all its attributes.
+ 2. Replace only some attributes.
+
+Example to replace all the content of an existing object:
+
+```java
+index.saveObject(new JSONObject()
+      .put("firstname", "Jimmie")
+      .put("lastname", "Barninger")
+      .put("city", "New York"), "myID");
+```
+
+Example to update only the city attribute of an existing object:
+
+```java
+index.partialUpdateObject(new JSONObject().put("city", "San Francisco"), "myID");
+```
 
 Search
 -------------
@@ -163,7 +236,7 @@ You can use the following optional arguments:
 #### Pagination parameters
 
  * **setPage**: (integer) Pagination parameter used to select the page to retrieve.<br/>Page is zero-based and defaults to 0. Thus, to retrieve the 10th page you need to set `page=9`
- * **setNbHitsPerPage**: (integer) Pagination parameter used to select the number of hits per page. Defaults to 20.
+ * **setHitsPerPage**: (integer) Pagination parameter used to select the number of hits per page. Defaults to 20.
 
 #### Geo-search parameters
 
@@ -238,60 +311,6 @@ The server response will look like:
   "query": "jimmie paint",
   "params": "query=jimmie+paint&attributesToRetrieve=firstname,lastname&hitsPerPage=50"
 }
-```
-
-
-
-Add a new object in the Index
--------------
-
-Each entry in an index has a unique identifier called `objectID`. You have two ways to add en entry in the index:
-
- 1. Using automatic `objectID` assignement, you will be able to retrieve it in the answer.
- 2. Passing your own `objectID`
-
-You don't need to explicitely create an index, it will be automatically created the first time you add an object.
-Objects are schema less, you don't need any configuration to start indexing. The settings section provide details about advanced settings.
-
-Example with automatic `objectID` assignement:
-
-```java
-JSONObject obj = index.addObject(new JSONObject()
-      .put("firstname", "Jimmie")
-      .put("lastname", "Barninger"));
-System.out.println(obj.getString("objectID"));
-```
-
-Example with manual `objectID` assignement:
-
-```java
-JSONObject obj = index.addObject(new JSONObject()
-      .put("firstname", "Jimmie")
-      .put("lastname", "Barninger"), "myID");
-System.out.println(obj.getString("objectID"));
-```
-
-Update an existing object in the Index
--------------
-
-You have two options to update an existing object:
-
- 1. Replace all its attributes.
- 2. Replace only some attributes.
-
-Example to replace all the content of an existing object:
-
-```java
-index.saveObject(new JSONObject()
-      .put("firstname", "Jimmie")
-      .put("lastname", "Barninger")
-      .put("city", "New York"), "myID");
-```
-
-Example to update only the city attribute of an existing object:
-
-```java
-index.partialUpdateObject(new JSONObject().put("city", "San Francisco"), "myID");
 ```
 
 Get an object
