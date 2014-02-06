@@ -31,9 +31,10 @@ public class SimpleTest {
     private static APIClient client;
     private static Index index;
 
-    public static String safe_name(String name) {
+    
+	public static String safe_name(String name) {
     	if (System.getenv("TRAVIS") != null) {
-    		String[] id = System.getenv("TRAVIS_JOB_NUMBER").split(".");
+    		String[] id = System.getenv("TRAVIS_JOB_NUMBER").split("\\.");
     		return name + "_travis" + id[id.length - 1];
     	}
     	return name;
