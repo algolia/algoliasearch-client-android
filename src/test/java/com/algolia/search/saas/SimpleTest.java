@@ -11,6 +11,7 @@ import java.util.List;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.junit.AfterClass;
 import org.junit.Assume;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -25,14 +26,14 @@ import com.algolia.search.saas.Query.QueryType;
 @RunWith(JUnit4.class)
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class SimpleTest {
-    private static final String indexName = safe_name("test?java");
+    private static final String indexName = safe_name("àlgol?à-java");
 
     private static APIClient client;
     private static Index index;
 
     public static String safe_name(String name) {
     	if (System.getenv("TRAVIS") != null) {
-    		String[] id = System.getenv("TRAVIS_JOB_NUMBER").split(",");
+    		String[] id = System.getenv("TRAVIS_JOB_NUMBER").split(".");
     		return name + "_travis" + id[id.length - 1];
     	}
     	return name;
@@ -64,6 +65,15 @@ public class SimpleTest {
         catch (AlgoliaException e) {
         	//Normal
         }
+    }
+    
+    @AfterClass
+    public static void dispose() {
+    	try {
+			client.deleteIndex(indexName);
+		} catch (AlgoliaException e) {
+			// Not fatal
+		}
     }
 
     @Test
@@ -347,7 +357,7 @@ public class SimpleTest {
     	query.setMinWordSizeToAllowTwoTypos(2);
     	query.getRankingInfo(true);
     	query.setPage(0);
-    	query.setNbHitsPerPage(1);
+    	query.setHitsPerPage(1);
     	assertTrue(!query.getQueryString().equals(""));
     	JSONObject res = newIndex.search(query);
     	assertEquals(1, res.getInt("nbHits"));
@@ -485,6 +495,26 @@ public class SimpleTest {
     	catch (AlgoliaException e) {
     		assertTrue(true);
     	}
+    }
+    
+    @Test
+    public void test33_customBatch() throws AlgoliaException, JSONException {
+    	assertEquals(indexName, index.getIndexName());
+    	JSONObject task = index.addObject(new JSONObject()
+        .put("firstname", "Jimmie")
+        .put("lastname", "Barninger")
+        .put("followers", 93)
+        .put("company", "California Paint"));
+    	index.waitTask(task.getString("taskID"));
+    	JSONObject res = index.search(new Query("jimie"));
+    	assertEquals(1, res.getInt("nbHits"));
+    	JSONArray actions = new JSONArray();
+    	JSONObject action = new JSONObject();
+    	action.put("action", "deleteObject");
+    	action.put("objectID", "a/go/?à");
+    	actions.put(action);
+    	task = index.batch(actions);
+    	index.waitTask(task.getString("taskID"));
     }
 
 }
