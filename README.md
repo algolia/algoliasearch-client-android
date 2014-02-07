@@ -19,6 +19,7 @@ Algolia’s Search API makes it easy to deliver a great search experience in you
 
 This Android client let you easily use the Algolia Search API from your Android Application. It wraps [Algolia's REST API](http://www.algolia.com/doc/rest_api).
 It is based on our [Java API client](https://github.com/algolia/algoliasearch-client-java) and  includes an easy to use asynchronous API to avoid networks calls on UI Thread.
+
 [![Build Status](https://travis-ci.org/algolia/algoliasearch-client-android.png?branch=master)](https://travis-ci.org/algolia/algoliasearch-client-android) [![GitHub version](https://badge.fury.io/gh/algolia%2Falgoliasearch-client-android.png)](http://badge.fury.io/gh/algolia%2Falgoliasearch-client-android)
 
 
@@ -268,6 +269,7 @@ You can use the following optional arguments:
 #### Faceting parameters
  * **setFacetFilters**: filter the query by a list of facets. Facets are separated by commas and each facet is encoded as `attributeName:value`. To OR facets, you must add parentheses. For example: `facetFilters=(category:Book,category:Movie),author:John%20Doe`. You can also use a string array encoding (for example `[["category:Book","category:Movie"],"author:John%20Doe"]`).
  * **setFacets**: List of object attributes that you want to use for faceting. <br/>Attributes are separated with a comma (for example `"category,author"` ). You can also use a JSON string array encoding (for example `["category","author"]` ). Only attributes that have been added in **attributesForFaceting** index setting can be used in this parameter. You can also use `*` to perform faceting on all attributes specified in **attributesForFaceting**.
+ * **setMaxNumberOfFacets**: Limit the number of facet values returned for each facet. For example: `maxNumberOfFacets=10` will retrieve max 10 values per facet.
 
 #### Distinct parameter
  * **setDistinct**: If set to true, enable the distinct feature (disabled by default) if the `attributeForDistinct` index setting is set. This feature is similar to the SQL "distinct" keyword: when enabled in a query with the `distinct=1` parameter, all hits containing a duplicate value for the attributeForDistinct attribute are removed from results. For example, if the chosen attribute is `show_name` and several hits have the same value for `show_name`, then only the best one is kept and others are removed.
