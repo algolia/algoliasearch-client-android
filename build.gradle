@@ -17,4 +17,5 @@ repositories {
 
 dependencies {
     compile group: 'com.google.android', name: 'android', version: '4.1.1.4'
+    testCompile 'junit:junit:[4,)'
 }
