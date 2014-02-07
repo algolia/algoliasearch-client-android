@@ -19,7 +19,7 @@ Algolia’s Search API makes it easy to deliver a great search experience in you
 
 This Android client let you easily use the Algolia Search API from your Android Application. It wraps [Algolia's REST API](http://www.algolia.com/doc/rest_api).
 It is based on our [Java API client](https://github.com/algolia/algoliasearch-client-java) and  includes an easy to use asynchronous API to avoid networks calls on UI Thread.
-
+[![Build Status](https://travis-ci.org/algolia/algoliasearch-client-android.png?branch=master)](https://travis-ci.org/algolia/algoliasearch-client-android) [![GitHub version](https://badge.fury.io/gh/algolia%2Falgoliasearch-client-android.png)](http://badge.fury.io/gh/algolia%2Falgoliasearch-client-android)
 
 
 
