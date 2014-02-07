@@ -1,0 +1,6 @@
+language: java
+jdk: oraclejdk7
+env:
+  global:
+  - secure: TRPB3uhIbFioK9Bp71lEwPsghIrYu1zLNACzFzM2lKxSREavEZo8V91jNSA1jFfsuX+HqqVyZJX1891UbJzHWIUeT+UdFDQhvEeuRyKPxTQeUbl+QjFL59w+mtTEdzfX/D4fuzZpe9Hx5GM2azUrpfXhbMKfD1pbaJ12Asu0qqY=
+  - secure: cYHXxg8SpNDloPKp6/fcgaf3nzWZ8ZaAw1Fa9mt0cCnz39KL52QRbRdfTGIuZYfzMQpDjj4lTQCjkF1/NV2XgKAwSxOnP9oxYxZHrzKiskwdBK3OHX2PbVWYOM2/JJq3rDODaVZZrABQZiqN5sd63edZRaGFm3Kb9F7QtcXxk78=
