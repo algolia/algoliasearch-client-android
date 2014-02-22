@@ -331,6 +331,28 @@ public class Index {
         else
             return client.getRequest("/1/indexes/" + indexName);
     }
+    
+    /**
+     * Delete several objects
+     * 
+     * @param objects the array of objectIDs to delete
+     */
+    public JSONObject deleteObjects(List<String> objects) throws AlgoliaException {
+        try {
+            JSONArray array = new JSONArray();
+            for (String id : objects) {
+            	JSONObject obj = new JSONObject();
+            	obj.put("objectID", id);
+                JSONObject action = new JSONObject();
+                action.put("action", "deleteObject");
+                action.put("body",obj);
+                array.put(action);
+            }
+            return batch(array);
+        } catch (JSONException e) {
+            throw new AlgoliaException(e.getMessage());
+        }
+    }
 
     /**
      * Browse all index content
