@@ -83,6 +83,16 @@ public interface IndexListener {
      * Asynchronously receive error of Index.deleteObjectASync method.
      */
     public void deleteObjectError(Index index, String objectID, AlgoliaException e);
+    
+    /**
+     * Asynchronously receive result of Index.deleteObjectsASync method.
+     */
+    public void deleteObjectsResult(Index index, JSONArray objects, JSONObject result);
+    
+    /**
+     * Asynchronously receive error of Index.deleteObjectsASync method.
+     */
+    public void deleteObjectsError(Index index, List<JSONObject> objects, AlgoliaException e);
 
     /**
      * Asynchronously receive result of Index.saveObjectASync methods.

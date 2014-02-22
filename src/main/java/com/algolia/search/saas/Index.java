@@ -2,6 +2,7 @@ package com.algolia.search.saas;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.json.JSONArray;
@@ -470,6 +471,66 @@ public class Index {
     }
     
     /**
+     * Delete several objects
+     * 
+     * @param objects the array of objectIDs to delete
+     */
+    public JSONObject deleteObjects(List<String> objects) throws AlgoliaException {
+        try {
+            JSONArray array = new JSONArray();
+            for (String id : objects) {
+                JSONObject obj = new JSONObject();
+                obj.put("objectID", id);
+                JSONObject action = new JSONObject();
+                action.put("action", "deleteObject");
+                action.put("body",obj);
+                array.put(action);
+            }
+            return batch(array);
+        } catch (JSONException e) {
+            throw new AlgoliaException(e.getMessage());
+        }
+    }
+
+    /**
+     * Delete several objects
+     * 
+     * @param objects the array of objectIDs to delete
+     */
+    public JSONObject deleteObjects2(List<JSONObject> objects) throws AlgoliaException {
+        try {
+            JSONArray array = new JSONArray();
+            for (JSONObject obj : objects) {
+                JSONObject action = new JSONObject();
+                action.put("action", "deleteObject");
+                action.put("body", obj);
+                array.put(action);
+            }
+            return batch(array);
+        } catch (JSONException e) {
+            throw new AlgoliaException(e.getMessage());
+        }
+    }
+
+    /**
+     * Delete several objects asynchronously
+     * 
+     * @param objects the array of objectIDs to delete
+     */
+    public void deleteObjectsASync(List<String> ids, IndexListener listener) throws AlgoliaException {
+        List<JSONObject> objects = new ArrayList<JSONObject>();
+        for (String id : ids) {
+            try {
+                objects.add(new JSONObject().put("objectID", id));
+            } catch (JSONException e) {
+                throw new AlgoliaException(e.getMessage()); 
+            }
+        }
+        ASyncIndexTaskParams params = new ASyncIndexTaskParams(listener, ASyncIndexTaskKind.DeleteObjects, objects);
+        new ASyncIndexTask().execute(params);
+    }
+    
+    /**
      * Search inside the index
      */
     public JSONObject search(Query query) throws AlgoliaException {
@@ -716,6 +777,7 @@ public class Index {
         PartialSaveObjects,
         PartialSaveObjects2,
         DeleteObject,
+        DeleteObjects,
         WaitTask,
         Query,
         GetSettings,
@@ -821,6 +883,9 @@ public class Index {
             case PartialSaveObjects2:
             	p.listener.partialUpdateObjectsResult(Index.this, p.objects2, res);
             	break;
+            case DeleteObjects:
+                p.listener.deleteObjectsResult(Index.this, p.objects2, res);
+                break;
             case GetObject:
                 p.listener.getObjectResult(Index.this, p.objectID, res);
                 break;
@@ -929,6 +994,14 @@ public class Index {
                     return null;
                 }
             	break;
+            case DeleteObjects:
+                try {
+                    res = deleteObjects2(p.objects);
+                } catch (AlgoliaException e) {
+                    p.listener.deleteObjectsError(Index.this, p.objects, e);
+                    return null;
+                }
+                break;
             case GetObject:
                 try {
                     if (p.attributesToRetrieve == null) {

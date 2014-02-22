@@ -256,6 +256,22 @@ public class SimpleTest {
     }
     
     @Test
+    public void test15_deleteObjects() throws JSONException, AlgoliaException {
+    	List<JSONObject> array = new ArrayList<JSONObject>();
+    	array.add(new JSONObject().put("firstname", "Jimmie").put("lastname", "Barninger").put("objectID", "à/go/?à"));
+    	array.add(new JSONObject().put("firstname", "Warren").put("lastname", "Speach").put("objectID", "à/go/?à2"));
+    	JSONObject task = index.addObjects(array);
+    	index.waitTask(task.getString("taskID"));
+    	List<String> deleted = new ArrayList<String>();
+    	deleted.add("à/go/?à");
+    	deleted.add("à/go/?à2");
+    	task = index.deleteObjects(deleted);
+    	index.waitTask(task.getString("taskID"));
+    	JSONObject res = index.search(new Query(""));
+    	assertEquals(0, res.getInt("nbHits"));
+    }
+    
+    @Test
     public void test15_addObjectsList() throws JSONException, AlgoliaException {
     	JSONArray array = new JSONArray();
     	array.put(new JSONObject().put("firstname", "Jimmie").put("lastname", "Barninger"));
