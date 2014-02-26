@@ -7,6 +7,8 @@ import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URLEncoder;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -271,6 +273,26 @@ public class APIClient {
      * @param maxHitsPerQuery Specify the maximum number of hits this API key can retrieve in one call. Defaults to 0 (unlimited) 
      */
     public JSONObject addUserKey(List<String> acls, int validity, int maxQueriesPerIPPerHour, int maxHitsPerQuery) throws AlgoliaException {
+        return addUserKey(acls, validity, maxQueriesPerIPPerHour, maxHitsPerQuery, null);
+    }
+
+    /**
+     * Create a new user key
+     *
+     * @param acls the list of ACL for this key. Defined by an array of strings that 
+     * can contains the following values:
+     *   - search: allow to search (https and http)
+     *   - addObject: allows to add/update an object in the index (https only)
+     *   - deleteObject : allows to delete an existing object (https only)
+     *   - deleteIndex : allows to delete index content (https only)
+     *   - settings : allows to get index settings (https only)
+     *   - editSettings : allows to change index settings (https only)
+     * @param validity the number of seconds after which the key will be automatically removed (0 means no time limit for this key)
+     * @param maxQueriesPerIPPerHour Specify the maximum number of API calls allowed from an IP address per hour.  Defaults to 0 (no rate limit).
+     * @param maxHitsPerQuery Specify the maximum number of hits this API key can retrieve in one call. Defaults to 0 (unlimited)
+     * @param indexes the list of targeted indexes 
+     */
+    public JSONObject addUserKey(List<String> acls, int validity, int maxQueriesPerIPPerHour, int maxHitsPerQuery, String indexes) throws AlgoliaException {
         JSONArray array = new JSONArray(acls);
         JSONObject jsonObject = new JSONObject();
         try {
@@ -278,11 +300,50 @@ public class APIClient {
             jsonObject.put("validity", validity);
             jsonObject.put("maxQueriesPerIPPerHour", maxQueriesPerIPPerHour);
             jsonObject.put("maxHitsPerQuery", maxHitsPerQuery);
-            
+            if (indexes != null) {
+                jsonObject.put("indexes", indexes);
+            }
         } catch (JSONException e) {
             throw new RuntimeException(e); // $COVERAGE-IGNORE$
         }
         return postRequest("/1/keys", jsonObject.toString());
+    }
+    
+    /**
+     * Generate a secured and public API Key from a list of tagFilters and an
+     * optional user token identifying the current user
+     *
+     * @param privateApiKey your private API Key
+     * @param tagFilters the list of tags applied to the query (used as security)
+     */
+    public String generateSecuredApiKey(String privateApiKey, String tagFilters) {
+        return generateSecuredApiKey(privateApiKey, tagFilters, null);
+    }
+    
+    /**
+     * Generate a secured and public API Key from a list of tagFilters and an
+     * optional user token identifying the current user
+     *
+     * @param privateApiKey your private API Key
+     * @param tagFilters the list of tags applied to the query (used as security)
+     * @param userToken an optional token identifying the current user
+     */
+    public String generateSecuredApiKey(String privateApiKey, String tagFilters, String userToken) {
+        return sha256(privateApiKey + tagFilters + (userToken != null ? userToken : ""));
+    }
+    
+    static String sha256(String str) {
+        MessageDigest md;
+        try {
+            md = MessageDigest.getInstance("SHA-256");
+        } catch (NoSuchAlgorithmException e) {
+            throw new Error(e);
+        }
+        StringBuffer sb = new StringBuffer();
+        for (byte b : md.digest(str.getBytes())) {
+            sb.append(String.format("%02x", b));
+        }
+        return sb.toString();
     }
     
     private static enum Method {
