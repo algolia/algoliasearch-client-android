@@ -215,6 +215,8 @@ Example to update only the city attribute of an existing object:
 index.partialUpdateObjectASync("{ \"city":\"San Francisco\" }", "myID", this);
 ```
 
+
+
 Search
 -------------
 
@@ -243,7 +245,7 @@ You can use the following optional arguments:
 
 #### Geo-search parameters
 
- * **aroundLatitudeLongitude(float, float, int)**: search for entries around a given latitude/longitude.<br/>You specify the maximum distance in meters with the **radius** parameter (in meters).<br/>At indexing, you should specify geoloc of an object with the _geoloc attribute (in the form `{"_geoloc":{"lat":48.853409, "lng":2.348800}}`)
+ * **aroundLatitudeLongitude(float, float, int)**: search for entries around a given latitude/longitude.<br/>You specify the maximum distance in meters with the **radius** parameter (in meters).<br/>At indexing, you should specify geoloc of an object with the `_geoloc` attribute (in the form ` {"_geoloc":{"lat":48.853409, "lng":2.348800}} `)
  * **aroundLatitudeLongitude(flot, float, int, int)**: search for entries around a given latitude/longitude with a given precision for ranking (for example if you set precision=100, two objects that are distant of less than 100m will be considered as identical for "geo" ranking parameter).
 
  * **insideBoundingBox**: search entries inside a given area defined by the two extreme points of a rectangle (defined by 4 floats: p1Lat,p1Lng,p2Lat,p2Lng).<br/>For example `insideBoundingBox=47.3165,4.9665,47.3424,5.0201`).<br/>At indexing, you should specify geoloc of an object with the _geoloc attribute (in the form `{"_geoloc":{"lat":48.853409, "lng":2.348800}}`)
@@ -269,7 +271,7 @@ You can use the following optional arguments:
 #### Faceting parameters
  * **setFacetFilters**: filter the query by a list of facets. Facets are separated by commas and each facet is encoded as `attributeName:value`. To OR facets, you must add parentheses. For example: `facetFilters=(category:Book,category:Movie),author:John%20Doe`. You can also use a string array encoding (for example `[["category:Book","category:Movie"],"author:John%20Doe"]`).
  * **setFacets**: List of object attributes that you want to use for faceting. <br/>Attributes are separated with a comma (for example `"category,author"` ). You can also use a JSON string array encoding (for example `["category","author"]` ). Only attributes that have been added in **attributesForFaceting** index setting can be used in this parameter. You can also use `*` to perform faceting on all attributes specified in **attributesForFaceting**.
- * **setMaxNumberOfFacets**: Limit the number of facet values returned for each facet. For example: `maxNumberOfFacets=10` will retrieve max 10 values per facet.
+ * **setMaxValuesPerFacet**: Limit the number of facet values returned for each facet. For example: `maxValuesPerFacet=10` will retrieve max 10 values per facet.
 
 #### Distinct parameter
  * **setDistinct**: If set to true, enable the distinct feature (disabled by default) if the `attributeForDistinct` index setting is set. This feature is similar to the SQL "distinct" keyword: when enabled in a query with the `distinct=1` parameter, all hits containing a duplicate value for the attributeForDistinct attribute are removed from results. For example, if the chosen attribute is `show_name` and several hits have the same value for `show_name`, then only the best one is kept and others are removed.
@@ -316,6 +318,10 @@ The server response will look like:
   "params": "query=jimmie+paint&attributesToRetrieve=firstname,lastname&hitsPerPage=50"
 }
 ```
+
+
+
+
 
 Get an object
 -------------
@@ -441,6 +447,7 @@ You may want to perform multiple operations with one API call to reduce latency.
 We expose three methods to perform batch:
  * `addObjects`: add an array of object using automatic `objectID` assignement
  * `saveObjects`: add or update an array of object that contains an `objectID` attribute
+ * `deleteObjects`: delete an array of objectIDs
  * `partialUpdateObjects`: partially update an array of objects that contain an `objectID` attribute (only specified attributes will be updated, other will remain unchanged)
 
 Example using automatic `objectID` assignement:
@@ -457,6 +464,14 @@ List<JSONObject> array = new ArrayList<JSONObject>();
 array.add(new JSONObject().put("firstname", "Jimmie").put("lastname", "Barninger").put("objectID", "SFO"));
 array.add(new JSONObject().put("firstname", "Warren").put("lastname", "Speach").put("objectID", "LA"));
 index.saveObjects(array);
+```
+
+Example that delete a set of records:
+```java
+List<String> ids = new ArrayList<String>();
+ids.add("myID1");
+ids.add("myID2");
+index.deleteObjects(ids);
 ```
 
 Example that update only the `firstname` attribute:
@@ -509,6 +524,7 @@ You can also create an API Key with advanced restrictions:
  * Specify the maximum number of API calls allowed from an IP address per hour. Each time an API call is performed with this key, a check is performed. If the IP at the origin of the call did more than this number of calls in the last hour, a 403 code is returned. Defaults to 0 (no rate limit). This parameter can be used to protect you from attempts at retrieving your entire content by massively querying the index.
 
  * Specify the maximum number of hits this API key can retrieve in one call. Defaults to 0 (unlimited). This parameter can be used to protect you from attempts at retrieving your entire content by massively querying the index.
+ * Specify the list of targeted indexes. Defaults to all indexes if empty of blank.
 
 ```java
 // Creates a new global API key that is valid for 300 seconds
@@ -533,6 +549,49 @@ Delete an existing key:
 client.deleteUserKey("f420238212c54dcfad07ea0aa6d5c45f");
 // Deletes an index specific key
 index.deleteUserKey("71671c38001bf3ac857bc82052485107");
+```
+
+You may have a single index containing per-user data. In that case, all records should be tagged with their associated user_id in order to add a `tagFilters=(public,user_42)` filter at query time to retrieve only what a user has access to. If you're using the [JavaScript client](http://github.com/algolia/algoliasearch-client-js), it will result in a security breach since the user is able to modify the `tagFilters` you've set modifying the code from the browser. To keep using the JavaScript client (recommended for optimal latency) and target secured records, you can generate secured API key from your backend:
+
+```java
+// generate a public API key for user 42. Here, records are tagged with:
+//  - 'public' if they are visible by all users
+//  - 'user_XXXX' if they are visible by user XXXX
+String publicKey = client.generateSecuredApiKey("YourSearchOnlyApiKey", "(public,user_42)");
+```
+
+This public API key must then be used in your JavaScript code as follow:
+
+```javascript
+<script type="text/javascript">
+  var algolia = new AlgoliaSearch('YourApplicationID', '<%= public_api_key %>');
+  algolia.setSecurityTags('(public,user_42)'); // must be same than those used at generation-time
+  algolia.initIndex('YourIndex').search($('#q').val(), function(success, content) {
+    // [...]
+  });
+</script>
+```
+
+You can mix rate limits and secured API keys setting an extra `user_token` attribute both at API key generation-time and query-time. When set, a uniq user will be identified by her `IP + user_token` instead of only her `IP`. It allows you to restrict a single user to perform maximum `N` API calls per hour, even if she share her `IP` with another user.
+
+```java
+// generate a public API key for user 42. Here, records are tagged with:
+//  - 'public' if they are visible by all users
+//  - 'user_XXXX' if they are visible by user XXXX
+String publicKey = client.generateSecuredApiKey("YourSearchOnlyApiKey", "(public,user_42)", "42");
+```
+
+This public API key must then be used in your JavaScript code as follow:
+
+```javascript
+<script type="text/javascript">
+  var algolia = new AlgoliaSearch('YourApplicationID', '<%= public_api_key %>');
+  algolia.setSecurityTags('(public,user_42)'); // must be same than those used at generation-time
+  algolia.setUserToken('user_42')              // must be same than the one used at generation-time
+  algolia.initIndex('YourIndex').search($('#q').val(), function(success, content) {
+    // [...]
+  });
+</script>
 ```
 
 Copy or rename an index
