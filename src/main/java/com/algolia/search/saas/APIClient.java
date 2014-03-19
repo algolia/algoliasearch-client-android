@@ -210,6 +210,15 @@ public class APIClient {
     }
     
     /**
+     * Return last logs entries.
+     * @param offset Specify the first entry to retrieve (0-based, 0 is the most recent log entry).
+     * @param length Specify the maximum number of entries to retrieve starting at offset. Maximum allowed value: 1000.
+     */
+    public JSONObject getLogs(int offset, int length, boolean onlyErrors) throws AlgoliaException {
+    	 return getRequest("/1/logs?offset=" + offset + "&length=" + length + "&onlyErrors=" + onlyErrors);
+    }
+    
+    /**
      * Get the index object initialized (no server call needed for initialization)
      *
      * @param indexName the name of index

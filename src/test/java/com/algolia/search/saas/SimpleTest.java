@@ -427,6 +427,8 @@ public class SimpleTest {
     	assertTrue(res.getJSONArray("logs").length() > 0);
     	res = client.getLogs(0, 1);
     	assertTrue(res.getJSONArray("logs").length() == 1);
+    	res = client.getLogs(0, 1, false);
+    	assertTrue(res.getJSONArray("logs").length() == 1);
     }
     
     @Test
