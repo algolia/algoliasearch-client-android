@@ -4,6 +4,8 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -535,12 +537,12 @@ public class SimpleTest {
     }
     
     @Test
-    public void test34_securedApiKeys() {
-        assertEquals("143fec7bef6f16f6aa127a4949948a966816fa154e67a811e516c2549dbe2a8b", APIClient.sha256("my_api_key(public,user1)"));
+    public void test34_securedApiKeys() throws InvalidKeyException, NoSuchAlgorithmException {
+        assertEquals("1fd74b206c64fb49fdcd7a5f3004356cd3bdc9d9aba8733656443e64daafc417", APIClient.hmac("my_api_key", "(public,user1)"));
         String key = client.generateSecuredApiKey("my_api_key", "(public,user1)");
-        assertEquals(key, APIClient.sha256("my_api_key(public,user1)"));
+        assertEquals(key, APIClient.hmac("my_api_key", "(public,user1)"));
         key = client.generateSecuredApiKey("my_api_key", "(public,user1)", "" + 42);
-        assertEquals(key, APIClient.sha256("my_api_key(public,user1)42"));
+        assertEquals(key, APIClient.hmac("my_api_key", "(public,user1)42"));
     }
     
     @Test

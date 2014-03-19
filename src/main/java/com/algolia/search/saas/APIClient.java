@@ -7,12 +7,17 @@ import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URLEncoder;
+import java.security.InvalidKeyException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
+import javax.crypto.Mac;
+import javax.crypto.spec.SecretKeySpec;
+
+import org.apache.commons.codec.binary.Hex;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.config.RequestConfig;
@@ -315,8 +320,10 @@ public class APIClient {
      *
      * @param privateApiKey your private API Key
      * @param tagFilters the list of tags applied to the query (used as security)
+     * @throws NoSuchAlgorithmException 
+     * @throws InvalidKeyException 
      */
-    public String generateSecuredApiKey(String privateApiKey, String tagFilters) {
+    public String generateSecuredApiKey(String privateApiKey, String tagFilters) throws NoSuchAlgorithmException, InvalidKeyException {
         return generateSecuredApiKey(privateApiKey, tagFilters, null);
     }
     
@@ -327,23 +334,29 @@ public class APIClient {
      * @param privateApiKey your private API Key
      * @param tagFilters the list of tags applied to the query (used as security)
      * @param userToken an optional token identifying the current user
+     * @throws NoSuchAlgorithmException 
+     * @throws InvalidKeyException 
      */
-    public String generateSecuredApiKey(String privateApiKey, String tagFilters, String userToken) {
-        return sha256(privateApiKey + tagFilters + (userToken != null ? userToken : ""));
+    public String generateSecuredApiKey(String privateApiKey, String tagFilters, String userToken) throws NoSuchAlgorithmException, InvalidKeyException {
+    	return hmac(privateApiKey, tagFilters + (userToken != null ? userToken : ""));
+        
     }
     
-    static String sha256(String str) {
-        MessageDigest md;
-        try {
-            md = MessageDigest.getInstance("SHA-256");
-        } catch (NoSuchAlgorithmException e) {
-            throw new Error(e);
-        }
-        StringBuffer sb = new StringBuffer();
-        for (byte b : md.digest(str.getBytes())) {
-            sb.append(String.format("%02x", b));
-        }
-        return sb.toString();
+    static String hmac(String key, String msg) {
+    	Mac hmac;
+		try {
+			hmac = Mac.getInstance("HmacSHA256");
+		} catch (NoSuchAlgorithmException e) {
+			throw new Error(e);
+		}
+    	try {
+			hmac.init(new SecretKeySpec(key.getBytes(), "HmacSHA256"));
+		} catch (InvalidKeyException e) {
+			throw new Error(e);
+		}
+    	byte[] rawHmac = hmac.doFinal(msg.getBytes());
+        byte[] hexBytes = new Hex().encode(rawHmac);
+        return new String(hexBytes);
     }
     
     private static enum Method {
