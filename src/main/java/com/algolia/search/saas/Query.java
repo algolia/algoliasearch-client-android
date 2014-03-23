@@ -257,6 +257,11 @@ public class Query {
     	return this;
     }
     
+    public Query setFacetFilters(String facets) {
+    	facetsFilter = facets;
+    	return this;
+    }
+    
     /**
      * List of object attributes that you want to use for faceting. <br/>
      * Only attributes that have been added in **attributesForFaceting** index setting can be used in this parameter. 
