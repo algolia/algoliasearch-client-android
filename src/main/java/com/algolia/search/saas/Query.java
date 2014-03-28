@@ -333,7 +333,7 @@ public class Query {
      *   - Prohibit operator: The prohibit operator excludes records that contain the term after the - symbol.
      *     For example search -engine will retrieve records containing search but not engine.
      */
-    public Query setAvancedSyntax(boolean advancedSyntax) {
+    public Query enableAvancedSyntax(boolean advancedSyntax) {
         this.advancedSyntax = advancedSyntax;
         return this;
     }
