@@ -47,6 +47,7 @@ public class Query {
     protected int minWordSizeForApprox2;
     protected boolean getRankingInfo;
     protected boolean distinct;
+    protected boolean advancedSyntax;
     protected int page;
     protected int hitsPerPage;
     protected String tags;
@@ -70,6 +71,7 @@ public class Query {
         this.query = query;
         queryType = QueryType.PREFIX_LAST;
         maxNumberOfFacets = -1;
+        advancedSyntax = false;
     }
     
     public Query() {
@@ -81,6 +83,7 @@ public class Query {
         hitsPerPage = 20;
         queryType = QueryType.PREFIX_ALL;
         maxNumberOfFacets = -1;
+        advancedSyntax = false;
     }
     
     /**
@@ -315,6 +318,20 @@ public class Query {
     	return this;
     }
     
+    /**
+     * Enable the advanced query syntax. Defaults to false.
+     *   - Phrase query: a phrase query defines a particular sequence of terms.
+     *     A phrase query is build by Algolia's query parser for words surrounded by ".
+     *     For example, "search engine" will retrieve records having search next to engine only.
+     *     Typo-tolerance is disabled on phrase queries.
+     *   - Prohibit operator: The prohibit operator excludes records that contain the term after the - symbol.
+     *     For example search -engine will retrieve records containing search but not engine.
+     */
+    public Query setAvancedSyntax(boolean advancedSyntax) {
+        this.advancedSyntax = advancedSyntax;
+        return this;
+    }
+
     protected String getQueryString() {
         StringBuilder stringBuilder = new StringBuilder();
         
@@ -374,6 +391,11 @@ public class Query {
                 if (stringBuilder.length() > 0)
                     stringBuilder.append('&');
                 stringBuilder.append("distinct=1");
+            }
+            if (advancedSyntax) {
+                if (stringBuilder.length() > 0)
+                    stringBuilder.append('&');
+                stringBuilder.append("advancedSyntax=1");
             }
             if (page > 0) {
                 if (stringBuilder.length() > 0)
