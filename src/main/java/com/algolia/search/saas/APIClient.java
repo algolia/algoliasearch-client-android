@@ -399,17 +399,20 @@ public class APIClient {
             	continue;
             }
             int code = response.getStatusLine().getStatusCode();
-            if (code == 403) {
-            	consumeQuietly(response.getEntity());
+            if (code == 200 || code == 201) {
+                // OK
+            } else if (code == 400) {
+                consumeQuietly(response.getEntity());
+                throw new AlgoliaException("Bad request");
+            } else if (code == 403) {
+                consumeQuietly(response.getEntity());
                 throw new AlgoliaException("Invalid Application-ID or API-Key");
-            }
-            if (code == 404) {
-            	consumeQuietly(response.getEntity());
+            } else if (code == 404) {
+                consumeQuietly(response.getEntity());
                 throw new AlgoliaException("Resource does not exist");
-            }
-            if (code == 503) {
-            	consumeQuietly(response.getEntity());
-            	// and continue
+            } else {
+                consumeQuietly(response.getEntity());
+                // KO, continue
                 continue;
             }
             try {
