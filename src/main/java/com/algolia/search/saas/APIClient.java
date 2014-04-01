@@ -456,17 +456,20 @@ public class APIClient {
             }
             try {
                 int code = response.getStatusLine().getStatusCode();
-                if (code == 403) {
+                if (code == 200 || code == 201) {
+                    // OK
+                } else if (code == 400) {
+                    EntityUtils.consumeQuietly(response.getEntity());
+                    throw new AlgoliaException("Bad request");
+                } else if (code == 403) {
                 	EntityUtils.consumeQuietly(response.getEntity());
                     throw new AlgoliaException("Invalid Application-ID or API-Key");
-                }
-                if (code == 404) {
+                } else if (code == 404) {
                 	EntityUtils.consumeQuietly(response.getEntity());
                     throw new AlgoliaException("Resource does not exist");
-                }
-                if (code == 503) {
+                } else {
                 	EntityUtils.consumeQuietly(response.getEntity());
-                	// and continue
+                	// KO, continue
                     continue;
                 }
                 try {
