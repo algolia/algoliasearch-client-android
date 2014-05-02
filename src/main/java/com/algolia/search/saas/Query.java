@@ -60,6 +60,9 @@ public class Query {
     protected String facets;
     protected String facetFilters;
     protected int maxNumberOfFacets;
+    protected boolean analytics;
+    protected boolean synonyms;
+    protected boolean replaceSynonyms;
     
     public Query(String query) {
         minWordSizeForApprox1 = 3;
@@ -72,6 +75,7 @@ public class Query {
         queryType = QueryType.PREFIX_LAST;
         maxNumberOfFacets = -1;
         advancedSyntax = false;
+        analytics = synonyms = replaceSynonyms = true;
     }
     
     public Query() {
@@ -84,6 +88,7 @@ public class Query {
         queryType = QueryType.PREFIX_ALL;
         maxNumberOfFacets = -1;
         advancedSyntax = false;
+        analytics = synonyms = replaceSynonyms = true;
     }
     
     /**
@@ -157,9 +162,34 @@ public class Query {
      *   one is kept and others are removed.
      */
     public Query enableDistinct(boolean distinct) {
-    	this.distinct = distinct;
+        this.distinct = distinct;
+        return this;
+    }
+
+    /**
+     * @param If set to false, this query will not be taken into account in analytics feature. Default to true.
+     */
+    public Query enableAnalytics(boolean enabled) {
+        this.analytics = enabled;
+        return this;
+    }
+
+    /**
+     * @param If set to false, this query will not use synonyms defined in configuration. Default to true.
+     */
+    public Query enableSynonyms(boolean enabled) {
+        this.synonyms = enabled;
+        return this;
+    }
+
+    /**
+     * @param If set to false, words matched via synonyms expansion will not be replaced by the matched synonym in highlight result. Default to true.
+     */
+    public Query enableReplaceSynonymsInHighlight(boolean enabled) {
+        this.replaceSynonyms = enabled;
     	return this;
     }
+
     /**
      * if set, the result hits will contain ranking information in _rankingInfo attribute.
      */
@@ -386,6 +416,21 @@ public class Query {
                 if (stringBuilder.length() > 0)
                     stringBuilder.append('&');
                 stringBuilder.append("getRankingInfo=1");
+            }
+            if (analytics) {
+                if (stringBuilder.length() > 0)
+                    stringBuilder.append('&');
+                stringBuilder.append("analytics=1");
+            }
+            if (synonyms) {
+                if (stringBuilder.length() > 0)
+                    stringBuilder.append('&');
+                stringBuilder.append("synonyms=1");
+            }
+            if (replaceSynonyms) {
+                if (stringBuilder.length() > 0)
+                    stringBuilder.append('&');
+                stringBuilder.append("replaceSynonymsInHighlight=1");
             }
             if (distinct) {
                 if (stringBuilder.length() > 0)
