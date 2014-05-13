@@ -331,12 +331,14 @@ public class SimpleTest {
     @Test
     public void test18_user_key_index() throws AlgoliaException, JSONException {
     	JSONObject newKey = index.addUserKey(Arrays.asList("search"));
+    	try { Thread.sleep(2000); } catch (Exception e) {}
     	assertTrue(!newKey.getString("key").equals(""));
     	JSONObject res = index.listUserKeys();
     	assertTrue(isPresent(res.getJSONArray("keys"), newKey.getString("key"), "value"));
     	JSONObject getKey = index.getUserKeyACL(newKey.getString("key"));
     	assertEquals(newKey.getString("key"), getKey.getString("value"));
     	index.deleteUserKey(getKey.getString("value"));
+    	try { Thread.sleep(2000); } catch (Exception e) {}
     	JSONObject resAfter = index.listUserKeys();
     	assertTrue(!isPresent(resAfter.getJSONArray("keys"), newKey.getString("key"), "value"));
     }
@@ -344,12 +346,14 @@ public class SimpleTest {
     @Test
     public void test19_user_key() throws AlgoliaException, JSONException {
     	JSONObject newKey = client.addUserKey(Arrays.asList("search"));
+    	try { Thread.sleep(2000); } catch (Exception e) {}
     	assertTrue(!newKey.getString("key").equals(""));
     	JSONObject res = client.listUserKeys();
     	assertTrue(isPresent(res.getJSONArray("keys"), newKey.getString("key"), "value"));
     	JSONObject getKey = client.getUserKeyACL(newKey.getString("key"));
     	assertEquals(newKey.getString("key"), getKey.getString("value"));
     	client.deleteUserKey(getKey.getString("value"));
+    	try { Thread.sleep(2000); } catch (Exception e) {}
     	JSONObject resAfter = client.listUserKeys();
     	assertTrue(!isPresent(resAfter.getJSONArray("keys"), newKey.getString("key"), "value"));
     }
