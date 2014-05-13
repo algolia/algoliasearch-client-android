@@ -484,6 +484,7 @@ public class SimpleTest {
     @Test
     public void test29_user_keyLimit() throws AlgoliaException, JSONException {
     	JSONObject newKey = client.addUserKey(Arrays.asList("search"), 0, 2, 2);
+    	try { Thread.sleep(2000); } catch (Exception e) {}
     	assertTrue(!newKey.getString("key").equals(""));
     	JSONObject res = client.listUserKeys();
     	assertTrue(isPresent(res.getJSONArray("keys"), newKey.getString("key"), "value"));
@@ -493,6 +494,7 @@ public class SimpleTest {
     @Test
     public void test30_user_key_indexLimit() throws AlgoliaException, JSONException {
     	JSONObject newKey = index.addUserKey(Arrays.asList("search"), 0, 2, 2);
+    	try { Thread.sleep(2000); } catch (Exception e) {}
     	assertTrue(!newKey.getString("key").equals(""));
     	JSONObject res = index.listUserKeys();
     	assertTrue(isPresent(res.getJSONArray("keys"), newKey.getString("key"), "value"));
