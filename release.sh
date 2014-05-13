@@ -1,6 +1,6 @@
 #!/bin/sh
-mvn release:prepare
-mvn release:perform
+mvn -Darguments="-DskipTests" release:prepare
+mvn -DskipTests release:perform
 cp -R target/checkout/repository .
 git add .
 echo "Your now need to perform:"
