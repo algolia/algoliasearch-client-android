@@ -305,7 +305,7 @@ public class APIClient {
      * @param maxHitsPerQuery Specify the maximum number of hits this API key can retrieve in one call. Defaults to 0 (unlimited)
      * @param indexes the list of targeted indexes 
      */
-    public JSONObject addUserKey(List<String> acls, int validity, int maxQueriesPerIPPerHour, int maxHitsPerQuery, String indexes) throws AlgoliaException {
+    public JSONObject addUserKey(List<String> acls, int validity, int maxQueriesPerIPPerHour, int maxHitsPerQuery, List<String> indexes) throws AlgoliaException {
         JSONArray array = new JSONArray(acls);
         JSONObject jsonObject = new JSONObject();
         try {
@@ -314,7 +314,7 @@ public class APIClient {
             jsonObject.put("maxQueriesPerIPPerHour", maxQueriesPerIPPerHour);
             jsonObject.put("maxHitsPerQuery", maxHitsPerQuery);
             if (indexes != null) {
-                jsonObject.put("indexes", indexes);
+                jsonObject.put("indexes", new JSONArray(indexes));
             }
         } catch (JSONException e) {
             throw new RuntimeException(e); // $COVERAGE-IGNORE$
