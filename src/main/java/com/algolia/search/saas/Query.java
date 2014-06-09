@@ -63,6 +63,8 @@ public class Query {
     protected boolean analytics;
     protected boolean synonyms;
     protected boolean replaceSynonyms;
+    protected boolean typoTolerance;
+    protected boolean allowTyposOnNumericTokens;
     
     public Query(String query) {
         minWordSizeForApprox1 = 3;
@@ -75,7 +77,7 @@ public class Query {
         queryType = QueryType.PREFIX_LAST;
         maxNumberOfFacets = -1;
         advancedSyntax = false;
-        analytics = synonyms = replaceSynonyms = true;
+        analytics = synonyms = replaceSynonyms = typoTolerance = allowTyposOnNumericTokens = true;
     }
     
     public Query() {
@@ -88,7 +90,7 @@ public class Query {
         queryType = QueryType.PREFIX_ALL;
         maxNumberOfFacets = -1;
         advancedSyntax = false;
-        analytics = synonyms = replaceSynonyms = true;
+        analytics = synonyms = replaceSynonyms = typoTolerance = allowTyposOnNumericTokens = true;
     }
     
     /**
@@ -137,23 +139,6 @@ public class Query {
     }
     
     /**
-     * Specify the minimum number of characters in a query word to accept one typo in this word. 
-     * Defaults to 3.
-     */
-    public Query setMinWordSizeToAllowOneTypo(int nbChars) {
-        minWordSizeForApprox1 = nbChars;
-        return this;
-    }
-    
-    /**
-     * Specify the minimum number of characters in a query word to accept two typos in this word. 
-     * Defaults to 7.
-     */
-    public Query setMinWordSizeToAllowTwoTypos(int nbChars) {
-        minWordSizeForApprox2 = nbChars;
-        return this;
-    }
-    /**
      * 
      * @param If set to true, enable the distinct feature (disabled by default) if the attributeForDistinct index setting is set. 
      *   This feature is similar to the SQL "distinct" keyword: when enabled in a query with the distinct=1 parameter, 
@@ -188,6 +173,41 @@ public class Query {
     public Query enableReplaceSynonymsInHighlight(boolean enabled) {
         this.replaceSynonyms = enabled;
     	return this;
+    }
+
+    /**
+
+     * @param If set to false, disable typo-tolerance. Default to true.
+     */
+    public Query enableTypoTolerance(boolean enabled) {
+        this.typoTolerance = enabled;
+        return this;
+    }
+
+    /**
+     * Specify the minimum number of characters in a query word to accept one typo in this word. 
+     * Defaults to 3.
+     */
+    public Query setMinWordSizeToAllowOneTypo(int nbChars) {
+        minWordSizeForApprox1 = nbChars;
+        return this;
+    }
+    
+    /**
+     * Specify the minimum number of characters in a query word to accept two typos in this word. 
+     * Defaults to 7.
+     */
+    public Query setMinWordSizeToAllowTwoTypos(int nbChars) {
+        minWordSizeForApprox2 = nbChars;
+        return this;
+    }
+
+    /**
+     * @param If set to false, disable typo-tolerance on numeric tokens. Default to true.
+     */
+    public Query enableTyposOnNumericTokens(boolean enabled) {
+        this.allowTyposOnNumericTokens = enabled;
+        return this;
     }
 
     /**
@@ -399,6 +419,16 @@ public class Query {
                     stringBuilder.append(URLEncoder.encode(attr, "UTF-8"));
                     first = false;
                 }
+            }
+            if (!typoTolerance) {
+                if (stringBuilder.length() > 0)
+                    stringBuilder.append('&');
+                stringBuilder.append("typoTolerance=false");
+            }
+            if (!allowTyposOnNumericTokens) {
+                if (stringBuilder.length() > 0)
+                    stringBuilder.append('&');
+                stringBuilder.append("allowTyposOnNumericTokens=false");
             }
             if (minWordSizeForApprox1 != 3) {
                 if (stringBuilder.length() > 0)
