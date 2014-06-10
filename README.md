@@ -448,7 +448,7 @@ All write operations return a `taskID` when the job is securely stored on our in
 For example, to wait for indexing of a new object:
 ```java
 JSONObject res = index.addObject(new JSONObject().put("firstname", "Jimmie").put("lastname", "Barninger"));
-index.waitTask(String.valueOf(res.getLong("objectID")));
+index.waitTask(String.valueOf(res.getLong("taskID")));
 ```
 
 
