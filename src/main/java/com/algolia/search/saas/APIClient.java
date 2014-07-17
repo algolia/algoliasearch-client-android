@@ -311,21 +311,24 @@ public class APIClient {
      * @param userToken an optional token identifying the current user
      */
     public String generateSecuredApiKey(String privateApiKey, String tagFilters, String userToken) {
-        return sha256(privateApiKey + tagFilters + (userToken != null ? userToken : ""));
+        return hmac(privateApiKey, tagFilters + (userToken != null ? userToken : ""));
     }
     
-    static String sha256(String str) {
-        MessageDigest md;
-        try {
-            md = MessageDigest.getInstance("SHA-256");
-        } catch (NoSuchAlgorithmException e) {
-            throw new Error(e);
-        }
-        StringBuffer sb = new StringBuffer();
-        for (byte b : md.digest(str.getBytes())) {
-            sb.append(String.format("%02x", b));
-        }
-        return sb.toString();
+    static String hmac(String key, String msg) {
+    	Mac hmac;
+		try {
+			hmac = Mac.getInstance("HmacSHA256");
+		} catch (NoSuchAlgorithmException e) {
+			throw new Error(e);
+		}
+    	try {
+			hmac.init(new SecretKeySpec(key.getBytes(), "HmacSHA256"));
+		} catch (InvalidKeyException e) {
+			throw new Error(e);
+		}
+    	byte[] rawHmac = hmac.doFinal(msg.getBytes());
+        byte[] hexBytes = new Hex().encode(rawHmac);
+        return new String(hexBytes);
     }
     
     private static enum Method {
