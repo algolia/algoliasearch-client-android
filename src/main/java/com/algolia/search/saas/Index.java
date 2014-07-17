@@ -247,10 +247,10 @@ public class Index {
      * @param listener the listener that will receive the result or error. If the listener is an instance of Activity, the result will be received directly on UIthread
      */
     public void getObjectASync(String objectID, IndexListener listener) {
-        ASyncIndexTaskParams params = new ASyncIndexTaskParams(listener, ASyncIndexTaskKind.GetObject, objectID, null);
+        ASyncIndexTaskParams params = new ASyncIndexTaskParams(listener, ASyncIndexTaskKind.GetObject, objectID, (List)null);
         new ASyncIndexTask().execute(params);
     }
-    
+
     /**
      * Get an object from this index asynchronously
      * 
@@ -259,7 +259,41 @@ public class Index {
      * @param listener the listener that will receive the result or error. If the listener is an instance of Activity, the result will be received directly on UIthread
      */
     public void getObjectASync(String objectID, List<String> attributesToRetrieve, IndexListener listener) {
-        ASyncIndexTaskParams params = new ASyncIndexTaskParams(listener, objectID, attributesToRetrieve);
+        ASyncIndexTaskParams params = new ASyncIndexTaskParams(listener, ASyncIndexTaskKind.GetObject, objectID, attributesToRetrieve);
+        new ASyncIndexTask().execute(params);
+    }
+    
+    /**
+     * Get several objects from this index
+     *
+     * @param objectIDs the array of unique identifier of objects to retrieve
+     * @throws AlgoliaException
+     */
+    public JSONObject getObjects(List<String> objectIDs) throws AlgoliaException {
+        try {
+	    JSONArray requests = new JSONArray();
+	    for (String id : objectIDs) {
+		JSONObject request = new JSONObject();
+		request.put("indexName", this.indexName);
+		request.put("objectID", id);
+		requests.put(request);
+	    }
+	    JSONObject body = new JSONObject();
+	    body.put("requests", requests);
+	    return client.postRequest("/1/indexes/*/objects", body.toString());
+        } catch (JSONException e){
+	    throw new AlgoliaException(e.getMessage());
+        }
+    }
+
+    /**
+     * Get several objects from this index asynchronously
+     *
+     * @param objectIDs the array of unique identifier of objects to retrieve
+     * @throws AlgoliaException
+     */
+    public void getObjectsASync(List<String> objectIDs, IndexListener listener) throws AlgoliaException {
+	ASyncIndexTaskParams params = new ASyncIndexTaskParams(listener, ASyncIndexTaskKind.GetObjects, objectIDs);
         new ASyncIndexTask().execute(params);
     }
     
@@ -466,7 +500,7 @@ public class Index {
      * @param listener the listener that will receive the result or error. If the listener is an instance of Activity, the result will be received directly on UIthread
      */
     public void deleteObjectASync(String objectID, IndexListener listener) {
-        ASyncIndexTaskParams params = new ASyncIndexTaskParams(listener, ASyncIndexTaskKind.DeleteObject, objectID, null);
+        ASyncIndexTaskParams params = new ASyncIndexTaskParams(listener, ASyncIndexTaskKind.DeleteObject, objectID, (List)null);
         new ASyncIndexTask().execute(params);
     }
     
@@ -490,6 +524,36 @@ public class Index {
         } catch (JSONException e) {
             throw new AlgoliaException(e.getMessage());
         }
+    }
+
+    /**
+     * Delete all objects matching a query
+     * 
+     * @param query the query string
+     * @param params the optional query parameters
+     * @throws AlgoliaException 
+     */
+    public void deleteByQuery(Query query) throws AlgoliaException {
+    	List<String> attributesToRetrieve = new ArrayList<String>();
+    	attributesToRetrieve.add("objectID");
+    	query.setAttributesToRetrieve(attributesToRetrieve);
+    	query.setHitsPerPage(1000);
+    	
+    	JSONObject results = this.search(query);
+    	try {
+			while (results.getInt("nbHits") != 0) {
+				List<String> objectIDs = new ArrayList<String>();
+				for (int i = 0; i < results.getJSONArray("hits").length(); ++i) {
+					JSONObject hit = results.getJSONArray("hits").getJSONObject(i);
+					objectIDs.add(hit.getString("objectID"));
+				}
+				JSONObject task = this.deleteObjects(objectIDs);
+				this.waitTask(task.getString("taskID"));
+				results = this.search(query);
+			}
+		} catch (JSONException e) {
+			throw new AlgoliaException(e.getMessage());
+		}
     }
 
     /**
@@ -583,7 +647,7 @@ public class Index {
      * @param listener the listener that will receive the result or error. If the listener is an instance of Activity, the result will be received directly on UIthread
      */
     public void waitTaskASync(String taskID, IndexListener listener) {
-        ASyncIndexTaskParams params = new ASyncIndexTaskParams(listener, ASyncIndexTaskKind.WaitTask, taskID, null);
+        ASyncIndexTaskParams params = new ASyncIndexTaskParams(listener, ASyncIndexTaskKind.WaitTask, taskID, (List)null);
         new ASyncIndexTask().execute(params);
     }
     
@@ -599,7 +663,7 @@ public class Index {
      * @param listener the listener that will receive the result or error. If the listener is an instance of Activity, the result will be received directly on UIthread
      */
     public void getSettingsASync(IndexListener listener) {
-        ASyncIndexTaskParams params = new ASyncIndexTaskParams(listener, ASyncIndexTaskKind.GetSettings, null, null);
+        ASyncIndexTaskParams params = new ASyncIndexTaskParams(listener, ASyncIndexTaskKind.GetSettings, null, (List)null);
         new ASyncIndexTask().execute(params);
     }
     
@@ -781,7 +845,8 @@ public class Index {
         WaitTask,
         Query,
         GetSettings,
-        SetSettings
+        SetSettings,
+        GetObjects
     };
     
     private static class ASyncIndexTaskParams
@@ -790,8 +855,8 @@ public class Index {
         public Query query;
         public ASyncIndexTaskKind kind;
         public String objectID;
+        public List list;
         public JSONObject objectContent;
-        public List<JSONObject> objects;
         public JSONArray objects2;
         public List<String> attributesToRetrieve;
         
@@ -809,11 +874,11 @@ public class Index {
             this.objectContent = content;
         }
         
-        public ASyncIndexTaskParams(IndexListener listener, ASyncIndexTaskKind kind, List<JSONObject> objects)
+        public ASyncIndexTaskParams(IndexListener listener, ASyncIndexTaskKind kind, List<?> objects)
         {
             this.listener = listener;
             this.kind = kind;
-            this.objects = objects;
+            this.list = objects;
         }
         public ASyncIndexTaskParams(IndexListener listener, ASyncIndexTaskKind kind, JSONArray objects)
         {
@@ -821,10 +886,10 @@ public class Index {
             this.kind = kind;
             this.objects2 = objects;
         }
-        public ASyncIndexTaskParams(IndexListener listener, String objectID, List<String> attributesToRetrieve)
+        public ASyncIndexTaskParams(IndexListener listener, ASyncIndexTaskKind kind, String objectID, List<String> attributesToRetrieve)
         {
             this.listener = listener;
-            this.kind = ASyncIndexTaskKind.GetObject;
+            this.kind = kind;
             this.objectID = objectID;
             this.attributesToRetrieve = attributesToRetrieve;
         }
@@ -854,7 +919,7 @@ public class Index {
                 p.listener.addObjectResult(Index.this, p.objectContent, res);
                 break;
             case AddObjects:
-                p.listener.addObjectsResult(Index.this, p.objects, res);
+                p.listener.addObjectsResult(Index.this, p.list, res);
                 break;
             case AddObjects2:
             	p.listener.addObjectsResult(Index.this, p.objects2, res);
@@ -866,7 +931,7 @@ public class Index {
                 p.listener.saveObjectResult(Index.this, p.objectContent, p.objectID, res);
                 break;
             case SaveObjects:
-                p.listener.saveObjectsResult(Index.this, p.objects, res);
+                p.listener.saveObjectsResult(Index.this, p.list, res);
                 break;
             case SaveObjects2:
             	p.listener.saveObjectsResult(Index.this, p.objects2, res);
@@ -878,7 +943,7 @@ public class Index {
                 p.listener.partialUpdateResult(Index.this, p.objectContent, p.objectID, res);
                 break;
             case PartialSaveObjects:
-            	p.listener.partialUpdateObjectsResult(Index.this, p.objects, res);
+            	p.listener.partialUpdateObjectsResult(Index.this, p.list, res);
             	break;
             case PartialSaveObjects2:
             	p.listener.partialUpdateObjectsResult(Index.this, p.objects2, res);
@@ -889,6 +954,9 @@ public class Index {
             case GetObject:
                 p.listener.getObjectResult(Index.this, p.objectID, res);
                 break;
+            case GetObjects:
+		p.listener.getObjectsResult(Index.this, p.list, res);
+		break;
             case Query:
                 p.listener.searchResult(Index.this, p.query, res);
                 break;
@@ -916,9 +984,9 @@ public class Index {
                 break;
             case AddObjects:
                 try {
-                    res = addObjects(p.objects);
+                    res = addObjects(p.list);
                 } catch (AlgoliaException e) {
-                    p.listener.addObjectsError(Index.this, p.objects, e);
+                    p.listener.addObjectsError(Index.this, p.list, e);
                     return null;
                 }
                 break;
@@ -948,9 +1016,9 @@ public class Index {
                 break;
             case SaveObjects:
                 try {
-                    res = saveObjects(p.objects);
+                    res = saveObjects(p.list);
                 } catch (AlgoliaException e) {
-                    p.listener.saveObjectsError(Index.this, p.objects, e);
+                    p.listener.saveObjectsError(Index.this, p.list, e);
                     return null;
                 }
                 break;
@@ -980,9 +1048,9 @@ public class Index {
                 break;
             case PartialSaveObjects:
             	try {
-                    res = partialUpdateObjects(p.objects);
+                    res = partialUpdateObjects(p.list);
                 } catch (AlgoliaException e) {
-                    p.listener.partialUpdateObjectsError(Index.this, p.objects, e);
+                    p.listener.partialUpdateObjectsError(Index.this, p.list, e);
                     return null;
                 }
             	break;
@@ -996,12 +1064,20 @@ public class Index {
             	break;
             case DeleteObjects:
                 try {
-                    res = deleteObjects2(p.objects);
+                    res = deleteObjects2(p.list);
                 } catch (AlgoliaException e) {
-                    p.listener.deleteObjectsError(Index.this, p.objects, e);
+                    p.listener.deleteObjectsError(Index.this, p.list, e);
                     return null;
                 }
                 break;
+	    case GetObjects:
+		try {
+		    res = getObjects(p.list);
+		} catch (AlgoliaException e) {
+		    p.listener.getObjectsError(Index.this, p.list, e);
+		    return null;
+		}
+		break;
             case GetObject:
                 try {
                     if (p.attributesToRetrieve == null) {

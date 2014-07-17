@@ -548,4 +548,29 @@ public class SimpleTest {
         assertEquals(key, APIClient.sha256("my_api_key(public,user1)42"));
     }
 
+    @Test
+	public void test35_getObjects() throws AlgoliaException, JSONException {
+	JSONObject task = index.addObjects(new JSONArray().put(new JSONObject()
+							       .put("name", "Los Angeles").put("objectID", "1")).put(new JSONObject()
+														     .put("name", "San Francisco").put("objectID", "2")));
+        index.waitTask(task.getString("taskID"));
+        List<String> objectIDs = new ArrayList<String>();
+        objectIDs.add("1");
+        objectIDs.add("2");
+        JSONObject object = index.getObjects(objectIDs);
+        assertEquals("Los Angeles", object.getJSONArray("results").getJSONObject(0).getString("name"));
+	assertEquals("San Francisco", object.getJSONArray("results").getJSONObject(1).getString("name"));
+    }
+
+   @Test
+       public void test36_deleteByQuery() throws JSONException, AlgoliaException {
+       JSONObject task = index.addObjects(new JSONArray().put(new JSONObject()
+							      .put("name", "Washington"))
+					  .put(new JSONObject().put("name", "San Francisco"))
+					  .put(new JSONObject().put("name", "San Jose")));
+       index.waitTask(task.getString("taskID"));
+       index.deleteByQuery(new Query("San"));
+       JSONObject res = index.search(new Query(""));
+       assertEquals(1, res.getInt("nbHits"));
+   }
 }

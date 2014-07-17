@@ -1,8 +1,10 @@
 apply plugin: 'java'
 apply plugin: 'eclipse'
 
+[compileJava, compileTestJava]*.options.collect {options -> options.encoding = 'UTF-8'} 
+
 sourceCompatibility = 1.5
-version = '1.4.7'
+version = '1.4.8'
 
 jar {
     manifest {

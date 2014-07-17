@@ -166,6 +166,16 @@ public interface IndexListener {
     public void getObjectError(Index index, String objectID, AlgoliaException e);
 
     /**
+     * Asynchronously receive result of Index.getObjectsASync method.
+     */
+    public void getObjectsResult(Index index, List<String> objectIDs, JSONObject result);
+    
+    /**
+     * Asynchronously receive error of Index.getObjectsASync method.
+     */
+    public void getObjectsError(Index index, List<String> objectIDs, AlgoliaException e);
+
+    /**
      * Asynchronously receive result of Index.waitTaskASync method.
      */
     public void waitTaskResult(Index index, String taskID);
