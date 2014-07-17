@@ -274,7 +274,7 @@ public class Index {
 	    JSONArray requests = new JSONArray();
 	    for (String id : objectIDs) {
 		JSONObject request = new JSONObject();
-		request.put("indexName", this.indexName);
+		request.put("indexName", this.originalIndexName);
 		request.put("objectID", id);
 		requests.put(request);
 	    }
