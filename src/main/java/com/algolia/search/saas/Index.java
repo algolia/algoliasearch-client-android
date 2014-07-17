@@ -41,8 +41,8 @@ import android.os.AsyncTask;
  */
 public class Index {
     private APIClient client;
+    private String encodedIndexName;
     private String indexName;
-    private String originalIndexName;
     
     /**
      * Index initialization (You should not call this initialized yourself)
@@ -50,15 +50,15 @@ public class Index {
     protected Index(APIClient client, String indexName) {
         try {
             this.client = client;
-            this.indexName = URLEncoder.encode(indexName, "UTF-8");
-            this.originalIndexName = indexName;
+            this.encodedIndexName = URLEncoder.encode(indexName, "UTF-8");
+            this.indexName = indexName;
         } catch (UnsupportedEncodingException e) {
             throw new RuntimeException(e);
         }
     }
     
     public String getIndexName() {
-        return originalIndexName;
+        return indexName;
     }
 
     /**
@@ -67,7 +67,7 @@ public class Index {
      * @param obj the object to add. 
     */
     public JSONObject addObject(JSONObject obj) throws AlgoliaException {
-        return client.postRequest("/1/indexes/" + indexName, obj.toString());
+        return client.postRequest("/1/indexes/" + encodedIndexName, obj.toString());
     }
    
     /**
@@ -79,7 +79,7 @@ public class Index {
      */
     public JSONObject addObject(JSONObject obj, String objectID) throws AlgoliaException {
         try {
-            return client.putRequest("/1/indexes/" + indexName + "/" + URLEncoder.encode(objectID, "UTF-8"), obj.toString());
+            return client.putRequest("/1/indexes/" + encodedIndexName + "/" + URLEncoder.encode(objectID, "UTF-8"), obj.toString());
         } catch (UnsupportedEncodingException e) {
             throw new RuntimeException(e);
         }
@@ -121,7 +121,7 @@ public class Index {
 	    try {
 	    	JSONObject content = new JSONObject();
 	    	content.put("requests", actions);
-	    	return client.postRequest("/1/indexes/" + indexName + "/batch", content.toString());
+	    	return client.postRequest("/1/indexes/" + encodedIndexName + "/batch", content.toString());
 	    } catch (JSONException e) {
 	        throw new AlgoliaException(e.getMessage());
 	    }
@@ -137,7 +137,7 @@ public class Index {
 	    try {
 	    	JSONObject content = new JSONObject();
 	    	content.put("requests", actions);
-	    	return client.postRequest("/1/indexes/" + indexName + "/batch", content.toString());
+	    	return client.postRequest("/1/indexes/" + encodedIndexName + "/batch", content.toString());
 	    } catch (JSONException e) {
 	        throw new AlgoliaException(e.getMessage());
 	    }
@@ -213,7 +213,7 @@ public class Index {
      */
     public JSONObject getObject(String objectID) throws AlgoliaException {
         try {
-            return client.getRequest("/1/indexes/" + indexName + "/" + URLEncoder.encode(objectID, "UTF-8"));
+            return client.getRequest("/1/indexes/" + encodedIndexName + "/" + URLEncoder.encode(objectID, "UTF-8"));
         } catch (UnsupportedEncodingException e) {
             throw new RuntimeException(e);
         }
@@ -234,7 +234,7 @@ public class Index {
                     params.append(",");
                 params.append(URLEncoder.encode(attributesToRetrieve.get(i), "UTF-8"));
             }
-            return client.getRequest("/1/indexes/" + indexName + "/" + URLEncoder.encode(objectID, "UTF-8") + params.toString());
+            return client.getRequest("/1/indexes/" + encodedIndexName + "/" + URLEncoder.encode(objectID, "UTF-8") + params.toString());
         } catch (UnsupportedEncodingException e) {
             throw new RuntimeException(e);
         }
@@ -274,7 +274,7 @@ public class Index {
 	    JSONArray requests = new JSONArray();
 	    for (String id : objectIDs) {
 		JSONObject request = new JSONObject();
-		request.put("indexName", this.originalIndexName);
+		request.put("indexName", this.indexName);
 		request.put("objectID", id);
 		requests.put(request);
 	    }
@@ -304,7 +304,7 @@ public class Index {
      */
     public JSONObject partialUpdateObject(JSONObject partialObject, String objectID) throws AlgoliaException {
         try {
-            return client.postRequest("/1/indexes/" + indexName + "/" + URLEncoder.encode(objectID, "UTF-8") + "/partial", partialObject.toString());
+            return client.postRequest("/1/indexes/" + encodedIndexName + "/" + URLEncoder.encode(objectID, "UTF-8") + "/partial", partialObject.toString());
         } catch (UnsupportedEncodingException e) {
             throw new RuntimeException(e);
         }
@@ -395,7 +395,7 @@ public class Index {
      */
     public JSONObject saveObject(JSONObject object, String objectID) throws AlgoliaException {
         try {
-            return client.putRequest("/1/indexes/" + indexName + "/" + URLEncoder.encode(objectID, "UTF-8"), object.toString());
+            return client.putRequest("/1/indexes/" + encodedIndexName + "/" + URLEncoder.encode(objectID, "UTF-8"), object.toString());
         } catch (UnsupportedEncodingException e) {
             throw new RuntimeException(e);
         }
@@ -487,7 +487,7 @@ public class Index {
         if (objectID.length() == 0 || objectID == null)
             throw new AlgoliaException("Invalid objectID");
         try {
-            return client.deleteRequest("/1/indexes/" + indexName + "/" + URLEncoder.encode(objectID, "UTF-8"));
+            return client.deleteRequest("/1/indexes/" + encodedIndexName + "/" + URLEncoder.encode(objectID, "UTF-8"));
         } catch (UnsupportedEncodingException e) {
             throw new RuntimeException(e);
         }
@@ -600,9 +600,9 @@ public class Index {
     public JSONObject search(Query query) throws AlgoliaException {
         String paramsString = query.getQueryString();
         if (paramsString.length() > 0)
-            return client.getRequest("/1/indexes/" + indexName + "?" + paramsString);
+            return client.getRequest("/1/indexes/" + encodedIndexName + "?" + paramsString);
         else
-            return client.getRequest("/1/indexes/" + indexName);
+            return client.getRequest("/1/indexes/" + encodedIndexName);
     }
 
     /**
@@ -623,7 +623,7 @@ public class Index {
     public void waitTask(String taskID) throws AlgoliaException {
         try {
             while (true) {
-                JSONObject obj = client.getRequest("/1/indexes/" + indexName + "/task/" + URLEncoder.encode(taskID, "UTF-8"));
+                JSONObject obj = client.getRequest("/1/indexes/" + encodedIndexName + "/task/" + URLEncoder.encode(taskID, "UTF-8"));
                 if (obj.getString("status").equals("published"))
                     return;
                 try {
@@ -655,7 +655,7 @@ public class Index {
      * Get settings of this index
      */
     public JSONObject getSettings() throws AlgoliaException {
-        return client.getRequest("/1/indexes/" + indexName + "/settings");
+        return client.getRequest("/1/indexes/" + encodedIndexName + "/settings");
     }
 
     /**
@@ -713,14 +713,14 @@ public class Index {
      */
 
     public JSONObject setSettings(JSONObject settings) throws AlgoliaException {
-        return client.putRequest("/1/indexes/" + indexName + "/settings", settings.toString());
+        return client.putRequest("/1/indexes/" + encodedIndexName + "/settings", settings.toString());
     }
     
     /**
      * Delete the index content without removing settings and index specific API keys.
      */
     public JSONObject clearIndex() throws AlgoliaException {
-        return client.postRequest("/1/indexes/" + indexName + "/clear", "");
+        return client.postRequest("/1/indexes/" + encodedIndexName + "/clear", "");
     }
     
     /**
@@ -736,21 +736,21 @@ public class Index {
      * List all existing user keys with their associated ACLs
      */
     public JSONObject listUserKeys() throws AlgoliaException {
-        return client.getRequest("/1/indexes/" + indexName + "/keys");
+        return client.getRequest("/1/indexes/" + encodedIndexName + "/keys");
     }
 
     /**
      * Get ACL of a user key
      */
     public JSONObject getUserKeyACL(String key) throws AlgoliaException {
-        return client.getRequest("/1/indexes/" + indexName + "/keys/" + key);
+        return client.getRequest("/1/indexes/" + encodedIndexName + "/keys/" + key);
     }
 
     /**
      * Delete an existing user key
      */
     public JSONObject deleteUserKey(String key) throws AlgoliaException {
-        return client.deleteRequest("/1/indexes/" + indexName + "/keys/" + key);
+        return client.deleteRequest("/1/indexes/" + encodedIndexName + "/keys/" + key);
     }
 
     /**
@@ -773,7 +773,7 @@ public class Index {
         } catch (JSONException e) {
             throw new RuntimeException(e);
         }
-        return client.postRequest("/1/indexes/" + indexName + "/keys", jsonObject.toString());
+        return client.postRequest("/1/indexes/" + encodedIndexName + "/keys", jsonObject.toString());
     }
     
     /**
@@ -803,7 +803,7 @@ public class Index {
         } catch (JSONException e) {
             throw new RuntimeException(e);
         }
-        return client.postRequest("/1/indexes/" + indexName + "/keys", jsonObject.toString());
+        return client.postRequest("/1/indexes/" + encodedIndexName + "/keys", jsonObject.toString());
     }
     
 
@@ -814,7 +814,7 @@ public class Index {
      *             Page is zero-based and defaults to 0. Thus, to retrieve the 10th page you need to set page=9
      */
     public JSONObject browse(int page) throws AlgoliaException {
-        return client.getRequest("/1/indexes/" + indexName + "/browse?page=" + page);
+        return client.getRequest("/1/indexes/" + encodedIndexName + "/browse?page=" + page);
     }
 
     /**
@@ -825,7 +825,7 @@ public class Index {
      * @param hitsPerPage: Pagination parameter used to select the number of hits per page. Defaults to 1000.
      */
     public JSONObject browse(int page, int hitsPerPage) throws AlgoliaException {
-        return client.getRequest("/1/indexes/" + indexName + "/browse?page=" + page + "&hitsPerPage=" + hitsPerPage);
+        return client.getRequest("/1/indexes/" + encodedIndexName + "/browse?page=" + page + "&hitsPerPage=" + hitsPerPage);
     }
     
     private enum ASyncIndexTaskKind
