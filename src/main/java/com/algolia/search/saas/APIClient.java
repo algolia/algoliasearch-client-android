@@ -7,12 +7,17 @@ import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URLEncoder;
+import java.security.InvalidKeyException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
+import javax.crypto.Mac;
+import javax.crypto.spec.SecretKeySpec;
+
+import org.apache.commons.codec.binary.Hex;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpDelete;
@@ -448,6 +453,44 @@ public class APIClient {
             }
         }
         throw new AlgoliaException("Hosts unreachable");
+    }
+    
+    static public class IndexQuery {
+    	private String index;
+    	private Query query;
+    	public IndexQuery(String index, Query q)  {
+    		this.index = index;
+    		this.query = q;
+    	}
+		public String getIndex() {
+			return index;
+		}
+		public void setIndex(String index) {
+			this.index = index;
+		}
+		public Query getQuery() {
+			return query;
+		}
+		public void setQuery(Query query) {
+			this.query = query;
+		}
+    }
+    /**
+     * This method allows to query multiple indexes with one API call
+     */
+    public JSONObject multipleQueries(List<IndexQuery> queries) throws AlgoliaException {
+    		try {
+    			JSONArray requests = new JSONArray();
+    			for (IndexQuery indexQuery : queries) {
+    				String paramsString = indexQuery.getQuery().getQueryString();
+				requests.put(new JSONObject().put("indexName", indexQuery.getIndex()).put("params", paramsString));
+    			}
+				JSONObject body = new JSONObject().put("requests", requests);
+				return postRequest("/1/indexes/*/queries", body.toString());
+			} catch (JSONException e) {
+				new AlgoliaException(e.getMessage());
+			}
+    		return null;
     }
     
     /**
