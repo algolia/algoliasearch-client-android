@@ -252,7 +252,7 @@ You can use the following optional arguments:
 #### Geo-search parameters
 
  * **aroundLatitudeLongitude(float, float, int)**: search for entries around a given latitude/longitude.<br/>You specify the maximum distance in meters with the **radius** parameter (in meters).<br/>At indexing, you should specify geoloc of an object with the `_geoloc` attribute (in the form ` {"_geoloc":{"lat":48.853409, "lng":2.348800}} `)
- * **aroundLatitudeLongitude(flot, float, int, int)**: search for entries around a given latitude/longitude with a given precision for ranking (for example if you set precision=100, two objects that are distant of less than 100m will be considered as identical for "geo" ranking parameter).
+ * **aroundLatitudeLongitude(float, float, int, int)**: search for entries around a given latitude/longitude with a given precision for ranking (for example if you set precision=100, two objects that are distant of less than 100m will be considered as identical for "geo" ranking parameter).
 
  * **insideBoundingBox**: search entries inside a given area defined by the two extreme points of a rectangle (defined by 4 floats: p1Lat,p1Lng,p2Lat,p2Lng).<br/>For example `insideBoundingBox=47.3165,4.9665,47.3424,5.0201`).<br/>At indexing, you should specify geoloc of an object with the _geoloc attribute (in the form `{"_geoloc":{"lat":48.853409, "lng":2.348800}}`)
 
@@ -345,6 +345,12 @@ You can easily retrieve an object using its `objectID` and optionnaly a list of 
 index.getObject("myID");
 // Retrieves only the firstname attribute
 index.getObject("myID", Arrays.asList("firstname"));
+```
+
+You can also retrieve a set of objects:
+
+```java
+index.getObjects(Arrays.asList("myObj1", "myObj2"));
 ```
 
 Delete an object
