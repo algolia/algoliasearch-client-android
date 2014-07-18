@@ -543,11 +543,11 @@ public class SimpleTest {
     
     @Test
     public void test34_securedApiKeys() {
-        assertEquals("143fec7bef6f16f6aa127a4949948a966816fa154e67a811e516c2549dbe2a8b", APIClient.sha256("my_api_key(public,user1)"));
+        assertEquals("143fec7bef6f16f6aa127a4949948a966816fa154e67a811e516c2549dbe2a8b", APIClient.hmac("my_api_key", "(public,user1)"));
         String key = client.generateSecuredApiKey("my_api_key", "(public,user1)");
-        assertEquals(key, APIClient.sha256("my_api_key(public,user1)"));
+        assertEquals(key, APIClient.hmac("my_api_key", "(public,user1)"));
         key = client.generateSecuredApiKey("my_api_key", "(public,user1)", "" + 42);
-        assertEquals(key, APIClient.sha256("my_api_key(public,user1)42"));
+        assertEquals(key, APIClient.hmac("my_api_key", "(public,user1)42"));
     }
 
     @Test
