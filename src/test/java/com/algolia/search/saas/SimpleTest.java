@@ -40,12 +40,12 @@ public class SimpleTest {
     	return name;
     }
     
-    public static boolean isPresent(JSONArray array, String search, String attr) throws JSONException {
-    	boolean isPresent = false;
+    public static boolean contains(JSONArray array, String search, String attr) throws JSONException {
+    	boolean found = false;
     	for (int i = 0; i < array.length(); ++i) {
-    		isPresent = isPresent || array.getJSONObject(i).getString(attr).equals(search);
+    		found = found || array.getJSONObject(i).getString(attr).equals(search);
     	}
-    	return isPresent;
+    	return found;
     }
     
     @BeforeClass
@@ -237,11 +237,11 @@ public class SimpleTest {
         .put("company", "California Paint"), "a/go/?à");
     	index.waitTask(task.getString("taskID"));
     	JSONObject res = client.listIndexes();
-    	assertTrue(isPresent(res.getJSONArray("items"), indexName, "name"));
+    	assertTrue(contains(res.getJSONArray("items"), indexName, "name"));
     	client.deleteIndex(indexName);
     	Thread.sleep(2000);
     	JSONObject resAfter = client.listIndexes();
-    	assertFalse(isPresent(resAfter.getJSONArray("items"), indexName, "name"));
+    	assertFalse(contains(resAfter.getJSONArray("items"), indexName, "name"));
     }
     
     @Test
@@ -331,13 +331,13 @@ public class SimpleTest {
     	try { Thread.sleep(1000); } catch (InterruptedException e) {  }
     	assertTrue(!newKey.getString("key").equals(""));
     	JSONObject res = index.listUserKeys();
-    	assertTrue(isPresent(res.getJSONArray("keys"), newKey.getString("key"), "value"));
+    	assertTrue(contains(res.getJSONArray("keys"), newKey.getString("key"), "value"));
     	JSONObject getKey = index.getUserKeyACL(newKey.getString("key"));
     	assertEquals(newKey.getString("key"), getKey.getString("value"));
     	index.deleteUserKey(getKey.getString("value"));
     	try { Thread.sleep(1000); } catch (InterruptedException e) {  }
     	JSONObject resAfter = index.listUserKeys();
-    	assertTrue(!isPresent(resAfter.getJSONArray("keys"), newKey.getString("key"), "value"));
+    	assertTrue(!contains(resAfter.getJSONArray("keys"), newKey.getString("key"), "value"));
     }
     
     @Test
@@ -346,13 +346,13 @@ public class SimpleTest {
     	try { Thread.sleep(1000); } catch (InterruptedException e) {  }
     	assertTrue(!newKey.getString("key").equals(""));
     	JSONObject res = client.listUserKeys();
-    	assertTrue(isPresent(res.getJSONArray("keys"), newKey.getString("key"), "value"));
+    	assertTrue(contains(res.getJSONArray("keys"), newKey.getString("key"), "value"));
     	JSONObject getKey = client.getUserKeyACL(newKey.getString("key"));
     	assertEquals(newKey.getString("key"), getKey.getString("value"));
     	client.deleteUserKey(getKey.getString("value"));
     	try { Thread.sleep(1000); } catch (InterruptedException e) {  }
     	JSONObject resAfter = client.listUserKeys();
-    	assertTrue(!isPresent(resAfter.getJSONArray("keys"), newKey.getString("key"), "value"));
+    	assertTrue(!contains(resAfter.getJSONArray("keys"), newKey.getString("key"), "value"));
     }
     
     @Test
@@ -484,7 +484,7 @@ public class SimpleTest {
     	try { Thread.sleep(1000); } catch (InterruptedException e) {  }
     	assertTrue(!newKey.getString("key").equals(""));
     	JSONObject res = client.listUserKeys();
-    	assertTrue(isPresent(res.getJSONArray("keys"), newKey.getString("key"), "value"));
+    	assertTrue(contains(res.getJSONArray("keys"), newKey.getString("key"), "value"));
     	index.deleteUserKey(newKey.getString("key"));
     }
     
@@ -494,7 +494,7 @@ public class SimpleTest {
     	try { Thread.sleep(1000); } catch (InterruptedException e) {  }
     	assertTrue(!newKey.getString("key").equals(""));
     	JSONObject res = index.listUserKeys();
-    	assertTrue(isPresent(res.getJSONArray("keys"), newKey.getString("key"), "value"));
+    	assertTrue(contains(res.getJSONArray("keys"), newKey.getString("key"), "value"));
     	index.deleteUserKey(newKey.getString("key"));
     }
     
