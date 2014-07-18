@@ -452,15 +452,15 @@ public class Query {
                     stringBuilder.append('&');
                 stringBuilder.append("analytics=0");
             }
-            if (synonyms) {
+            if (!synonyms) {
                 if (stringBuilder.length() > 0)
                     stringBuilder.append('&');
-                stringBuilder.append("synonyms=1");
+                stringBuilder.append("synonyms=0");
             }
-            if (replaceSynonyms) {
+            if (!replaceSynonyms) {
                 if (stringBuilder.length() > 0)
                     stringBuilder.append('&');
-                stringBuilder.append("replaceSynonymsInHighlight=1");
+                stringBuilder.append("replaceSynonymsInHighlight=0");
             }
             if (distinct) {
                 if (stringBuilder.length() > 0)
