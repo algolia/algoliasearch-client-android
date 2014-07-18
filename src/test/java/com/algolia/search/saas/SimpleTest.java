@@ -328,14 +328,14 @@ public class SimpleTest {
     @Test
     public void test18_user_key_index() throws AlgoliaException, JSONException {
     	JSONObject newKey = index.addUserKey(Arrays.asList("search"));
-    	try { Thread.sleep(1000); } catch (InterruptedException e) {  }
+    	try { Thread.sleep(4000); } catch (InterruptedException e) {  }
     	assertTrue(!newKey.getString("key").equals(""));
     	JSONObject res = index.listUserKeys();
     	assertTrue(contains(res.getJSONArray("keys"), newKey.getString("key"), "value"));
     	JSONObject getKey = index.getUserKeyACL(newKey.getString("key"));
     	assertEquals(newKey.getString("key"), getKey.getString("value"));
     	index.deleteUserKey(getKey.getString("value"));
-    	try { Thread.sleep(1000); } catch (InterruptedException e) {  }
+    	try { Thread.sleep(4000); } catch (InterruptedException e) {  }
     	JSONObject resAfter = index.listUserKeys();
     	assertTrue(!contains(resAfter.getJSONArray("keys"), newKey.getString("key"), "value"));
     }
