@@ -527,36 +527,6 @@ public class Index {
     }
 
     /**
-     * Delete all objects matching a query
-     * 
-     * @param query the query string
-     * @param params the optional query parameters
-     * @throws AlgoliaException 
-     */
-    public void deleteByQuery(Query query) throws AlgoliaException {
-    	List<String> attributesToRetrieve = new ArrayList<String>();
-    	attributesToRetrieve.add("objectID");
-    	query.setAttributesToRetrieve(attributesToRetrieve);
-    	query.setHitsPerPage(1000);
-    	
-    	JSONObject results = this.search(query);
-    	try {
-			while (results.getInt("nbHits") != 0) {
-				List<String> objectIDs = new ArrayList<String>();
-				for (int i = 0; i < results.getJSONArray("hits").length(); ++i) {
-					JSONObject hit = results.getJSONArray("hits").getJSONObject(i);
-					objectIDs.add(hit.getString("objectID"));
-				}
-				JSONObject task = this.deleteObjects(objectIDs);
-				this.waitTask(task.getString("taskID"));
-				results = this.search(query);
-			}
-		} catch (JSONException e) {
-			throw new AlgoliaException(e.getMessage());
-		}
-    }
-
-    /**
      * Delete several objects
      * 
      * @param objects the array of objectIDs to delete
@@ -580,6 +550,7 @@ public class Index {
      * Delete several objects asynchronously
      * 
      * @param objects the array of objectIDs to delete
+     * @param listener the listener that will receive the result or error. If the listener is an instance of Activity, the result will be received directly on UIthread
      */
     public void deleteObjectsASync(List<String> ids, IndexListener listener) throws AlgoliaException {
         List<JSONObject> objects = new ArrayList<JSONObject>();
@@ -594,6 +565,46 @@ public class Index {
         new ASyncIndexTask().execute(params);
     }
     
+    /**
+     * Delete all objects matching a query
+     * 
+     * @param query the query string
+     * @throws AlgoliaException 
+     */
+    public void deleteByQuery(Query query) throws AlgoliaException {
+        List<String> attributesToRetrieve = new ArrayList<String>();
+        attributesToRetrieve.add("objectID");
+        query.setAttributesToRetrieve(attributesToRetrieve);
+        query.setHitsPerPage(1000);
+        
+        JSONObject results = this.search(query);
+        try {
+            while (results.getInt("nbHits") != 0) {
+                List<String> objectIDs = new ArrayList<String>();
+                for (int i = 0; i < results.getJSONArray("hits").length(); ++i) {
+                    JSONObject hit = results.getJSONArray("hits").getJSONObject(i);
+                    objectIDs.add(hit.getString("objectID"));
+                }
+                JSONObject task = this.deleteObjects(objectIDs);
+                this.waitTask(task.getString("taskID"));
+                results = this.search(query);
+            }
+        } catch (JSONException e) {
+            throw new AlgoliaException(e.getMessage());
+        }
+    }
+    
+    /**
+     * Delete all objects matching a query asynchronously
+     * 
+     * @param query the query string
+     * @param listener the listener that will receive the result or error. If the listener is an instance of Activity, the result will be received directly on UIthread
+     */
+    public void deleteByQueryASync(Query query, IndexListener listener) {
+        ASyncIndexTaskParams params = new ASyncIndexTaskParams(listener, ASyncIndexTaskKind.DeleteByQuery, query);
+        new ASyncIndexTask().execute(params);
+    }
+
     /**
      * Search inside the index
      */
@@ -842,6 +853,7 @@ public class Index {
         PartialSaveObjects2,
         DeleteObject,
         DeleteObjects,
+        DeleteByQuery,
         WaitTask,
         Query,
         GetSettings,
@@ -879,6 +891,12 @@ public class Index {
             this.listener = listener;
             this.kind = kind;
             this.list = objects;
+        }
+        public ASyncIndexTaskParams(IndexListener listener, ASyncIndexTaskKind kind, Query query)
+        {
+            this.listener = listener;
+            this.kind = kind;
+            this.query = query;
         }
         public ASyncIndexTaskParams(IndexListener listener, ASyncIndexTaskKind kind, JSONArray objects)
         {
@@ -950,6 +968,9 @@ public class Index {
             	break;
             case DeleteObjects:
                 p.listener.deleteObjectsResult(Index.this, p.objects2, res);
+                break;
+            case DeleteByQuery:
+                p.listener.deleteByQueryResult(Index.this);
                 break;
             case GetObject:
                 p.listener.getObjectResult(Index.this, p.objectID, res);
@@ -1035,6 +1056,14 @@ public class Index {
                     res = deleteObject(p.objectID);
                 } catch (AlgoliaException e) {
                     p.listener.deleteObjectError(Index.this, p.objectID, e);
+                    return null;
+                }
+                break;
+            case DeleteByQuery:
+                try {
+                    deleteByQuery(p.query);
+                } catch (AlgoliaException e) {
+                    p.listener.deleteByQueryError(Index.this, p.query, e);
                     return null;
                 }
                 break;
