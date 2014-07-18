@@ -555,7 +555,7 @@ public class SimpleTest {
     	JSONObject obj = index.addObject(new JSONObject().put("i", 42).put("s", "foo").put("b", true));
         index.waitTask(obj.getString("taskID"));
         List<APIClient.IndexQuery> queries = new ArrayList<APIClient.IndexQuery>();
-        queries.add(new APIClient.IndexQuery(safe_name("àlgol?à-java"), new Query("")));
+        queries.add(new APIClient.IndexQuery(indexName, new Query("")));
         JSONObject res = client.multipleQueries(queries);
         assertEquals(1, res.getJSONArray("results").length());
         assertEquals(1, res.getJSONArray("results").getJSONObject(0).getJSONArray("hits").length());
