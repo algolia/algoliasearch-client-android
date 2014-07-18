@@ -549,6 +549,20 @@ public class SimpleTest {
         key = client.generateSecuredApiKey("my_api_key", "(public,user1)", "" + 42);
         assertEquals(key, APIClient.hmac("my_api_key", "(public,user1)42"));
     }
+    
+    @Test
+    public void test34_multipleQueries() throws AlgoliaException, JSONException {
+    	JSONObject obj = index.addObject(new JSONObject().put("i", 42).put("s", "foo").put("b", true));
+        index.waitTask(obj.getString("taskID"));
+        List<APIClient.IndexQuery> queries = new ArrayList<APIClient.IndexQuery>();
+        queries.add(new APIClient.IndexQuery(safe_name("àlgol?à-java"), new Query("")));
+        JSONObject res = client.multipleQueries(queries);
+        assertEquals(1, res.getJSONArray("results").length());
+        assertEquals(1, res.getJSONArray("results").getJSONObject(0).getJSONArray("hits").length());
+        assertEquals("foo", res.getJSONArray("results").getJSONObject(0).getJSONArray("hits").getJSONObject(0).getString("s"));
+        assertEquals(42, res.getJSONArray("results").getJSONObject(0).getJSONArray("hits").getJSONObject(0).getLong("i"));
+        assertEquals(true, res.getJSONArray("results").getJSONObject(0).getJSONArray("hits").getJSONObject(0).getBoolean("b"));
+    }
 
     @Test
 	public void test35_getObjects() throws AlgoliaException, JSONException {
