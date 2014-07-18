@@ -39,6 +39,7 @@ Table of Content
 1. [Search](#search)
 1. [Get an object](#get-an-object)
 1. [Delete an object](#delete-an-object)
+1. [Delete by query](#delete-by-query)
 1. [Index settings](#index-settings)
 1. [List indexes](#list-indexes)
 1. [Delete an index](#delete-an-index)
@@ -332,6 +333,29 @@ The server response will look like:
 ```
 
 
+Multi-queries
+--------------
+
+You can send multiple queries with a single API call using a batch of queries:
+
+```java
+// perform 3 queries in a single API call:
+//  - 1st query targets index `categories`
+//  - 2nd and 3rd queries target index `products`
+
+List<APIClient.IndexQuery> queries = new ArrayList<APIClient.IndexQuery>();
+
+queries.add(new APIClient.IndexQuery("categories", new Query(myQueryString).setHitsPerPage(3)));
+queries.add(new APIClient.IndexQuery("products", new Query(myQueryString).setHitsPerPage(3).setTagFilters("promotion"));
+queries.add(new APIClient.IndexQuery("products", new Query(myQueryString).setHitsPerPage(10)));
+
+JSONObject res = client.multipleQueries(queries);
+
+System.out.println(res.getJSONArray("results").toString())
+```
+
+
+
 
 
 
@@ -361,6 +385,18 @@ You can delete an object using its `objectID`:
 ```java
 index.deleteObject("myID");
 ```
+
+
+Delete by query
+-------------
+
+You can delete all objects matching a single query with the following code. Internally, the API client performs the query, delete all matching hits, wait until the deletions have been applied and so on.
+
+```java
+Query query = /* [ ... ] */;
+index.deleteByQuery(query);
+```
+
 
 Index Settings
 -------------
