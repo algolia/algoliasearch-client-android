@@ -450,10 +450,10 @@ public class Query {
                     stringBuilder.append('&');
                 stringBuilder.append("getRankingInfo=1");
             }
-            if (analytics) {
+            if (!analytics) {
                 if (stringBuilder.length() > 0)
                     stringBuilder.append('&');
-                stringBuilder.append("analytics=1");
+                stringBuilder.append("analytics=0");
             }
             if (synonyms) {
                 if (stringBuilder.length() > 0)
