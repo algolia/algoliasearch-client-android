@@ -239,7 +239,7 @@ public class SimpleTest {
     	JSONObject res = client.listIndexes();
     	assertTrue(contains(res.getJSONArray("items"), indexName, "name"));
     	client.deleteIndex(indexName);
-    	Thread.sleep(2000);
+    	Thread.sleep(4000);
     	JSONObject resAfter = client.listIndexes();
     	assertFalse(contains(resAfter.getJSONArray("items"), indexName, "name"));
     }
