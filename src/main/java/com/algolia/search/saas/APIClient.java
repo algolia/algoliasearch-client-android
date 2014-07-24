@@ -70,6 +70,8 @@ public class APIClient {
     private final String apiKey;
     private final List<String> hostsArray;
     private final DefaultHttpClient httpClient;
+    private String tagFilters;
+    private String userToken;
     
     /**
      * Algolia Search initialization
@@ -319,6 +321,14 @@ public class APIClient {
         return hmac(privateApiKey, tagFilters + (userToken != null ? userToken : ""));
     }
     
+    public void setSecurityTags(String tagFilters) {
+        this.tagFilters = tagFilters;
+    }
+    
+    public void setUserToken(String userToken) {
+        this.userToken = userToken;
+    }
+    
     static String hmac(String key, String msg) {
     	Mac hmac;
 		try {
@@ -389,6 +399,14 @@ public class APIClient {
         	// set auth headers
         	req.setHeader("X-Algolia-Application-Id", this.applicationID);
             req.setHeader("X-Algolia-API-Key", this.apiKey);
+            
+            // set optional headers
+            if (this.userToken != null) {
+                req.setHeader("X-Algolia-UserToken", this.userToken);
+            }
+            if (this.tagFilters != null) {
+                req.setHeader("X-Algolia-TagFilters", this.tagFilters);
+            }
             
             // set JSON entity
             if (json != null) {
