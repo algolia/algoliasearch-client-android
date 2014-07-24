@@ -50,6 +50,7 @@ public class Query {
     protected boolean advancedSyntax;
     protected int page;
     protected int hitsPerPage;
+    protected String restrictSearchableAttributes;
     protected String tags;
     protected String numerics;
     protected String insideBoundingBox;
@@ -93,6 +94,18 @@ public class Query {
         analytics = synonyms = replaceSynonyms = typoTolerance = allowTyposOnNumericTokens = true;
     }
     
+    /**
+     * List of object attributes you want to use for textual search (must be a subset of the attributesToIndex 
+     * index setting). Attributes are separated with a comma (for example @"name,address").
+     * You can also use a JSON string array encoding (for example encodeURIComponent("[\"name\",\"address\"]")).
+     * By default, all attributes specified in attributesToIndex settings are used to search.
+     */
+    public Query restrictSearchableAttributes(String attributes)
+    {
+	this.restrictSearchableAttributes = attributes;
+	return this;
+    }
+
     /**
      *  Select how the query words are interpreted:
      */
@@ -538,6 +551,13 @@ public class Query {
                 stringBuilder.append("optionalWords=");
                 stringBuilder.append(URLEncoder.encode(optionalWords, "UTF-8"));
             }
+	    if (restrictSearchableAttributes != null) {
+            	if (stringBuilder.length() > 0)
+                    stringBuilder.append('&');
+                stringBuilder.append("restrictSearchableAttributes=");
+                stringBuilder.append(URLEncoder.encode(restrictSearchableAttributes, "UTF-8"));
+	    }
+
             switch (queryType) {
             case PREFIX_ALL:
             	if (stringBuilder.length() > 0)
