@@ -95,7 +95,7 @@ public class Query {
     }
 
     /**
-     * List of object attributes you want to use for textual search (must be a subset of the attributesToIndex 
+     * List of attributes you want to use for textual search (must be a subset of the attributesToIndex 
      * index setting). Attributes are separated with a comma (for example @"name,address").
      * You can also use a JSON string array encoding (for example encodeURIComponent("[\"name\",\"address\"]")).
      * By default, all attributes specified in attributesToIndex settings are used to search.
