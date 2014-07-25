@@ -2,5 +2,5 @@ language: java
 jdk: oraclejdk7
 env:
   global:
-  - secure: TRPB3uhIbFioK9Bp71lEwPsghIrYu1zLNACzFzM2lKxSREavEZo8V91jNSA1jFfsuX+HqqVyZJX1891UbJzHWIUeT+UdFDQhvEeuRyKPxTQeUbl+QjFL59w+mtTEdzfX/D4fuzZpe9Hx5GM2azUrpfXhbMKfD1pbaJ12Asu0qqY=
-  - secure: cYHXxg8SpNDloPKp6/fcgaf3nzWZ8ZaAw1Fa9mt0cCnz39KL52QRbRdfTGIuZYfzMQpDjj4lTQCjkF1/NV2XgKAwSxOnP9oxYxZHrzKiskwdBK3OHX2PbVWYOM2/JJq3rDODaVZZrABQZiqN5sd63edZRaGFm3Kb9F7QtcXxk78=
+  - secure: MjCN5JoPNjtXN4YInXSpT1fk5CxgmLzpgZnAye7N35Cu6U0tqztTuiCU01039dFV2T6HxKNAQnr5o//cfHU4j6HPIY0N5czL/9f3h3pX9BXMZL5/d5HDVTPpCgJTyABXHL7R1wpAJ7Z1YteXtUecwm/Vv7Hpy2zK3843pL7tsoo=
+  - secure: EvS4L5bdRAle2O18+jnH/Hui8SEdk5X3jiZDHeUoVmCjBdMe6CQvU2vsKwHl6jXhiLs26MHAn5AeHjmYzC/4OtavNtvre7PslH5axnPilgSbJsueIS9uklbKB+TorFi4TV+uKGwNVcea/0emV4EJkqN7+9SMRNaqdof+k58HzxI=
