@@ -3,8 +3,6 @@ Algolia Search API Client for Java
 
 
 
-
-
 [Algolia Search](http://www.algolia.com) is a search API that provides hosted full-text, numerical and faceted search.
 Algolia’s Search API makes it easy to deliver a great search experience in your apps & websites providing:
 
@@ -19,18 +17,18 @@ Algolia’s Search API makes it easy to deliver a great search experience in you
 
 This Java client let you easily use the Algolia Search API from your Java Application. It wraps [Algolia's REST API](http://www.algolia.com/doc/rest_api).
 
-
 [![Build Status](https://travis-ci.org/algolia/algoliasearch-client-java.png?branch=master)](https://travis-ci.org/algolia/algoliasearch-client-java) [![GitHub version](https://badge.fury.io/gh/algolia%2Falgoliasearch-client-java.png)](http://badge.fury.io/gh/algolia%2Falgoliasearch-client-java) [![Coverage Status](https://coveralls.io/repos/algolia/algoliasearch-client-java/badge.png)](https://coveralls.io/r/algolia/algoliasearch-client-java)
 
 
 
 Table of Content
--------------
+================
 **Get started**
 
 1. [Setup](#setup)
 1. [Quick Start](#quick-start)
-1. [Online documentation](#online-documentation)
+1. [Online documentation](#documentation)
+1. [Tutorials](#tutorials)
 
 **Commands reference**
 
@@ -140,27 +138,62 @@ System.out.println(index.search(new Query("jim")));
 ```
 
 
+**Notes:** If you are building a web application, you may be more interested in using our [JavaScript client](https://github.com/algolia/algoliasearch-client-js) to perform queries. It brings two benefits:
+  * your users get a better response time by avoiding to go through your servers,
+  * it will offload your servers of unnecessary tasks.
+
+```html
+<script type="text/javascript" src="//path/to/algoliasearch.min.js"></script>
+<script type="text/javascript">
+  var client = new AlgoliaSearch("YourApplicationID", "YourSearchOnlyAPIKey");
+  var index = client.initIndex('YourIndexName');
+
+  function searchCallback(success, content) {
+    if (success) {
+      console.log(content);
+    }
+  }
+
+  // perform query "jim"
+  index.search("jim", searchCallback);
+
+  // the last optional argument can be used to add search parameters
+  index.search("jim", searchCallback, { hitsPerPage: 5, facets: '*', maxValuesPerFacet: 10 });
+</script>
+```
 
 
-Online Documentation
-----------------
 
-Check our [online documentation](http://www.algolia.com/doc):
- * [Initial Import](http://www.algolia.com/doc#InitialImport)
- * [Ranking &amp; Relevance](http://www.algolia.com/doc#RankingRelevance)
- * [Settings](http://www.algolia.com/doc#Settings)
- * [Search](http://www.algolia.com/doc#Search)
- * [Incremental Updates](http://www.algolia.com/doc#IncrementalUpdates)
- * [Reindexing](http://www.algolia.com/doc#Reindexing)
- * [Numeric-Search](http://www.algolia.com/doc#Numeric-Search)
- * [Category-Search](http://www.algolia.com/doc#Category-Search)
- * [Faceting](http://www.algolia.com/doc#Faceting)
- * [Geo-Search](http://www.algolia.com/doc#Geo-Search)
- * [Security](http://www.algolia.com/doc#Security)
- * [Indexing Several Types](http://www.algolia.com/doc#IndexingSeveralTypes)
+
+
+
+Documentation
+================
+
+Check our [online documentation](http://www.algolia.com/doc/guides/java):
+ * [Initial Import](http://www.algolia.com/doc/guides/java#InitialImport)
+ * [Ranking &amp; Relevance](http://www.algolia.com/doc/guides/java#RankingRelevance)
+ * [Indexing](http://www.algolia.com/doc/guides/java#Indexing)
+ * [Search](http://www.algolia.com/doc/guides/java#Search)
+ * [Sorting](http://www.algolia.com/doc/guides/java#Sorting)
+ * [Filtering](http://www.algolia.com/doc/guides/java#Filtering)
+ * [Faceting](http://www.algolia.com/doc/guides/java#Faceting)
+ * [Geo-Search](http://www.algolia.com/doc/guides/java#Geo-Search)
+ * [Security](http://www.algolia.com/doc/guides/java#Security)
  * [REST API](http://www.algolia.com/doc/rest)
 
+Tutorials
+================
 
+Check our [tutorials](http://www.algolia.com/doc/tutorials):
+ * [Searchbar with auto-completion](http://www.algolia.com/doc/tutorials/auto-complete)
+ * [Searchbar with multi-categories auto-completion](http://www.algolia.com/doc/tutorials/multi-auto-complete)
+ * [Instant-search](http://www.algolia.com/doc/tutorials/instant-search)
+
+
+
+Commands reference
+==================
 
 
 
@@ -222,7 +255,11 @@ index.partialUpdateObject(new JSONObject().put("city", "San Francisco"), "myID")
 
 Search
 -------------
- **Opening note:** If you are building a web application, you may be more interested in using our [javascript client](https://github.com/algolia/algoliasearch-client-js) to send queries. It brings two benefits: (i) your users get a better response time by avoiding to go through your servers, and (ii) it will offload your servers of unnecessary tasks.
+
+**Opening note:** If you are building a web application, you may be more interested in using our [javascript client](https://github.com/algolia/algoliasearch-client-js) to send queries. It brings two benefits:
+  * your users get a better response time by avoiding to go through your servers,
+  * and it will offload your servers of unnecessary tasks.
+
 
 To perform a search, you just need to initialize the index and perform a call to the search function.
 
