@@ -55,6 +55,7 @@ public class Query {
     protected String numerics;
     protected String insideBoundingBox;
     protected String aroundLatLong;
+    protected boolean aroundLatLongViaIP;
     protected String query;
     protected QueryType queryType;
     protected String optionalWords;
@@ -276,6 +277,29 @@ public class Query {
     public Query aroundLatitudeLongitude(float latitude, float longitude, int radius, int precision) {
         aroundLatLong = "aroundLatLng=" + latitude + "," + longitude + "&aroundRadius=" + radius + "&aroundPrecision=" + precision;
         return this;
+    }
+    
+    /**
+     * Search for entries around the latitude/longitude of user (using IP geolocation)
+     *  @param radius set the maximum distance in meters.
+     *  Note: at indexing, geoloc of an object should be set with _geoloc attribute containing lat and lng attributes (for example {"_geoloc":{"lat":48.853409, "lng":2.348800}})
+     */
+    public Query aroundLatitudeLongitudeViaIP(boolean enabled, int radius) {
+	aroundLatLong = "aroundRadius=" + radius;
+	aroundLatLongViaIP = enabled;
+	return this;
+    }
+
+    /**
+     * Search for entries around the latitude/longitude of user (using IP geolocation)
+     *  @param radius set the maximum distance in meters.
+     *  @param precision set the precision for ranking (for example if you set precision=100, two objects that are distant of less than 100m will be considered as identical for "geo" ranking parameter).
+     *  Note: at indexing, geoloc of an object should be set with _geoloc attribute containing lat and lng attributes (for example {"_geoloc":{"lat":48.853409, "lng":2.348800}})
+     */
+    public Query aroundLatitudeLongitudeViaIP(boolean enabled, int radius, int precision) {
+	aroundLatLong = "aroundRadius=" + radius + "&aroundPrecision=" + precision;
+	aroundLatLongViaIP = enabled;
+	return this;
     }
     
     /**
@@ -518,6 +542,11 @@ public class Query {
                     stringBuilder.append('&');
                 stringBuilder.append(aroundLatLong);
             }
+	    if (aroundLatLongViaIP) {
+		if (stringBuilder.length() > 0)
+		    stringBuilder.append('&');
+		stringBuilder.append("aroundLatLngViaIP=true");
+	    }
             if (query != null) {
                 if (stringBuilder.length() > 0)
                     stringBuilder.append('&');
