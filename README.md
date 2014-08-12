@@ -170,17 +170,18 @@ System.out.println(index.search(new Query("jim")));
 Documentation
 ================
 
-Check our [online documentation](http://www.algolia.com/doc/java):
- * [Initial Import](http://www.algolia.com/doc/java#InitialImport)
- * [Ranking &amp; Relevance](http://www.algolia.com/doc/java#RankingRelevance)
- * [Indexing](http://www.algolia.com/doc/java#Indexing)
- * [Search](http://www.algolia.com/doc/java#Search)
- * [Sorting](http://www.algolia.com/doc/java#Sorting)
- * [Filtering](http://www.algolia.com/doc/java#Filtering)
- * [Faceting](http://www.algolia.com/doc/java#Faceting)
- * [Geo-Search](http://www.algolia.com/doc/java#Geo-Search)
- * [Security](http://www.algolia.com/doc/java#Security)
+Check our [online documentation](http://www.algolia.com/doc/guides/java):
+ * [Initial Import](http://www.algolia.com/doc/guides/java#InitialImport)
+ * [Ranking &amp; Relevance](http://www.algolia.com/doc/guides/java#RankingRelevance)
+ * [Indexing](http://www.algolia.com/doc/guides/java#Indexing)
+ * [Search](http://www.algolia.com/doc/guides/java#Search)
+ * [Sorting](http://www.algolia.com/doc/guides/java#Sorting)
+ * [Filtering](http://www.algolia.com/doc/guides/java#Filtering)
+ * [Faceting](http://www.algolia.com/doc/guides/java#Faceting)
+ * [Geo-Search](http://www.algolia.com/doc/guides/java#Geo-Search)
+ * [Security](http://www.algolia.com/doc/guides/java#Security)
  * [REST API](http://www.algolia.com/doc/rest)
+
 
 Tutorials
 ================
