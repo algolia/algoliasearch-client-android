@@ -142,17 +142,18 @@ index.searchASync(new Query("jim"), this);
 Documentation
 ================
 
-Check our [online documentation](http://www.algolia.com/doc/android):
- * [Initial Import](http://www.algolia.com/doc/android#InitialImport)
- * [Ranking &amp; Relevance](http://www.algolia.com/doc/android#RankingRelevance)
- * [Indexing](http://www.algolia.com/doc/android#Indexing)
- * [Search](http://www.algolia.com/doc/android#Search)
- * [Sorting](http://www.algolia.com/doc/android#Sorting)
- * [Filtering](http://www.algolia.com/doc/android#Filtering)
- * [Faceting](http://www.algolia.com/doc/android#Faceting)
- * [Geo-Search](http://www.algolia.com/doc/android#Geo-Search)
- * [Security](http://www.algolia.com/doc/android#Security)
+Check our [online documentation](http://www.algolia.com/doc/guides/android):
+ * [Initial Import](http://www.algolia.com/doc/guides/android#InitialImport)
+ * [Ranking &amp; Relevance](http://www.algolia.com/doc/guides/android#RankingRelevance)
+ * [Indexing](http://www.algolia.com/doc/guides/android#Indexing)
+ * [Search](http://www.algolia.com/doc/guides/android#Search)
+ * [Sorting](http://www.algolia.com/doc/guides/android#Sorting)
+ * [Filtering](http://www.algolia.com/doc/guides/android#Filtering)
+ * [Faceting](http://www.algolia.com/doc/guides/android#Faceting)
+ * [Geo-Search](http://www.algolia.com/doc/guides/android#Geo-Search)
+ * [Security](http://www.algolia.com/doc/guides/android#Security)
  * [REST API](http://www.algolia.com/doc/rest)
+
 
 Tutorials
 ================
