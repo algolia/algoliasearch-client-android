@@ -67,7 +67,9 @@ public class Query {
     protected boolean replaceSynonyms;
     protected boolean typoTolerance;
     protected boolean allowTyposOnNumericTokens;
-    
+    protected boolean removeLastWordsIfNoResult;
+    protected boolean removeFirstWordsIfNoResult;
+
     public Query(String query) {
         minWordSizeForApprox1 = 3;
         minWordSizeForApprox2 = 7;
@@ -80,6 +82,7 @@ public class Query {
         maxNumberOfFacets = -1;
         advancedSyntax = false;
         analytics = synonyms = replaceSynonyms = typoTolerance = allowTyposOnNumericTokens = true;
+	removeLastWordsIfNoResult = removeFirstWordsIfNoResult = false;
     }
     
     public Query() {
@@ -93,8 +96,29 @@ public class Query {
         maxNumberOfFacets = -1;
         advancedSyntax = false;
         analytics = synonyms = replaceSynonyms = typoTolerance = allowTyposOnNumericTokens = true;
+	removeLastWordsIfNoResult = removeFirstWordsIfNoResult = false;
     }
-    
+
+    /**
+     * If set to true, when a query does not return any result, the final word will be removed until there is results. 
+     * This option is particulary useful on e-commerce websites. (disabled by default)
+     */
+    public Query removeLastWordsIfNoResult(boolean enable)
+    {
+        this.removeLastWordsIfNoResult = enable;
+        return this;
+    }
+
+    /**
+     * If set to true, when a query does not return any result, the first word will be removed until there is results.
+     * This option is useful on adress search. (disabled by default).
+     */
+    public Query removeFirstWordsIfNoResult(boolean enable)
+    {
+        this.removeFirstWordsIfNoResult = enable;
+        return this;
+    }
+
     /**
      * List of object attributes you want to use for textual search (must be a subset of the attributesToIndex 
      * index setting). Attributes are separated with a comma (for example @"name,address").
@@ -481,6 +505,16 @@ public class Query {
                     stringBuilder.append('&');
                 stringBuilder.append("minWordSizefor2Typos=");
                 stringBuilder.append(minWordSizeForApprox2);
+            }
+	    if (removeFirstWordsIfNoResult) {
+                if (stringBuilder.length() > 0)
+                    stringBuilder.append('&');
+                stringBuilder.append("removeFirstWordsIfNoResult=true");
+            }
+            if (removeLastWordsIfNoResult) {
+                if (stringBuilder.length() > 0)
+                    stringBuilder.append('&');
+                stringBuilder.append("removeLastWordsIfNoResult=true");
             }
             if (getRankingInfo) {
                 if (stringBuilder.length() > 0)
