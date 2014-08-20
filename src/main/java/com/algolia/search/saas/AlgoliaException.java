@@ -23,11 +23,21 @@ package com.algolia.search.saas;
  * THE SOFTWARE.
  */
 public class AlgoliaException extends Exception {
-
+    
     public AlgoliaException(String message) {
+        this(0, message);
+    }
+
+    public AlgoliaException(int code, String message) {
         super(message);
+        this.code = code;
     }
     
-    private static final long serialVersionUID = 1L;
+    public int getCode() {
+        return code;
+    }
 
+    private final int code; 
+    
+    private static final long serialVersionUID = 1L;
 }
