@@ -160,13 +160,18 @@ public class Index {
     }
 
     /**
-     * Get an object from this index
+     * Get an object from this index. Return null if the object doens't exist.
      * 
      * @param objectID the unique identifier of the object to retrieve
      */
     public JSONObject getObject(String objectID) throws AlgoliaException {
         try {
             return client.getRequest("/1/indexes/" + encodedIndexName + "/" + URLEncoder.encode(objectID, "UTF-8"));
+        } catch (AlgoliaException e) {
+            if (e.getCode() == 404) {
+                return null;
+            }
+            throw e;
         } catch (UnsupportedEncodingException e) {
             throw new RuntimeException(e);
         }
