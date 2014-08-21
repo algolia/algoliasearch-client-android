@@ -447,7 +447,7 @@ public class Index {
                 if (obj.getString("status").equals("published"))
                     return;
                 try {
-                    Thread.sleep(1000);
+                    Thread.sleep(100);
                 } catch (InterruptedException e) {
                 }
             }
