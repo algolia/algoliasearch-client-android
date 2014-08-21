@@ -575,7 +575,7 @@ public class Index {
         List<String> attributesToRetrieve = new ArrayList<String>();
         attributesToRetrieve.add("objectID");
         query.setAttributesToRetrieve(attributesToRetrieve);
-        query.setHitsPerPage(1000);
+        query.setHitsPerPage(100);
         
         JSONObject results = this.search(query);
         try {
