@@ -656,6 +656,15 @@ JSONObject res = index.addUserKey(Arrays.asList("search"), 300, 100, 20);
 System.out.println("Key: " + res.getString("key"));
 ```
 
+Update the rights of an existing key:
+```java
+// Creates a new global API key that is valid for 300 seconds
+JSONObject res = client.updateUserKey("myAPIKey", Arrays.asList("search"), 300, 0, 0);
+Log.d("debug", "Key: " + res.getString("key"));
+// Update a index specific API key valid for 300 seconds, with a rate limit of 100 calls per hour per IP and a maximum of 20 hits
+JSONObject res = index.updateUserKey("myAPIKey", Arrays.asList("search"), 300, 100, 20);
+Log.d("debug", "Key: " + res.getString("key"));
+```
 Get the rights of a given key:
 ```java
 // Gets the rights of a global key
