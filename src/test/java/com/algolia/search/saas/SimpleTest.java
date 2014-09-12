@@ -334,6 +334,10 @@ public class SimpleTest {
     	assertTrue(contains(res.getJSONArray("keys"), newKey.getString("key"), "value"));
     	JSONObject getKey = index.getUserKeyACL(newKey.getString("key"));
     	assertEquals(newKey.getString("key"), getKey.getString("value"));
+      index.updateUserKey(newKey.getString("key"), Arrays.asList("addObject"));
+      try { Thread.sleep(2000); } catch (Exception e) {}
+      getKey = index.getUserKeyACL(newKey.getString("key"));
+     assertEquals(getKey.getJSONArray("acl").get(0), "addObject");
     	index.deleteUserKey(getKey.getString("value"));
     	try { Thread.sleep(4000); } catch (InterruptedException e) {  }
     	JSONObject resAfter = index.listUserKeys();
@@ -349,6 +353,10 @@ public class SimpleTest {
     	assertTrue(contains(res.getJSONArray("keys"), newKey.getString("key"), "value"));
     	JSONObject getKey = client.getUserKeyACL(newKey.getString("key"));
     	assertEquals(newKey.getString("key"), getKey.getString("value"));
+     client.updateUserKey(newKey.getString("key"), Arrays.asList("addObject"));
+     try { Thread.sleep(2000); } catch (Exception e) {}
+     getKey = client.getUserKeyACL(newKey.getString("key"));
+     assertEquals(getKey.getJSONArray("acl").get(0), "addObject");
     	client.deleteUserKey(getKey.getString("value"));
     	try { Thread.sleep(1000); } catch (InterruptedException e) {  }
     	JSONObject resAfter = client.listUserKeys();

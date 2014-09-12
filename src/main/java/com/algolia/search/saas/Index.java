@@ -43,7 +43,7 @@ public class Index {
     private APIClient client;
     private String encodedIndexName;
     private String indexName;
-    
+
     /**
      * Index initialization (You should not call this initialized yourself)
      */
@@ -56,7 +56,7 @@ public class Index {
             throw new RuntimeException(e);
         }
     }
-    
+
     public String getIndexName() {
         return indexName;
     }
@@ -69,7 +69,7 @@ public class Index {
     public JSONObject addObject(JSONObject obj) throws AlgoliaException {
         return client.postRequest("/1/indexes/" + encodedIndexName, obj.toString());
     }
-   
+
     /**
      * Add an object in this index
      * 
@@ -84,7 +84,7 @@ public class Index {
             throw new RuntimeException(e);
         }
     }
-    
+
     /**
      * Add an object in this index asynchronously
      * 
@@ -96,7 +96,7 @@ public class Index {
         ASyncIndexTaskParams params = new ASyncIndexTaskParams(listener, ASyncIndexTaskKind.AddObject, null, obj);
         new ASyncIndexTask().execute(params);
     }
-   
+
     /**
      * Add an object in this index asynchronously
      * 
@@ -126,7 +126,7 @@ public class Index {
 	        throw new AlgoliaException(e.getMessage());
 	    }
     }
-    
+
     /**
      * Custom batch
      * 
@@ -142,7 +142,7 @@ public class Index {
 	        throw new AlgoliaException(e.getMessage());
 	    }
     }
-    
+
     /**
      * Add several objects
      * 
@@ -173,7 +173,7 @@ public class Index {
         ASyncIndexTaskParams params = new ASyncIndexTaskParams(listener, ASyncIndexTaskKind.AddObjects, objects);
         new ASyncIndexTask().execute(params);
     }
-    
+
     /**
      * Add several objects
      * 
@@ -194,7 +194,7 @@ public class Index {
             throw new AlgoliaException(e.getMessage());
         }
     }
-    
+
     /**
      * Add several objects asynchronously
      * 
@@ -205,7 +205,7 @@ public class Index {
         ASyncIndexTaskParams params = new ASyncIndexTaskParams(listener, ASyncIndexTaskKind.AddObjects2, objects);
         new ASyncIndexTask().execute(params);
     }
-    
+
     /**
      * Get an object from this index
      * 
@@ -218,7 +218,7 @@ public class Index {
             throw new RuntimeException(e);
         }
     }
-    
+
     /**
      * Get an object from this index
      * 
@@ -239,7 +239,7 @@ public class Index {
             throw new RuntimeException(e);
         }
     }
-    
+
     /**
      * Get an object from this index asynchronously
      * 
@@ -262,7 +262,7 @@ public class Index {
         ASyncIndexTaskParams params = new ASyncIndexTaskParams(listener, ASyncIndexTaskKind.GetObject, objectID, attributesToRetrieve);
         new ASyncIndexTask().execute(params);
     }
-    
+
     /**
      * Get several objects from this index
      *
@@ -296,7 +296,7 @@ public class Index {
 	ASyncIndexTaskParams params = new ASyncIndexTaskParams(listener, ASyncIndexTaskKind.GetObjects, objectIDs);
         new ASyncIndexTask().execute(params);
     }
-    
+
     /**
      * Update partially an object (only update attributes passed in argument)
      * 
@@ -309,7 +309,7 @@ public class Index {
             throw new RuntimeException(e);
         }
     }
-    
+
     /**
      * Update partially an object asynchronously (only update attributes passed in argument)
      * 
@@ -321,7 +321,7 @@ public class Index {
         ASyncIndexTaskParams params = new ASyncIndexTaskParams(listener, ASyncIndexTaskKind.PartialSaveObject, objectID, partialObject);
         new ASyncIndexTask().execute(params);
     }
-    
+
     /**
      * Partially Override the content of several objects
      * 
@@ -344,7 +344,7 @@ public class Index {
             throw new AlgoliaException(e.getMessage());
         }
     }
-    
+
     /**
      * Override the content of several objects asynchronously
      * 
@@ -355,7 +355,7 @@ public class Index {
         ASyncIndexTaskParams params = new ASyncIndexTaskParams(listener, ASyncIndexTaskKind.PartialSaveObjects2, objects);
         new ASyncIndexTask().execute(params);
     }
-    
+
     /**
      * Partially Override the content of several objects
      * 
@@ -387,7 +387,7 @@ public class Index {
         ASyncIndexTaskParams params = new ASyncIndexTaskParams(listener, ASyncIndexTaskKind.PartialSaveObjects, objects);
         new ASyncIndexTask().execute(params);
     }
-    
+
     /**
      * Override the content of object
      * 
@@ -411,7 +411,7 @@ public class Index {
         ASyncIndexTaskParams params = new ASyncIndexTaskParams(listener, ASyncIndexTaskKind.SaveObject, objectID, object);
         new ASyncIndexTask().execute(params);
     }
-    
+
     /**
      * Override the content of several objects
      * 
@@ -432,7 +432,7 @@ public class Index {
             throw new AlgoliaException(e.getMessage());
         }
     }
-    
+
     /**
      * Override the content of several objects asynchronously
      * 
@@ -443,7 +443,7 @@ public class Index {
         ASyncIndexTaskParams params = new ASyncIndexTaskParams(listener, ASyncIndexTaskKind.SaveObjects, objects);
         new ASyncIndexTask().execute(params);
     }
-    
+
     /**
      * Override the content of several objects
      * 
@@ -466,7 +466,7 @@ public class Index {
             throw new AlgoliaException(e.getMessage());
         }
     }
-    
+
     /**
      * Override the content of several objects asynchronously
      * 
@@ -477,7 +477,7 @@ public class Index {
         ASyncIndexTaskParams params = new ASyncIndexTaskParams(listener, ASyncIndexTaskKind.SaveObjects2, objects);
         new ASyncIndexTask().execute(params);
     }
-    
+
     /**
      * Delete an object from the index 
      * 
@@ -492,7 +492,7 @@ public class Index {
             throw new RuntimeException(e);
         }
     }
-    
+
     /**
      * Delete an object from the index asynchronously
      * 
@@ -503,7 +503,7 @@ public class Index {
         ASyncIndexTaskParams params = new ASyncIndexTaskParams(listener, ASyncIndexTaskKind.DeleteObject, objectID, (List)null);
         new ASyncIndexTask().execute(params);
     }
-    
+
     /**
      * Delete several objects
      * 
@@ -564,7 +564,7 @@ public class Index {
         ASyncIndexTaskParams params = new ASyncIndexTaskParams(listener, ASyncIndexTaskKind.DeleteObjects, objects);
         new ASyncIndexTask().execute(params);
     }
-    
+
     /**
      * Delete all objects matching a query
      * 
@@ -576,7 +576,7 @@ public class Index {
         attributesToRetrieve.add("objectID");
         query.setAttributesToRetrieve(attributesToRetrieve);
         query.setHitsPerPage(100);
-        
+
         JSONObject results = this.search(query);
         try {
             while (results.getInt("nbHits") != 0) {
@@ -593,7 +593,7 @@ public class Index {
             throw new AlgoliaException(e.getMessage());
         }
     }
-    
+
     /**
      * Delete all objects matching a query asynchronously
      * 
@@ -624,7 +624,7 @@ public class Index {
         ASyncIndexTaskParams params = new ASyncIndexTaskParams(listener, query);
         new ASyncIndexTask().execute(params);
     }
-    
+
     /**
      * Wait the publication of a task on the server. 
      * All server task are asynchronous and you can check with this method that the task is published.
@@ -661,7 +661,7 @@ public class Index {
         ASyncIndexTaskParams params = new ASyncIndexTaskParams(listener, ASyncIndexTaskKind.WaitTask, taskID, (List)null);
         new ASyncIndexTask().execute(params);
     }
-    
+
     /**
      * Get settings of this index
      */
@@ -677,7 +677,7 @@ public class Index {
         ASyncIndexTaskParams params = new ASyncIndexTaskParams(listener, ASyncIndexTaskKind.GetSettings, null, (List)null);
         new ASyncIndexTask().execute(params);
     }
-    
+
     /**
      * Set settings for this index
      * 
@@ -726,14 +726,14 @@ public class Index {
     public JSONObject setSettings(JSONObject settings) throws AlgoliaException {
         return client.putRequest("/1/indexes/" + encodedIndexName + "/settings", settings.toString());
     }
-    
+
     /**
      * Delete the index content without removing settings and index specific API keys.
      */
     public JSONObject clearIndex() throws AlgoliaException {
         return client.postRequest("/1/indexes/" + encodedIndexName + "/clear", "");
     }
-    
+
     /**
      * Set settings for this index asynchronously
      * @param listener the listener that will receive the result or error. If the listener is an instance of Activity, the result will be received directly on UIthread
@@ -742,7 +742,7 @@ public class Index {
         ASyncIndexTaskParams params = new ASyncIndexTaskParams(listener, ASyncIndexTaskKind.SetSettings, null, settings);
         new ASyncIndexTask().execute(params);
     }
-    
+
     /**
      * List all existing user keys with their associated ACLs
      */
@@ -786,7 +786,30 @@ public class Index {
         }
         return client.postRequest("/1/indexes/" + encodedIndexName + "/keys", jsonObject.toString());
     }
-    
+
+     /**
+     * Update a user key
+     *
+     * @param acls the list of ACL for this key. Defined by an array of strings that 
+     * can contains the following values:
+     *   - search: allow to search (https and http)
+     *   - addObject: allows to add/update an object in the index (https only)
+     *   - deleteObject : allows to delete an existing object (https only)
+     *   - deleteIndex : allows to delete index content (https only)
+     *   - settings : allows to get index settings (https only)
+     *   - editSettings : allows to change index settings (https only)
+     */
+    public JSONObject updateUserKey(String key, List<String> acls) throws AlgoliaException {
+        JSONArray array = new JSONArray(acls);
+        JSONObject jsonObject = new JSONObject();
+        try {
+            jsonObject.put("acl", array);
+        } catch (JSONException e) {
+            throw new RuntimeException(e);
+        }
+        return client.putRequest("/1/indexes/" + encodedIndexName + "/keys/" + key, jsonObject.toString());
+    }
+
     /**
      * Create a new user key
      *
@@ -816,7 +839,35 @@ public class Index {
         }
         return client.postRequest("/1/indexes/" + encodedIndexName + "/keys", jsonObject.toString());
     }
-    
+
+    /**
+     * Update a user key
+     *
+     * @param acls the list of ACL for this key. Defined by an array of strings that 
+     * can contains the following values:
+     *   - search: allow to search (https and http)
+     *   - addObject: allows to add/update an object in the index (https only)
+     *   - deleteObject : allows to delete an existing object (https only)
+     *   - deleteIndex : allows to delete index content (https only)
+     *   - settings : allows to get index settings (https only)
+     *   - editSettings : allows to change index settings (https only)
+     * @param validity the number of seconds after which the key will be automatically removed (0 means no time limit for this key)
+     * @param maxQueriesPerIPPerHour Specify the maximum number of API calls allowed from an IP address per hour.  Defaults to 0 (no rate limit).
+     * @param maxHitsPerQuery Specify the maximum number of hits this API key can retrieve in one call. Defaults to 0 (unlimited) 
+     */
+    public JSONObject updateUserKey(String key, List<String> acls, int validity, int maxQueriesPerIPPerHour, int maxHitsPerQuery) throws AlgoliaException {
+        JSONArray array = new JSONArray(acls);
+        JSONObject jsonObject = new JSONObject();
+        try {
+            jsonObject.put("acl", array);
+            jsonObject.put("validity", validity);
+            jsonObject.put("maxQueriesPerIPPerHour", maxQueriesPerIPPerHour);
+            jsonObject.put("maxHitsPerQuery", maxHitsPerQuery);
+        } catch (JSONException e) {
+            throw new RuntimeException(e);
+        }
+        return client.putRequest("/1/indexes/" + encodedIndexName + "/keys/" + key, jsonObject.toString());
+    }
 
     /**
      * Browse all index content
@@ -838,7 +889,7 @@ public class Index {
     public JSONObject browse(int page, int hitsPerPage) throws AlgoliaException {
         return client.getRequest("/1/indexes/" + encodedIndexName + "/browse?page=" + page + "&hitsPerPage=" + hitsPerPage);
     }
-    
+
     private enum ASyncIndexTaskKind
     {
         GetObject,
@@ -860,7 +911,7 @@ public class Index {
         SetSettings,
         GetObjects
     };
-    
+
     private static class ASyncIndexTaskParams
     {
         public IndexListener listener;
@@ -871,13 +922,13 @@ public class Index {
         public JSONObject objectContent;
         public JSONArray objects2;
         public List<String> attributesToRetrieve;
-        
+
         public ASyncIndexTaskParams(IndexListener listener, Query query) {
             this.listener = listener;
             this.query = query;
             this.kind = ASyncIndexTaskKind.Query;
         }
-        
+
         public ASyncIndexTaskParams(IndexListener listener, ASyncIndexTaskKind kind, String objectID, JSONObject content)
         {
             this.listener = listener;
@@ -885,7 +936,7 @@ public class Index {
             this.objectID = objectID;
             this.objectContent = content;
         }
-        
+
         public ASyncIndexTaskParams(IndexListener listener, ASyncIndexTaskKind kind, List<?> objects)
         {
             this.listener = listener;
@@ -912,7 +963,7 @@ public class Index {
             this.attributesToRetrieve = attributesToRetrieve;
         }
     }
-    
+
     private class ASyncIndexTask extends AsyncTask<ASyncIndexTaskParams, Void, Void> {
 
         private void _sendResult(ASyncIndexTaskParams p, JSONObject res)
@@ -929,7 +980,7 @@ public class Index {
                 _sendResultImpl(p, res);
             }
         }
-        
+
         private void _sendResultImpl(ASyncIndexTaskParams p, JSONObject res)
         {
             switch (p.kind) {
@@ -989,7 +1040,7 @@ public class Index {
                 break;
             }
         }
-        
+
         @Override
         protected Void doInBackground(ASyncIndexTaskParams... params) {
             ASyncIndexTaskParams p = params[0];
