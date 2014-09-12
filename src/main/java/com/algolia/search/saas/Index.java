@@ -565,6 +565,29 @@ public class Index {
     }
     
     /**
+     * Update a user key
+     *
+     * @param acls the list of ACL for this key. Defined by an array of strings that 
+     * can contains the following values:
+     *   - search: allow to search (https and http)
+     *   - addObject: allows to add/update an object in the index (https only)
+     *   - deleteObject : allows to delete an existing object (https only)
+     *   - deleteIndex : allows to delete index content (https only)
+     *   - settings : allows to get index settings (https only)
+     *   - editSettings : allows to change index settings (https only)
+     */
+    public JSONObject updateUserKey(String key, List<String> acls) throws AlgoliaException {
+        JSONArray array = new JSONArray(acls);
+        JSONObject jsonObject = new JSONObject();
+        try {
+            jsonObject.put("acl", array);
+        } catch (JSONException e) {
+            throw new RuntimeException(e);
+        }
+        return client.putRequest("/1/indexes/" + encodedIndexName + "/keys/" + key, jsonObject.toString());
+    }
+    
+    /**
      * Create a new user key
      *
      * @param acls the list of ACL for this key. Defined by an array of strings that 
@@ -591,5 +614,34 @@ public class Index {
             throw new RuntimeException(e);
         }
         return client.postRequest("/1/indexes/" + encodedIndexName + "/keys", jsonObject.toString());
+    }
+    
+    /**
+     * Update a user key
+     *
+     * @param acls the list of ACL for this key. Defined by an array of strings that 
+     * can contains the following values:
+     *   - search: allow to search (https and http)
+     *   - addObject: allows to add/update an object in the index (https only)
+     *   - deleteObject : allows to delete an existing object (https only)
+     *   - deleteIndex : allows to delete index content (https only)
+     *   - settings : allows to get index settings (https only)
+     *   - editSettings : allows to change index settings (https only)
+     * @param validity the number of seconds after which the key will be automatically removed (0 means no time limit for this key)
+     * @param maxQueriesPerIPPerHour Specify the maximum number of API calls allowed from an IP address per hour.  Defaults to 0 (no rate limit).
+     * @param maxHitsPerQuery Specify the maximum number of hits this API key can retrieve in one call. Defaults to 0 (unlimited) 
+     */
+    public JSONObject updateUserKey(String key, List<String> acls, int validity, int maxQueriesPerIPPerHour, int maxHitsPerQuery) throws AlgoliaException {
+        JSONArray array = new JSONArray(acls);
+        JSONObject jsonObject = new JSONObject();
+        try {
+            jsonObject.put("acl", array);
+            jsonObject.put("validity", validity);
+            jsonObject.put("maxQueriesPerIPPerHour", maxQueriesPerIPPerHour);
+            jsonObject.put("maxHitsPerQuery", maxHitsPerQuery);
+        } catch (JSONException e) {
+            throw new RuntimeException(e);
+        }
+        return client.putRequest("/1/indexes/" + encodedIndexName + "/keys/" + key, jsonObject.toString());
     }
 }
