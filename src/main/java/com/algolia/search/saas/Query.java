@@ -56,6 +56,7 @@ public class Query {
     protected int minWordSizeForApprox1;
     protected int minWordSizeForApprox2;
     protected boolean getRankingInfo;
+    protected boolean ignorePlural;
     protected boolean distinct;
     protected boolean advancedSyntax;
     protected int page;
@@ -83,6 +84,7 @@ public class Query {
         minWordSizeForApprox1 = 3;
         minWordSizeForApprox2 = 7;
         getRankingInfo = false;
+        ignorePlural = false;
         distinct = false;
         page = 0;
         hitsPerPage = 20;
@@ -98,6 +100,7 @@ public class Query {
         minWordSizeForApprox1 = 3;
         minWordSizeForApprox2 = 7;
         getRankingInfo = false;
+        ignorePlural = false;
         distinct = false;
         page = 0;
         hitsPerPage = 20;
@@ -251,6 +254,14 @@ public class Query {
      */
     public Query getRankingInfo(boolean enabled) {
         this.getRankingInfo = enabled;
+        return this;
+    }
+
+    /**
+     * If set to true, plural won't be considered as a typo (for example car/cars will be considered as equals). Default to false.
+     */
+    public Query ignorePlural(boolean enabled) {
+        this.ignorePlural = enabled;
         return this;
     }
 
@@ -505,6 +516,11 @@ public class Query {
                 if (stringBuilder.length() > 0)
                     stringBuilder.append('&');
                 stringBuilder.append("getRankingInfo=1");
+            }
+            if (ignorePlural) {
+                if (stringBuilder.length() > 0)
+                    stringBuilder.append('&');
+                stringBuilder.append("ignorePlural=true");
             }
             if (!analytics) {
                 if (stringBuilder.length() > 0)
