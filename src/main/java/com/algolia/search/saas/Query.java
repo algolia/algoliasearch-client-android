@@ -366,7 +366,7 @@ public class Query {
     }
  
     /**
-     * Filter the query by a list of facets. Each facet is encoded as `attributeName:value`. For example: `["category:Book","author:John%20Doe"].
+     * Filter the query by a list of facets. Each filter is encoded as `attributeName:value`.
      */
     public Query setFacetFilters(List<String> facets) {
       JSONArray obj = new JSONArray();
@@ -377,8 +377,11 @@ public class Query {
       return this;
     }
     
-    public Query setFacetFilters(String facets) {
-      facetsFilter = facets;
+    /**
+     * Filter the query by a list of facets. Each facet is encoded as `attributeName:value`. For example: `["category:Book","author:John%20Doe"]`.
+     */
+    public Query setFacetFilters(String facetsFilter) {
+      this.facetsFilter = facetsFilter;
       return this;
     }
     
