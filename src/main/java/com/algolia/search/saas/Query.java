@@ -368,7 +368,7 @@ public class Query {
     }
  
     /**
-     * Filter the query by a list of facets. Each facet is encoded as `attributeName:value`. For example: `["category:Book","author:John%20Doe"].
+     * Filter the query by a list of facets. Each filter is encoded as `attributeName:value`.
      */
     public Query setFacetFilters(List<String> facets) {
         JSONArray obj = new JSONArray();
@@ -379,6 +379,16 @@ public class Query {
         return this;
     }
     
+    /**
+     * Filter the query by a list of facets. Filters are separated by commas and each facet is encoded as `attributeName:value`.
+     * To OR facets, you must add parentheses. For example: `(category:Book,category:Movie),author:John%20Doe`.
+     * You can also use a JSON string array encoding, for example `"[[\"category:Book\",\"category:Movie\"],\"author:John Doe\"]"`.
+     */
+    public Query setFacetFilters(String facetsFilter) {
+        this.facetFilters = facetsFilter;
+        return this;
+    }
+   
     /**
      * List of object attributes that you want to use for faceting. <br/>
      * Only attributes that have been added in **attributesForFaceting** index setting can be used in this parameter. 
