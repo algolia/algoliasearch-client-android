@@ -6,13 +6,15 @@ import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.net.URL;
+import java.net.URLClassLoader;
 import java.net.URLEncoder;
 import java.security.InvalidKeyException;
-import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.jar.Manifest;
 
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
@@ -65,6 +67,21 @@ import org.json.JSONTokener;
  */
 public class APIClient {
     private final static int HTTP_TIMEOUT_MS = 30000;
+    
+    private final static String version;
+    
+    static {
+        String tmp = null;
+        URLClassLoader cl = (URLClassLoader) APIClient.class.getClassLoader();
+        try {
+          URL url = cl.findResource("META-INF/MANIFEST.MF");
+          Manifest manifest = new Manifest(url.openStream());
+          tmp = manifest.getMainAttributes().getValue("Implementation-Version");
+        } catch (IOException E) {
+          // not fatal
+        }
+        version = tmp != null ? tmp : "N/A";
+    }
     
     private final String applicationID;
     private final String apiKey;
@@ -474,6 +491,9 @@ public class APIClient {
         	// set auth headers
         	req.setHeader("X-Algolia-Application-Id", this.applicationID);
             req.setHeader("X-Algolia-API-Key", this.apiKey);
+            
+            // set user agent
+            req.setHeader("User-Agent", "Algolia for Android " + version);
             
             // set optional headers
             if (this.userToken != null) {
