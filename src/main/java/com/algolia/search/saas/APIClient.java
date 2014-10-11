@@ -1,5 +1,6 @@
 package com.algolia.search.saas;
 
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -66,6 +67,22 @@ import org.json.JSONTokener;
  */
 public class APIClient {
     private final static int HTTP_TIMEOUT_MS = 30000;
+    
+    private final static String version;
+    static {
+        String tmp = "N/A";
+        try {
+            InputStream versionStream = APIClient.class.getResourceAsStream("/version.properties");
+            if (versionStream != null) {
+                BufferedReader versionReader = new BufferedReader(new InputStreamReader(versionStream));
+                tmp = versionReader.readLine();
+                versionReader.close();
+            }
+        } catch (IOException e) {
+            // not fatal
+        }
+        version = tmp;
+    }
     
     private final String applicationID;
     private final String apiKey;
@@ -502,7 +519,10 @@ public class APIClient {
         		req.setHeader("X-Forwarded-For", this.forwardEndUserIP);
         		req.setHeader("X-Forwarded-API-Key", this.forwardRateLimitAPIKey);
         	}
-            
+        	
+        	// set user agent
+        	req.setHeader("User-Agent", "Algolia for Java " + version);
+        	
             // set JSON entity
             if (json != null) {
             	if (!(req instanceof HttpEntityEnclosingRequestBase)) {
