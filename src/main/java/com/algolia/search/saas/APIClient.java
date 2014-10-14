@@ -13,7 +13,9 @@ import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map.Entry;
 import java.util.jar.Manifest;
 
 import javax.crypto.Mac;
@@ -89,6 +91,7 @@ public class APIClient {
     private final DefaultHttpClient httpClient;
     private String tagFilters;
     private String userToken;
+    private HashMap<String, String> headers;
     
     /**
      * Algolia Search initialization
@@ -123,6 +126,14 @@ public class APIClient {
         Collections.shuffle(hostsArray);
         this.hostsArray = hostsArray;
         httpClient = new DefaultHttpClient();
+        headers = new HashMap<String, String>();
+    }
+    
+    /**
+     * Allow to set custom headers
+     */
+    public void setExtraHeader(String key, String value) {
+    	headers.put(key, value);
     }
     
     /**
@@ -491,6 +502,9 @@ public class APIClient {
         	// set auth headers
         	req.setHeader("X-Algolia-Application-Id", this.applicationID);
             req.setHeader("X-Algolia-API-Key", this.apiKey);
+            for (Entry<String, String> entry : headers.entrySet()) {
+            	req.setHeader(entry.getKey(), entry.getValue());
+            }
             
             // set user agent
             req.setHeader("User-Agent", "Algolia for Android " + version);
