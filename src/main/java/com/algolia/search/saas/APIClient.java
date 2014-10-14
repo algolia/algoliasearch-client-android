@@ -12,7 +12,10 @@ import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
@@ -91,6 +94,7 @@ public class APIClient {
     private String forwardRateLimitAPIKey;
     private String forwardEndUserIP;
     private String forwardAdminAPIKey;
+    private HashMap<String, String> headers;
     
     /**
      * Algolia Search initialization
@@ -126,6 +130,7 @@ public class APIClient {
         Collections.shuffle(hostsArray);
         this.hostsArray = hostsArray;
         httpClient = HttpClientBuilder.create().build();
+        headers = new HashMap<String, String>();
     }
     
     /**
@@ -147,6 +152,13 @@ public class APIClient {
      */
     public void disableRateLimitForward() {
         forwardAdminAPIKey = forwardEndUserIP = forwardRateLimitAPIKey = null;
+    }
+    
+    /**
+     * Allow to set custom headers
+     */
+    public void setExtraHeader(String key, String value) {
+    	headers.put(key, value);
     }
     
     /**
@@ -518,6 +530,9 @@ public class APIClient {
         		req.setHeader("X-Algolia-API-Key", this.forwardAdminAPIKey);
         		req.setHeader("X-Forwarded-For", this.forwardEndUserIP);
         		req.setHeader("X-Forwarded-API-Key", this.forwardRateLimitAPIKey);
+        	}
+        	for (Entry<String, String> entry : headers.entrySet()) {
+        		req.setHeader(entry.getKey(), entry.getValue());
         	}
         	
         	// set user agent
