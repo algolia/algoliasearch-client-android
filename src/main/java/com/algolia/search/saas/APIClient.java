@@ -70,20 +70,7 @@ import org.json.JSONTokener;
 public class APIClient {
     private final static int HTTP_TIMEOUT_MS = 30000;
     
-    private final static String version;
-    
-    static {
-        String tmp = null;
-        URLClassLoader cl = (URLClassLoader) APIClient.class.getClassLoader();
-        try {
-          URL url = cl.findResource("META-INF/MANIFEST.MF");
-          Manifest manifest = new Manifest(url.openStream());
-          tmp = manifest.getMainAttributes().getValue("Implementation-Version");
-        } catch (IOException E) {
-          // not fatal
-        }
-        version = tmp != null ? tmp : "N/A";
-    }
+    private final static String version = "1.5.9";
     
     private final String applicationID;
     private final String apiKey;
