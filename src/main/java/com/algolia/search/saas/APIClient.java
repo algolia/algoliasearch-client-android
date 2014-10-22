@@ -509,7 +509,7 @@ public class APIClient {
 		default:
 			throw new IllegalArgumentException("Method " + m + " is not supported");
     	}
-
+    	HashMap<String, String> errors = new HashMap<String, String>();
     	// for each host
     	for (String host : this.hostsArray) {
             req.reset();
@@ -561,6 +561,7 @@ public class APIClient {
             	response = httpClient.execute(req);
             } catch (IOException e) {
             	// on error continue on the next host
+            	errors.put(host, e.getClass().getName());
             	continue;
             }
             try {
@@ -577,6 +578,11 @@ public class APIClient {
                 	EntityUtils.consumeQuietly(response.getEntity());
                     throw new AlgoliaException(404, "Resource does not exist");
                 } else {
+                	try {
+						errors.put(host, EntityUtils.toString(response.getEntity()));
+					} catch (IOException e) {
+						errors.put(host, String.valueOf(code));
+					}
                 	EntityUtils.consumeQuietly(response.getEntity());
                 	// KO, continue
                     continue;
@@ -598,7 +604,16 @@ public class APIClient {
                 req.releaseConnection();
             }
         }
-        throw new AlgoliaException("Hosts unreachable");
+    	StringBuilder builder = new StringBuilder("Hosts unreachable: ");
+    	Boolean first = true;
+    	for (Map.Entry<String, String> entry : errors.entrySet()) {
+    		if (!first) {
+    			builder.append(", ");
+    		}
+    		builder.append(entry.toString());
+    		first = false;
+    	}
+        throw new AlgoliaException(builder.toString());
     }
     
     static public class IndexQuery {
