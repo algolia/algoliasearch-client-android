@@ -15,6 +15,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
 import java.util.jar.Manifest;
 
@@ -34,6 +35,7 @@ import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicHeader;
 import org.apache.http.protocol.HTTP;
+import org.apache.http.util.EntityUtils;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -458,7 +460,7 @@ public class APIClient {
     
     private JSONObject _request(Method m, String url, String json) throws AlgoliaException {
     	HttpRequestBase req;
-
+    	HashMap<String, String> errors = new HashMap<String, String>();
     	// for each host
     	for (String host : this.hostsArray) {
         	switch (m) {
@@ -527,6 +529,7 @@ public class APIClient {
             	response = httpClient.execute(req);
             } catch (IOException e) {
             	// on error continue on the next host
+            	errors.put(host, e.getClass().getName());
             	continue;
             }
             int code = response.getStatusLine().getStatusCode();
@@ -542,6 +545,11 @@ public class APIClient {
                 consumeQuietly(response.getEntity());
                 throw new AlgoliaException("Resource does not exist");
             } else {
+            	try {
+					errors.put(host, EntityUtils.toString(response.getEntity()));
+				} catch (IOException e) {
+					errors.put(host, String.valueOf(code));
+				}
                 consumeQuietly(response.getEntity());
                 // KO, continue
                 continue;
@@ -566,7 +574,16 @@ public class APIClient {
                 throw new AlgoliaException("JSON decode error:" + e.getMessage());
             }
         }
-        throw new AlgoliaException("Hosts unreachable");
+    	StringBuilder builder = new StringBuilder("Hosts unreachable: ");
+    	Boolean first = true;
+    	for (Map.Entry<String, String> entry : errors.entrySet()) {
+    		if (!first) {
+    			builder.append(", ");
+    		}
+    		builder.append(entry.toString());
+    		first = false;
+    	}
+        throw new AlgoliaException(builder.toString());
     }
     
     static public class IndexQuery {
