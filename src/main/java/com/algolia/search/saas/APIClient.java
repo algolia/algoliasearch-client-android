@@ -553,7 +553,11 @@ public class APIClient {
 	            }
             }
             
-            RequestConfig config = RequestConfig.custom().setSocketTimeout(HTTP_TIMEOUT_MS).setConnectTimeout(HTTP_TIMEOUT_MS).build();
+            RequestConfig config = RequestConfig.custom()
+                    .setSocketTimeout(HTTP_TIMEOUT_MS)
+                    .setConnectTimeout(HTTP_TIMEOUT_MS)
+                    .setConnectionRequestTimeout(HTTP_TIMEOUT_MS)
+                    .build();
             req.setConfig(config);
 
             HttpResponse response;
