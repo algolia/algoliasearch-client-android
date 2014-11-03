@@ -62,12 +62,12 @@ If you're using Maven, add the following dependency and repository to your pom f
 <dependency>
     <groupId>com.algolia</groupId>
     <artifactId>algoliasearch</artifactId>
-    <version>[1.2.2,]</version>
+    <version>[1.2.3,]</version>
 </dependency>
 <repository>
     <id>algoliasearch</id>
     <name>Algolia Search Client</name>
-    <url>https://raw.github.com/algolia/algoliasearch-client-java/master/repository</url>
+    <url>https://raw.githubusercontent.com/algolia/algoliasearch-client-java/master/repository</url>
 </repository>
 ```
 
