@@ -6,8 +6,6 @@ import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.net.URL;
-import java.net.URLClassLoader;
 import java.net.URLEncoder;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
@@ -17,7 +15,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.jar.Manifest;
 
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
@@ -100,6 +97,31 @@ public class APIClient {
      * @param hostsArray the list of hosts that you have received for the service
      */
     public APIClient(String applicationID, String apiKey, List<String> hostsArray) {
+    	this(applicationID, apiKey, hostsArray, false, null);
+    }
+    
+    /**
+     * Algolia Search initialization
+     * @param applicationID the application ID you have in your admin interface
+     * @param apiKey a valid API key for the service
+     * @param enableDsn set to true if your account has the Distributed Search Option
+     */
+    public APIClient(String applicationID, String apiKey, boolean enableDsn) {
+    	this(applicationID, apiKey, Arrays.asList(applicationID + "-1.algolia.io", 
+        		applicationID + "-2.algolia.io", 
+        		applicationID + "-3.algolia.io"), enableDsn, null);
+    }
+    
+    
+    /**
+     * Algolia Search initialization
+     * @param applicationID the application ID you have in your admin interface
+     * @param apiKey a valid API key for the service
+     * @param hostsArray the list of hosts that you have received for the service
+     * @param enableDsn set to true if your account has the Distributed Search Option
+     * @param dsnHost override the automatic computation of dsn hostname
+     */
+    public APIClient(String applicationID, String apiKey, List<String> hostsArray, boolean enableDsn, String dsnHost) {
         if (applicationID == null || applicationID.length() == 0) {
             throw new RuntimeException("AlgoliaSearch requires an applicationID.");
         }
@@ -114,6 +136,13 @@ public class APIClient {
         // randomize elements of hostsArray (act as a kind of load-balancer)
         Collections.shuffle(hostsArray);
         this.hostsArray = hostsArray;
+        if (enableDsn || dsnHost != null) {
+        	if (dsnHost != null) {
+        		this.hostsArray.add(0, dsnHost);
+        	} else {
+        		this.hostsArray.add(0, applicationID + "-dsn.algolia.io");
+        	}
+        }
         httpClient = new DefaultHttpClient();
         headers = new HashMap<String, String>();
     }
