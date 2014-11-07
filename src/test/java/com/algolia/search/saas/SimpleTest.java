@@ -347,18 +347,18 @@ public class SimpleTest {
     @Test
     public void test19_user_key() throws AlgoliaException, JSONException {
     	JSONObject newKey = client.addUserKey(Arrays.asList("search"));
-    	try { Thread.sleep(1000); } catch (InterruptedException e) {  }
+    	try { Thread.sleep(3000); } catch (InterruptedException e) {  }
     	assertTrue(!newKey.getString("key").equals(""));
     	JSONObject res = client.listUserKeys();
     	assertTrue(contains(res.getJSONArray("keys"), newKey.getString("key"), "value"));
     	JSONObject getKey = client.getUserKeyACL(newKey.getString("key"));
     	assertEquals(newKey.getString("key"), getKey.getString("value"));
      client.updateUserKey(newKey.getString("key"), Arrays.asList("addObject"));
-     try { Thread.sleep(2000); } catch (Exception e) {}
+     try { Thread.sleep(3000); } catch (Exception e) {}
      getKey = client.getUserKeyACL(newKey.getString("key"));
      assertEquals(getKey.getJSONArray("acl").get(0), "addObject");
     	client.deleteUserKey(getKey.getString("value"));
-    	try { Thread.sleep(1000); } catch (InterruptedException e) {  }
+    	try { Thread.sleep(3000); } catch (InterruptedException e) {  }
     	JSONObject resAfter = client.listUserKeys();
     	assertTrue(!contains(resAfter.getJSONArray("keys"), newKey.getString("key"), "value"));
     }
