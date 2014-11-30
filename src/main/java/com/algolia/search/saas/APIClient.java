@@ -107,9 +107,9 @@ public class APIClient {
      * @param enableDsn set to true if your account has the Distributed Search Option
      */
     public APIClient(String applicationID, String apiKey, boolean enableDsn) {
-    	this(applicationID, apiKey, Arrays.asList(applicationID + "-1.algolia.io", 
-        		applicationID + "-2.algolia.io", 
-        		applicationID + "-3.algolia.io"), enableDsn, null);
+    	this(applicationID, apiKey, Arrays.asList(applicationID + "-1.algolia.net", 
+        		applicationID + "-2.algolia.net", 
+        		applicationID + "-3.algolia.net"), enableDsn, null);
     }
     
     
@@ -140,7 +140,7 @@ public class APIClient {
         	if (dsnHost != null) {
         		this.hostsArray.add(0, dsnHost);
         	} else {
-        		this.hostsArray.add(0, applicationID + "-dsn.algolia.io");
+        		this.hostsArray.add(0, applicationID + "-dsn.algolia.net");
         	}
         }
         httpClient = new DefaultHttpClient();
@@ -558,7 +558,7 @@ public class APIClient {
             	response = httpClient.execute(req);
             } catch (IOException e) {
             	// on error continue on the next host
-            	errors.put(host, e.getClass().getName());
+            	errors.put(host, String.format("%s=%s", e.getClass().getName(), e.getMessage()));
             	continue;
             }
             int code = response.getStatusLine().getStatusCode();
