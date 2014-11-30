@@ -102,9 +102,9 @@ public class APIClient {
      * @param apiKey a valid API key for the service
      */
     public APIClient(String applicationID, String apiKey) {
-        this(applicationID, apiKey, Arrays.asList(applicationID + "-1.algolia.io", 
-						        		applicationID + "-2.algolia.io", 
-						        		applicationID + "-3.algolia.io"));
+        this(applicationID, apiKey, Arrays.asList(applicationID + "-1.algolia.net", 
+						        		applicationID + "-2.algolia.net", 
+						        		applicationID + "-3.algolia.net"));
     }
     
     /**
