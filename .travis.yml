@@ -1,5 +1,6 @@
 language: java
 jdk: oraclejdk7
+script: gradle check --stacktrace --debug
 env:
   global:
   - secure: MjCN5JoPNjtXN4YInXSpT1fk5CxgmLzpgZnAye7N35Cu6U0tqztTuiCU01039dFV2T6HxKNAQnr5o//cfHU4j6HPIY0N5czL/9f3h3pX9BXMZL5/d5HDVTPpCgJTyABXHL7R1wpAJ7Z1YteXtUecwm/Vv7Hpy2zK3843pL7tsoo=
