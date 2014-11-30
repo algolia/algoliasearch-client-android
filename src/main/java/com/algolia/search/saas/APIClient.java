@@ -565,7 +565,7 @@ public class APIClient {
             	response = httpClient.execute(req);
             } catch (IOException e) {
             	// on error continue on the next host
-            	errors.put(host, e.getClass().getName());
+            	errors.put(host, String.format("%s=%s", e.getClass().getName(), e.getMessage()));
             	continue;
             }
             try {
