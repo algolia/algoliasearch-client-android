@@ -3,8 +3,8 @@ apply plugin: 'eclipse'
 
 [compileJava, compileTestJava]*.options.collect {options -> options.encoding = 'UTF-8'} 
 
-sourceCompatibility = 1.5
-version = '1.5.11'
+sourceCompatibility = 1.6
+version = '1.6.0'
 
 jar {
     manifest {

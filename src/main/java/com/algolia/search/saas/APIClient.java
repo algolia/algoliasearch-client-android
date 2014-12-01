@@ -69,7 +69,7 @@ import org.json.JSONTokener;
 public class APIClient {
     private final static int HTTP_TIMEOUT_MS = 30000;
     
-    private final static String version = "1.5.10";
+    private final static String version = "1.6.0";
     
     private final String applicationID;
     private final String apiKey;
