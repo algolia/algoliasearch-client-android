@@ -1,6 +1,625 @@
-CHANGELOG
+Changelog
+=========
 
-2014-10-31 2.2.3
+%%version%% (unreleased)
+------------------------
 
-	* Set ConnectionRequestTimeout as well
+- Add more debug during an host unreachable error. [Xavier Grand]
+
+- Release 1.3.0. [Xavier Grand]
+
+- [maven-release-plugin] prepare release 1.3.0. [Xavier Grand]
+
+- Increase sleep. [Xavier Grand]
+
+- Switch to .net. [Xavier Grand]
+
+- Updated maven's repository url in the pom.xml. [Alexandre C]
+
+- Release 1.2.3. [Sylvain UTARD]
+
+- [maven-release-plugin] prepare for next development iteration.
+  [Sylvain UTARD]
+
+1.2.3 (2014-10-31)
+------------------
+
+- Add ChangeLog. [Sylvain UTARD]
+
+- Set ConnectionRequestTimeout as well. [Sylvain UTARD]
+
+- Updated to last major version. [Sylvain UTARD]
+
+- Release 1.2.3. [Xavier Grand]
+
+- [maven-release-plugin] prepare release 1.2.3. [Xavier Grand]
+
+- Add more information when hosts are unreachable. [Xavier Grand]
+
+- Add setExtraHeader. [Xavier Grand]
+
+- Release 1.2.2. [Sylvain UTARD]
+
+- [maven-release-plugin] prepare for next development iteration.
+  [Sylvain UTARD]
+
+1.2.2 (2014-10-11)
+------------------
+
+- [maven-release-plugin] prepare release 1.2.2. [Sylvain UTARD]
+
+- Embed the API client version in the User-Agent. [Sylvain UTARD]
+
+- Improved documentation. [Sylvain UTARD]
+
+- Cosmetics. [Sylvain UTARD]
+
+- Version 1.2.1. [Julien Lemoine]
+
+- [maven-release-plugin] prepare for next development iteration. [Julien
+  Lemoine]
+
+1.2.1 (2014-09-14)
+------------------
+
+- [maven-release-plugin] prepare release 1.2.1. [Julien Lemoine]
+
+- New version with ignorePlural query parameter. [Julien Lemoine]
+
+- Add the documentation about the update of an APIKey. [Xavier Grand]
+
+- Add update acl. [Xavier Grand]
+
+- Updated default typoTolerance setting & updated removedWordsIfNoResult
+  documentation. [Julien Lemoine]
+
+- Reduce the sleep of waitTask from 1s to 100ms. [Xavier Grand]
+
+- Release 1.2.0. [Sylvain UTARD]
+
+- [maven-release-plugin] prepare for next development iteration.
+  [Sylvain UTARD]
+
+1.2.0 (2014-08-20)
+------------------
+
+- [maven-release-plugin] prepare release 1.2.0. [Sylvain UTARD]
+
+- GetObject: return null instead of Exception if missing. [Sylvain
+  UTARD]
+
+- Store the HTTP status code if relevant. [Sylvain UTARD]
+
+- Add documentation about removeWordsIfNoResult. [Xavier Grand]
+
+- Version 1.1.23 new prototype for removeWordsIfNoResult. [Julien
+  Lemoine]
+
+- [maven-release-plugin] prepare for next development iteration. [Julien
+  Lemoine]
+
+1.1.23 (2014-08-13)
+-------------------
+
+- [maven-release-plugin] prepare release 1.1.23. [Julien Lemoine]
+
+- New prototype for removeWordsIfNoResult. [Julien Lemoine]
+
+- [maven-release-plugin] prepare for next development iteration. [Julien
+  Lemoine]
+
+1.1.22 (2014-08-13)
+-------------------
+
+- [maven-release-plugin] prepare release 1.1.22. [Julien Lemoine]
+
+- Added support of removeLastWordsIfNoResult &
+  removeFirstWordsIfNoResult. [Julien Lemoine]
+
+- Fixed typos. [Julien Lemoine]
+
+- Fixed links. [Julien Lemoine]
+
+- Added aroundLatLngViaIP documentation. [Julien Lemoine]
+
+- Release 1.1.21. [Sylvain UTARD]
+
+- [maven-release-plugin] prepare for next development iteration.
+  [Sylvain UTARD]
+
+1.1.21 (2014-08-04)
+-------------------
+
+- [maven-release-plugin] prepare release 1.1.21. [Sylvain UTARD]
+
+- Merge branch 'master' of https://github.com/algolia/algoliasearch-
+  client-java. [Julien Lemoine]
+
+- Added aroundLatitudeLongitudeViaIP. [Julien Lemoine]
+
+- Added documentation of suffix/prefix index name matching in API key.
+  [Julien Lemoine]
+
+- Change the cluster. [Xavier Grand]
+
+- Added restrictSearchableAttributes. [Julien Lemoine]
+
+- Release 1.1.20. [Sylvain UTARD]
+
+- [maven-release-plugin] prepare for next development iteration.
+  [Sylvain UTARD]
+
+1.1.20 (2014-07-24)
+-------------------
+
+- [maven-release-plugin] prepare release 1.1.20. [Sylvain UTARD]
+
+- Added restrictSearchableAttributes. [Julien Lemoine]
+
+- Fix synonyms and replace synonyms. [Xavier Grand]
+
+- Documentation: Added deleteByQuery and multipleQueries. [Xavier Grand]
+
+- Fix analytics flag. [Xavier Grand]
+
+- Release 1.1.19. [Sylvain UTARD]
+
+- [maven-release-plugin] prepare for next development iteration.
+  [Sylvain UTARD]
+
+1.1.19 (2014-07-17)
+-------------------
+
+- [maven-release-plugin] prepare release 1.1.19. [Sylvain UTARD]
+
+- Added notes on attributesToIndex. [Julien Lemoine]
+
+- Update README.md (getObjects + fix typo flot => float) [Xavier Grand]
+
+- Add deleteByQuery and getObjects. [Xavier Grand]
+
+- Added disableTypoToleranceOn & altCorrections index settings. [Julien
+  Lemoine]
+
+- Fixed waitTask snippet. [Sylvain UTARD]
+
+- Add typoTolerance & allowsTyposOnNumericTokens query parameters.
+  [Sylvain UTARD]
+
+- Release 1.1.18. [Sylvain UTARD]
+
+- [maven-release-plugin] prepare for next development iteration.
+  [Sylvain UTARD]
+
+1.1.18 (2014-06-09)
+-------------------
+
+- [maven-release-plugin] prepare release 1.1.18. [Sylvain UTARD]
+
+- Add typoTolerance + allowTyposOnNumericTokens query parameters
+  handling. [Sylvain UTARD]
+
+- Documentation: Added words ranking parameter. [Julien Lemoine]
+
+- Added asc(attributeName) & desc(attributeName) documentation in index
+  settings. [Julien Lemoine]
+
+- Java client version 1.1.17 released. [Julien Lemoine]
+
+- [maven-release-plugin] prepare for next development iteration. [Julien
+  Lemoine]
+
+1.1.17 (2014-05-21)
+-------------------
+
+- [maven-release-plugin] prepare release 1.1.17. [Julien Lemoine]
+
+- AddUserKey now support an array of string for target indexes. [Julien
+  Lemoine]
+
+- Updated synonyms examples. [Xavier Grand]
+
+- Fix typo. [Xavier Grand]
+
+- Add a note about distinct and the empty queries. [Xavier Grand]
+
+- 1.1.16 release. [Sylvain UTARD]
+
+- [maven-release-plugin] prepare for next development iteration.
+  [Sylvain UTARD]
+
+1.1.16 (2014-05-13)
+-------------------
+
+- [maven-release-plugin] prepare release 1.1.16. [Sylvain UTARD]
+
+- Disable tests when releasing. [Sylvain UTARD]
+
+- Maven is going to make me crazy. [Sylvain UTARD]
+
+- More test fixes. [Sylvain UTARD]
+
+- Adding user keys is an asynchronous process too but doesn't return any
+  taskID -> sleep. [Sylvain UTARD]
+
+- 1.1.15 release. [Sylvain UTARD]
+
+1.1.15 (2014-05-02)
+-------------------
+
+- Added support of enableAnalytics, enableSynonyms &
+  enableReplaceSynonymsInHighlight in Query class. [Julien Lemoine]
+
+- Added analytics,synonyms,enableSynonymsInHighlight query parameters.
+  [Julien Lemoine]
+
+- New numericFilters documentation. [Julien Lemoine]
+
+- 1.1.14 release. [Sylvain UTARD]
+
+1.1.14 (2014-04-01)
+-------------------
+
+- Unused import. [Sylvain UTARD]
+
+- Improved API errors handling. [Sylvain UTARD]
+
+- S/setAvancedSyntax/enableAdvancedSyntax/ [Sylvain UTARD]
+
+- Add advancedSyntax query parameter. [Sylvain UTARD]
+
+- Add or for facetFilter. [Xavier Grand]
+
+- Add onlyErrors parametter to getLogs. [Xavier Grand]
+
+- Change sha256 to hmac with sha256. [Xavier Grand]
+
+- Add test on multipleQueries. [Xavier Grand]
+
+- Add multipleQueries. [Xavier Grand]
+
+- 1.1.13 release. [Sylvain UTARD]
+
+- [maven-release-plugin] prepare for next development iteration.
+  [Sylvain UTARD]
+
+1.1.13 (2014-02-26)
+-------------------
+
+- [maven-release-plugin] prepare release 1.1.13. [Sylvain UTARD]
+
+- Ability to generate secured API keys + specify list of indexes
+  targeted by user keys. [Sylvain UTARD]
+
+- Added deleteObjects. [Xavier Grand]
+
+- Fixed regex for travis build. [Xavier Grand]
+
+- Delete each index used by the test suite at the end of the execution.
+  [Xavier Grand]
+
+- Add maxNumberOfFacets query parameter. [Sylvain UTARD]
+
+- Updated README. [Sylvain UTARD]
+
+- S/setNbHitsPerPage/setHitsPerPage/ [Sylvain UTARD]
+
+- Eclipse: ignore jacoco-maven-plugin's prepare-agent execution.
+  [Sylvain UTARD]
+
+- Added comments to ignore unreachable lines for coveralls. [Xavier
+  Grand]
+
+- Removed unused imports. [Sylvain UTARD]
+
+- Improved test suite. [Xavier Grand]
+
+- Set project.build.sourceEncoding to UTF-8. [Sylvain UTARD]
+
+- Trying to fix coveralls. [Xavier Grand]
+
+- README: add coveralls badge. [Sylvain UTARD]
+
+- README: add Github version. [Sylvain UTARD]
+
+- Set tagNameFormat to @{project.version} [Sylvain UTARD]
+
+- Updated README. [Sylvain UTARD]
+
+- Release the connection. [Sylvain UTARD]
+
+- Trying to add coveralls. [Xavier Grand]
+
+- Trying to add travis. [Xavier Grand]
+
+- Improved test suite. [Xavier Grand]
+
+- 1.1.12 release. [Sylvain UTARD]
+
+- [maven-release-plugin] prepare for next development iteration.
+  [Sylvain UTARD]
+
+1.1.12 (2014-02-01)
+-------------------
+
+- [maven-release-plugin] prepare release algoliasearch-1.1.12. [Sylvain
+  UTARD]
+
+- Added batch function. [Xavier Grand]
+
+- Fixed error in doc generation. [Julien Lemoine]
+
+- Fixed typos (result of doc generator) Added slaves parameter
+  documentation in Index settings. [Julien Lemoine]
+
+- Algoliasearch 1.1.11. [Julien Lemoine]
+
+- [maven-release-plugin] prepare for next development iteration. [Julien
+  Lemoine]
+
+1.1.11 (2014-01-02)
+-------------------
+
+- [maven-release-plugin] prepare release algoliasearch-1.1.11. [Julien
+  Lemoine]
+
+- Fix maven name. [Julien Lemoine]
+
+- Added distinct parameters Added support of Rate Limit forward Updated
+  documentation. [Julien Lemoine]
+
+- Add version 1.1.10 to repository. [Sylvain UTARD]
+
+- Add version 1.1.10 to repository. [Sylvain UTARD]
+
+- [maven-release-plugin] prepare for next development iteration.
+  [Sylvain UTARD]
+
+1.1.10 (2013-12-26)
+-------------------
+
+- [maven-release-plugin] prepare release algoliasearch-1.1.10. [Sylvain
+  UTARD]
+
+- Fixed missing equals. [Sylvain UTARD]
+
+- Improved readability of search & settings parameters. [Julien Lemoine]
+
+- Fixed code comment. [Julien Lemoine]
+
+- 1.1.9 released. [Julien Lemoine]
+
+- [maven-release-plugin] prepare for next development iteration. [Julien
+  Lemoine]
+
+1.1.9 (2013-12-06)
+------------------
+
+- [maven-release-plugin] prepare release algoliasearch-1.1.9. [Julien
+  Lemoine]
+
+- Added missing method. [Julien Lemoine]
+
+- Removed $ directory. [Julien Lemoine]
+
+- Release 1.1.8. [Julien Lemoine]
+
+- [maven-release-plugin] prepare for next development iteration. [Julien
+  Lemoine]
+
+1.1.8 (2013-12-06)
+------------------
+
+- [maven-release-plugin] prepare release algoliasearch-1.1.8. [Julien
+  Lemoine]
+
+- Added partialUpdateObjects method Added browse method & ACL. [Julien
+  Lemoine]
+
+- Merge branch 'master' of https://github.com/algolia/algoliasearch-
+  client-java. [Julien Lemoine]
+
+- Fixed typo. [Julien Lemoine]
+
+- Release 1.1.7. [Julien Lemoine]
+
+- [maven-release-plugin] prepare for next development iteration. [Julien
+  Lemoine]
+
+- [maven-release-plugin] prepare release algoliasearch-$ [Julien
+  Lemoine]
+
+- Fixed typo in facetFilters, numericFilters & tagFilters Query methods.
+  [Julien Lemoine]
+
+- Renaming. [Sylvain UTARD]
+
+- Release 1.1.6. [Julien Lemoine]
+
+- [maven-release-plugin] prepare for next development iteration. [Julien
+  Lemoine]
+
+1.1.6 (2013-11-07)
+------------------
+
+- [maven-release-plugin] prepare release algoliasearch-1.1.6. [Julien
+  Lemoine]
+
+- [maven-release-plugin] prepare release algoliasearch-1.1.6. [Julien
+  Lemoine]
+
+- [maven-release-plugin] prepare release algoliasearch-1.1.6. [Julien
+  Lemoine]
+
+- Fixed compilation issue version 1.1.6. [Julien Lemoine]
+
+-  added maven script. [Julien Lemoine]
+
+- Documented new features. [Julien Lemoine]
+
+- Add empty query string tests. Cosmetics (tabs -> spaces + DRY)
+  [Sylvain UTARD]
+
+- Release 1.1.5. [Sylvain UTARD]
+
+- [maven-release-plugin] prepare for next development iteration.
+  [Sylvain UTARD]
+
+1.1.5 (2013-10-31)
+------------------
+
+- [maven-release-plugin] prepare release algoliasearch-1.1.5. [Sylvain
+  UTARD]
+
+- Set HTTP timeout to 30sec. [Sylvain UTARD]
+
+- Release 1.1.4. [Sylvain UTARD]
+
+- [maven-release-plugin] prepare for next development iteration.
+  [Sylvain UTARD]
+
+1.1.4 (2013-10-30)
+------------------
+
+- [maven-release-plugin] prepare release algoliasearch-1.1.4. [Sylvain
+  UTARD]
+
+- Refactoring + amend d93922b. [Sylvain UTARD]
+
+- Add unit tests. [Sylvain UTARD]
+
+- Bump version. [Sylvain UTARD]
+
+- Release 1.1.3. [Sylvain UTARD]
+
+- [maven-release-plugin] prepare for next development iteration.
+  [Sylvain UTARD]
+
+1.1.3 (2013-10-30)
+------------------
+
+- [maven-release-plugin] prepare release algoliasearch-1.1.3. [Sylvain
+  UTARD]
+
+- Consume response when an error occurs. [Sylvain UTARD]
+
+- Release 1.1.2. [Sylvain UTARD]
+
+- [maven-release-plugin] prepare for next development iteration.
+  [Sylvain UTARD]
+
+1.1.2 (2013-10-21)
+------------------
+
+- [maven-release-plugin] prepare release algoliasearch-1.1.2. [Sylvain
+  UTARD]
+
+- Bump to 1.1.2. [Sylvain UTARD]
+
+- Improve move & copy doc. [Nicolas Dessaigne]
+
+- New method that expose geoPrecision in aroundLatLng. [Julien Lemoine]
+
+- Remoted Android async call from documentation. [Julien Lemoine]
+
+- Release algoliasearch 1.1.0. [Sylvain UTARD]
+
+- [maven-release-plugin] prepare for next development iteration.
+  [Sylvain UTARD]
+
+1.1.0 (2013-10-13)
+------------------
+
+- [maven-release-plugin] prepare release algoliasearch-1.1.0. [Sylvain
+  UTARD]
+
+- Use JSONObject instead of String. [Sylvain UTARD]
+
+- Updated README to use JSONObjects instead of bulk strings. [Sylvain
+  UTARD]
+
+- Updated README with Maven instructions. [Sylvain UTARD]
+
+- Release algoliasearch 1.0.0. [Sylvain UTARD]
+
+- [maven-release-plugin] prepare for next development iteration.
+  [Sylvain UTARD]
+
+1.0.0 (2013-10-13)
+------------------
+
+- [maven-release-plugin] prepare release algoliasearch-1.0.0. [Sylvain
+  UTARD]
+
+- Mavenification. [Sylvain UTARD]
+
+- Renamed parameters of typo tolerance configuration. [Julien Lemoine]
+
+- QueryType=prefixLast is now the default behavior Documented
+  unordered(attributeName) [Julien Lemoine]
+
+- Added missing newline. [Julien Lemoine]
+
+- Added helper updateObjects(JSONArray) [Julien Lemoine]
+
+- Added a helper addObjects(JSONArray) [Julien Lemoine]
+
+- Moved numerics close to tags in doc other minor corrections. [Nicolas
+  Dessaigne]
+
+- Fixed numerics doc. [Julien Lemoine]
+
+- Document new features: numerics/copy/move/logs. [Julien Lemoine]
+
+- Added support of copy/move index + logs + numerics in Java client.
+  [Julien Lemoine]
+
+- Check that objectID is not empty. [Julien Lemoine]
+
+- Added "your account" link. [Julien Lemoine]
+
+- Add a link to download in doc. [Julien Lemoine]
+
+- Correction. [Nicolas Dessaigne]
+
+- Replaced cities by contacts. [Julien Lemoine]
+
+- Added a new constructor that automatically set hostnames. [Julien
+  Lemoine]
+
+- Updated ranking doc. [Julien Lemoine]
+
+- Fixed error in method name. [Julien Lemoine]
+
+- Added List indexes / delete index / ACLS documentation. Added per
+  Index ACLS. [Julien Lemoine]
+
+- Updates list of hostnames. [Julien Lemoine]
+
+- Added support of attributesToSnippet & queryType. [Julien Lemoine]
+
+- Removed obsolete comment. [Julien Lemoine]
+
+- Fixed typo in comment. [Julien Lemoine]
+
+- Remote unfinished sentence. [Julien Lemoine]
+
+- Removed obsolete comment. [Julien Lemoine]
+
+- Refactor to avoid package clash with offline SDK. [Julien Lemoine]
+
+- Added missing URLEncode on deleteIndex method. [Julien Lemoine]
+
+- Fixed indentation. [Julien Lemoine]
+
+- Removed AlgoliaException at Initialization and removed debug message.
+  [Julien Lemoine]
+
+- Improved a little json formatting and replaced QueryParameters by
+  Query. [Julien Lemoine]
+
+- Fixed typo. [Julien Lemoine]
+
+- Initial import of Java client. [Julien Lemoine]
+
 
