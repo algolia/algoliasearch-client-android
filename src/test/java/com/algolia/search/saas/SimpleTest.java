@@ -8,6 +8,7 @@ import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 
 import org.json.JSONArray;
@@ -599,6 +600,60 @@ public class SimpleTest {
     	index.deleteByQuery(new Query("San"));
     	JSONObject res = index.search(new Query(""));
     	assertEquals(1, res.getInt("nbHits"));
+    }
+    
+    @Test
+    public void test37_disjunctiveFaceting() throws AlgoliaException, JSONException {
+    	index.setSettings(new JSONObject("{\"attributesForFaceting\":[\"city\", \"stars\", \"facilities\"]}"));
+    	JSONObject task = index.addObjects(new JSONArray()
+    		.put(new JSONObject("{\"name\":\"Hotel A\", \"stars\":\"*\", \"facilities\":[\"wifi\", \"bath\", \"spa\"], \"city\":\"Paris\"}"))
+    		.put(new JSONObject("{\"name\":\"Hotel B\", \"stars\":\"*\", \"facilities\":[\"wifi\"], \"city\":\"Paris\"}"))
+    		.put(new JSONObject("{\"name\":\"Hotel C\", \"stars\":\"**\", \"facilities\":[\"bath\"], \"city\":\"San Fancisco\"}"))
+    		.put(new JSONObject("{\"name\":\"Hotel D\", \"stars\":\"****\", \"facilities\":[\"spa\"], \"city\":\"Paris\"}"))
+    		.put(new JSONObject("{\"name\":\"Hotel E\", \"stars\":\"****\", \"facilities\":[\"spa\"], \"city\":\"New York\"}")));
+    	index.waitTask(task.getString("taskID"));
+    	HashMap<String, List<String>> refinements = new HashMap<String, List<String>>();
+    	List<String> disjunctiveFacets = new ArrayList<String>();
+    	List<String> facets = new ArrayList<String>();
+    	facets.add("city");
+    	disjunctiveFacets.add("stars");
+    	disjunctiveFacets.add("facilities");
+    	JSONObject answer = index.disjunctiveFaceting(new Query("h").setFacets(facets), disjunctiveFacets);
+    	assertEquals(5,  answer.getInt("nbHits"));
+    	assertEquals(1,  answer.getJSONObject("facets").length());
+    	assertEquals(2,  answer.getJSONObject("disjunctiveFacets").length());
+    	
+    	ArrayList<String> refineValue = new ArrayList<String>();
+    	refineValue.add("*");
+    	refinements.put("stars", refineValue);
+    	answer = index.disjunctiveFaceting(new Query("h").setFacets(facets), disjunctiveFacets, refinements);
+    	assertEquals(2,  answer.getInt("nbHits"));
+    	assertEquals(1,  answer.getJSONObject("facets").length());
+    	assertEquals(2,  answer.getJSONObject("disjunctiveFacets").length());
+    	assertEquals(2,  answer.getJSONObject("disjunctiveFacets").getJSONObject("stars").getInt("*"));
+    	assertEquals(1,  answer.getJSONObject("disjunctiveFacets").getJSONObject("stars").getInt("**"));
+    	assertEquals(2,  answer.getJSONObject("disjunctiveFacets").getJSONObject("stars").getInt("****"));
+    	
+    	refineValue = new ArrayList<String>();
+    	refineValue.add("Paris");
+    	refinements.put("city", refineValue);
+    	answer = index.disjunctiveFaceting(new Query("h").setFacets(facets), disjunctiveFacets, refinements);
+    	assertEquals(2,  answer.getInt("nbHits"));
+    	assertEquals(1,  answer.getJSONObject("facets").length());
+    	assertEquals(2,  answer.getJSONObject("disjunctiveFacets").length());
+    	assertEquals(2,  answer.getJSONObject("disjunctiveFacets").getJSONObject("stars").getInt("*"));
+    	assertEquals(1,  answer.getJSONObject("disjunctiveFacets").getJSONObject("stars").getInt("****"));
+    	
+    	refineValue = new ArrayList<String>();
+    	refineValue.add("*");
+    	refineValue.add("****");
+    	refinements.put("stars", refineValue);
+    	answer = index.disjunctiveFaceting(new Query("h").setFacets(facets), disjunctiveFacets, refinements);
+    	assertEquals(3,  answer.getInt("nbHits"));
+    	assertEquals(1,  answer.getJSONObject("facets").length());
+    	assertEquals(2,  answer.getJSONObject("disjunctiveFacets").length());
+    	assertEquals(2,  answer.getJSONObject("disjunctiveFacets").getJSONObject("stars").getInt("*"));
+    	assertEquals(1,  answer.getJSONObject("disjunctiveFacets").getJSONObject("stars").getInt("****"));
     }
 
 }

@@ -2,6 +2,7 @@ package com.algolia.search.saas;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.json.JSONArray;
@@ -109,6 +110,44 @@ public class Query {
         advancedSyntax = false;
         analytics = synonyms = replaceSynonyms = typoTolerance = allowTyposOnNumericTokens = true;
         removeWordsIfNoResult = RemoveWordsType.REMOVE_NONE;
+    }
+    
+    public Query(Query other) {
+        if (other.attributesToHighlight != null) {
+        	attributesToHighlight = new ArrayList<String>(other.attributesToHighlight);
+        }
+        if (other.attributes != null) {
+        	attributes = new ArrayList<String>(other.attributes);
+        }
+        if (other.attributesToSnippet != null) {
+        	attributesToSnippet = new ArrayList<String>(other.attributesToSnippet);
+        }
+        minWordSizeForApprox1 = other.minWordSizeForApprox1;
+        minWordSizeForApprox2 = other.minWordSizeForApprox2;
+        getRankingInfo = other.getRankingInfo;
+        ignorePlural = other.ignorePlural;
+        distinct = other.distinct;
+        advancedSyntax = other.advancedSyntax;
+        page = other.page;
+        hitsPerPage = other.hitsPerPage;
+        restrictSearchableAttributes = other.restrictSearchableAttributes;
+        tags = other.tags;
+        numerics = other.numerics;
+        insideBoundingBox = other.insideBoundingBox;
+        aroundLatLong = other.aroundLatLong;
+        aroundLatLongViaIP = other.aroundLatLongViaIP;
+        query = other.query;
+        queryType = other.queryType;
+        optionalWords = other.optionalWords;
+        facets = other.facets;
+        facetsFilter = other.facetsFilter;
+        maxNumberOfFacets = other.maxNumberOfFacets;
+        analytics = other.analytics;
+        synonyms = other.synonyms;
+        replaceSynonyms = other.replaceSynonyms;
+        typoTolerance = other.typoTolerance;
+        allowTyposOnNumericTokens = other.allowTyposOnNumericTokens;
+        removeWordsIfNoResult = other.removeWordsIfNoResult;
     }
 
     /**
