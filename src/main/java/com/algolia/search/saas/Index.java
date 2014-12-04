@@ -658,7 +658,7 @@ public class Index {
      *     ex: { "my_facet1" => ["my_value1", "my_value2"], "my_disjunctive_facet1" => ["my_value1", "my_value2"] }
      * @throws AlgoliaException 
      */
-    public JSONObject disjunctiveFaceting(Query query, List<String> disjunctiveFacets, Map<String, List<String>> refinements) throws AlgoliaException {
+    public JSONObject searchDisjunctiveFaceting(Query query, List<String> disjunctiveFacets, Map<String, List<String>> refinements) throws AlgoliaException {
     	if (refinements == null) {
     		refinements = new HashMap<String, List<String>>();
     	}
@@ -779,7 +779,7 @@ public class Index {
 			throw new Error(e);
 		}
     }
-    public JSONObject disjunctiveFaceting(Query query, List<String> disjunctiveFacets) throws AlgoliaException {
-    	return disjunctiveFaceting(query, disjunctiveFacets, null);
+    public JSONObject searchDisjunctiveFaceting(Query query, List<String> disjunctiveFacets) throws AlgoliaException {
+    	return searchDisjunctiveFaceting(query, disjunctiveFacets, null);
     }
 }

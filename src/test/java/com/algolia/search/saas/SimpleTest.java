@@ -618,7 +618,7 @@ public class SimpleTest {
     	facets.add("city");
     	disjunctiveFacets.add("stars");
     	disjunctiveFacets.add("facilities");
-    	JSONObject answer = index.disjunctiveFaceting(new Query("h").setFacets(facets), disjunctiveFacets);
+    	JSONObject answer = index.searchDisjunctiveFaceting(new Query("h").setFacets(facets), disjunctiveFacets);
     	assertEquals(5,  answer.getInt("nbHits"));
     	assertEquals(1,  answer.getJSONObject("facets").length());
     	assertEquals(2,  answer.getJSONObject("disjunctiveFacets").length());
@@ -626,7 +626,7 @@ public class SimpleTest {
     	ArrayList<String> refineValue = new ArrayList<String>();
     	refineValue.add("*");
     	refinements.put("stars", refineValue);
-    	answer = index.disjunctiveFaceting(new Query("h").setFacets(facets), disjunctiveFacets, refinements);
+    	answer = index.searchDisjunctiveFaceting(new Query("h").setFacets(facets), disjunctiveFacets, refinements);
     	assertEquals(2,  answer.getInt("nbHits"));
     	assertEquals(1,  answer.getJSONObject("facets").length());
     	assertEquals(2,  answer.getJSONObject("disjunctiveFacets").length());
@@ -637,7 +637,7 @@ public class SimpleTest {
     	refineValue = new ArrayList<String>();
     	refineValue.add("Paris");
     	refinements.put("city", refineValue);
-    	answer = index.disjunctiveFaceting(new Query("h").setFacets(facets), disjunctiveFacets, refinements);
+    	answer = index.searchDisjunctiveFaceting(new Query("h").setFacets(facets), disjunctiveFacets, refinements);
     	assertEquals(2,  answer.getInt("nbHits"));
     	assertEquals(1,  answer.getJSONObject("facets").length());
     	assertEquals(2,  answer.getJSONObject("disjunctiveFacets").length());
@@ -648,7 +648,7 @@ public class SimpleTest {
     	refineValue.add("*");
     	refineValue.add("****");
     	refinements.put("stars", refineValue);
-    	answer = index.disjunctiveFaceting(new Query("h").setFacets(facets), disjunctiveFacets, refinements);
+    	answer = index.searchDisjunctiveFaceting(new Query("h").setFacets(facets), disjunctiveFacets, refinements);
     	assertEquals(3,  answer.getInt("nbHits"));
     	assertEquals(1,  answer.getJSONObject("facets").length());
     	assertEquals(2,  answer.getJSONObject("disjunctiveFacets").length());
