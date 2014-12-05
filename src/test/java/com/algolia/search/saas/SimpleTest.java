@@ -24,6 +24,7 @@ import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 import org.junit.runners.MethodSorters;
 
+import com.algolia.search.saas.APIClient.LogType;
 import com.algolia.search.saas.Query.QueryType;
 
 @RunWith(JUnit4.class)
@@ -441,6 +442,8 @@ public class SimpleTest {
     	res = client.getLogs(0, 1);
     	assertTrue(res.getJSONArray("logs").length() == 1);
     	res = client.getLogs(0, 1, false);
+    	assertTrue(res.getJSONArray("logs").length() == 1);
+    	res = client.getLogs(0, 1, LogType.LOG_ALL);
     	assertTrue(res.getJSONArray("logs").length() == 1);
     }
     

@@ -221,6 +221,18 @@ public class APIClient {
     	}   	
     }
     
+    public enum LogType
+    {
+      /// all query logs
+      LOG_QUERY,
+      /// all build logs
+      LOG_BUILD,
+      /// all error logs
+      LOG_ERROR,
+      /// all logs
+      LOG_ALL
+    }
+    
     /**
      * Return 10 last log entries.
      */
@@ -241,9 +253,35 @@ public class APIClient {
      * Return last logs entries.
      * @param offset Specify the first entry to retrieve (0-based, 0 is the most recent log entry).
      * @param length Specify the maximum number of entries to retrieve starting at offset. Maximum allowed value: 1000.
+     * @param onlyErrors Retrieve only logs with an httpCode different than 200 and 201
      */
     public JSONObject getLogs(int offset, int length, boolean onlyErrors) throws AlgoliaException {
     	 return getRequest("/1/logs?offset=" + offset + "&length=" + length + "&onlyErrors=" + onlyErrors);
+    }
+    
+    /**
+     * Return last logs entries.
+     * @param offset Specify the first entry to retrieve (0-based, 0 is the most recent log entry).
+     * @param length Specify the maximum number of entries to retrieve starting at offset. Maximum allowed value: 1000.
+     * @param logType Specify the type of log to retrieve
+     */
+    public JSONObject getLogs(int offset, int length, LogType logType) throws AlgoliaException {
+    	String type = null;
+    	switch (logType) {
+    	case LOG_BUILD:
+    		type = "build";
+    		break;
+    	case LOG_QUERY:
+    		type = "query";
+    		break;
+    	case LOG_ERROR:
+    		type = "error";
+    		break;
+    	case LOG_ALL:
+    		type = "all";
+    		break;
+    	}
+    	 return getRequest("/1/logs?offset=" + offset + "&length=" + length + "&type=" + type);
     }
     
     /**
