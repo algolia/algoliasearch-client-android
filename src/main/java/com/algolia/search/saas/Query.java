@@ -49,6 +49,18 @@ public class Query {
        // No specific processing is done when a query does not return any result.
        REMOVE_NONE
     }
+    
+    public enum TypoTolerance
+    {
+      /// the typotolerance is enabled and all typos are retrieved. (Default behavior)
+      TYPO_TRUE,
+      /// the typotolerance is disabled.
+      TYPO_FALSE,
+      /// only keep results with the minimum number of typos.
+      TYPO_MIN,
+      /// the typotolerance with a distance=2 is disabled if the results contain hits without typo.
+      TYPO_STRICT
+    }
 
     protected List<String> attributes;
     protected List<String> attributesToHighlight;
@@ -76,9 +88,9 @@ public class Query {
     protected boolean analytics;
     protected boolean synonyms;
     protected boolean replaceSynonyms;
-    protected boolean typoTolerance;
     protected boolean allowTyposOnNumericTokens;
     protected RemoveWordsType removeWordsIfNoResult;
+    protected TypoTolerance typoTolerance;
 
     public Query(String query) {
         minWordSizeForApprox1 = 3;
@@ -92,7 +104,8 @@ public class Query {
         queryType = QueryType.PREFIX_LAST;
         maxNumberOfFacets = -1;
         advancedSyntax = false;
-        analytics = synonyms = replaceSynonyms = typoTolerance = allowTyposOnNumericTokens = true;
+        analytics = synonyms = replaceSynonyms = allowTyposOnNumericTokens = true;
+        typoTolerance = TypoTolerance.TYPO_TRUE;
         removeWordsIfNoResult = RemoveWordsType.REMOVE_NONE;
     }
     
@@ -107,7 +120,8 @@ public class Query {
         queryType = QueryType.PREFIX_ALL;
         maxNumberOfFacets = -1;
         advancedSyntax = false;
-        analytics = synonyms = replaceSynonyms = typoTolerance = allowTyposOnNumericTokens = true;
+        analytics = synonyms = replaceSynonyms = allowTyposOnNumericTokens = true;
+        typoTolerance = TypoTolerance.TYPO_TRUE;
         removeWordsIfNoResult = RemoveWordsType.REMOVE_NONE;
     }
 
@@ -219,7 +233,19 @@ public class Query {
      * @param If set to false, disable typo-tolerance. Default to true.
      */
     public Query enableTypoTolerance(boolean enabled) {
-        this.typoTolerance = enabled;
+    	if (enabled) {
+    		this.typoTolerance = TypoTolerance.TYPO_TRUE;
+    	} else {
+    		this.typoTolerance = TypoTolerance.TYPO_FALSE;
+    	}
+        return this;
+    }
+    
+    /**
+     * @param This option allow to control the number of typo in the results set.
+     */
+    public Query setTypoTolerance(TypoTolerance typoTolerance) {
+        this.typoTolerance = typoTolerance;
         return this;
     }
 
@@ -500,10 +526,24 @@ public class Query {
                     first = false;
                 }
             }
-            if (!typoTolerance) {
+            if (typoTolerance != TypoTolerance.TYPO_TRUE) {
                 if (stringBuilder.length() > 0)
                     stringBuilder.append('&');
-                stringBuilder.append("typoTolerance=false");
+                stringBuilder.append("typoTolerance=");
+                switch (typoTolerance) {
+                case TYPO_FALSE:
+                	stringBuilder.append("false");
+                	break;
+                case TYPO_MIN:
+                	stringBuilder.append("min");
+                	break;
+                case TYPO_STRICT:
+                	stringBuilder.append("strict");
+                	break;
+                case TYPO_TRUE:
+                	stringBuilder.append("true");
+                	break;
+                }
             }
             if (!allowTyposOnNumericTokens) {
                 if (stringBuilder.length() > 0)
