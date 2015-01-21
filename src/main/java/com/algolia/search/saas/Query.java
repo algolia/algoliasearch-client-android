@@ -154,7 +154,7 @@ public class Query {
         queryType = other.queryType;
         optionalWords = other.optionalWords;
         facets = other.facets;
-        facetFilters = other.facetsFilter ? other.facetsFilter : other.facetFilters;
+        facetFilters = other.facetFilters;
         maxNumberOfFacets = other.maxNumberOfFacets;
         analytics = other.analytics;
         synonyms = other.synonyms;
