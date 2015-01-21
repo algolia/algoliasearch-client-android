@@ -84,7 +84,7 @@ public class Query {
     protected QueryType queryType;
     protected String optionalWords;
     protected String facets;
-    protected String facetsFilter;
+    protected String facetFilters;
     protected int maxNumberOfFacets;
     protected boolean analytics;
     protected boolean synonyms;
@@ -154,7 +154,7 @@ public class Query {
         queryType = other.queryType;
         optionalWords = other.optionalWords;
         facets = other.facets;
-        facetsFilter = other.facetsFilter;
+        facetFilters = other.facetsFilter ? other.facetsFilter : other.facetFilters;
         maxNumberOfFacets = other.maxNumberOfFacets;
         analytics = other.analytics;
         synonyms = other.synonyms;
@@ -438,7 +438,7 @@ public class Query {
       for (String facet : facets) {
         obj.put(facet);
       }
-      this.facetsFilter = obj.toString();
+      this.facetFilters = obj.toString();
       return this;
     }
     
@@ -447,8 +447,8 @@ public class Query {
      * To OR facets, you must add parentheses. For example: `(category:Book,category:Movie),author:John%20Doe`.
      * You can also use a JSON string array encoding, for example `[[\"category:Book\",\"category:Movie\"],\"author:John Doe\"]`.
      */
-    public Query setFacetFilters(String facetsFilter) {
-      this.facetsFilter = facetsFilter;
+    public Query setFacetFilters(String facetFilters) {
+      this.facetFilters = facetFilters;
       return this;
     }
     
@@ -698,11 +698,11 @@ public class Query {
                 stringBuilder.append("facets=");
                 stringBuilder.append(URLEncoder.encode(facets, "UTF-8"));
             }
-            if (facetsFilter != null) {
+            if (facetFilters != null) {
                 if (stringBuilder.length() > 0)
                     stringBuilder.append('&');
                 stringBuilder.append("facetFilters=");
-                stringBuilder.append(URLEncoder.encode(facetsFilter, "UTF-8"));
+                stringBuilder.append(URLEncoder.encode(facetFilters, "UTF-8"));
             }
             if (maxNumberOfFacets > 0) {
                 if (stringBuilder.length() > 0)
