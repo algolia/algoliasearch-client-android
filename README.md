@@ -17,7 +17,7 @@ Algolia’s Search API makes it easy to deliver a great search experience in you
 
 This Android client let you easily use the Algolia Search API from your Android Application. It wraps [Algolia's REST API](http://www.algolia.com/doc/rest_api).
 It is based on our [Java API client](https://github.com/algolia/algoliasearch-client-java) and  includes an easy to use asynchronous API to avoid networks calls on UI Thread.
-[![Build Status](https://travis-ci.org/algolia/algoliasearch-client-android.png?branch=master)](https://travis-ci.org/algolia/algoliasearch-client-android) [![GitHub version](https://badge.fury.io/gh/algolia%2Falgoliasearch-client-android.png)](http://badge.fury.io/gh/algolia%2Falgoliasearch-client-android)
+[![Build Status](https://travis-ci.org/algolia/algoliasearch-client-android.svg?branch=master)](https://travis-ci.org/algolia/algoliasearch-client-android) [![GitHub version](https://badge.fury.io/gh/algolia%2Falgoliasearch-client-android.svg)](http://badge.fury.io/gh/algolia%2Falgoliasearch-client-android)
 
 
 
@@ -227,6 +227,15 @@ index.saveObjectASync(new JSONObject()
       .put("city", "New York"), "myID", this);
 ```
 
+You have three ways to update an attribute of an object:
+
+ 1. Set the attribute value
+ 2. Add an element to an array
+ 3. Remove an element to an array
+ 4. Add an element to an array if it doesn't exist
+ 5. increment an attribute
+ 6. decrement an attribute
+
 Example to update only the city attribute of an existing object:
 
 ```java
@@ -422,9 +431,6 @@ System.out.println(res.getJSONArray("results").toString())
 
 
 
-
-
-
 Get an object
 -------------
 
@@ -442,6 +448,10 @@ You can also retrieve a set of objects:
 ```java
 index.getObjectsASync(Arrays.asList("myID1", "myID2"), this);
 ```
+
+
+
+
 
 Delete an object
 -------------
