@@ -664,4 +664,207 @@ public class Query {
         }
         return stringBuilder.toString();
     }
+
+    /**
+     * @return the attributes
+     */
+    public List<String> getAttributes() {
+        return attributes;
+    }
+
+    /**
+     * @return the attributesToHighlight
+     */
+    public List<String> getAttributesToHighlight() {
+        return attributesToHighlight;
+    }
+
+    /**
+     * @return the attributesToSnippet
+     */
+    public List<String> getAttributesToSnippet() {
+        return attributesToSnippet;
+    }
+
+    /**
+     * @return the minWordSizeForApprox1
+     */
+    public int getMinWordSizeForApprox1() {
+        return minWordSizeForApprox1;
+    }
+
+    /**
+     * @return the minWordSizeForApprox2
+     */
+    public int getMinWordSizeForApprox2() {
+        return minWordSizeForApprox2;
+    }
+
+    /**
+     * @return the getRankingInfo
+     */
+    public boolean isGetRankingInfo() {
+        return getRankingInfo;
+    }
+
+    /**
+     * @return the ignorePlural
+     */
+    public boolean isIgnorePlural() {
+        return ignorePlural;
+    }
+
+    /**
+     * @return the distinct
+     */
+    public boolean isDistinct() {
+        return distinct;
+    }
+
+    /**
+     * @return the advancedSyntax
+     */
+    public boolean isAdvancedSyntax() {
+        return advancedSyntax;
+    }
+
+    /**
+     * @return the page
+     */
+    public int getPage() {
+        return page;
+    }
+
+    /**
+     * @return the hitsPerPage
+     */
+    public int getHitsPerPage() {
+        return hitsPerPage;
+    }
+
+    /**
+     * @return the restrictSearchableAttributes
+     */
+    public String getRestrictSearchableAttributes() {
+        return restrictSearchableAttributes;
+    }
+
+    /**
+     * @return the tags
+     */
+    public String getTags() {
+        return tags;
+    }
+
+    /**
+     * @return the numerics
+     */
+    public String getNumerics() {
+        return numerics;
+    }
+
+    /**
+     * @return the insideBoundingBox
+     */
+    public String getInsideBoundingBox() {
+        return insideBoundingBox;
+    }
+
+    /**
+     * @return the aroundLatLong
+     */
+    public String getAroundLatLong() {
+        return aroundLatLong;
+    }
+
+    /**
+     * @return the aroundLatLongViaIP
+     */
+    public boolean isAroundLatLongViaIP() {
+        return aroundLatLongViaIP;
+    }
+
+    /**
+     * @return the query
+     */
+    public String getQuery() {
+        return query;
+    }
+
+    /**
+     * @return the queryType
+     */
+    public QueryType getQueryType() {
+        return queryType;
+    }
+
+    /**
+     * @return the optionalWords
+     */
+    public String getOptionalWords() {
+        return optionalWords;
+    }
+
+    /**
+     * @return the facets
+     */
+    public String getFacets() {
+        return facets;
+    }
+
+    /**
+     * @return the facetFilters
+     */
+    public String getFacetFilters() {
+        return facetFilters;
+    }
+
+    /**
+     * @return the maxNumberOfFacets
+     */
+    public int getMaxNumberOfFacets() {
+        return maxNumberOfFacets;
+    }
+
+    /**
+     * @return the analytics
+     */
+    public boolean isAnalytics() {
+        return analytics;
+    }
+
+    /**
+     * @return the synonyms
+     */
+    public boolean isSynonyms() {
+        return synonyms;
+    }
+
+    /**
+     * @return the replaceSynonyms
+     */
+    public boolean isReplaceSynonyms() {
+        return replaceSynonyms;
+    }
+
+    /**
+     * @return the allowTyposOnNumericTokens
+     */
+    public boolean isAllowTyposOnNumericTokens() {
+        return allowTyposOnNumericTokens;
+    }
+
+    /**
+     * @return the removeWordsIfNoResult
+     */
+    public RemoveWordsType getRemoveWordsIfNoResult() {
+        return removeWordsIfNoResult;
+    }
+
+    /**
+     * @return the typoTolerance
+     */
+    public TypoTolerance getTypoTolerance() {
+        return typoTolerance;
+    }
 }
