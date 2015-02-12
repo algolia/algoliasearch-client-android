@@ -1,6 +1,13 @@
 Changelog
 =========
 
+
+1.6.1 (2015-02-12)
+------------------
+
+- Add missing getters.
+- Add new typoTolerance parameter values.
+
 1.6.0 (2014-12-01)
 ------------------
 
