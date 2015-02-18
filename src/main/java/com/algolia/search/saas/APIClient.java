@@ -67,7 +67,8 @@ import org.json.JSONTokener;
  * to start using Algolia Search API
  */
 public class APIClient {
-    private final static int HTTP_TIMEOUT_MS = 30000;
+    private int httpSocketTimeoutMS = 30000;
+    private int httpConnectTimeoutMS = 3000;
     
     private final static String version = "1.6.0";
     
@@ -152,6 +153,16 @@ public class APIClient {
      */
     public void setExtraHeader(String key, String value) {
     	headers.put(key, value);
+    }
+    
+    /**
+     * Allow to set timeout
+     * @param connectTimeout connection timeout in MS
+     * @param readTimeout socket timeout in MS
+     */
+    public void setTimeout(int connectTimeout, int readTimeout) {
+    	httpSocketTimeoutMS = readTimeout;
+    	httpConnectTimeoutMS = connectTimeout;
     }
     
     /**
@@ -550,8 +561,8 @@ public class APIClient {
 	            }
             }
             
-            httpClient.getParams().setParameter("http.socket.timeout", HTTP_TIMEOUT_MS);
-            httpClient.getParams().setParameter("http.connection.timeout", HTTP_TIMEOUT_MS);
+            httpClient.getParams().setParameter("http.socket.timeout", httpSocketTimeoutMS);
+            httpClient.getParams().setParameter("http.connection.timeout", httpConnectTimeoutMS);
 
             HttpResponse response;
             try {

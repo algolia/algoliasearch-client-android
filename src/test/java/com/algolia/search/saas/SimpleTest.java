@@ -22,6 +22,7 @@ import org.junit.runners.JUnit4;
 import org.junit.runners.MethodSorters;
 
 import com.algolia.search.saas.Query.QueryType;
+import com.algolia.search.saas.Query.TypoTolerance;
 
 @RunWith(JUnit4.class)
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
@@ -95,7 +96,7 @@ public class SimpleTest {
     public void test03_search() throws AlgoliaException, JSONException {
     	JSONObject obj = index.addObject(new JSONObject().put("i", 42).put("s", "foo").put("b", true));
         index.waitTask(obj.getString("taskID"));
-        JSONObject res = index.search(new Query("foo"));
+        JSONObject res = index.search(new Query("foo").setTypoTolerance(TypoTolerance.TYPO_FALSE));
         assertEquals(1, res.getJSONArray("hits").length());
         assertEquals("foo", res.getJSONArray("hits").getJSONObject(0).getString("s"));
         assertEquals(42, res.getJSONArray("hits").getJSONObject(0).getLong("i"));

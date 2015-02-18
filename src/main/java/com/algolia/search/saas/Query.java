@@ -51,6 +51,18 @@ public class Query {
       /// When a query does not return any result, a second trial will be made with all words as optional (which is equivalent to transforming the AND operand between query terms in a OR operand) 
       REMOVE_ALLOPTIONAL
     }
+    
+    public enum TypoTolerance
+    {
+      /// the typotolerance is enabled and all typos are retrieved. (Default behavior)
+      TYPO_TRUE,
+      /// the typotolerance is disabled.
+      TYPO_FALSE,
+      /// only keep results with the minimum number of typos.
+      TYPO_MIN,
+      /// the typotolerance with a distance=2 is disabled if the results contain hits without typo.
+      TYPO_STRICT
+    }
 
     protected List<String> attributes;
     protected List<String> attributesToHighlight;
@@ -78,9 +90,9 @@ public class Query {
     protected boolean analytics;
     protected boolean synonyms;
     protected boolean replaceSynonyms;
-    protected boolean typoTolerance;
     protected boolean allowTyposOnNumericTokens;
     protected RemoveWordsType removeWordsIfNoResult;
+    protected TypoTolerance typoTolerance;
 
     public Query(String query) {
         minWordSizeForApprox1 = 3;
@@ -94,7 +106,8 @@ public class Query {
         queryType = QueryType.PREFIX_LAST;
         maxNumberOfFacets = -1;
         advancedSyntax = false;
-        analytics = synonyms = replaceSynonyms = typoTolerance = allowTyposOnNumericTokens = true;
+        analytics = synonyms = replaceSynonyms = allowTyposOnNumericTokens = true;
+        typoTolerance = TypoTolerance.TYPO_TRUE;
         removeWordsIfNoResult = RemoveWordsType.REMOVE_NONE;
     }
     
@@ -109,7 +122,8 @@ public class Query {
         queryType = QueryType.PREFIX_ALL;
         maxNumberOfFacets = -1;
         advancedSyntax = false;
-        analytics = synonyms = replaceSynonyms = typoTolerance = allowTyposOnNumericTokens = true;
+        analytics = synonyms = replaceSynonyms = allowTyposOnNumericTokens = true;
+        typoTolerance = TypoTolerance.TYPO_TRUE;
         removeWordsIfNoResult = RemoveWordsType.REMOVE_NONE;
     }
 
@@ -221,7 +235,19 @@ public class Query {
      * @param If set to false, disable typo-tolerance. Default to true.
      */
     public Query enableTypoTolerance(boolean enabled) {
-        this.typoTolerance = enabled;
+    	if (enabled) {
+    		this.typoTolerance = TypoTolerance.TYPO_TRUE;
+    	} else {
+    		this.typoTolerance = TypoTolerance.TYPO_FALSE;
+    	}
+        return this;
+    }
+    
+    /**
+     * @param This option allow to control the number of typo in the results set.
+     */
+    public Query setTypoTolerance(TypoTolerance typoTolerance) {
+        this.typoTolerance = typoTolerance;
         return this;
     }
 
@@ -502,10 +528,24 @@ public class Query {
                     first = false;
                 }
             }
-            if (!typoTolerance) {
+            if (typoTolerance != TypoTolerance.TYPO_TRUE) {
                 if (stringBuilder.length() > 0)
                     stringBuilder.append('&');
-                stringBuilder.append("typoTolerance=false");
+                stringBuilder.append("typoTolerance=");
+                switch (typoTolerance) {
+                case TYPO_FALSE:
+                	stringBuilder.append("false");
+                	break;
+                case TYPO_MIN:
+                	stringBuilder.append("min");
+                	break;
+                case TYPO_STRICT:
+                	stringBuilder.append("strict");
+                	break;
+                case TYPO_TRUE:
+                	stringBuilder.append("true");
+                	break;
+                }
             }
             if (!allowTyposOnNumericTokens) {
                 if (stringBuilder.length() > 0)
@@ -670,5 +710,208 @@ public class Query {
             throw new RuntimeException(e);
         }
         return stringBuilder.toString();
+    }
+
+    /**
+     * @return the attributes
+     */
+    public List<String> getAttributes() {
+        return attributes;
+    }
+
+    /**
+     * @return the attributesToHighlight
+     */
+    public List<String> getAttributesToHighlight() {
+        return attributesToHighlight;
+    }
+
+    /**
+     * @return the attributesToSnippet
+     */
+    public List<String> getAttributesToSnippet() {
+        return attributesToSnippet;
+    }
+
+    /**
+     * @return the minWordSizeForApprox1
+     */
+    public int getMinWordSizeForApprox1() {
+        return minWordSizeForApprox1;
+    }
+
+    /**
+     * @return the minWordSizeForApprox2
+     */
+    public int getMinWordSizeForApprox2() {
+        return minWordSizeForApprox2;
+    }
+
+    /**
+     * @return the getRankingInfo
+     */
+    public boolean isGetRankingInfo() {
+        return getRankingInfo;
+    }
+
+    /**
+     * @return the ignorePlural
+     */
+    public boolean isIgnorePlural() {
+        return ignorePlural;
+    }
+
+    /**
+     * @return the distinct
+     */
+    public boolean isDistinct() {
+        return distinct;
+    }
+
+    /**
+     * @return the advancedSyntax
+     */
+    public boolean isAdvancedSyntax() {
+        return advancedSyntax;
+    }
+
+    /**
+     * @return the page
+     */
+    public int getPage() {
+        return page;
+    }
+
+    /**
+     * @return the hitsPerPage
+     */
+    public int getHitsPerPage() {
+        return hitsPerPage;
+    }
+
+    /**
+     * @return the restrictSearchableAttributes
+     */
+    public String getRestrictSearchableAttributes() {
+        return restrictSearchableAttributes;
+    }
+
+    /**
+     * @return the tags
+     */
+    public String getTags() {
+        return tags;
+    }
+
+    /**
+     * @return the numerics
+     */
+    public String getNumerics() {
+        return numerics;
+    }
+
+    /**
+     * @return the insideBoundingBox
+     */
+    public String getInsideBoundingBox() {
+        return insideBoundingBox;
+    }
+
+    /**
+     * @return the aroundLatLong
+     */
+    public String getAroundLatLong() {
+        return aroundLatLong;
+    }
+
+    /**
+     * @return the aroundLatLongViaIP
+     */
+    public boolean isAroundLatLongViaIP() {
+        return aroundLatLongViaIP;
+    }
+
+    /**
+     * @return the query
+     */
+    public String getQuery() {
+        return query;
+    }
+
+    /**
+     * @return the queryType
+     */
+    public QueryType getQueryType() {
+        return queryType;
+    }
+
+    /**
+     * @return the optionalWords
+     */
+    public String getOptionalWords() {
+        return optionalWords;
+    }
+
+    /**
+     * @return the facets
+     */
+    public String getFacets() {
+        return facets;
+    }
+
+    /**
+     * @return the facetFilters
+     */
+    public String getFacetFilters() {
+        return facetFilters;
+    }
+
+    /**
+     * @return the maxNumberOfFacets
+     */
+    public int getMaxNumberOfFacets() {
+        return maxNumberOfFacets;
+    }
+
+    /**
+     * @return the analytics
+     */
+    public boolean isAnalytics() {
+        return analytics;
+    }
+
+    /**
+     * @return the synonyms
+     */
+    public boolean isSynonyms() {
+        return synonyms;
+    }
+
+    /**
+     * @return the replaceSynonyms
+     */
+    public boolean isReplaceSynonyms() {
+        return replaceSynonyms;
+    }
+
+    /**
+     * @return the allowTyposOnNumericTokens
+     */
+    public boolean isAllowTyposOnNumericTokens() {
+        return allowTyposOnNumericTokens;
+    }
+
+    /**
+     * @return the removeWordsIfNoResult
+     */
+    public RemoveWordsType getRemoveWordsIfNoResult() {
+        return removeWordsIfNoResult;
+    }
+
+    /**
+     * @return the typoTolerance
+     */
+    public TypoTolerance getTypoTolerance() {
+        return typoTolerance;
     }
 }
