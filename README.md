@@ -294,6 +294,7 @@ You can use the following optional arguments:
  * **removeWordsIfNoResults**: This option to select a strategy to avoid having an empty result page. There is three different option:
   * **REMOVE_LAST_WORDS**: when a query does not return any result, the last word will be added as optional (the process is repeated with n-1 word, n-2 word, ... until there is results),
   * **REMOVE_FIRST_WORDS**: when a query does not return any result, the first word will be added as optional (the process is repeated with second word, third word, ... until there is results),
+  * **REMOVE_ALL_OPTIONAL**: When a query does not return any result, a second trial will be made with all words as optional (which is equivalent to transforming the AND operand between query terms in a OR operand) 
   * **REMOVE_NONE**: No specific processing is done when a query does not return any result (default behavior).
  * **setMinWordSizeToAllowOneTypo**: the minimum number of characters in a query word to accept one typo in this word.<br/>Defaults to 4.
  * **setMinWordSizeToAllowTwoTypos**: the minimum number of characters in a query word to accept two typos in this word.<br/>Defaults to 8.
