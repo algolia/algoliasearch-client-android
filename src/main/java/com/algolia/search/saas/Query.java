@@ -48,7 +48,9 @@ public class Query {
       /// when a query does not return any result, the first word will be removed until there is results. This option is useful on adress search.
       REMOVE_FIRST_WORDS,
       /// No specific processing is done when a query does not return any result.
-      REMOVE_NONE
+      REMOVE_NONE,
+      /// When a query does not return any result, a second trial will be made with all words as optional (which is equivalent to transforming the AND operand between query terms in a OR operand) 
+      REMOVE_ALLOPTIONAL
     }
     
     public enum TypoTolerance
@@ -609,6 +611,11 @@ public class Query {
 		if (stringBuilder.length() > 0)
                     stringBuilder.append('&');
                 stringBuilder.append("removeWordsIfNoResult=FirstWords");
+		break;
+            case REMOVE_ALLOPTIONAL:
+		if (stringBuilder.length() > 0)
+                    stringBuilder.append('&');
+                stringBuilder.append("removeWordsIfNoResult=allOptional");
 		break;
             case REMOVE_NONE:
 		break;
