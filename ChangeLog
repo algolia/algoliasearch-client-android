@@ -1,6 +1,10 @@
 Changelog
 =========
 
+1.6.2 (2015-02-18)
+------------------
+
+- Added support of AllOptional in removeWordsIfNoResult
 
 1.6.1 (2015-02-12)
 ------------------

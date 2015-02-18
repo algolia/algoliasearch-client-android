@@ -70,7 +70,7 @@ public class APIClient {
     private int httpSocketTimeoutMS = 30000;
     private int httpConnectTimeoutMS = 3000;
     
-    private final static String version = "1.6.0";
+    private final static String version = "1.6.2";
     
     private final String applicationID;
     private final String apiKey;
