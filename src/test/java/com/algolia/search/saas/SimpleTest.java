@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -658,6 +659,38 @@ public class SimpleTest {
     	assertEquals(2,  answer.getJSONObject("disjunctiveFacets").length());
     	assertEquals(2,  answer.getJSONObject("disjunctiveFacets").getJSONObject("stars").getInt("*"));
     	assertEquals(1,  answer.getJSONObject("disjunctiveFacets").getJSONObject("stars").getInt("****"));
+    }
+    
+    @Test
+    public void test38_keepAlive() throws AlgoliaException, JSONException {
+    	JSONObject task = index.addObjects(new JSONArray().put(new JSONObject()
+        .put("name", "Los Angeles").put("objectID", "1")).put(new JSONObject()
+        .put("name", "San Francisco").put("objectID", "2")));
+    	index.waitTask(task.getString("taskID"));
+    	try {
+			Thread.sleep(TimeUnit.MILLISECONDS.convert(5, TimeUnit.SECONDS));
+		} catch (InterruptedException e) {
+			//OK
+		}
+    	// Redefine a client to break the current keep alive
+    	String applicationID = System.getenv("ALGOLIA_APPLICATION_ID");
+        String apiKey = System.getenv("ALGOLIA_API_KEY");
+        client = new APIClient(applicationID, apiKey);
+        index = client.initIndex(indexName);
+        
+    	double firstDSNQuery = 0;
+    	double avgDSNQuery = 0;
+    	long current = System.currentTimeMillis();
+    	index.search(new Query());
+    	firstDSNQuery = System.currentTimeMillis() - current;
+    	int upperBound = 10;
+    	for (int i = 0; i < upperBound; ++i) {
+    		current = System.currentTimeMillis();
+    		index.search(new Query());
+    		avgDSNQuery += System.currentTimeMillis() - current;
+    	}
+    	avgDSNQuery /= upperBound;
+    	assertTrue(2.0 < firstDSNQuery / avgDSNQuery);
     }
 
 }
