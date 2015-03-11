@@ -10,18 +10,21 @@ import java.net.URISyntaxException;
 import java.net.URLEncoder;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.concurrent.TimeUnit;
 
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 
 import org.apache.commons.codec.binary.Hex;
 import org.apache.http.HttpResponse;
+import org.apache.http.ParseException;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.methods.HttpDelete;
@@ -90,7 +93,10 @@ public class APIClient {
     
     private final String applicationID;
     private final String apiKey;
-    private final List<String> hostsArray;
+    private final List<String> buildHostsArray;
+    private final List<String> queryHostsArray;
+    private final List<Long> buildHostsEnabled;
+    private final List<Long> queryHostsEnabled;
     private final HttpClient httpClient;
     private String forwardRateLimitAPIKey;
     private String forwardEndUserIP;
@@ -106,6 +112,12 @@ public class APIClient {
         this(applicationID, apiKey, Arrays.asList(applicationID + "-1.algolia.net", 
 						        		applicationID + "-2.algolia.net", 
 						        		applicationID + "-3.algolia.net"));
+        Collections.shuffle(this.buildHostsArray);
+        this.buildHostsArray.add(0, applicationID + ".algolia.net");
+        this.buildHostsEnabled.add(0L);
+        Collections.shuffle(this.queryHostsArray);
+        this.queryHostsArray.add(0, applicationID + "-dsn.algolia.net");
+        this.queryHostsEnabled.add(0L);
     }
     
     /**
@@ -115,6 +127,17 @@ public class APIClient {
      * @param hostsArray the list of hosts that you have received for the service
      */
     public APIClient(String applicationID, String apiKey, List<String> hostsArray) {
+    	this(applicationID, apiKey, hostsArray, hostsArray);
+    }
+    
+    /**
+     * Algolia Search initialization
+     * @param applicationID the application ID you have in your admin interface
+     * @param apiKey a valid API key for the service
+     * @param buildHostsArray the list of hosts that you have received for the service
+     * @param queryHostsArray the list of hosts that you have received for the service
+     */
+    public APIClient(String applicationID, String apiKey, List<String> buildHostsArray, List<String> queryHostArray) {
     	forwardRateLimitAPIKey = forwardAdminAPIKey = forwardEndUserIP = null;
         if (applicationID == null || applicationID.length() == 0) {
             throw new RuntimeException("AlgoliaSearch requires an applicationID.");
@@ -124,14 +147,31 @@ public class APIClient {
             throw new RuntimeException("AlgoliaSearch requires an apiKey.");
         }
         this.apiKey = apiKey;
-        if (hostsArray == null || hostsArray.size() == 0) {
+        if (buildHostsArray == null || buildHostsArray.size() == 0 || queryHostArray == null || queryHostArray.size() == 0) {
             throw new RuntimeException("AlgoliaSearch requires a list of hostnames.");
         }
-        // randomize elements of hostsArray (act as a kind of load-balancer)
-        Collections.shuffle(hostsArray);
-        this.hostsArray = hostsArray;
+        
+        this.buildHostsArray = clone(buildHostsArray);
+        this.queryHostsArray = clone(queryHostArray);
+        this.buildHostsEnabled = new ArrayList<Long>();
+        for (int i =0; i < this.buildHostsArray.size(); ++i)
+        	this.buildHostsEnabled.add(0L);
+        this.queryHostsEnabled = new ArrayList<Long>();
+        for (int i =0; i < this.queryHostsArray.size(); ++i)
+        	this.queryHostsEnabled.add(0L);
         httpClient = HttpClientBuilder.create().build();
         headers = new HashMap<String, String>();
+    }
+    
+    /**
+     * Clone an List
+     * @param other list to clone
+     * @return the clone
+     */
+    public List<String> clone(List<String> other) {
+    	List<String> res = new ArrayList<String>();
+    	res.addAll(other);
+    	return res;
     }
     
     /**
@@ -179,7 +219,7 @@ public class APIClient {
      *              {"name": "notes", "createdAt": "2013-01-18T15:33:13.556Z"}]}
      */
     public JSONObject listIndexes() throws AlgoliaException {
-        return getRequest("/1/indexes/");
+        return getRequest("/1/indexes/", false);
     }
 
     /**
@@ -190,7 +230,7 @@ public class APIClient {
      */
     public JSONObject deleteIndex(String indexName) throws AlgoliaException {
         try {
-            return deleteRequest("/1/indexes/" + URLEncoder.encode(indexName, "UTF-8"));
+            return deleteRequest("/1/indexes/" + URLEncoder.encode(indexName, "UTF-8"), true);
         } catch (UnsupportedEncodingException e) {
             throw new RuntimeException(e); // $COVERAGE-IGNORE$
         }
@@ -206,7 +246,7 @@ public class APIClient {
 	        JSONObject content = new JSONObject();
 	        content.put("operation", "move");
 	        content.put("destination", dstIndexName);
-	        return postRequest("/1/indexes/" + URLEncoder.encode(srcIndexName, "UTF-8") + "/operation", content.toString()); 	
+	        return postRequest("/1/indexes/" + URLEncoder.encode(srcIndexName, "UTF-8") + "/operation", content.toString(), true); 	
     	} catch (UnsupportedEncodingException e) {
     		throw new RuntimeException(e); // $COVERAGE-IGNORE$
     	} catch (JSONException e) {
@@ -224,7 +264,7 @@ public class APIClient {
 	        JSONObject content = new JSONObject();
 	        content.put("operation", "copy");
 	        content.put("destination", dstIndexName);
-	        return postRequest("/1/indexes/" + URLEncoder.encode(srcIndexName, "UTF-8") + "/operation", content.toString()); 	
+	        return postRequest("/1/indexes/" + URLEncoder.encode(srcIndexName, "UTF-8") + "/operation", content.toString(), true); 	
     	} catch (UnsupportedEncodingException e) {
     		throw new RuntimeException(e); // $COVERAGE-IGNORE$
     	} catch (JSONException e) {
@@ -248,7 +288,7 @@ public class APIClient {
      * Return 10 last log entries.
      */
     public JSONObject getLogs() throws AlgoliaException {
-    	 return getRequest("/1/logs");
+    	 return getRequest("/1/logs", false);
     }
 
     /**
@@ -257,7 +297,7 @@ public class APIClient {
      * @param length Specify the maximum number of entries to retrieve starting at offset. Maximum allowed value: 1000.
      */
     public JSONObject getLogs(int offset, int length) throws AlgoliaException {
-    	 return getRequest("/1/logs?offset=" + offset + "&length=" + length);
+    	 return getRequest("/1/logs?offset=" + offset + "&length=" + length, false);
     }
     
     /**
@@ -267,7 +307,7 @@ public class APIClient {
      * @param onlyErrors Retrieve only logs with an httpCode different than 200 and 201
      */
     public JSONObject getLogs(int offset, int length, boolean onlyErrors) throws AlgoliaException {
-    	 return getRequest("/1/logs?offset=" + offset + "&length=" + length + "&onlyErrors=" + onlyErrors);
+    	 return getRequest("/1/logs?offset=" + offset + "&length=" + length + "&onlyErrors=" + onlyErrors, false);
     }
     
     /**
@@ -292,7 +332,7 @@ public class APIClient {
     		type = "all";
     		break;
     	}
-    	 return getRequest("/1/logs?offset=" + offset + "&length=" + length + "&type=" + type);
+    	 return getRequest("/1/logs?offset=" + offset + "&length=" + length + "&type=" + type, false);
     }
     
     /**
@@ -308,21 +348,21 @@ public class APIClient {
      * List all existing user keys with their associated ACLs
      */
     public JSONObject listUserKeys() throws AlgoliaException {
-        return getRequest("/1/keys");
+        return getRequest("/1/keys", false);
     }
 
     /**
      * Get ACL of a user key
      */
     public JSONObject getUserKeyACL(String key) throws AlgoliaException {
-        return getRequest("/1/keys/" + key);
+        return getRequest("/1/keys/" + key, false);
     }
 
     /**
      * Delete an existing user key
      */
     public JSONObject deleteUserKey(String key) throws AlgoliaException {
-        return deleteRequest("/1/keys/" + key);
+        return deleteRequest("/1/keys/" + key, true);
     }
 
     /**
@@ -345,7 +385,7 @@ public class APIClient {
         } catch (JSONException e) {
             throw new RuntimeException(e); // $COVERAGE-IGNORE$
         }
-        return postRequest("/1/keys", jsonObject.toString());
+        return postRequest("/1/keys", jsonObject.toString(), true);
     }
     
     /**
@@ -368,7 +408,7 @@ public class APIClient {
         } catch (JSONException e) {
             throw new RuntimeException(e); // $COVERAGE-IGNORE$
         }
-        return putRequest("/1/keys/" + key, jsonObject.toString());
+        return putRequest("/1/keys/" + key, jsonObject.toString(), true);
     }
     
     /**
@@ -439,7 +479,7 @@ public class APIClient {
         } catch (JSONException e) {
             throw new RuntimeException(e); // $COVERAGE-IGNORE$
         }
-        return postRequest("/1/keys", jsonObject.toString());
+        return postRequest("/1/keys", jsonObject.toString(), true);
     }
     
     /**
@@ -472,7 +512,7 @@ public class APIClient {
         } catch (JSONException e) {
             throw new RuntimeException(e); // $COVERAGE-IGNORE$
         }
-        return putRequest("/1/keys/" + key, jsonObject.toString());
+        return putRequest("/1/keys/" + key, jsonObject.toString(), true);
     }
     
     /**
@@ -552,23 +592,127 @@ public class APIClient {
         GET, POST, PUT, DELETE, OPTIONS, TRACE, HEAD;
     }
     
-    protected JSONObject getRequest(String url) throws AlgoliaException {
-    	return _request(Method.GET, url, null);
+    protected JSONObject getRequest(String url, boolean build) throws AlgoliaException {
+    	return _request(Method.GET, url, null, build);
     }
     
-    protected JSONObject deleteRequest(String url) throws AlgoliaException {
-    	return _request(Method.DELETE, url, null);
+    protected JSONObject deleteRequest(String url, boolean build) throws AlgoliaException {
+    	return _request(Method.DELETE, url, null, build);
     }
     
-    protected JSONObject postRequest(String url, String obj) throws AlgoliaException {
-    	return _request(Method.POST, url, obj);
+    protected JSONObject postRequest(String url, String obj, boolean build) throws AlgoliaException {
+    	return _request(Method.POST, url, obj, build);
     }
     
-    protected JSONObject putRequest(String url, String obj) throws AlgoliaException {
-    	return _request(Method.PUT, url, obj);
+    protected JSONObject putRequest(String url, String obj, boolean build) throws AlgoliaException {
+    	return _request(Method.PUT, url, obj, build);
     }
     
-    private JSONObject _request(Method m, String url, String json) throws AlgoliaException {
+    private JSONObject _requestByHost(HttpRequestBase req, String host, String url, String json, HashMap<String, String> errors) throws AlgoliaException {
+    	req.reset();
+
+        // set URL
+        try {
+			req.setURI(new URI("https://" + host + url));
+		} catch (URISyntaxException e) {
+			// never reached
+			throw new IllegalStateException(e);
+		}
+    	
+    	// set auth headers
+    	req.setHeader("X-Algolia-Application-Id", this.applicationID);
+    	if (forwardAdminAPIKey == null) {
+    		req.setHeader("X-Algolia-API-Key", this.apiKey);
+    	} else {
+    		req.setHeader("X-Algolia-API-Key", this.forwardAdminAPIKey);
+    		req.setHeader("X-Forwarded-For", this.forwardEndUserIP);
+    		req.setHeader("X-Forwarded-API-Key", this.forwardRateLimitAPIKey);
+    	}
+    	for (Entry<String, String> entry : headers.entrySet()) {
+    		req.setHeader(entry.getKey(), entry.getValue());
+    	}
+    	
+    	// set user agent
+    	req.setHeader("User-Agent", "Algolia for Java " + version);
+    	
+        // set JSON entity
+        if (json != null) {
+        	if (!(req instanceof HttpEntityEnclosingRequestBase)) {
+        		throw new IllegalArgumentException("Method " + req.getMethod() + " cannot enclose entity");
+        	}
+            req.setHeader("Content-type", "application/json");
+            try {
+                StringEntity se = new StringEntity(json, "UTF-8"); 
+                se.setContentEncoding(new BasicHeader(HTTP.CONTENT_TYPE, "application/json"));
+                ((HttpEntityEnclosingRequestBase) req).setEntity(se); 
+            } catch (UnsupportedEncodingException e) {
+                throw new AlgoliaException("Invalid JSON Object: " + json); // $COVERAGE-IGNORE$
+            }
+        }
+        
+        RequestConfig config = RequestConfig.custom()
+                .setSocketTimeout(httpSocketTimeoutMS)
+                .setConnectTimeout(httpConnectTimeoutMS)
+                .setConnectionRequestTimeout(httpConnectTimeoutMS)
+                .build();
+        req.setConfig(config);
+
+        HttpResponse response;
+        try {
+        	response = httpClient.execute(req);
+        } catch (IOException e) {
+        	// on error continue on the next host
+        	errors.put(host, String.format("%s=%s", e.getClass().getName(), e.getMessage()));
+        	return null;
+        }
+        try {
+            int code = response.getStatusLine().getStatusCode();
+        	if (code / 100 == 4) {
+        		String message = "";
+        		try {
+					message = EntityUtils.toString(response.getEntity());
+				} catch (ParseException e) {
+					e.printStackTrace();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+        		if (code == 400) {
+                    throw new AlgoliaException(code, message.length() > 0 ? message : "Bad request");
+                } else if (code == 403) {
+                    throw new AlgoliaException(code, message.length() > 0 ? message : "Invalid Application-ID or API-Key");
+                } else if (code == 404) {
+                    throw new AlgoliaException(code, message.length() > 0 ? message : "Resource does not exist");
+                } else {
+                    throw new AlgoliaException(code, message.length() > 0 ? message : "Error");
+                }
+        	}
+            if (code / 100 != 2) {
+            	try {
+					errors.put(host, EntityUtils.toString(response.getEntity()));
+				} catch (IOException e) {
+					errors.put(host, String.valueOf(code));
+				}
+            	// KO, continue
+                return null;
+            }
+            try {
+                InputStream istream = response.getEntity().getContent();
+                InputStreamReader is = new InputStreamReader(istream, "UTF-8");
+                JSONTokener tokener = new JSONTokener(is);
+                JSONObject res = new JSONObject(tokener);
+                is.close();
+                return res;
+            } catch (IOException e) {
+            	return null;
+            } catch (JSONException e) {
+                throw new AlgoliaException("JSON decode error:" + e.getMessage());
+            }
+        } finally {
+            req.releaseConnection();
+        }
+    }
+    
+    private JSONObject _request(Method m, String url, String json, boolean build) throws AlgoliaException {
     	HttpRequestBase req;
     	switch (m) {
 		case DELETE:
@@ -587,104 +731,27 @@ public class APIClient {
 			throw new IllegalArgumentException("Method " + m + " is not supported");
     	}
     	HashMap<String, String> errors = new HashMap<String, String>();
+    	List<String> hosts = null;
+    	List<Long> enabled = null;
+    	if (build) {
+    		hosts = this.buildHostsArray;
+    		enabled = this.buildHostsEnabled;
+    	} else {
+    		hosts = this.queryHostsArray;
+    		enabled = this.queryHostsEnabled;
+    	}
+		
     	// for each host
-    	for (String host : this.hostsArray) {
-            req.reset();
-
-            // set URL
-            try {
-    			req.setURI(new URI("https://" + host + url));
-    		} catch (URISyntaxException e) {
-    			// never reached
-    			throw new IllegalStateException(e);
-    		}
-        	
-        	// set auth headers
-        	req.setHeader("X-Algolia-Application-Id", this.applicationID);
-        	if (forwardAdminAPIKey == null) {
-        		req.setHeader("X-Algolia-API-Key", this.apiKey);
-        	} else {
-        		req.setHeader("X-Algolia-API-Key", this.forwardAdminAPIKey);
-        		req.setHeader("X-Forwarded-For", this.forwardEndUserIP);
-        		req.setHeader("X-Forwarded-API-Key", this.forwardRateLimitAPIKey);
-        	}
-        	for (Entry<String, String> entry : headers.entrySet()) {
-        		req.setHeader(entry.getKey(), entry.getValue());
-        	}
-        	
-        	// set user agent
-        	req.setHeader("User-Agent", "Algolia for Java " + version);
-        	
-            // set JSON entity
-            if (json != null) {
-            	if (!(req instanceof HttpEntityEnclosingRequestBase)) {
-            		throw new IllegalArgumentException("Method " + m + " cannot enclose entity");
-            	}
-	            req.setHeader("Content-type", "application/json");
-	            try {
-	                StringEntity se = new StringEntity(json, "UTF-8"); 
-	                se.setContentEncoding(new BasicHeader(HTTP.CONTENT_TYPE, "application/json"));
-	                ((HttpEntityEnclosingRequestBase) req).setEntity(se); 
-	            } catch (UnsupportedEncodingException e) {
-	                throw new AlgoliaException("Invalid JSON Object: " + json); // $COVERAGE-IGNORE$
-	            }
-            }
-            
-            RequestConfig config = RequestConfig.custom()
-                    .setSocketTimeout(httpSocketTimeoutMS)
-                    .setConnectTimeout(httpConnectTimeoutMS)
-                    .setConnectionRequestTimeout(httpConnectTimeoutMS)
-                    .build();
-            req.setConfig(config);
-
-            HttpResponse response;
-            try {
-            	response = httpClient.execute(req);
-            } catch (IOException e) {
-            	// on error continue on the next host
-            	errors.put(host, String.format("%s=%s", e.getClass().getName(), e.getMessage()));
-            	continue;
-            }
-            try {
-                int code = response.getStatusLine().getStatusCode();
-                if (code == 200 || code == 201) {
-                    // OK
-                } else if (code == 400) {
-                    EntityUtils.consumeQuietly(response.getEntity());
-                    throw new AlgoliaException(400, "Bad request");
-                } else if (code == 403) {
-                	EntityUtils.consumeQuietly(response.getEntity());
-                    throw new AlgoliaException(403, "Invalid Application-ID or API-Key");
-                } else if (code == 404) {
-                	EntityUtils.consumeQuietly(response.getEntity());
-                    throw new AlgoliaException(404, "Resource does not exist");
-                } else {
-                	try {
-						errors.put(host, EntityUtils.toString(response.getEntity()));
-					} catch (IOException e) {
-						errors.put(host, String.valueOf(code));
-					}
-                	EntityUtils.consumeQuietly(response.getEntity());
-                	// KO, continue
-                    continue;
-                }
-                try {
-                    InputStream istream = response.getEntity().getContent();
-                    InputStreamReader is = new InputStreamReader(istream, "UTF-8");
-                    JSONTokener tokener = new JSONTokener(is);
-                    JSONObject res = new JSONObject(tokener);
-                    is.close();
-                    return res;
-                } catch (IOException e) {
-                	continue;
-                } catch (JSONException e) {
-                    //System.out.println(response.getEntity().getContent().read);
-                    throw new AlgoliaException("JSON decode error:" + e.getMessage());
-                }
-            } finally {
-                req.releaseConnection();
-            }
-        }
+    	for (int i = 0; i < hosts.size(); ++i) {
+    		String host = hosts.get(i);
+    		if (enabled.get(i) > System.currentTimeMillis())
+    			continue;
+    		JSONObject res = _requestByHost(req, host, url, json, errors);
+    		if (res != null)
+    			return res;
+    		enabled.set(i, System.currentTimeMillis() + TimeUnit.MILLISECONDS.convert(30, TimeUnit.SECONDS));
+    	}
+    	enabled.set(enabled.size() - 1, 0L); // Keep the last host up;
     	StringBuilder builder = new StringBuilder("Hosts unreachable: ");
     	Boolean first = true;
     	for (Map.Entry<String, String> entry : errors.entrySet()) {
@@ -728,7 +795,7 @@ public class APIClient {
 				requests.put(new JSONObject().put("indexName", indexQuery.getIndex()).put("params", paramsString));
     			}
 				JSONObject body = new JSONObject().put("requests", requests);
-				return postRequest("/1/indexes/*/queries", body.toString());
+				return postRequest("/1/indexes/*/queries", body.toString(), false);
 			} catch (JSONException e) {
 				new AlgoliaException(e.getMessage());
 			}
