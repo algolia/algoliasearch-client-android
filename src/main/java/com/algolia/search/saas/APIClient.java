@@ -489,6 +489,19 @@ public class APIClient {
     }
     
     /**
+     * Generate a secured and public API Key from a query and an
+     * optional user token identifying the current user
+     *
+     * @param privateApiKey your private API Key
+     * @param query contains the parameter applied to the query (used as security)
+     * @throws NoSuchAlgorithmException 
+     * @throws InvalidKeyException 
+     */
+    public String generateSecuredApiKey(String privateApiKey, Query query) throws NoSuchAlgorithmException, InvalidKeyException {
+        return generateSecuredApiKey(privateApiKey, query.toString(), null);
+    }
+    
+    /**
      * Generate a secured and public API Key from a list of tagFilters and an
      * optional user token identifying the current user
      *
@@ -500,6 +513,21 @@ public class APIClient {
      */
     public String generateSecuredApiKey(String privateApiKey, String tagFilters, String userToken) throws NoSuchAlgorithmException, InvalidKeyException {
     	return hmac(privateApiKey, tagFilters + (userToken != null ? userToken : ""));
+        
+    }
+    
+    /**
+     * Generate a secured and public API Key from a query and an
+     * optional user token identifying the current user
+     *
+     * @param privateApiKey your private API Key
+     * @param query contains the parameter applied to the query (used as security)
+     * @param userToken an optional token identifying the current user
+     * @throws NoSuchAlgorithmException 
+     * @throws InvalidKeyException 
+     */
+    public String generateSecuredApiKey(String privateApiKey, Query query, String userToken) throws NoSuchAlgorithmException, InvalidKeyException {
+    	return hmac(privateApiKey, query.toString() + (userToken != null ? userToken : ""));
         
     }
     
