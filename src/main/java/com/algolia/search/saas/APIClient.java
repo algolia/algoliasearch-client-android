@@ -151,8 +151,8 @@ public class APIClient {
             throw new RuntimeException("AlgoliaSearch requires a list of hostnames.");
         }
         
-        this.buildHostsArray = clone(buildHostsArray);
-        this.queryHostsArray = clone(queryHostArray);
+        this.buildHostsArray = new ArrayList<String>(buildHostsArray);
+        this.queryHostsArray = new ArrayList<String>(queryHostArray);
         this.buildHostsEnabled = new ArrayList<Long>();
         for (int i =0; i < this.buildHostsArray.size(); ++i)
         	this.buildHostsEnabled.add(0L);
@@ -161,17 +161,6 @@ public class APIClient {
         	this.queryHostsEnabled.add(0L);
         httpClient = HttpClientBuilder.create().build();
         headers = new HashMap<String, String>();
-    }
-    
-    /**
-     * Clone an List
-     * @param other list to clone
-     * @return the clone
-     */
-    public List<String> clone(List<String> other) {
-    	List<String> res = new ArrayList<String>();
-    	res.addAll(other);
-    	return res;
     }
     
     /**
