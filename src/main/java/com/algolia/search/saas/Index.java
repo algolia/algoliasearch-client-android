@@ -756,7 +756,7 @@ public class Index {
     		}
     		List<String> facets = new ArrayList<String>();
     		facets.add(disjunctiveFacet);
-    		queries.add(new IndexQuery(this.indexName, new Query(query).setHitsPerPage(1).setAttributesToRetrieve(new ArrayList<String>()).setAttributesToHighlight(new ArrayList<String>()).setAttributesToSnippet(new ArrayList<String>()).setFacets(facets).setFacetFilters(filters.toString())));
+    		queries.add(new IndexQuery(this.indexName, new Query(query).setHitsPerPage(0).enableAnalytics(false).setAttributesToRetrieve(new ArrayList<String>()).setAttributesToHighlight(new ArrayList<String>()).setAttributesToSnippet(new ArrayList<String>()).setFacets(facets).setFacetFilters(filters.toString())));
     	}
     	JSONObject answers = this.client.multipleQueries(queries);
     	
