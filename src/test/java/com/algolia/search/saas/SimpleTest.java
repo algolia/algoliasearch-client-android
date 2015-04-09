@@ -464,16 +464,6 @@ public class SimpleTest {
     	}
     }
     
-    @Test
-    public void test26_EmptyHost() {
-    	try {
-    		new APIClient("algolia", "algolia", new ArrayList<String>());
-    		assertTrue(false);
-    	}
-    	catch (RuntimeException e){
-    		assertTrue(true);
-    	}
-    }
     
 //    @Test
 //    public void test27_headerDisableRateLimit() throws AlgoliaException, JSONException {
