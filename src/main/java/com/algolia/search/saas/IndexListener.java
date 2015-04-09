@@ -7,7 +7,7 @@ import org.json.JSONObject;
 
 
 /*
- * Copyright (c) 2013 Algolia
+ * Copyright (c) 2015 Algolia
  * http://www.algolia.com/
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy

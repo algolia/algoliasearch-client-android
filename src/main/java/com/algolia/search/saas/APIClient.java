@@ -39,7 +39,7 @@ import org.json.JSONObject;
 import org.json.JSONTokener;
 
 /*
- * Copyright (c) 2013 Algolia
+ * Copyright (c) 2015 Algolia
  * http://www.algolia.com/
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -68,13 +68,15 @@ import org.json.JSONTokener;
  */
 public class APIClient {
     private int httpSocketTimeoutMS = 30000;
-    private int httpConnectTimeoutMS = 3000;
+    private int httpConnectTimeoutMS = 2000;
+    private int httpSearchTimeoutMS = 5000;
     
-    private final static String version = "1.6.2";
+    private final static String version = "1.6.3";
     
     private final String applicationID;
     private final String apiKey;
-    private final List<String> hostsArray;
+    private final List<String> readHostsArray;
+    private final List<String> writeHostsArray;
     private final DefaultHttpClient httpClient;
     private String tagFilters;
     private String userToken;
@@ -86,9 +88,7 @@ public class APIClient {
      * @param apiKey a valid API key for the service
      */
     public APIClient(String applicationID, String apiKey) {
-        this(applicationID, apiKey, Arrays.asList(applicationID + "-1.algolia.net", 
-						        		applicationID + "-2.algolia.net", 
-						        		applicationID + "-3.algolia.net"));
+        this(applicationID, apiKey, null);
     }
     
     /**
@@ -108,9 +108,7 @@ public class APIClient {
      * @param enableDsn set to true if your account has the Distributed Search Option
      */
     public APIClient(String applicationID, String apiKey, boolean enableDsn) {
-    	this(applicationID, apiKey, Arrays.asList(applicationID + "-1.algolia.net", 
-        		applicationID + "-2.algolia.net", 
-        		applicationID + "-3.algolia.net"), enableDsn, null);
+    	this(applicationID, apiKey, null, enableDsn, null);
     }
     
     
@@ -132,17 +130,16 @@ public class APIClient {
         }
         this.apiKey = apiKey;
         if (hostsArray == null || hostsArray.size() == 0) {
-            throw new RuntimeException("AlgoliaSearch requires a list of hostnames.");
-        }
-        // randomize elements of hostsArray (act as a kind of load-balancer)
-        Collections.shuffle(hostsArray);
-        this.hostsArray = hostsArray;
-        if (enableDsn || dsnHost != null) {
-        	if (dsnHost != null) {
-        		this.hostsArray.add(0, dsnHost);
-        	} else {
-        		this.hostsArray.add(0, applicationID + "-dsn.algolia.net");
-        	}
+        	readHostsArray = Arrays.asList(applicationID + "-dsn.algolia.net", 
+            		                       applicationID + "-1.algolianet.com", 
+            		                       applicationID + "-2.algolianet.com",
+            		                       applicationID + "-3.algolianet.com");
+        	writeHostsArray = Arrays.asList(applicationID + ".algolia.net", 
+						                   applicationID + "-1.algolianet.com", 
+						                   applicationID + "-2.algolianet.com",
+						                   applicationID + "-3.algolianet.com");
+        } else {
+        	readHostsArray = writeHostsArray = hostsArray;
         }
         httpClient = new DefaultHttpClient();
         headers = new HashMap<String, String>();
@@ -154,7 +151,7 @@ public class APIClient {
     public void setExtraHeader(String key, String value) {
     	headers.put(key, value);
     }
-    
+   
     /**
      * Allow to set timeout
      * @param connectTimeout connection timeout in MS
@@ -162,7 +159,19 @@ public class APIClient {
      */
     public void setTimeout(int connectTimeout, int readTimeout) {
     	httpSocketTimeoutMS = readTimeout;
+    	httpConnectTimeoutMS = httpSearchTimeoutMS = connectTimeout;
+    }
+    
+    /**
+     * Allow to set timeout
+     * @param connectTimeout connection timeout in MS
+     * @param readTimeout socket timeout in MS
+     * @param search socket timeout in MS
+     */
+    public void setTimeout(int connectTimeout, int readTimeout, int searchTimeout) {
+    	httpSocketTimeoutMS = readTimeout;
     	httpConnectTimeoutMS = connectTimeout;
+    	httpSearchTimeoutMS = searchTimeout;
     }
     
     /**
@@ -172,7 +181,7 @@ public class APIClient {
      *              {"name": "notes", "createdAt": "2013-01-18T15:33:13.556Z"}]}
      */
     public JSONObject listIndexes() throws AlgoliaException {
-        return getRequest("/1/indexes/");
+        return getRequest("/1/indexes/", false);
     }
 
     /**
@@ -199,7 +208,7 @@ public class APIClient {
 	        JSONObject content = new JSONObject();
 	        content.put("operation", "move");
 	        content.put("destination", dstIndexName);
-	        return postRequest("/1/indexes/" + URLEncoder.encode(srcIndexName, "UTF-8") + "/operation", content.toString()); 	
+	        return postRequest("/1/indexes/" + URLEncoder.encode(srcIndexName, "UTF-8") + "/operation", content.toString(), false); 	
     	} catch (UnsupportedEncodingException e) {
     		throw new RuntimeException(e);
     	} catch (JSONException e) {
@@ -217,7 +226,7 @@ public class APIClient {
 	        JSONObject content = new JSONObject();
 	        content.put("operation", "copy");
 	        content.put("destination", dstIndexName);
-	        return postRequest("/1/indexes/" + URLEncoder.encode(srcIndexName, "UTF-8") + "/operation", content.toString()); 	
+	        return postRequest("/1/indexes/" + URLEncoder.encode(srcIndexName, "UTF-8") + "/operation", content.toString(), false); 	
     	} catch (UnsupportedEncodingException e) {
     		throw new RuntimeException(e);
     	} catch (JSONException e) {
@@ -229,7 +238,7 @@ public class APIClient {
      * Return 10 last log entries.
      */
     public JSONObject getLogs() throws AlgoliaException {
-    	 return getRequest("/1/logs");
+    	 return getRequest("/1/logs", false);
     }
 
     /**
@@ -238,7 +247,7 @@ public class APIClient {
      * @param length Specify the maximum number of entries to retrieve starting at offset. Maximum allowed value: 1000.
      */
     public JSONObject getLogs(int offset, int length) throws AlgoliaException {
-    	 return getRequest("/1/logs?offset=" + offset + "&length=" + length);
+    	 return getRequest("/1/logs?offset=" + offset + "&length=" + length, false);
     }
     
     /**
@@ -247,7 +256,7 @@ public class APIClient {
      * @param length Specify the maximum number of entries to retrieve starting at offset. Maximum allowed value: 1000.
      */
     public JSONObject getLogs(int offset, int length, boolean onlyErrors) throws AlgoliaException {
-    	 return getRequest("/1/logs?offset=" + offset + "&length=" + length + "&onlyErrors=" + onlyErrors);
+    	 return getRequest("/1/logs?offset=" + offset + "&length=" + length + "&onlyErrors=" + onlyErrors, false);
     }
     
     /**
@@ -263,14 +272,14 @@ public class APIClient {
      * List all existing user keys with their associated ACLs
      */
     public JSONObject listUserKeys() throws AlgoliaException {
-        return getRequest("/1/keys");
+        return getRequest("/1/keys", false);
     }
 
     /**
      * Get ACL of a user key
      */
     public JSONObject getUserKeyACL(String key) throws AlgoliaException {
-        return getRequest("/1/keys/" + key);
+        return getRequest("/1/keys/" + key, false);
     }
 
     /**
@@ -300,7 +309,7 @@ public class APIClient {
         } catch (JSONException e) {
             throw new RuntimeException(e);
         }
-        return postRequest("/1/keys", jsonObject.toString());
+        return postRequest("/1/keys", jsonObject.toString(), false);
     }
 
     /**
@@ -394,7 +403,7 @@ public class APIClient {
         } catch (JSONException e) {
             throw new RuntimeException(e);
         }
-        return postRequest("/1/keys", jsonObject.toString());
+        return postRequest("/1/keys", jsonObject.toString(), false);
     }
 
     /**
@@ -482,27 +491,42 @@ public class APIClient {
         GET, POST, PUT, DELETE, OPTIONS, TRACE, HEAD;
     }
     
-    protected JSONObject getRequest(String url) throws AlgoliaException {
-    	return _request(Method.GET, url, null);
+    protected JSONObject getRequest(String url, boolean search) throws AlgoliaException {
+    	return _request(Method.GET, url, null, readHostsArray, httpConnectTimeoutMS, search ? httpSearchTimeoutMS : httpSocketTimeoutMS);
     }
     
     protected JSONObject deleteRequest(String url) throws AlgoliaException {
-    	return _request(Method.DELETE, url, null);
+    	return _request(Method.DELETE, url, null, writeHostsArray, httpConnectTimeoutMS, httpSocketTimeoutMS);
     }
     
-    protected JSONObject postRequest(String url, String obj) throws AlgoliaException {
-    	return _request(Method.POST, url, obj);
+    protected JSONObject postRequest(String url, String obj, boolean readOperation) throws AlgoliaException {
+    	return _request(Method.POST, url, obj, (readOperation ? readHostsArray : writeHostsArray), httpConnectTimeoutMS, (readOperation ? httpSearchTimeoutMS : httpSocketTimeoutMS));
     }
     
     protected JSONObject putRequest(String url, String obj) throws AlgoliaException {
-    	return _request(Method.PUT, url, obj);
+    	return _request(Method.PUT, url, obj, writeHostsArray, httpConnectTimeoutMS, httpSocketTimeoutMS);
     }
     
-    private JSONObject _request(Method m, String url, String json) throws AlgoliaException {
+    private JSONObject _getAnswerObject(InputStream istream) throws IOException, JSONException {
+    	InputStreamReader is = new InputStreamReader(istream, "UTF-8");
+    	StringBuilder builder= new StringBuilder();
+        char[] buf = new char[1000];
+        int l = 0;
+        while (l >= 0) {
+            builder.append(buf, 0, l);
+            l = is.read(buf);
+        }
+        JSONTokener tokener = new JSONTokener(builder.toString());
+        JSONObject res = new JSONObject(tokener);
+        is.close();
+        return res;
+    }
+    
+    private JSONObject _request(Method m, String url, String json, List<String> hostsArray, int connectTimeout, int readTimeout) throws AlgoliaException {
     	HttpRequestBase req;
     	HashMap<String, String> errors = new HashMap<String, String>();
     	// for each host
-    	for (String host : this.hostsArray) {
+    	for (String host : hostsArray) {
         	switch (m) {
     		case DELETE:
     			req = new HttpDelete();
@@ -561,8 +585,8 @@ public class APIClient {
 	            }
             }
             
-            httpClient.getParams().setParameter("http.socket.timeout", httpSocketTimeoutMS);
-            httpClient.getParams().setParameter("http.connection.timeout", httpConnectTimeoutMS);
+            httpClient.getParams().setParameter("http.socket.timeout", readTimeout);
+            httpClient.getParams().setParameter("http.connection.timeout", connectTimeout);
 
             HttpResponse response;
             try {
@@ -573,17 +597,19 @@ public class APIClient {
             	continue;
             }
             int code = response.getStatusLine().getStatusCode();
-            if (code == 200 || code == 201) {
+            if ((int)code / 100 == 2) {
                 // OK
-            } else if (code == 400) {
+            } else if ((int)code / 100 == 4) {
+            	String message = "Error detected in backend";
+                try {
+                    message = _getAnswerObject(response.getEntity().getContent()).getString("message");
+                } catch (IOException e) {
+                	continue;
+                } catch (JSONException e) {
+                    throw new AlgoliaException("JSON decode error:" + e.getMessage());
+                }
                 consumeQuietly(response.getEntity());
-                throw new AlgoliaException("Bad request");
-            } else if (code == 403) {
-                consumeQuietly(response.getEntity());
-                throw new AlgoliaException("Invalid Application-ID or API-Key");
-            } else if (code == 404) {
-                consumeQuietly(response.getEntity());
-                throw new AlgoliaException("Resource does not exist");
+                throw new AlgoliaException(message);
             } else {
             	try {
 					errors.put(host, EntityUtils.toString(response.getEntity()));
@@ -595,19 +621,7 @@ public class APIClient {
                 continue;
             }
             try {
-            	InputStream istream = response.getEntity().getContent();
-            	InputStreamReader is = new InputStreamReader(istream, "UTF-8");
-            	StringBuilder builder= new StringBuilder();
-                char[] buf = new char[1000];
-                int l = 0;
-                while (l >= 0) {
-                    builder.append(buf, 0, l);
-                    l = is.read(buf);
-                }
-                JSONTokener tokener = new JSONTokener(builder.toString());
-                JSONObject res = new JSONObject(tokener);
-                is.close();
-                return res;
+                return _getAnswerObject(response.getEntity().getContent());
             } catch (IOException e) {
             	continue;
             } catch (JSONException e) {
@@ -657,7 +671,7 @@ public class APIClient {
 				requests.put(new JSONObject().put("indexName", indexQuery.getIndex()).put("params", paramsString));
     			}
 				JSONObject body = new JSONObject().put("requests", requests);
-				return postRequest("/1/indexes/*/queries", body.toString());
+				return postRequest("/1/indexes/*/queries", body.toString(), true);
 			} catch (JSONException e) {
 				new AlgoliaException(e.getMessage());
 			}
