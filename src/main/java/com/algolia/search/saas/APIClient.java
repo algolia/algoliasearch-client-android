@@ -44,7 +44,7 @@ import org.json.JSONObject;
 import org.json.JSONTokener;
 
 /*
- * Copyright (c) 2013 Algolia
+ * Copyright (c) 2015 Algolia
  * http://www.algolia.com/
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -73,8 +73,9 @@ import org.json.JSONTokener;
  */
 public class APIClient {
 	private int httpSocketTimeoutMS = 30000;
-	private int httpConnectTimeoutMS = 3000;
-    
+	private int httpConnectTimeoutMS = 2000;
+	private int httpSearchTimeoutMS = 5000;
+	     
     private final static String version;
     static {
         String tmp = "N/A";
@@ -109,13 +110,11 @@ public class APIClient {
      * @param apiKey a valid API key for the service
      */
     public APIClient(String applicationID, String apiKey) {
-        this(applicationID, apiKey, Arrays.asList(applicationID + "-1.algolia.net", 
-						        		applicationID + "-2.algolia.net", 
-						        		applicationID + "-3.algolia.net"));
-        Collections.shuffle(this.buildHostsArray);
+        this(applicationID, apiKey, Arrays.asList(applicationID + "-1.algolianet.com", 
+						        		applicationID + "-2.algolianet.com", 
+						        		applicationID + "-3.algolianet.com"));
         this.buildHostsArray.add(0, applicationID + ".algolia.net");
         this.buildHostsEnabled.add(0L);
-        Collections.shuffle(this.queryHostsArray);
         this.queryHostsArray.add(0, applicationID + "-dsn.algolia.net");
         this.queryHostsEnabled.add(0L);
     }
@@ -235,7 +234,7 @@ public class APIClient {
 	        JSONObject content = new JSONObject();
 	        content.put("operation", "move");
 	        content.put("destination", dstIndexName);
-	        return postRequest("/1/indexes/" + URLEncoder.encode(srcIndexName, "UTF-8") + "/operation", content.toString(), true); 	
+	        return postRequest("/1/indexes/" + URLEncoder.encode(srcIndexName, "UTF-8") + "/operation", content.toString(), true, false); 	
     	} catch (UnsupportedEncodingException e) {
     		throw new RuntimeException(e); // $COVERAGE-IGNORE$
     	} catch (JSONException e) {
@@ -253,7 +252,7 @@ public class APIClient {
 	        JSONObject content = new JSONObject();
 	        content.put("operation", "copy");
 	        content.put("destination", dstIndexName);
-	        return postRequest("/1/indexes/" + URLEncoder.encode(srcIndexName, "UTF-8") + "/operation", content.toString(), true); 	
+	        return postRequest("/1/indexes/" + URLEncoder.encode(srcIndexName, "UTF-8") + "/operation", content.toString(), true, false); 	
     	} catch (UnsupportedEncodingException e) {
     		throw new RuntimeException(e); // $COVERAGE-IGNORE$
     	} catch (JSONException e) {
@@ -374,7 +373,7 @@ public class APIClient {
         } catch (JSONException e) {
             throw new RuntimeException(e); // $COVERAGE-IGNORE$
         }
-        return postRequest("/1/keys", jsonObject.toString(), true);
+        return postRequest("/1/keys", jsonObject.toString(), true, false);
     }
     
     /**
@@ -468,7 +467,7 @@ public class APIClient {
         } catch (JSONException e) {
             throw new RuntimeException(e); // $COVERAGE-IGNORE$
         }
-        return postRequest("/1/keys", jsonObject.toString(), true);
+        return postRequest("/1/keys", jsonObject.toString(), true, false);
     }
     
     /**
@@ -581,23 +580,23 @@ public class APIClient {
         GET, POST, PUT, DELETE, OPTIONS, TRACE, HEAD;
     }
     
-    protected JSONObject getRequest(String url, boolean build) throws AlgoliaException {
-    	return _request(Method.GET, url, null, build);
+    protected JSONObject getRequest(String url, boolean search) throws AlgoliaException {
+    	return _request(Method.GET, url, null, false, search);
     }
     
     protected JSONObject deleteRequest(String url, boolean build) throws AlgoliaException {
-    	return _request(Method.DELETE, url, null, build);
+    	return _request(Method.DELETE, url, null, build, false);
     }
     
-    protected JSONObject postRequest(String url, String obj, boolean build) throws AlgoliaException {
-    	return _request(Method.POST, url, obj, build);
+    protected JSONObject postRequest(String url, String obj, boolean build, boolean search) throws AlgoliaException {
+    	return _request(Method.POST, url, obj, build, search);
     }
     
     protected JSONObject putRequest(String url, String obj, boolean build) throws AlgoliaException {
-    	return _request(Method.PUT, url, obj, build);
+    	return _request(Method.PUT, url, obj, build, false);
     }
     
-    private JSONObject _requestByHost(HttpRequestBase req, String host, String url, String json, HashMap<String, String> errors) throws AlgoliaException {
+    private JSONObject _requestByHost(HttpRequestBase req, String host, String url, String json, HashMap<String, String> errors, boolean searchTimeout) throws AlgoliaException {
     	req.reset();
 
         // set URL
@@ -640,7 +639,7 @@ public class APIClient {
         }
         
         RequestConfig config = RequestConfig.custom()
-                .setSocketTimeout(httpSocketTimeoutMS)
+                .setSocketTimeout(searchTimeout ? httpSearchTimeoutMS : httpSocketTimeoutMS)
                 .setConnectTimeout(httpConnectTimeoutMS)
                 .setConnectionRequestTimeout(httpConnectTimeoutMS)
                 .build();
@@ -701,7 +700,7 @@ public class APIClient {
         }
     }
     
-    private JSONObject _request(Method m, String url, String json, boolean build) throws AlgoliaException {
+    private JSONObject _request(Method m, String url, String json, boolean build, boolean search) throws AlgoliaException {
     	HttpRequestBase req;
     	switch (m) {
 		case DELETE:
@@ -735,7 +734,7 @@ public class APIClient {
     		String host = hosts.get(i);
     		if (enabled.get(i) > System.currentTimeMillis())
     			continue;
-    		JSONObject res = _requestByHost(req, host, url, json, errors);
+    		JSONObject res = _requestByHost(req, host, url, json, errors, search);
     		if (res != null)
     			return res;
     		enabled.set(i, System.currentTimeMillis() + TimeUnit.MILLISECONDS.convert(30, TimeUnit.SECONDS));
@@ -784,7 +783,7 @@ public class APIClient {
 				requests.put(new JSONObject().put("indexName", indexQuery.getIndex()).put("params", paramsString));
     			}
 				JSONObject body = new JSONObject().put("requests", requests);
-				return postRequest("/1/indexes/*/queries", body.toString(), false);
+				return postRequest("/1/indexes/*/queries", body.toString(), false, true);
 			} catch (JSONException e) {
 				new AlgoliaException(e.getMessage());
 			}
