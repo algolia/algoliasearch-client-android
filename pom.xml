@@ -2,7 +2,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.algolia</groupId>
 	<artifactId>algoliasearch</artifactId>
-	<version>1.3.5</version>
+	<version>1.3.6-SNAPSHOT</version>
 	<name>Algolia Search Client</name>
 	<description>Java client for Algolia Search API</description>
 	<url>https://github.com/algolia/algoliasearch-client-java</url>
@@ -25,7 +25,7 @@
 		<connection>scm:git:git@github.com:algolia/algoliasearch-client-java.git</connection>
 		<url>scm:git:git@github.com:algolia/algoliasearch-client-java.git</url>
 		<developerConnection>scm:git:git@github.com:algolia/algoliasearch-client-java.git</developerConnection>
-		<tag>1.3.5</tag>
+		<tag>HEAD</tag>
 	</scm>
 	<developers>
 		<developer>
