@@ -12,12 +12,10 @@ import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.concurrent.TimeUnit;
 
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
@@ -96,8 +94,6 @@ public class APIClient {
     private final String apiKey;
     private final List<String> buildHostsArray;
     private final List<String> queryHostsArray;
-    private final List<Long> buildHostsEnabled;
-    private final List<Long> queryHostsEnabled;
     private final HttpClient httpClient;
     private String forwardRateLimitAPIKey;
     private String forwardEndUserIP;
@@ -114,9 +110,7 @@ public class APIClient {
 						        		applicationID + "-2.algolianet.com", 
 						        		applicationID + "-3.algolianet.com"));
         this.buildHostsArray.add(0, applicationID + ".algolia.net");
-        this.buildHostsEnabled.add(0L);
         this.queryHostsArray.add(0, applicationID + "-dsn.algolia.net");
-        this.queryHostsEnabled.add(0L);
     }
     
     /**
@@ -152,12 +146,6 @@ public class APIClient {
         
         this.buildHostsArray = new ArrayList<String>(buildHostsArray);
         this.queryHostsArray = new ArrayList<String>(queryHostArray);
-        this.buildHostsEnabled = new ArrayList<Long>();
-        for (int i =0; i < this.buildHostsArray.size(); ++i)
-        	this.buildHostsEnabled.add(0L);
-        this.queryHostsEnabled = new ArrayList<Long>();
-        for (int i =0; i < this.queryHostsArray.size(); ++i)
-        	this.queryHostsEnabled.add(0L);
         httpClient = HttpClientBuilder.create().disableAutomaticRetries().build();
         headers = new HashMap<String, String>();
     }
@@ -719,27 +707,16 @@ public class APIClient {
 			throw new IllegalArgumentException("Method " + m + " is not supported");
     	}
     	HashMap<String, String> errors = new HashMap<String, String>();
-    	List<String> hosts = null;
-    	List<Long> enabled = null;
-    	if (build) {
-    		hosts = this.buildHostsArray;
-    		enabled = this.buildHostsEnabled;
-    	} else {
-    		hosts = this.queryHostsArray;
-    		enabled = this.queryHostsEnabled;
-    	}
+    	List<String> hosts = build ? this.buildHostsArray : this.queryHostsArray;
 		
     	// for each host
     	for (int i = 0; i < hosts.size(); ++i) {
     		String host = hosts.get(i);
-    		if (enabled.get(i) > System.currentTimeMillis())
-    			continue;
     		JSONObject res = _requestByHost(req, host, url, json, errors, search);
-    		if (res != null)
+    		if (res != null) {
     			return res;
-    		enabled.set(i, System.currentTimeMillis() + TimeUnit.MILLISECONDS.convert(30, TimeUnit.SECONDS));
+    		}
     	}
-    	enabled.set(enabled.size() - 1, 0L); // Keep the last host up;
     	StringBuilder builder = new StringBuilder("Hosts unreachable: ");
     	Boolean first = true;
     	for (Map.Entry<String, String> entry : errors.entrySet()) {

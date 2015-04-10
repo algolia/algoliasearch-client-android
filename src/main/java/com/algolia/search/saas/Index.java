@@ -768,7 +768,8 @@ public class Index {
 			JSONObject disjunctiveFacetsJSON = new JSONObject();
 			for (int i = 1; i < results.length(); ++i) {
 				JSONObject facets = results.getJSONObject(i).getJSONObject("facets");
-				Iterator<String> keys = facets.keys();
+				@SuppressWarnings("unchecked")
+                Iterator<String> keys = facets.keys();
 				while(keys.hasNext()) {
 					String key = keys.next();
 					// Add the facet to the disjunctive facet hash
