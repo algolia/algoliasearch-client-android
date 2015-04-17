@@ -1,23 +1,63 @@
-apply plugin: 'java'
 apply plugin: 'eclipse'
 
-[compileJava, compileTestJava]*.options.collect {options -> options.encoding = 'UTF-8'} 
+buildscript {
+	repositories {
+		mavenCentral()
+		jcenter()
+	}
+	dependencies {
+		classpath 'com.android.tools.build:gradle:1.0.0'
+        classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:1.1'
+        classpath 'com.github.dcendents:android-maven-plugin:1.2'
+        classpath 'com.jakewharton.sdkmanager:gradle-plugin:0.12.+'
+	}
+}
 
-sourceCompatibility = 1.6
+group = 'com.algolia'
 version = '1.6.3'
 
-jar {
-    manifest {
-        attributes 'Implementation-Title': 'Algolia Search API Client for Android', 'Implementation-Version': version
+apply plugin: 'android-sdk-manager'
+apply plugin: 'com.android.library'
+
+android {
+	compileSdkVersion 15
+	buildToolsVersion "20.0.0"
+	
+	defaultConfig {
+        minSdkVersion 15
+        targetSdkVersion 15
     }
-    destinationDir  file('dist')
 }
 
 repositories {
-    mavenCentral()
+	mavenCentral()
 }
 
 dependencies {
-    compile group: 'com.google.android', name: 'android', version: '4.1.1.4'
-    testCompile 'junit:junit:[4,)'
+    compile 'org.apache.httpcomponents:httpclient-android:4.3.5'
+    compile 'commons-codec:commons-codec:1.4'
+    
+    androidTestCompile 'junit:junit:4.+'
 }
+
+apply plugin: 'com.github.dcendents.android-maven'
+apply plugin: 'com.jfrog.bintray'
+
+Properties properties = new Properties()
+properties.load(project.rootProject.file('local.properties').newDataInputStream())
+
+bintray {
+    user = properties.getProperty("bintray.user")
+    key = properties.getProperty("bintray.apikey")
+
+    configurations = ['archives']
+    pkg {
+        repo = "maven"
+        name = "algoliasearch-client-android"
+        websiteUrl = "https://github.com/algolia/algoliasearch-client-android"
+        vcsUrl = "https://github.com/algolia/algoliasearch-client-android.git"
+        licenses = ["MIT"]
+        publish = true
+    }
+}
+
