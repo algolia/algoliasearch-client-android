@@ -1,5 +1,8 @@
-language: java
-jdk: oraclejdk7
+language: android
+android:
+  components:
+    - build-tools-20.0.0
+    - android-15
 script: gradle check --stacktrace --debug
 env:
   global:
