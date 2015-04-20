@@ -287,6 +287,25 @@ public class APIClient {
     public JSONObject deleteUserKey(String key) throws AlgoliaException {
         return deleteRequest("/1/keys/" + key);
     }
+    
+    /**
+     * Create a new user key
+     *
+     * @param params the list of parameters for this key. Defined by a JSONObject that 
+     * can contains the following values:
+     *   - acl: array of string
+     *   - indices: array of string
+     *   - validity: int
+     *   - referers: array of string
+     *   - description: string
+     *   - maxHitsPerQuery: integer
+     *   - queryParameters: string
+     *   - maxQueriesPerIPPerHour: integer
+     *   
+     */
+    public JSONObject addUserKey(JSONObject params) throws AlgoliaException {
+        return postRequest("/1/keys", params.toString(), false);
+    }
 
     /**
      * Create a new user key
@@ -301,14 +320,24 @@ public class APIClient {
      *   - editSettings : allows to change index settings (https only)
      */
     public JSONObject addUserKey(List<String> acls) throws AlgoliaException {
-        JSONArray array = new JSONArray(acls);
-        JSONObject jsonObject = new JSONObject();
-        try {
-            jsonObject.put("acl", array);
-        } catch (JSONException e) {
-            throw new RuntimeException(e);
-        }
-        return postRequest("/1/keys", jsonObject.toString(), false);
+        return addUserKey(acls, 0, 0, 0, null);
+    }
+    /**
+     * Update a user key
+     *
+     * @param params the list of parameters for this key. Defined by a JSONObject that 
+     * can contains the following values:
+     *   - acl: array of string
+     *   - indices: array of string
+     *   - validity: int
+     *   - referers: array of string
+     *   - description: string
+     *   - maxHitsPerQuery: integer
+     *   - queryParameters: string
+     *   - maxQueriesPerIPPerHour: integer
+     */
+    public JSONObject updateUserKey(String key, JSONObject params) throws AlgoliaException {
+        return putRequest("/1/keys/" + key, params.toString());
     }
 
     /**
@@ -324,14 +353,7 @@ public class APIClient {
      *   - editSettings : allows to change index settings (https only)
      */
     public JSONObject updateUserKey(String key, List<String> acls) throws AlgoliaException {
-        JSONArray array = new JSONArray(acls);
-        JSONObject jsonObject = new JSONObject();
-        try {
-            jsonObject.put("acl", array);
-        } catch (JSONException e) {
-            throw new RuntimeException(e); // $COVERAGE-IGNORE$
-        }
-        return putRequest("/1/keys/" + key, jsonObject.toString());
+        return updateUserKey(key, acls, 0, 0, 0, null);
     }
     
     /**
@@ -402,7 +424,7 @@ public class APIClient {
         } catch (JSONException e) {
             throw new RuntimeException(e);
         }
-        return postRequest("/1/keys", jsonObject.toString(), false);
+        return addUserKey(jsonObject);
     }
 
     /**
@@ -435,7 +457,7 @@ public class APIClient {
         } catch (JSONException e) {
             throw new RuntimeException(e); // $COVERAGE-IGNORE$
         }
-        return putRequest("/1/keys/" + key, jsonObject.toString());
+        return updateUserKey(key, jsonObject);
     }
 
     /**
@@ -663,6 +685,9 @@ public class APIClient {
      * This method allows to query multiple indexes with one API call
      */
     public JSONObject multipleQueries(List<IndexQuery> queries) throws AlgoliaException {
+    	return multipleQueries(queries, "none");
+    }
+    public JSONObject multipleQueries(List<IndexQuery> queries, String strategy) throws AlgoliaException {
     		try {
     			JSONArray requests = new JSONArray();
     			for (IndexQuery indexQuery : queries) {
@@ -670,7 +695,7 @@ public class APIClient {
 				requests.put(new JSONObject().put("indexName", indexQuery.getIndex()).put("params", paramsString));
     			}
 				JSONObject body = new JSONObject().put("requests", requests);
-				return postRequest("/1/indexes/*/queries", body.toString(), true);
+				return postRequest("/1/indexes/*/queries?strategy=" + strategy, body.toString(), true);
 			} catch (JSONException e) {
 				new AlgoliaException(e.getMessage());
 			}
