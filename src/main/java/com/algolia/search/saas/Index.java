@@ -556,6 +556,24 @@ public class Index {
     public JSONObject deleteUserKey(String key) throws AlgoliaException {
         return client.deleteRequest("/1/indexes/" + encodedIndexName + "/keys/" + key, true);
     }
+    
+    /**
+     * Create a new user key
+     *
+     * @param params the list of parameters for this key. Defined by a JSONObject that 
+     * can contains the following values:
+     *   - acl: array of string
+     *   - indices: array of string
+     *   - validity: int
+     *   - referers: array of string
+     *   - description: string
+     *   - maxHitsPerQuery: integer
+     *   - queryParameters: string
+     *   - maxQueriesPerIPPerHour: integer
+     */
+    public JSONObject addUserKey(JSONObject params) throws AlgoliaException {
+    	return client.postRequest("/1/indexes/" + encodedIndexName + "/keys", params.toString(), true, false);
+    }
 
     /**
      * Create a new user key
@@ -570,14 +588,25 @@ public class Index {
      *   - editSettings : allows to change index settings (https only)
      */
     public JSONObject addUserKey(List<String> acls) throws AlgoliaException {
-        JSONArray array = new JSONArray(acls);
-        JSONObject jsonObject = new JSONObject();
-        try {
-            jsonObject.put("acl", array);
-        } catch (JSONException e) {
-            throw new RuntimeException(e);
-        }
-        return client.postRequest("/1/indexes/" + encodedIndexName + "/keys", jsonObject.toString(), true, false);
+        return addUserKey(acls, 0, 0, 0);
+    }
+    
+    /**
+     * Update a new user key
+     *
+     * @param params the list of parameters for this key. Defined by a JSONObject that 
+     * can contains the following values:
+     *   - acl: array of string
+     *   - indices: array of string
+     *   - validity: int
+     *   - referers: array of string
+     *   - description: string
+     *   - maxHitsPerQuery: integer
+     *   - queryParameters: string
+     *   - maxQueriesPerIPPerHour: integer
+     */
+    public JSONObject updateUserKey(String key, JSONObject params) throws AlgoliaException {
+    	return client.putRequest("/1/indexes/" + encodedIndexName + "/keys/" + key, params.toString(), true);
     }
     
     /**
@@ -593,14 +622,7 @@ public class Index {
      *   - editSettings : allows to change index settings (https only)
      */
     public JSONObject updateUserKey(String key, List<String> acls) throws AlgoliaException {
-        JSONArray array = new JSONArray(acls);
-        JSONObject jsonObject = new JSONObject();
-        try {
-            jsonObject.put("acl", array);
-        } catch (JSONException e) {
-            throw new RuntimeException(e);
-        }
-        return client.putRequest("/1/indexes/" + encodedIndexName + "/keys/" + key, jsonObject.toString(), true);
+        return updateUserKey(key, acls, 0, 0, 0);
     }
     
     /**
@@ -629,7 +651,7 @@ public class Index {
         } catch (JSONException e) {
             throw new RuntimeException(e);
         }
-        return client.postRequest("/1/indexes/" + encodedIndexName + "/keys", jsonObject.toString(), true, false);
+        return addUserKey(jsonObject);
     }
     
     /**
@@ -658,7 +680,7 @@ public class Index {
         } catch (JSONException e) {
             throw new RuntimeException(e);
         }
-        return client.putRequest("/1/indexes/" + encodedIndexName + "/keys/" + key, jsonObject.toString(), true);
+        return updateUserKey(key, jsonObject);
     }
     
     /**
