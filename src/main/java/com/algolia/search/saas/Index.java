@@ -48,6 +48,7 @@ public class Index {
     private APIClient client;
     private String encodedIndexName;
     private String indexName;
+    private final long MAX_TIME_MS_TO_WAIT = 10000L;
 
     /**
      * Index initialization (You should not call this initialized yourself)
@@ -629,29 +630,42 @@ public class Index {
         ASyncIndexTaskParams params = new ASyncIndexTaskParams(listener, query);
         new ASyncIndexTask().execute(params);
     }
-
+    
     /**
      * Wait the publication of a task on the server. 
      * All server task are asynchronous and you can check with this method that the task is published.
-     *
+     * 
      * @param taskID the id of the task returned by server
+     * @param timeToWait time to sleep seed
      */
-    public void waitTask(String taskID) throws AlgoliaException {
+    public void waitTask(String taskID, long timeToWait) throws AlgoliaException {
         try {
             while (true) {
                 JSONObject obj = client.getRequest("/1/indexes/" + encodedIndexName + "/task/" + URLEncoder.encode(taskID, "UTF-8"), false);
                 if (obj.getString("status").equals("published"))
                     return;
                 try {
-                    Thread.sleep(1000);
+                    Thread.sleep(timeToWait > MAX_TIME_MS_TO_WAIT ? MAX_TIME_MS_TO_WAIT : timeToWait);
                 } catch (InterruptedException e) {
                 }
+                timeToWait *= 2;
             }
         } catch (JSONException e) {
             throw new AlgoliaException(e.getMessage());
         } catch (UnsupportedEncodingException e) {
             throw new RuntimeException(e);
         }
+    }
+    
+    /**
+     * Wait the publication of a task on the server. 
+     * All server task are asynchronous and you can check with this method that the task is published.
+     * 
+     *
+     * @param taskID the id of the task returned by server
+     */
+    public void waitTask(String taskID) throws AlgoliaException {
+    	waitTask(taskID, 100);
     }
 
     /**
