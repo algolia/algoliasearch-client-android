@@ -692,5 +692,16 @@ public class SimpleTest {
     	avgDSNQuery /= upperBound;
     	assertTrue(2.0 < firstDSNQuery / avgDSNQuery);
     }
+    
+    @Test
+    public void test39_customBatchIndexes() throws AlgoliaException, JSONException {
+    	List<JSONObject> array = new ArrayList<JSONObject>();
+    	array.add(new JSONObject().put("action", "addObject").put("indexName", index.getIndexName()).put("body", new JSONObject().put("firstname", "Jimmie").put("lastname", "Barninger")));
+    	array.add(new JSONObject().put("action", "addObject").put("indexName", index.getIndexName()).put("body", new JSONObject().put("firstname", "Warren").put("lastname", "Speach")));
+    	JSONObject task = client.batch(array);
+    	index.waitTask(task.getJSONObject("taskID").getString(index.getIndexName()));
+    	JSONObject res = index.search(new Query(""));
+    	assertEquals(2, res.getInt("nbHits"));
+    }
 
 }

@@ -273,7 +273,7 @@ public class APIClient {
      * @param length Specify the maximum number of entries to retrieve starting at offset. Maximum allowed value: 1000.
      */
     public JSONObject getLogs(int offset, int length) throws AlgoliaException {
-    	 return getRequest("/1/logs?offset=" + offset + "&length=" + length, false);
+    	return getLogs(offset, length, LogType.LOG_ALL);
     }
     
     /**
@@ -283,7 +283,7 @@ public class APIClient {
      * @param onlyErrors Retrieve only logs with an httpCode different than 200 and 201
      */
     public JSONObject getLogs(int offset, int length, boolean onlyErrors) throws AlgoliaException {
-    	 return getRequest("/1/logs?offset=" + offset + "&length=" + length + "&onlyErrors=" + onlyErrors, false);
+    	 return getLogs(offset, length, onlyErrors ? LogType.LOG_ERROR : LogType.LOG_ALL);
     }
     
     /**
@@ -790,6 +790,38 @@ public class APIClient {
 				new AlgoliaException(e.getMessage());
 			}
     		return null;
+    }
+    
+    /**
+     * Custom batch
+     * 
+     * @param actions the array of actions
+     * @throws AlgoliaException 
+     */
+    public JSONObject batch(JSONArray actions) throws AlgoliaException {
+	    try {
+	    	JSONObject content = new JSONObject();
+	    	content.put("requests", actions);
+	    	return postRequest("/1/indexes/*/batch", content.toString(), true, false);
+	    } catch (JSONException e) {
+	        throw new AlgoliaException(e.getMessage());
+	    }
+    }
+    
+    /**
+     * Custom batch
+     * 
+     * @param actions the array of actions
+     * @throws AlgoliaException 
+     */
+    public JSONObject batch(List<JSONObject> actions) throws AlgoliaException {
+	    try {
+	    	JSONObject content = new JSONObject();
+	    	content.put("requests", actions);
+	    	return postRequest("/1/indexes/*/batch", content.toString(), true, false);
+	    } catch (JSONException e) {
+	        throw new AlgoliaException(e.getMessage());
+	    }
     }
     
 }
