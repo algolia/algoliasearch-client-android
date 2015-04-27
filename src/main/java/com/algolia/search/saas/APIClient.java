@@ -37,6 +37,9 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.json.JSONTokener;
 
+import android.app.Activity;
+import android.os.AsyncTask;
+
 /*
  * Copyright (c) 2015 Algolia
  * http://www.algolia.com/
@@ -173,6 +176,255 @@ public class APIClient {
     	httpSearchTimeoutMS = searchTimeout;
     }
     
+    private enum ASyncAPIClientTaskKind
+    {
+        ListIndexes,
+        DeleteIndex,
+        CopyIndex,
+        MoveIndex,
+        MultipleQueries,
+        Batch,
+        GetLogs,
+        ListUserKeys,
+        GetUserKey,
+        AddUserKey,
+        UpdateUserKey,
+        DeleteUserKey
+    };
+
+    private static class ASyncAPIClientTaskParams
+    {
+        public APIClientListener listener;
+        public ASyncAPIClientTaskKind kind;
+        public String strParam;
+        public String strParam2;
+        public int intParam;
+        public int intParam2;
+        public LogType logType;
+        public JSONObject jsonParam;
+        public JSONArray jsonArrayParam;
+        public List<IndexQuery> queries;
+
+        public ASyncAPIClientTaskParams(APIClientListener listener, ASyncAPIClientTaskKind kind) {
+            this.listener = listener;
+            this.kind = kind;
+        }
+        
+        public ASyncAPIClientTaskParams(APIClientListener listener, ASyncAPIClientTaskKind kind, String strParam) {
+            this.listener = listener;
+            this.kind = kind;
+            this.strParam = strParam;
+        }
+        
+        public ASyncAPIClientTaskParams(APIClientListener listener, ASyncAPIClientTaskKind kind, String strParam, String strParam2) {
+            this.listener = listener;
+            this.kind = kind;
+            this.strParam = strParam;
+            this.strParam2 = strParam2;
+        }
+        
+        public ASyncAPIClientTaskParams(APIClientListener listener, ASyncAPIClientTaskKind kind, int intParam, int intParam2, LogType logType) {
+        	this.listener = listener;
+            this.kind = kind;
+            this.intParam = intParam;
+            this.intParam2 = intParam2;
+            this.logType = logType;
+        }
+        
+        public ASyncAPIClientTaskParams(APIClientListener listener, ASyncAPIClientTaskKind kind, JSONObject jsonParam) {
+        	this.listener = listener;
+            this.kind = kind;
+            this.jsonParam = jsonParam;
+        }
+        
+        public ASyncAPIClientTaskParams(APIClientListener listener, ASyncAPIClientTaskKind kind, String strParam, JSONObject jsonParam) {
+        	this.listener = listener;
+            this.kind = kind;
+            this.strParam = strParam;
+            this.jsonParam = jsonParam;
+        }
+        
+        public ASyncAPIClientTaskParams(APIClientListener listener, ASyncAPIClientTaskKind kind, List<IndexQuery> queries, String strParam) {
+        	this.listener = listener;
+            this.kind = kind;
+            this.queries = queries;
+            this.strParam = strParam;
+        }
+        
+        public ASyncAPIClientTaskParams(APIClientListener listener, ASyncAPIClientTaskKind kind, JSONArray jsonArrayParam) {
+        	this.listener = listener;
+            this.kind = kind;
+            this.jsonArrayParam = jsonArrayParam;
+        }
+    }
+
+    private class ASyncAPIClientTask extends AsyncTask<ASyncAPIClientTaskParams, Void, Void> {
+
+        private void _sendResult(ASyncAPIClientTaskParams p, JSONObject res)
+        {
+            final ASyncAPIClientTaskParams fp = p;
+            final JSONObject fres = res;
+            if (p.listener instanceof Activity) {
+                ((Activity)p.listener).runOnUiThread(new Runnable() {
+                    public void run() {
+                        _sendResultImpl(fp, fres);
+                    }
+                });
+            } else {
+                _sendResultImpl(p, res);
+            }
+        }
+
+        private void _sendResultImpl(ASyncAPIClientTaskParams p, JSONObject res)
+        {
+            switch (p.kind) {
+            case ListIndexes:
+                p.listener.listIndexesResult(APIClient.this, res);
+                break;
+            case DeleteIndex:
+            	p.listener.deleteIndexResult(APIClient.this, p.strParam, res);
+            	break;
+            case MoveIndex:
+            	p.listener.moveIndexResult(APIClient.this, p.strParam, p.strParam2, res);
+            	break;
+            case CopyIndex:
+            	p.listener.copyIndexResult(APIClient.this, p.strParam, p.strParam2, res);
+            	break;
+            case GetLogs:
+            	p.listener.getLogsResult(APIClient.this, p.intParam, p.intParam2, p.logType, res);
+            	break;
+            case GetUserKey:
+            	p.listener.getUserKeyResult(APIClient.this, p.strParam, res);
+            	break;
+            case ListUserKeys:
+            	p.listener.listUserKeysResult(APIClient.this, res);
+            	break;
+            case DeleteUserKey:
+            	p.listener.deleteUserKeyResult(APIClient.this, p.strParam, res);
+            	break;
+            case AddUserKey:
+            	p.listener.addUserKeyResult(APIClient.this, p.jsonParam, res);
+            	break;
+            case UpdateUserKey:
+            	p.listener.updateUserKeyResult(APIClient.this, p.strParam, p.jsonParam, res);
+            	break;
+            case MultipleQueries:
+            	p.listener.multipleQueriesResult(APIClient.this, p.queries, p.strParam, res);
+            	break;
+            case Batch:
+            	p.listener.batchResult(APIClient.this, p.jsonArrayParam, res);
+            	break;
+            }
+        }
+
+        @Override
+        protected Void doInBackground(ASyncAPIClientTaskParams... params) {
+            ASyncAPIClientTaskParams p = params[0];
+            JSONObject res = null;
+            switch (p.kind) {
+            case ListIndexes:
+                try {
+                    res = listIndexes();
+                } catch (AlgoliaException e) {
+                    p.listener.listIndexesError(APIClient.this, e);
+                    return null;
+                }
+                break;
+            case DeleteIndex:
+            	try {
+            		res = deleteIndex(p.strParam);
+            	} catch (AlgoliaException e) {
+            		p.listener.deleteIndexError(APIClient.this, p.strParam, e);
+            	}
+            	break;
+            case MoveIndex:
+            	try {
+            		res = moveIndex(p.strParam, p.strParam2);
+            	} catch (AlgoliaException e) {
+            		p.listener.moveIndexError(APIClient.this, p.strParam, p.strParam2, e);
+            	}
+            	break;
+            case CopyIndex:
+            	try {
+            		res = copyIndex(p.strParam, p.strParam2);
+            	} catch (AlgoliaException e) {
+            		p.listener.copyIndexError(APIClient.this, p.strParam, p.strParam2, e);
+            	}
+            	break;
+            case GetLogs:
+            	try {
+            		res = getLogs(p.intParam, p.intParam2, p.logType);
+            	} catch (AlgoliaException e) {
+            		p.listener.getLogsError(APIClient.this, p.intParam, p.intParam2, p.logType, e);
+            	}
+            	break;
+            case GetUserKey:
+            	try {
+            		res = getUserKeyACL(p.strParam);
+            	} catch (AlgoliaException e) {
+            		p.listener.getUserKeyError(APIClient.this, p.strParam, e);
+            	}
+            	break;
+            case ListUserKeys:
+            	try {
+            		res = listUserKeys();
+            	} catch (AlgoliaException e) {
+            		p.listener.listUserKeysError(APIClient.this, e);
+            	}
+            	break;
+            case DeleteUserKey:
+            	try {
+            		res = deleteUserKey(p.strParam);
+            	} catch (AlgoliaException e) {
+            		p.listener.deleteUserKeyError(APIClient.this, p.strParam, e);
+            	}
+            	break;
+            case AddUserKey:
+            	try {
+            		res = addUserKey(p.jsonParam);
+            	} catch (AlgoliaException e) {
+            		p.listener.addUserKeyError(APIClient.this, p.jsonParam, e);
+            	}
+            	break;
+            case UpdateUserKey:
+            	try {
+            		res = updateUserKey(p.strParam, p.jsonParam);
+            	} catch (AlgoliaException e) {
+            		p.listener.updateUserKeyError(APIClient.this, p.strParam, p.jsonParam, e);
+            	}
+            	break;
+            case MultipleQueries:
+            	try {
+            		res = multipleQueries(p.queries, p.strParam);
+            	} catch (AlgoliaException e) {
+            		p.listener.multipleQueriesError(APIClient.this, p.queries, p.strParam, e);
+            	}
+            	break;
+            case Batch:
+            	try {
+            		res = batch(p.jsonArrayParam);
+            	} catch (AlgoliaException e) {
+            		p.listener.batchError(APIClient.this, p.jsonArrayParam, e);
+            	}
+            	break;
+            }
+            _sendResult(p, res);
+            return null;
+        }      
+
+        @Override
+        protected void onPostExecute(Void result) {
+        }
+
+        @Override
+        protected void onPreExecute() {
+        }
+
+        @Override
+        protected void onProgressUpdate(Void... values) {
+        }
+  }   
+    
     /**
      * List all existing indexes
      * return an JSON Object in the form:
@@ -181,6 +433,16 @@ public class APIClient {
      */
     public JSONObject listIndexes() throws AlgoliaException {
         return getRequest("/1/indexes/", false);
+    }
+    
+    /**
+     * List all existing user keys with their associated ACLs
+     * 
+     * @param listener the listener that will receive the result or error. If the listener is an instance of Activity, the result will be received directly on UIthread
+     */
+    public void listIndexesASync(APIClientListener listener) {
+        ASyncAPIClientTaskParams params = new ASyncAPIClientTaskParams(listener, ASyncAPIClientTaskKind.ListIndexes);
+        new ASyncAPIClientTask().execute(params);
     }
 
     /**
@@ -195,6 +457,17 @@ public class APIClient {
         } catch (UnsupportedEncodingException e) {
             throw new RuntimeException(e);
         }
+    }
+    
+    /**
+     * Delete an index
+     *
+     * @param indexName the name of index to delete
+     * return an object containing a "deletedAt" attribute
+     */
+    public void deleteIndexASync(String indexName, APIClientListener listener) {
+        ASyncAPIClientTaskParams params = new ASyncAPIClientTaskParams(listener, ASyncAPIClientTaskKind.DeleteIndex, indexName);
+        new ASyncAPIClientTask().execute(params);
     }
     
     /**
@@ -216,6 +489,16 @@ public class APIClient {
     }
     
     /**
+     * Move an existing index.
+     * @param srcIndexName the name of index to copy.
+     * @param dstIndexName the new index name that will contains a copy of srcIndexName (destination will be overriten if it already exist).
+     */
+    public void moveIndexASync(String srcIndexName, String dstIndexName, APIClientListener listener) {
+        ASyncAPIClientTaskParams params = new ASyncAPIClientTaskParams(listener, ASyncAPIClientTaskKind.MoveIndex, srcIndexName, dstIndexName);
+        new ASyncAPIClientTask().execute(params);
+    }
+    
+    /**
      * Copy an existing index.
      * @param srcIndexName the name of index to copy.
      * @param dstIndexName the new index name that will contains a copy of srcIndexName (destination will be overriten if it already exist).
@@ -234,6 +517,28 @@ public class APIClient {
     }
     
     /**
+     * Copy an existing index.
+     * @param srcIndexName the name of index to copy.
+     * @param dstIndexName the new index name that will contains a copy of srcIndexName (destination will be overriten if it already exist).
+     */
+    public void copyIndexASync(String srcIndexName, String dstIndexName, APIClientListener listener) {
+        ASyncAPIClientTaskParams params = new ASyncAPIClientTaskParams(listener, ASyncAPIClientTaskKind.CopyIndex, srcIndexName, dstIndexName);
+        new ASyncAPIClientTask().execute(params);
+    }
+    
+    public enum LogType
+    {
+      /// all query logs
+      LOG_QUERY,
+      /// all build logs
+      LOG_BUILD,
+      /// all error logs
+      LOG_ERROR,
+      /// all logs
+      LOG_ALL
+    }
+    
+    /**
      * Return 10 last log entries.
      */
     public JSONObject getLogs() throws AlgoliaException {
@@ -246,7 +551,7 @@ public class APIClient {
      * @param length Specify the maximum number of entries to retrieve starting at offset. Maximum allowed value: 1000.
      */
     public JSONObject getLogs(int offset, int length) throws AlgoliaException {
-    	 return getRequest("/1/logs?offset=" + offset + "&length=" + length, false);
+    	return getLogs(offset, length, LogType.LOG_ALL);
     }
     
     /**
@@ -255,7 +560,43 @@ public class APIClient {
      * @param length Specify the maximum number of entries to retrieve starting at offset. Maximum allowed value: 1000.
      */
     public JSONObject getLogs(int offset, int length, boolean onlyErrors) throws AlgoliaException {
-    	 return getRequest("/1/logs?offset=" + offset + "&length=" + length + "&onlyErrors=" + onlyErrors, false);
+    	 return getLogs(offset, length, onlyErrors ? LogType.LOG_ERROR : LogType.LOG_ALL);
+    }
+    
+    /**
+     * Return last logs entries.
+     * @param offset Specify the first entry to retrieve (0-based, 0 is the most recent log entry).
+     * @param length Specify the maximum number of entries to retrieve starting at offset. Maximum allowed value: 1000.
+     * @param logType Specify the type of log to retrieve
+     */
+    public JSONObject getLogs(int offset, int length, LogType logType) throws AlgoliaException {
+    	String type = null;
+    	switch (logType) {
+    	case LOG_BUILD:
+    		type = "build";
+    		break;
+    	case LOG_QUERY:
+    		type = "query";
+    		break;
+    	case LOG_ERROR:
+    		type = "error";
+    		break;
+    	case LOG_ALL:
+    		type = "all";
+    		break;
+    	}
+    	 return getRequest("/1/logs?offset=" + offset + "&length=" + length + "&type=" + type, false);
+    }
+    
+    /**
+     * Return last logs entries.
+     * @param offset Specify the first entry to retrieve (0-based, 0 is the most recent log entry).
+     * @param length Specify the maximum number of entries to retrieve starting at offset. Maximum allowed value: 1000.
+     * @param logType Specify the type of log to retrieve
+     */
+    public void getLogsASync(int offset, int length, LogType logType, APIClientListener listener) {
+        ASyncAPIClientTaskParams params = new ASyncAPIClientTaskParams(listener, ASyncAPIClientTaskKind.GetLogs, offset, length, logType);
+        new ASyncAPIClientTask().execute(params);
     }
     
     /**
@@ -273,6 +614,14 @@ public class APIClient {
     public JSONObject listUserKeys() throws AlgoliaException {
         return getRequest("/1/keys", false);
     }
+    
+    /**
+     * List all existing user keys with their associated ACLs
+     */
+    public void listUserKeysASync(APIClientListener listener) {
+        ASyncAPIClientTaskParams params = new ASyncAPIClientTaskParams(listener, ASyncAPIClientTaskKind.ListUserKeys);
+        new ASyncAPIClientTask().execute(params);
+    }
 
     /**
      * Get ACL of a user key
@@ -280,12 +629,28 @@ public class APIClient {
     public JSONObject getUserKeyACL(String key) throws AlgoliaException {
         return getRequest("/1/keys/" + key, false);
     }
+    
+    /**
+     * Get ACL of a user key
+     */
+    public void getUserKeyACLASync(String key, APIClientListener listener) {
+        ASyncAPIClientTaskParams params = new ASyncAPIClientTaskParams(listener, ASyncAPIClientTaskKind.GetUserKey, key);
+        new ASyncAPIClientTask().execute(params);
+    }
 
     /**
      * Delete an existing user key
      */
     public JSONObject deleteUserKey(String key) throws AlgoliaException {
         return deleteRequest("/1/keys/" + key);
+    }
+    
+    /**
+     * Delete an existing user key
+     */
+    public void deleteUserKeyASync(String key, APIClientListener listener) {
+        ASyncAPIClientTaskParams params = new ASyncAPIClientTaskParams(listener, ASyncAPIClientTaskKind.DeleteUserKey, key);
+        new ASyncAPIClientTask().execute(params);
     }
     
     /**
@@ -305,6 +670,11 @@ public class APIClient {
      */
     public JSONObject addUserKey(JSONObject params) throws AlgoliaException {
         return postRequest("/1/keys", params.toString(), false);
+    }
+    
+    public void addUserKeyASync(JSONObject parameters, APIClientListener listener) {
+        ASyncAPIClientTaskParams params = new ASyncAPIClientTaskParams(listener, ASyncAPIClientTaskKind.AddUserKey, parameters);
+        new ASyncAPIClientTask().execute(params);
     }
 
     /**
@@ -338,6 +708,25 @@ public class APIClient {
      */
     public JSONObject updateUserKey(String key, JSONObject params) throws AlgoliaException {
         return putRequest("/1/keys/" + key, params.toString());
+    }
+    
+    /**
+     * Update a user key asynchronously
+     *
+     * @param params the list of parameters for this key. Defined by a JSONObject that 
+     * can contains the following values:
+     *   - acl: array of string
+     *   - indices: array of string
+     *   - validity: int
+     *   - referers: array of string
+     *   - description: string
+     *   - maxHitsPerQuery: integer
+     *   - queryParameters: string
+     *   - maxQueriesPerIPPerHour: integer
+     */
+    public void updateUserKeyASync(String key, JSONObject parameters, APIClientListener listener) {
+        ASyncAPIClientTaskParams params = new ASyncAPIClientTaskParams(listener, ASyncAPIClientTaskKind.UpdateUserKey, key, parameters);
+        new ASyncAPIClientTask().execute(params);
     }
 
     /**
@@ -687,6 +1076,15 @@ public class APIClient {
     public JSONObject multipleQueries(List<IndexQuery> queries) throws AlgoliaException {
     	return multipleQueries(queries, "none");
     }
+    
+    /**
+     * This method allows to query multiple indexes with one API call asynchronously
+     */
+    public void multipleQueriesKeyASync(List<IndexQuery> queries, APIClientListener listener) {
+        ASyncAPIClientTaskParams params = new ASyncAPIClientTaskParams(listener, ASyncAPIClientTaskKind.MultipleQueries, queries, "none");
+        new ASyncAPIClientTask().execute(params);
+    }
+    
     public JSONObject multipleQueries(List<IndexQuery> queries, String strategy) throws AlgoliaException {
     		try {
     			JSONArray requests = new JSONArray();
@@ -700,6 +1098,68 @@ public class APIClient {
 				new AlgoliaException(e.getMessage());
 			}
     		return null;
+    }
+    
+    /**
+     * This method allows to query multiple indexes with one API call asynchronously
+     */
+    public void multipleQueriesKeyASync(List<IndexQuery> queries, String strategy, APIClientListener listener) {
+        ASyncAPIClientTaskParams params = new ASyncAPIClientTaskParams(listener, ASyncAPIClientTaskKind.MultipleQueries, queries, strategy);
+        new ASyncAPIClientTask().execute(params);
+    }
+    
+    /**
+     * Custom batch
+     * 
+     * @param actions the array of actions
+     * @throws AlgoliaException 
+     */
+    public JSONObject batch(JSONArray actions) throws AlgoliaException {
+	    try {
+	    	JSONObject content = new JSONObject();
+	    	content.put("requests", actions);
+	    	return postRequest("/1/indexes/*/batch", content.toString(), false);
+	    } catch (JSONException e) {
+	        throw new AlgoliaException(e.getMessage());
+	    }
+    }
+    
+    /**
+     * Custom batch asynchronous
+     * 
+     * @param actions the array of actions
+     * @throws AlgoliaException 
+     */
+    public void batchASync(JSONArray actions, APIClientListener listener) {
+        ASyncAPIClientTaskParams params = new ASyncAPIClientTaskParams(listener, ASyncAPIClientTaskKind.Batch, actions);
+        new ASyncAPIClientTask().execute(params);
+    }
+
+    /**
+     * Custom batch
+     * 
+     * @param actions the array of actions
+     * @throws AlgoliaException 
+     */
+    public JSONObject batch(List<JSONObject> actions) throws AlgoliaException {
+	    try {
+	    	JSONObject content = new JSONObject();
+	    	content.put("requests", actions);
+	    	return postRequest("/1/indexes/*/batch", content.toString(), false);
+	    } catch (JSONException e) {
+	        throw new AlgoliaException(e.getMessage());
+	    }
+    }
+    
+    /**
+     * Custom batch asynchronous
+     * 
+     * @param actions the array of actions
+     * @throws AlgoliaException 
+     */
+    public void batchASync(List<JSONObject> actions, APIClientListener listener) {
+        ASyncAPIClientTaskParams params = new ASyncAPIClientTaskParams(listener, ASyncAPIClientTaskKind.Batch, new JSONArray(actions));
+        new ASyncAPIClientTask().execute(params);
     }
     
     /**
