@@ -1,6 +1,15 @@
 Changelog
 =========
 
+1.6.4 (2015-05-04)
+------------------
+
+- Add new methods to add/update api key
+- Add batch method to target multiple indices
+- Add strategy parameter for the multipleQueries
+- Add new method to generate secured api key from query parameters
+- Add missing async methods 
+
 1.6.3 (2015-04-09)
 ------------------
 
