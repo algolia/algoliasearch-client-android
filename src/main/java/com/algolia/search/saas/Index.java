@@ -228,13 +228,31 @@ public class Index {
     }
     
     /**
-     * Update partially an object (only update attributes passed in argument)
+     * Update partially an object (only update attributes passed in argument), create the object if it does not exist
      * 
      * @param partialObject the object to override
      */
     public JSONObject partialUpdateObject(JSONObject partialObject, String objectID) throws AlgoliaException {
+        return partialUpdateObject(partialObject, objectID, true);
+    }
+
+    /**
+     * Update partially an object (only update attributes passed in argument), do nothing if object does not exist
+     *
+     * @param partialObject the object to override
+     */
+    public JSONObject partialUpdateObjectNoCreate(JSONObject partialObject, String objectID) throws AlgoliaException {
+        return partialUpdateObject(partialObject, objectID, false);
+    }
+
+    private JSONObject partialUpdateObject(JSONObject partialObject, String objectID, Boolean createIfNotExists) throws AlgoliaException {
+        String parameters = "";
+        if (!createIfNotExists) {
+            parameters = "?createIfNotExists=false";
+        }
         try {
-            return client.postRequest("/1/indexes/" + encodedIndexName + "/" + URLEncoder.encode(objectID, "UTF-8") + "/partial", partialObject.toString(), true, false);
+            return client.postRequest("/1/indexes/" + encodedIndexName + "/" + URLEncoder.encode(objectID, "UTF-8")
+                    + "/partial" + parameters, partialObject.toString(), true, false);
         } catch (UnsupportedEncodingException e) {
             throw new RuntimeException(e);
         }

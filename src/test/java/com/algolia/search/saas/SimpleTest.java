@@ -188,6 +188,30 @@ public class SimpleTest {
     	JSONObject res = index.search(new Query("jimie"));
     	assertEquals(1, res.getInt("nbHits"));
     }
+
+    @Test
+    public void test09_partialUpdateObjectNoCreate_whenObjectExists() throws AlgoliaException, JSONException {
+        JSONObject task = index.addObject(new JSONObject()
+                .put("firstname", "Jimmie")
+                .put("lastname", "Barninger")
+                .put("followers", 93)
+                .put("company", "California Paint"), "a/go/?à");
+        index.waitTask(task.getString("taskID"));
+        task = index.partialUpdateObjectNoCreate(new JSONObject()
+                .put("firtname", "Roger"), "a/go/?à");
+        index.waitTask(task.getString("taskID"));
+        JSONObject res = index.search(new Query("jimie"));
+        assertEquals(1, res.getInt("nbHits"));
+    }
+
+    @Test
+    public void test09_partialUpdateObjectNoCreate_whenObjectDoesNotExist() throws AlgoliaException, JSONException {
+        JSONObject task = task = index.partialUpdateObjectNoCreate(new JSONObject()
+                .put("firtname", "Jimmie"), "a/go/?à");
+        index.waitTask(task.getString("taskID"));
+        JSONObject res = index.search(new Query("jimie"));
+        assertEquals(0, res.getInt("nbHits"));
+    }
     
     @Test
     public void test10_getObject() throws AlgoliaException, JSONException {
