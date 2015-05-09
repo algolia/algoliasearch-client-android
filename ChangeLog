@@ -1,9 +1,13 @@
 Changelog
 =========
 
-1.3.5 (2015-05-09)
+1.3.6 (2015-05-09)
+-------------------
+- add new partialUpdateObjectNoCreate
+
+1.3.5 (2015-04-09)
 ------------------
-- Add a partialUpdateObjectNoCreate method
+- removed the enabled hosts (new retry strategy)
 
 1.3.4 (2015-04-09)
 ------------------------
