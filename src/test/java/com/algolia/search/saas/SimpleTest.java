@@ -735,9 +735,13 @@ public class SimpleTest {
         String apiKey = System.getenv("ALGOLIA_API_KEY");
     	APIClient client = new APIClient(applicationID, apiKey);
     	Field f = client.getClass().getDeclaredField("buildHostsArray");
+    	Field f2 = client.getClass().getDeclaredField("queryHostsArray");
     	f.setAccessible(true);
+    	f2.setAccessible(true);
     	List<String> host = (List<String>) f.get(client);
+    	List<String> host2 = (List<String>) f2.get(client);
     	host.set(0, applicationID + "test.algolia.net"); // Force to use algolianet.com
+    	host2.set(0, applicationID + "test.algolia.net"); // Force to use algolianet.com
     	client.listIndexes();
     }
 
