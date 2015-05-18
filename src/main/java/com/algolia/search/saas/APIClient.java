@@ -99,6 +99,7 @@ public class APIClient {
     private String forwardEndUserIP;
     private String forwardAdminAPIKey;
     private HashMap<String, String> headers;
+    private final boolean verbose;
     
     /**
      * Algolia Search initialization
@@ -131,6 +132,7 @@ public class APIClient {
      * @param queryHostsArray the list of hosts that you have received for the service
      */
     public APIClient(String applicationID, String apiKey, List<String> buildHostsArray, List<String> queryHostArray) {
+    	verbose = System.getenv("VERBOSE") != null;
     	forwardRateLimitAPIKey = forwardAdminAPIKey = forwardEndUserIP = null;
         if (applicationID == null || applicationID.length() == 0) {
             throw new RuntimeException("AlgoliaSearch requires an applicationID.");
@@ -660,6 +662,9 @@ public class APIClient {
         	response = httpClient.execute(req);
         } catch (IOException e) {
         	// on error continue on the next host
+        	if (verbose) {
+        		System.out.println(String.format("%s: %s=%s", host, e.getClass().getName(), e.getMessage()));
+        	}
         	errors.put(host, String.format("%s=%s", e.getClass().getName(), e.getMessage()));
         	return null;
         }
@@ -686,8 +691,14 @@ public class APIClient {
         	}
             if (code / 100 != 2) {
             	try {
+            		if (verbose) {
+		        		System.out.println(String.format("%s: %s", host, EntityUtils.toString(response.getEntity())));
+		        	}
 					errors.put(host, EntityUtils.toString(response.getEntity()));
 				} catch (IOException e) {
+					if (verbose) {
+		        		System.out.println(String.format("%s: %s", host, String.valueOf(code)));
+		        	}
 					errors.put(host, String.valueOf(code));
 				}
             	// KO, continue
@@ -701,6 +712,10 @@ public class APIClient {
                 is.close();
                 return res;
             } catch (IOException e) {
+            	if (verbose) {
+	        		System.out.println(String.format("%s: %s=%s", host, e.getClass().getName(), e.getMessage()));
+	        	}
+            	errors.put(host, String.format("%s=%s", e.getClass().getName(), e.getMessage()));
             	return null;
             } catch (JSONException e) {
                 throw new AlgoliaException("JSON decode error:" + e.getMessage());

@@ -8,5 +8,6 @@ after_success:
 - mvn -e -X clean test jacoco:report coveralls:jacoco
 env:
   global:
+  - VERBOSE=1
   - secure: i9jW5TP+4Zih4PuLZbm0i8eHnDMDMTOr+CQhzlX7+xQDc8H8y5YGKMn4efffVsYrRubPoQDdRljFGyQE+cW7qYScvH+9QdbVqT2uc0/CiU4vjEdpB5qj5Z0g7bj05vaPiSdWe93fU/Bjf4tpNgA4Yoan9oUTU3Ii/hR4c0js6+E=
   - secure: Xylor/wHKbL3vvDNaSJdF6QrFdkGXG4Xb6L8u06Yhm1G+zLVErMmkW0N4wBRT3bqvI4WwevduGpumljcREIieoLhDjGDI/EHJLNDYC+3fefG8XDMy1acetNpbVAHIs9kpl8e20CWp13Ee/esPNMFsXie0NxTFgJaXAArY4AlEpY=
