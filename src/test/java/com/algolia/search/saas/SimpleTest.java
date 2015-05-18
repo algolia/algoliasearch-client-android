@@ -4,6 +4,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+import java.lang.reflect.Field;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
@@ -726,6 +727,18 @@ public class SimpleTest {
     	index.waitTask(task.getJSONObject("taskID").getString(index.getIndexName()));
     	JSONObject res = index.search(new Query(""));
     	assertEquals(2, res.getInt("nbHits"));
+    }
+    
+    @Test
+    public void test40_checkFallBack() throws AlgoliaException, JSONException, NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException {
+    	String applicationID = System.getenv("ALGOLIA_APPLICATION_ID");
+        String apiKey = System.getenv("ALGOLIA_API_KEY");
+    	APIClient client = new APIClient(applicationID, apiKey);
+    	Field f = client.getClass().getDeclaredField("buildHostsArray");
+    	f.setAccessible(true);
+    	List<String> host = (List<String>) f.get(client);
+    	host.set(0, applicationID + "test.algolia.net"); // Force to use algolianet.com
+    	client.listIndexes();
     }
 
 }
