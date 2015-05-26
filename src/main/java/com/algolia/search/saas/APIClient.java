@@ -960,7 +960,7 @@ public class APIClient {
         return res;
     }
     
-    private JSONObject _request(Method m, String url, String json, List<String> hostsArray, int connectTimeout, int readTimeout) throws AlgoliaException {
+    private synchronized JSONObject _request(Method m, String url, String json, List<String> hostsArray, int connectTimeout, int readTimeout) throws AlgoliaException {
     	HttpRequestBase req;
     	HashMap<String, String> errors = new HashMap<String, String>();
     	// for each host
