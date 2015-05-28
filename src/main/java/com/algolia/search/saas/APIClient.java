@@ -645,7 +645,7 @@ public class APIClient {
                 StringEntity se = new StringEntity(json, "UTF-8"); 
                 se.setContentEncoding(new BasicHeader(HTTP.CONTENT_TYPE, "application/json"));
                 ((HttpEntityEnclosingRequestBase) req).setEntity(se); 
-            } catch (UnsupportedEncodingException e) {
+            } catch (Exception e) {
                 throw new AlgoliaException("Invalid JSON Object: " + json); // $COVERAGE-IGNORE$
             }
         }
