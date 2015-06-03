@@ -75,6 +75,9 @@ public class Query {
     protected boolean distinct;
     protected boolean advancedSyntax;
     protected int page;
+    protected int minProximity;
+    protected String highlightPreTag;
+    protected String highlightPostTag;
     protected int hitsPerPage;
     protected String restrictSearchableAttributes;
     protected String tags;
@@ -96,6 +99,7 @@ public class Query {
     protected TypoTolerance typoTolerance;
 
     public Query(String query) {
+	minProximity = 1;
         minWordSizeForApprox1 = 3;
         minWordSizeForApprox2 = 7;
         getRankingInfo = false;
@@ -113,6 +117,7 @@ public class Query {
     }
     
     public Query() {
+	minProximity = 1;
         minWordSizeForApprox1 = 3;
         minWordSizeForApprox2 = 7;
         getRankingInfo = false;
@@ -138,6 +143,9 @@ public class Query {
         if (other.attributesToSnippet != null) {
         	attributesToSnippet = new ArrayList<String>(other.attributesToSnippet);
         }
+	minProximity = other.minProximity;
+	highlightPreTag = other.highlightPreTag;
+	highlightPostTag = other.highlightPostTag;
         minWordSizeForApprox1 = other.minWordSizeForApprox1;
         minWordSizeForApprox2 = other.minWordSizeForApprox2;
         getRankingInfo = other.getRankingInfo;
@@ -357,6 +365,26 @@ public class Query {
         return setHitsPerPage(nbHitsPerPage);
     }
 
+
+    /*
+     * Configure the precision of the proximity ranking criterion. 
+     * By default, the minimum (and best) proximity value distance between 2 matching words is 1. Setting it to 2 (or 3) would allow 1 (or 2) words to be found between the matching words without degrading the proximity ranking value.
+     *
+     * Considering the query "javascript framework", if you set minProximity=2 the records "JavaScript framework" and "JavaScript charting framework" will get the same proximity score, even if the second one contains a word between the 2 matching words. Default to 1.
+     */
+    public Query setMinProximity(int value) {
+	this.minProximity = value;
+	return this;
+    }
+
+    /*
+     * Specify the string that is inserted before/after the highlighted parts in the query result (default to "<em>" / "</em>").
+     */
+    public Query setHighlightingTags(String preTag, String postTag) {
+	this.highlightPreTag = preTag;
+	this.highlightPostTag = postTag;
+	return this;
+    }
     
     /**
      *  Search for entries around a given latitude/longitude. 
@@ -586,6 +614,20 @@ public class Query {
                 	break;
                 }
             }
+	    if (minProximity > 1) {
+                if (stringBuilder.length() > 0)
+                    stringBuilder.append('&');
+                stringBuilder.append("minProximity=");
+                stringBuilder.append(minProximity);
+	    }
+	    if (highlightPreTag != null && highlightPostTag != null) {
+                if (stringBuilder.length() > 0)
+                    stringBuilder.append('&');
+                stringBuilder.append("highlightPreTag=");
+                stringBuilder.append(highlightPreTag);
+                stringBuilder.append("&highlightPostTag=");
+                stringBuilder.append(highlightPostTag);
+	    }
             if (!allowTyposOnNumericTokens) {
                 if (stringBuilder.length() > 0)
                     stringBuilder.append('&');

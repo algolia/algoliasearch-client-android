@@ -1,6 +1,12 @@
 Changelog
 =========
 
+1.6.6 (2015-06-03)
+------------------
+
+- add new parameter on the Query: setMinProximity & setHighlightingTags
+
+
 1.6.5 (2015-05-26)
 ------------------
 
