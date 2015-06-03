@@ -312,7 +312,7 @@ public class Query {
      *
      * Considering the query "javascript framework", if you set minProximity=2 the records "JavaScript framework" and "JavaScript charting framework" will get the same proximity score, even if the second one contains a word between the 2 matching words. Default to 1.
      */
-    public Query SetMinProximity(int value) {
+    public Query setMinProximity(int value) {
 	this.minProximity = value;
 	return this;
     }
@@ -321,7 +321,7 @@ public class Query {
     /*
      * Specify the string that is inserted before/after the highlighted parts in the query result (default to "<em>" / "</em>").
      */
-    public Query SetHighlightingTags(String preTag, String postTag) {
+    public Query setHighlightingTags(String preTag, String postTag) {
 	this.highlightPreTag = preTag;
 	this.highlightPostTag = postTag;
 	return this;

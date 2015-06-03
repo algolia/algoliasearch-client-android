@@ -1,6 +1,10 @@
 Changelog
 =========
 
+1.3.7 (2015-06-03)
+-------------------
+- add new parameter on the Query: setMinProximity & setHighlightingTags
+
 1.3.6 (2015-05-09)
 -------------------
 - add new partialUpdateObjectNoCreate
