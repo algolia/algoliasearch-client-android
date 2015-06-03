@@ -78,6 +78,9 @@ public class Query {
     protected int hitsPerPage;
     protected String restrictSearchableAttributes;
     protected String tags;
+    protected String highlightPreTag;
+    protected String highlightPostTag;
+    protected int minProximity;
     protected String numerics;
     protected String insideBoundingBox;
     protected String aroundLatLong;
@@ -102,6 +105,7 @@ public class Query {
         ignorePlural = false;
         distinct = false;
         page = 0;
+	minProximity = 1;
         hitsPerPage = 20;
         this.query = query;
         queryType = QueryType.PREFIX_LAST;
@@ -119,6 +123,7 @@ public class Query {
         ignorePlural = false;
         distinct = false;
         page = 0;
+	minProximity = 1;
         hitsPerPage = 20;
         queryType = QueryType.PREFIX_ALL;
         maxNumberOfFacets = -1;
@@ -142,6 +147,9 @@ public class Query {
         minWordSizeForApprox2 = other.minWordSizeForApprox2;
         getRankingInfo = other.getRankingInfo;
         ignorePlural = other.ignorePlural;
+	minProximity = other.minProximity;
+	highlightPreTag = other.highlightPreTag;
+	highlightPostTag = other.highlightPostTag;
         distinct = other.distinct;
         advancedSyntax = other.advancedSyntax;
         page = other.page;
@@ -298,6 +306,27 @@ public class Query {
         return this;
     }
     
+    /*
+     * Configure the precision of the proximity ranking criterion. 
+     * By default, the minimum (and best) proximity value distance between 2 matching words is 1. Setting it to 2 (or 3) would allow 1 (or 2) words to be found between the matching words without degrading the proximity ranking value.
+     *
+     * Considering the query "javascript framework", if you set minProximity=2 the records "JavaScript framework" and "JavaScript charting framework" will get the same proximity score, even if the second one contains a word between the 2 matching words. Default to 1.
+     */
+    public Query SetMinProximity(int value) {
+	this.minProximity = value;
+	return this;
+    }
+
+
+    /*
+     * Specify the string that is inserted before/after the highlighted parts in the query result (default to "<em>" / "</em>").
+     */
+    public Query SetHighlightingTags(String preTag, String postTag) {
+	this.highlightPreTag = preTag;
+	this.highlightPostTag = postTag;
+	return this;
+    }
+
     /**
      * Specify the minimum number of characters in a query word to accept two typos in this word. 
      * Defaults to 7.
@@ -661,6 +690,20 @@ public class Query {
                 stringBuilder.append("page=");
                 stringBuilder.append(page);
             }
+	    if (minProximity > 1) {
+                if (stringBuilder.length() > 0)
+                    stringBuilder.append('&');
+                stringBuilder.append("minProximity=");
+                stringBuilder.append(minProximity);
+	    }
+	    if (highlightPreTag != null && highlightPostTag != null) {
+                if (stringBuilder.length() > 0)
+                    stringBuilder.append('&');
+                stringBuilder.append("highlightPreTag=");
+                stringBuilder.append(highlightPreTag);
+                stringBuilder.append("&highlightPostTag=");
+                stringBuilder.append(highlightPostTag);
+	    }
             if (hitsPerPage != 20 && hitsPerPage > 0) {
                 if (stringBuilder.length() > 0)
                     stringBuilder.append('&');
