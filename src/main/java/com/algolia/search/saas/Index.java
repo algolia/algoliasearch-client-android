@@ -439,9 +439,88 @@ public class Index {
      *
      * @param page Pagination parameter used to select the page to retrieve.
      *             Page is zero-based and defaults to 0. Thus, to retrieve the 10th page you need to set page=9
+     * @deprecated Use the `browse(Query params)` version
      */
     public JSONObject browse(int page) throws AlgoliaException {
         return client.getRequest("/1/indexes/" + encodedIndexName + "/browse?page=" + page, false);
+    }
+    
+    static class IndexBrower implements Iterator<JSONObject> {
+        
+        IndexBrower(APIClient client, String encodedIndexName, Query params, String startingCursor) throws AlgoliaException {
+            this.client = client;
+            this.params = params;
+            this.encodedIndexName = encodedIndexName;
+            
+            doQuery(startingCursor);
+            this.pos = 0;
+        }
+
+        @Override
+        public boolean hasNext() {
+            try {
+                do {
+                    if (pos < answer.getJSONArray("hits").length()) {
+                        hit = answer.getJSONArray("hits").getJSONObject(pos);
+                        ++pos;
+                        return true;
+                    }
+                    if (answer.has("cursor") && !answer.getString("cursor").isEmpty()) {
+                        pos = 0;
+                        doQuery(answer.getString("cursor"));
+                        continue;
+                    }
+                    return false;
+                } while (true);
+            } catch (JSONException e) {
+                throw new IllegalStateException(e);
+            } catch (AlgoliaException e) {
+                throw new IllegalArgumentException(e);
+            }
+        }
+
+        @Override
+        public JSONObject next() {
+            return hit;
+        }
+
+        @Override
+        public void remove() {
+            throw new IllegalStateException("Cannot remove while browsing");
+        }
+        
+        private void doQuery(String cursor) throws AlgoliaException {
+            String paramsString = params.getQueryString();
+            if (cursor != null) {
+                try {
+                    paramsString += (paramsString.length() > 0 ? "&" : "") + "cursor=" +  URLEncoder.encode(cursor, "UTF-8");
+                } catch (UnsupportedEncodingException e) {
+                    throw new IllegalStateException(e);
+                }
+            }
+            this.answer = client.getRequest("/1/indexes/" + encodedIndexName + "/browse" + ((paramsString.length() > 0) ? ("?" + paramsString) : ""), true);
+        }
+        
+        final APIClient client;
+        final Query params;
+        final String encodedIndexName;
+        JSONObject answer;
+        JSONObject hit;
+        int pos;
+    }
+    
+    /**
+     * Browse all index content
+     */
+    public Iterator<JSONObject> browse(Query params) throws AlgoliaException {
+        return new IndexBrower(client, encodedIndexName, params, null);
+    }
+
+    /**
+     * Browse all index content starting from a cursor
+     */
+    public Iterator<JSONObject> browseFrow(Query params, String cursor) throws AlgoliaException {
+        return new IndexBrower(client, encodedIndexName, params, cursor);
     }
 
     /**

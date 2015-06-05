@@ -10,6 +10,7 @@ import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -745,4 +746,36 @@ public class SimpleTest {
     	client.listIndexes();
     }
 
+    @Test
+    public void test41_browseWithCursor() throws AlgoliaException, JSONException {
+        List<JSONObject> objects = new ArrayList<JSONObject>();
+        for (int i = 0; i < 1500; ++i) {
+            objects.add(new JSONObject().put("objectID", i).put("i", i));
+        }
+        JSONObject task = index.addObjects(objects);
+        index.waitTask(task.getString("taskID"));
+        // browse whole index
+        {
+            int i = 0;
+            Iterator<JSONObject> it = index.browse(new Query());
+            while (it.hasNext()) {
+                it.next();
+                ++i;
+            }
+            assertEquals(1500, i);
+        }
+        // browse with condition
+        {
+            int i = 0;
+            Iterator<JSONObject> it = index.browse(new Query().setNumericFilters("i<42"));
+            while (it.hasNext()) {
+                it.next();
+                ++i;
+            }
+            assertEquals(42, i);
+        }
+    }
+    
+
+    
 }
