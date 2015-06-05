@@ -75,6 +75,7 @@ public class APIClient {
 	private int httpSearchTimeoutMS = 5000;
 	     
     private final static String version;
+    private final static String fallbackDomain;
     static {
         String tmp = "N/A";
         try {
@@ -88,6 +89,14 @@ public class APIClient {
             // not fatal
         }
         version = tmp;
+        
+        // fallback domain should be algolia.net if Java <= 1.6 because no SNI support
+        {
+            String version = System.getProperty("java.version");
+            int pos = version.indexOf('.');
+            pos = version.indexOf('.', pos + 1);
+            fallbackDomain = Double.parseDouble(version.substring (0, pos)) <= 1.6 ? "algolia.net" : "algolianet.com";
+        }
     }
     
     private final String applicationID;
@@ -107,9 +116,9 @@ public class APIClient {
      * @param apiKey a valid API key for the service
      */
     public APIClient(String applicationID, String apiKey) {
-        this(applicationID, apiKey, Arrays.asList(applicationID + "-1.algolianet.com", 
-						        		applicationID + "-2.algolianet.com", 
-						        		applicationID + "-3.algolianet.com"));
+        this(applicationID, apiKey, Arrays.asList(applicationID + "-1." + fallbackDomain, 
+						        		applicationID + "-2." + fallbackDomain, 
+						        		applicationID + "-3." + fallbackDomain));
         this.buildHostsArray.add(0, applicationID + ".algolia.net");
         this.queryHostsArray.add(0, applicationID + "-dsn.algolia.net");
     }
