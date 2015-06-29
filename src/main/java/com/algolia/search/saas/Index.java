@@ -574,7 +574,7 @@ public class Index {
                     }
                     if (answer.has("cursor") && !answer.getString("cursor").isEmpty()) {
                         pos = 0;
-                        doQuery(answer.getString("cursor"));
+                        doQuery(getCursor());
                         continue;
                     }
                     return false;
@@ -589,6 +589,14 @@ public class Index {
         @Override
         public JSONObject next() {
             return hit;
+        }
+        
+        public String getCursor() {
+            try {
+                return answer != null && answer.has("cursor") ? answer.getString("cursor") : null;
+            } catch (JSONException e) {
+                throw new IllegalStateException(e);
+            }
         }
 
         @Override
