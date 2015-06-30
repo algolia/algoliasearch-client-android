@@ -97,6 +97,7 @@ public class Query {
     protected boolean allowTyposOnNumericTokens;
     protected RemoveWordsType removeWordsIfNoResult;
     protected TypoTolerance typoTolerance;
+    protected String analyticsTags;
 
     public Query(String query) {
 	minProximity = 1;
@@ -106,12 +107,14 @@ public class Query {
         ignorePlural = false;
         distinct = 0;
         page = 0;
+        minProximity = 1;
         hitsPerPage = 20;
         this.query = query;
         queryType = QueryType.PREFIX_LAST;
         maxNumberOfFacets = -1;
         advancedSyntax = false;
         analytics = synonyms = replaceSynonyms = allowTyposOnNumericTokens = true;
+        analyticsTags = null;
         typoTolerance = TypoTolerance.TYPO_TRUE;
         removeWordsIfNoResult = RemoveWordsType.REMOVE_NONE;
     }
@@ -124,11 +127,13 @@ public class Query {
         ignorePlural = false;
         distinct = 0;
         page = 0;
+        minProximity = 1;
         hitsPerPage = 20;
         queryType = QueryType.PREFIX_ALL;
         maxNumberOfFacets = -1;
         advancedSyntax = false;
         analytics = synonyms = replaceSynonyms = allowTyposOnNumericTokens = true;
+        analyticsTags = null;
         typoTolerance = TypoTolerance.TYPO_TRUE;
         removeWordsIfNoResult = RemoveWordsType.REMOVE_NONE;
     }
@@ -167,6 +172,7 @@ public class Query {
         facetFilters = other.facetFilters;
         maxNumberOfFacets = other.maxNumberOfFacets;
         analytics = other.analytics;
+        analyticsTags = other.analyticsTags;
         synonyms = other.synonyms;
         replaceSynonyms = other.replaceSynonyms;
         typoTolerance = other.typoTolerance;
@@ -267,6 +273,14 @@ public class Query {
      */
     public Query enableAnalytics(boolean enabled) {
         this.analytics = enabled;
+        return this;
+    }
+
+    /**
+     * @param Set the analytics tags identifying the query
+     */
+    public Query setAnalyticsTags(String analyticsTags) {
+        this.analyticsTags = analyticsTags;
         return this;
     }
 
@@ -669,6 +683,11 @@ public class Query {
                     stringBuilder.append('&');
                 stringBuilder.append("analytics=0");
             }
+            if (analyticsTags != null) {
+                if (stringBuilder.length() > 0)
+                    stringBuilder.append('&');
+                stringBuilder.append("analyticsTags=" + analyticsTags);
+            }
             if (!synonyms) {
                 if (stringBuilder.length() > 0)
                     stringBuilder.append('&');
@@ -969,6 +988,13 @@ public class Query {
      */
     public boolean isAnalytics() {
         return analytics;
+    }
+
+    /**
+     * @return the analytics tags
+     */
+    public String getAnalyticsTags() {
+        return analyticsTags;
     }
 
     /**

@@ -6,11 +6,11 @@ Changelog
 
 - Added support of grouping (distinct=3 for example keep the 3 best hits for a distinct key)
 
-1.6.6 (2015-06-03)
-------------------
+1.6.6 (2015-06-05)
+--------------------
 
 - add new parameter on the Query: setMinProximity & setHighlightingTags
-
+- new cursor-based browse implementation
 
 1.6.5 (2015-05-26)
 ------------------
