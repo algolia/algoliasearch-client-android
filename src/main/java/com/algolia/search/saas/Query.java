@@ -72,7 +72,7 @@ public class Query {
     protected int minWordSizeForApprox2;
     protected boolean getRankingInfo;
     protected boolean ignorePlural;
-    protected boolean distinct;
+    protected int distinct;
     protected boolean advancedSyntax;
     protected int page;
     protected int hitsPerPage;
@@ -104,7 +104,7 @@ public class Query {
         minWordSizeForApprox2 = 7;
         getRankingInfo = false;
         ignorePlural = false;
-        distinct = false;
+        distinct = 0;
         page = 0;
         minProximity = 1;
         hitsPerPage = 20;
@@ -123,7 +123,7 @@ public class Query {
         minWordSizeForApprox2 = 7;
         getRankingInfo = false;
         ignorePlural = false;
-        distinct = false;
+        distinct = 0;
         page = 0;
         minProximity = 1;
         hitsPerPage = 20;
@@ -253,7 +253,16 @@ public class Query {
      *   one is kept and others are removed.
      */
     public Query enableDistinct(boolean distinct) {
-      this.distinct = distinct;
+      this.distinct = distinct ? 1 : 0;
+      return this;
+    }
+
+    /**
+     * This feature is similar to the distinct just before but instead of keeping the best value per value of attributeForDistinct, it allows to keep N values.
+     * @param nbHitsToKeep Specify the maximum number of hits to keep for each distinct value
+     */
+    public Query enableDistinct(int nbHitsToKeep) {
+      this.distinct = nbHitsToKeep;
       return this;
     }
 
@@ -691,10 +700,11 @@ public class Query {
                     stringBuilder.append('&');
                 stringBuilder.append("replaceSynonymsInHighlight=0");
             }
-            if (distinct) {
+            if (distinct > 0) {
               if (stringBuilder.length() > 0)
                     stringBuilder.append('&');
-                stringBuilder.append("distinct=1");
+                stringBuilder.append("distinct=");
+		stringBuilder.append(distinct);
             }
             if (advancedSyntax) {
                 if (stringBuilder.length() > 0)
@@ -863,7 +873,7 @@ public class Query {
      * @return the distinct
      */
     public boolean isDistinct() {
-        return distinct;
+        return distinct > 0;
     }
 
     /**
