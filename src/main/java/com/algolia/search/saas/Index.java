@@ -556,10 +556,11 @@ public class Index {
                 if (obj.getString("status").equals("published"))
                     return;
                 try {
-                    Thread.sleep(timeToWait > MAX_TIME_MS_TO_WAIT ? MAX_TIME_MS_TO_WAIT : timeToWait);
+                    Thread.sleep(timeToWait);
                 } catch (InterruptedException e) {
                 }
                 timeToWait *= 2;
+                timeToWait = timeToWait > MAX_TIME_MS_TO_WAIT ? MAX_TIME_MS_TO_WAIT : timeToWait;
             }
         } catch (JSONException e) {
             throw new AlgoliaException(e.getMessage());
