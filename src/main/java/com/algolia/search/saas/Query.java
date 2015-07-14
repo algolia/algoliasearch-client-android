@@ -872,9 +872,16 @@ public class Query {
     }
 
     /**
-     * @return the distinct
+     * @return if the distinct is set
      */
     public boolean isDistinct() {
+        return distinct != 0;
+    }
+
+    /**
+     * @return the distinct
+     */
+    public int getDistinct() {
         return distinct;
     }
 
