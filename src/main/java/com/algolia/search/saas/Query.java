@@ -731,7 +731,7 @@ public class Query {
                 stringBuilder.append("&highlightPostTag=");
                 stringBuilder.append(highlightPostTag);
 	    }
-            if (hitsPerPage != 20 && hitsPerPage > 0) {
+            if (hitsPerPage > 0) {
                 if (stringBuilder.length() > 0)
                     stringBuilder.append('&');
                 stringBuilder.append("hitsPerPage=");
