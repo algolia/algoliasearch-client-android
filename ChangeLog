@@ -1,7 +1,11 @@
 Changelog
 =========
 
-1.3.8 (2015-06-30)
+1.3.9 (2015-07-17)
+-------------------
+- fixed a bug avoiding the hitsPerPage parameter to be sent to the API if equal to 20
+
+1.3.8 (2015-07-14)
 -------------------
 - Added support of grouping (distinct=3 for example keep the 3 best hits for a distinct key)
 
