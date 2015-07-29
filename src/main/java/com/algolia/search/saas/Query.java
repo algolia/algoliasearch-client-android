@@ -958,6 +958,13 @@ public class Query {
 	public Boolean isDistinct() {
 		return distinct > 0;
 	}
+	
+	/**
+	 * @return the distinct
+	 */
+	public Integer getDistinct() {
+		return distinct;
+	}
 
 	/**
 	 * @return the advancedSyntax
