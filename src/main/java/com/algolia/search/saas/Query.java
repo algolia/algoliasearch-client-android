@@ -38,7 +38,9 @@ public class Query {
 		PREFIX_LAST,
 		// / no query word is interpreted as a prefix. This option is not
 		// recommended.
-		PREFIX_NONE
+		PREFIX_NONE,
+		// The parameter isn't set
+		PREFIX_NOTSET
 	}
 
 	public enum RemoveWordsType {
@@ -56,7 +58,9 @@ public class Query {
 		// / When a query does not return any result, a second trial will be
 		// made with all words as optional (which is equivalent to transforming
 		// the AND operand between query terms in a OR operand)
-		REMOVE_ALLOPTIONAL
+		REMOVE_ALLOPTIONAL,
+		// The parameter isn't set
+		REMOVE_NOTSET
 	}
 
 	public enum TypoTolerance {
@@ -69,78 +73,66 @@ public class Query {
 		TYPO_MIN,
 		// / the typotolerance with a distance=2 is disabled if the results
 		// contain hits without typo.
-		TYPO_STRICT
+		TYPO_STRICT,
+		// The parameter isn't set
+		TYPO_NOTSET
 	}
 
 	protected List<String> attributes;
 	protected List<String> attributesToHighlight;
 	protected List<String> attributesToSnippet;
-	protected int minWordSizeForApprox1;
-	protected int minWordSizeForApprox2;
-	protected boolean getRankingInfo;
-	protected boolean ignorePlural;
-	protected int distinct;
-	protected boolean advancedSyntax;
-	protected int page;
-	protected int hitsPerPage;
+	protected Integer minWordSizeForApprox1;
+	protected Integer minWordSizeForApprox2;
+	protected Boolean getRankingInfo;
+	protected Boolean ignorePlural;
+	protected Integer distinct;
+	protected Boolean advancedSyntax;
+	protected Integer page;
+	protected Integer hitsPerPage;
 	protected String restrictSearchableAttributes;
 	protected String tags;
 	protected String highlightPreTag;
 	protected String highlightPostTag;
-	protected int minProximity;
+	protected Integer minProximity;
 	protected String numerics;
 	protected String insideBoundingBox;
 	protected String aroundLatLong;
-	protected boolean aroundLatLongViaIP;
+	protected Boolean aroundLatLongViaIP;
 	protected String query;
 	protected QueryType queryType;
 	protected String optionalWords;
 	protected String facets;
 	protected String facetFilters;
-	protected int maxNumberOfFacets;
-	protected boolean analytics;
-	protected boolean synonyms;
-	protected boolean replaceSynonyms;
-	protected boolean allowTyposOnNumericTokens;
+	protected Integer maxNumberOfFacets;
+	protected Boolean analytics;
+	protected Boolean synonyms;
+	protected Boolean replaceSynonyms;
+	protected Boolean allowTyposOnNumericTokens;
 	protected RemoveWordsType removeWordsIfNoResult;
 	protected TypoTolerance typoTolerance;
 	protected String analyticsTags;
 
 	public Query(String query) {
-		minWordSizeForApprox1 = 3;
-		minWordSizeForApprox2 = 7;
-		getRankingInfo = false;
-		ignorePlural = false;
-		distinct = 0;
-		page = 0;
-		minProximity = 1;
-		hitsPerPage = 20;
+		minWordSizeForApprox1 = null;
+		minWordSizeForApprox2 = null;
+		getRankingInfo = null;
+		ignorePlural = null;
+		distinct = null;
+		page = null;
+		minProximity = null;
+		hitsPerPage = null;
 		this.query = query;
-		queryType = QueryType.PREFIX_LAST;
-		maxNumberOfFacets = -1;
-		advancedSyntax = false;
-		analytics = synonyms = replaceSynonyms = allowTyposOnNumericTokens = true;
+		queryType = QueryType.PREFIX_NOTSET;
+		maxNumberOfFacets = null;
+		advancedSyntax = null;
+		analytics = synonyms = replaceSynonyms = allowTyposOnNumericTokens = null;
 		analyticsTags = null;
-		typoTolerance = TypoTolerance.TYPO_TRUE;
-		removeWordsIfNoResult = RemoveWordsType.REMOVE_NONE;
+		typoTolerance = TypoTolerance.TYPO_NOTSET;
+		removeWordsIfNoResult = RemoveWordsType.REMOVE_NOTSET;
 	}
 
 	public Query() {
-		minWordSizeForApprox1 = 3;
-		minWordSizeForApprox2 = 7;
-		getRankingInfo = false;
-		ignorePlural = false;
-		distinct = 0;
-		page = 0;
-		minProximity = 1;
-		hitsPerPage = 20;
-		queryType = QueryType.PREFIX_ALL;
-		maxNumberOfFacets = -1;
-		advancedSyntax = false;
-		analytics = synonyms = replaceSynonyms = allowTyposOnNumericTokens = true;
-		analyticsTags = null;
-		typoTolerance = TypoTolerance.TYPO_TRUE;
-		removeWordsIfNoResult = RemoveWordsType.REMOVE_NONE;
+		this((String) null);
 	}
 
 	public Query(Query other) {
@@ -695,7 +687,7 @@ public class Query {
 					first = false;
 				}
 			}
-			if (typoTolerance != TypoTolerance.TYPO_TRUE) {
+			if (typoTolerance != TypoTolerance.TYPO_NOTSET) {
 				if (stringBuilder.length() > 0)
 					stringBuilder.append('&');
 				stringBuilder.append("typoTolerance=");
@@ -712,20 +704,22 @@ public class Query {
 				case TYPO_TRUE:
 					stringBuilder.append("true");
 					break;
+				case TYPO_NOTSET:
+					throw new IllegalStateException("code not reachable");
 				}
 			}
-			if (!allowTyposOnNumericTokens) {
+			if (allowTyposOnNumericTokens != null) {
 				if (stringBuilder.length() > 0)
 					stringBuilder.append('&');
-				stringBuilder.append("allowTyposOnNumericTokens=false");
+				stringBuilder.append("allowTyposOnNumericTokens=").append(allowTyposOnNumericTokens ? '1' : '0');
 			}
-			if (minWordSizeForApprox1 != 3) {
+			if (minWordSizeForApprox1 != null) {
 				if (stringBuilder.length() > 0)
 					stringBuilder.append('&');
 				stringBuilder.append("minWordSizefor1Typo=");
 				stringBuilder.append(minWordSizeForApprox1);
 			}
-			if (minWordSizeForApprox2 != 7) {
+			if (minWordSizeForApprox2 != null) {
 				if (stringBuilder.length() > 0)
 					stringBuilder.append('&');
 				stringBuilder.append("minWordSizefor2Typos=");
@@ -748,56 +742,62 @@ public class Query {
 				stringBuilder.append("removeWordsIfNoResult=allOptional");
 				break;
 			case REMOVE_NONE:
+				if (stringBuilder.length() > 0)
+					stringBuilder.append('&');
+				stringBuilder.append("removeWordsIfNoResult=none");
+				break;
+			case REMOVE_NOTSET:
+				// Nothing to do
 				break;
 			}
-			if (getRankingInfo) {
+			if (getRankingInfo != null) {
 				if (stringBuilder.length() > 0)
 					stringBuilder.append('&');
-				stringBuilder.append("getRankingInfo=1");
+				stringBuilder.append("getRankingInfo=").append(getRankingInfo ? '1' : '0');
 			}
-			if (ignorePlural) {
+			if (ignorePlural != null) {
 				if (stringBuilder.length() > 0)
 					stringBuilder.append('&');
-				stringBuilder.append("ignorePlural=true");
+				stringBuilder.append("ignorePlural=").append(ignorePlural ? '1' : '0');
 			}
-			if (!analytics) {
+			if (analytics != null) {
 				if (stringBuilder.length() > 0)
 					stringBuilder.append('&');
-				stringBuilder.append("analytics=0");
+				stringBuilder.append("analytics=").append(analytics ? '1' : '0');
 			}
 			if (analyticsTags != null) {
 				if (stringBuilder.length() > 0)
 					stringBuilder.append('&');
 				stringBuilder.append("analyticsTags=" + analyticsTags);
 			}
-			if (!synonyms) {
+			if (synonyms != null) {
 				if (stringBuilder.length() > 0)
 					stringBuilder.append('&');
-				stringBuilder.append("synonyms=0");
+				stringBuilder.append("synonyms=").append(synonyms ? '1' : '0');
 			}
-			if (!replaceSynonyms) {
+			if (replaceSynonyms != null) {
 				if (stringBuilder.length() > 0)
 					stringBuilder.append('&');
-				stringBuilder.append("replaceSynonymsInHighlight=0");
+				stringBuilder.append("replaceSynonymsInHighlight=").append(replaceSynonyms ? '1' : '0');
 			}
-			if (distinct > 0) {
+			if (distinct != null) {
 				if (stringBuilder.length() > 0)
 					stringBuilder.append('&');
 				stringBuilder.append("distinct=");
 				stringBuilder.append(distinct);
 			}
-			if (advancedSyntax) {
+			if (advancedSyntax != null) {
 				if (stringBuilder.length() > 0)
 					stringBuilder.append('&');
-				stringBuilder.append("advancedSyntax=1");
+				stringBuilder.append("advancedSyntax=").append(advancedSyntax ? '1' : '0');
 			}
-			if (page > 0) {
+			if (page != null) {
 				if (stringBuilder.length() > 0)
 					stringBuilder.append('&');
 				stringBuilder.append("page=");
 				stringBuilder.append(page);
 			}
-			if (minProximity > 1) {
+			if (minProximity != null) {
 				if (stringBuilder.length() > 0)
 					stringBuilder.append('&');
 				stringBuilder.append("minProximity=");
@@ -811,7 +811,7 @@ public class Query {
 				stringBuilder.append("&highlightPostTag=");
 				stringBuilder.append(highlightPostTag);
 			}
-			if (hitsPerPage > 0) {
+			if (hitsPerPage != null) {
 				if (stringBuilder.length() > 0)
 					stringBuilder.append('&');
 				stringBuilder.append("hitsPerPage=");
@@ -838,10 +838,10 @@ public class Query {
 					stringBuilder.append('&');
 				stringBuilder.append(aroundLatLong);
 			}
-			if (aroundLatLongViaIP) {
+			if (aroundLatLongViaIP != null) {
 				if (stringBuilder.length() > 0)
 					stringBuilder.append('&');
-				stringBuilder.append("aroundLatLngViaIP=true");
+				stringBuilder.append("aroundLatLngViaIP=").append(aroundLatLongViaIP ? '1' : '0');
 			}
 			if (query != null) {
 				if (stringBuilder.length() > 0)
@@ -861,7 +861,7 @@ public class Query {
 				stringBuilder.append("facetFilters=");
 				stringBuilder.append(URLEncoder.encode(facetFilters, "UTF-8"));
 			}
-			if (maxNumberOfFacets > 0) {
+			if (maxNumberOfFacets != null) {
 				if (stringBuilder.length() > 0)
 					stringBuilder.append('&');
 				stringBuilder.append("maxNumberOfFacets=");
@@ -887,6 +887,9 @@ public class Query {
 				stringBuilder.append("queryType=prefixAll");
 				break;
 			case PREFIX_LAST:
+				if (stringBuilder.length() > 0)
+					stringBuilder.append('&');
+				stringBuilder.append("queryType=prefixLast");
 				break;
 			case PREFIX_NONE:
 				if (stringBuilder.length() > 0)
@@ -924,56 +927,56 @@ public class Query {
 	/**
 	 * @return the minWordSizeForApprox1
 	 */
-	public int getMinWordSizeForApprox1() {
+	public Integer getMinWordSizeForApprox1() {
 		return minWordSizeForApprox1;
 	}
 
 	/**
 	 * @return the minWordSizeForApprox2
 	 */
-	public int getMinWordSizeForApprox2() {
+	public Integer getMinWordSizeForApprox2() {
 		return minWordSizeForApprox2;
 	}
 
 	/**
 	 * @return the getRankingInfo
 	 */
-	public boolean isGetRankingInfo() {
+	public Boolean isGetRankingInfo() {
 		return getRankingInfo;
 	}
 
 	/**
 	 * @return the ignorePlural
 	 */
-	public boolean isIgnorePlural() {
+	public Boolean isIgnorePlural() {
 		return ignorePlural;
 	}
 
 	/**
 	 * @return the distinct
 	 */
-	public boolean isDistinct() {
+	public Boolean isDistinct() {
 		return distinct > 0;
 	}
 
 	/**
 	 * @return the advancedSyntax
 	 */
-	public boolean isAdvancedSyntax() {
+	public Boolean isAdvancedSyntax() {
 		return advancedSyntax;
 	}
 
 	/**
 	 * @return the page
 	 */
-	public int getPage() {
+	public Integer getPage() {
 		return page;
 	}
 
 	/**
 	 * @return the hitsPerPage
 	 */
-	public int getHitsPerPage() {
+	public Integer getHitsPerPage() {
 		return hitsPerPage;
 	}
 
@@ -1015,7 +1018,7 @@ public class Query {
 	/**
 	 * @return the aroundLatLongViaIP
 	 */
-	public boolean isAroundLatLongViaIP() {
+	public Boolean isAroundLatLongViaIP() {
 		return aroundLatLongViaIP;
 	}
 
@@ -1057,14 +1060,14 @@ public class Query {
 	/**
 	 * @return the maxNumberOfFacets
 	 */
-	public int getMaxNumberOfFacets() {
+	public Integer getMaxNumberOfFacets() {
 		return maxNumberOfFacets;
 	}
 
 	/**
 	 * @return the analytics
 	 */
-	public boolean isAnalytics() {
+	public Boolean isAnalytics() {
 		return analytics;
 	}
 
@@ -1078,21 +1081,21 @@ public class Query {
 	/**
 	 * @return the synonyms
 	 */
-	public boolean isSynonyms() {
+	public Boolean isSynonyms() {
 		return synonyms;
 	}
 
 	/**
 	 * @return the replaceSynonyms
 	 */
-	public boolean isReplaceSynonyms() {
+	public Boolean isReplaceSynonyms() {
 		return replaceSynonyms;
 	}
 
 	/**
 	 * @return the allowTyposOnNumericTokens
 	 */
-	public boolean isAllowTyposOnNumericTokens() {
+	public Boolean isAllowTyposOnNumericTokens() {
 		return allowTyposOnNumericTokens;
 	}
 
