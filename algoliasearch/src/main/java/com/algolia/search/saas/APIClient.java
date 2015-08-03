@@ -18,7 +18,6 @@ import java.util.Map.Entry;
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 
-import org.apache.commons.codec.binary.Hex;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpDelete;
@@ -848,57 +847,6 @@ public class APIClient {
         }
         return updateUserKey(key, jsonObject);
     }
-
-    /**
-     * Generate a secured and public API Key from a list of tagFilters and an
-     * optional user token identifying the current user
-     *
-     * @param privateApiKey your private API Key
-     * @param tagFilters the list of tags applied to the query (used as security)
-     */
-    public String generateSecuredApiKey(String privateApiKey, String tagFilters) {
-        return generateSecuredApiKey(privateApiKey, tagFilters, null);
-    }
-    
-    /**
-     * Generate a secured and public API Key from a query and an
-     * optional user token identifying the current user
-     *
-     * @param privateApiKey your private API Key
-     * @param query contains the parameter applied to the query (used as security)
-     * @throws NoSuchAlgorithmException 
-     * @throws InvalidKeyException 
-     */
-    public String generateSecuredApiKey(String privateApiKey, Query query) throws NoSuchAlgorithmException, InvalidKeyException {
-        return generateSecuredApiKey(privateApiKey, query.toString(), null);
-    }
-    
-    /**
-     * Generate a secured and public API Key from a list of tagFilters and an
-     * optional user token identifying the current user
-     *
-     * @param privateApiKey your private API Key
-     * @param tagFilters the list of tags applied to the query (used as security)
-     * @param userToken an optional token identifying the current user
-     */
-    public String generateSecuredApiKey(String privateApiKey, String tagFilters, String userToken) {
-        return hmac(privateApiKey, tagFilters + (userToken != null ? userToken : ""));
-    }
-    
-    /**
-     * Generate a secured and public API Key from a query and an
-     * optional user token identifying the current user
-     *
-     * @param privateApiKey your private API Key
-     * @param query contains the parameter applied to the query (used as security)
-     * @param userToken an optional token identifying the current user
-     * @throws NoSuchAlgorithmException 
-     * @throws InvalidKeyException 
-     */
-    public String generateSecuredApiKey(String privateApiKey, Query query, String userToken) throws NoSuchAlgorithmException, InvalidKeyException {
-    	return hmac(privateApiKey, query.toString() + (userToken != null ? userToken : ""));
-        
-    }
     
     public void setSecurityTags(String tagFilters) {
         this.tagFilters = tagFilters;
@@ -906,23 +854,6 @@ public class APIClient {
     
     public void setUserToken(String userToken) {
         this.userToken = userToken;
-    }
-    
-    static String hmac(String key, String msg) {
-    	Mac hmac;
-		try {
-			hmac = Mac.getInstance("HmacSHA256");
-		} catch (NoSuchAlgorithmException e) {
-			throw new Error(e);
-		}
-    	try {
-			hmac.init(new SecretKeySpec(key.getBytes(), "HmacSHA256"));
-		} catch (InvalidKeyException e) {
-			throw new Error(e);
-		}
-    	byte[] rawHmac = hmac.doFinal(msg.getBytes());
-        byte[] hexBytes = new Hex().encode(rawHmac);
-        return new String(hexBytes);
     }
     
     private static enum Method {

@@ -1,0 +1,34 @@
+apply plugin: 'com.android.library'
+
+ext {
+    PUBLISH_GROUP_ID = 'com.algolia'
+    PUBLISH_ARTIFACT_ID = 'android-algoliasearch'
+    PUBLISH_VERSION = '0.1.0'
+}
+
+android {
+    compileSdkVersion 22
+    buildToolsVersion '22.0.1'
+
+    defaultConfig {
+        minSdkVersion 15
+        targetSdkVersion 22
+        versionCode 1
+        versionName PUBLISH_VERSION
+    }
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+}
+
+apply from: 'android-release-jar.gradle'
+
+dependencies {
+    compile 'com.android.support:appcompat-v7:22.+'
+    //compile group: 'org.apache.httpcomponents' , name: 'httpclient-android' , version: '4.3.5.1'
+    //compile 'com.algolia:algoliasearch:1.+'
+    compile fileTree(dir: 'libs', include: ['*.jar'])
+}
