@@ -69,16 +69,16 @@ public class Index {
 
     /**
      * Add an object in this index
-     * 
+     *
      * @param obj the object to add. 
-    */
+     */
     public JSONObject addObject(JSONObject obj) throws AlgoliaException {
         return client.postRequest("/1/indexes/" + encodedIndexName, obj.toString(), false);
     }
 
     /**
      * Add an object in this index
-     * 
+     *
      * @param obj the object to add. 
      * @param objectID an objectID you want to attribute to this object 
      * (if the attribute already exist the old object will be overwrite)
@@ -93,7 +93,7 @@ public class Index {
 
     /**
      * Add an object in this index asynchronously
-     * 
+     *
      * @param obj the object to add. 
      *  The object is represented by an associative array
      * @param listener the listener that will receive the result or error. If the listener is an instance of Activity, the result will be received directly on UIthread
@@ -105,7 +105,7 @@ public class Index {
 
     /**
      * Add an object in this index asynchronously
-     * 
+     *
      * @param obj the object to add. 
      *  The object is represented by an associative array
      * @param objectID an objectID you want to attribute to this object 
@@ -119,39 +119,39 @@ public class Index {
 
     /**
      * Custom batch
-     * 
+     *
      * @param actions the array of actions
-     * @throws AlgoliaException 
+     * @throws AlgoliaException
      */
     public JSONObject batch(JSONArray actions) throws AlgoliaException {
-	    try {
-	    	JSONObject content = new JSONObject();
-	    	content.put("requests", actions);
-	    	return client.postRequest("/1/indexes/" + encodedIndexName + "/batch", content.toString(), false);
-	    } catch (JSONException e) {
-	        throw new AlgoliaException(e.getMessage());
-	    }
+        try {
+            JSONObject content = new JSONObject();
+            content.put("requests", actions);
+            return client.postRequest("/1/indexes/" + encodedIndexName + "/batch", content.toString(), false);
+        } catch (JSONException e) {
+            throw new AlgoliaException(e.getMessage());
+        }
     }
 
     /**
      * Custom batch
-     * 
+     *
      * @param actions the array of actions
-     * @throws AlgoliaException 
+     * @throws AlgoliaException
      */
     public JSONObject batch(List<JSONObject> actions) throws AlgoliaException {
-	    try {
-	    	JSONObject content = new JSONObject();
-	    	content.put("requests", actions);
-	    	return client.postRequest("/1/indexes/" + encodedIndexName + "/batch", content.toString(), false);
-	    } catch (JSONException e) {
-	        throw new AlgoliaException(e.getMessage());
-	    }
+        try {
+            JSONObject content = new JSONObject();
+            content.put("requests", actions);
+            return client.postRequest("/1/indexes/" + encodedIndexName + "/batch", content.toString(), false);
+        } catch (JSONException e) {
+            throw new AlgoliaException(e.getMessage());
+        }
     }
 
     /**
      * Add several objects
-     * 
+     *
      * @param objects contains an array of objects to add.
      */
     public JSONObject addObjects(List<JSONObject> objects) throws AlgoliaException {
@@ -171,7 +171,7 @@ public class Index {
 
     /**
      * Add several objects asynchronously
-     * 
+     *
      * @param objects contains an array of objects to add. If the object contains an objectID
      * @param listener the listener that will receive the result or error. If the listener is an instance of Activity, the result will be received directly on UIthread
      */
@@ -182,7 +182,7 @@ public class Index {
 
     /**
      * Add several objects
-     * 
+     *
      * @param objects contains an array of objects to add.
      */
     public JSONObject addObjects(JSONArray inputArray) throws AlgoliaException {
@@ -203,7 +203,7 @@ public class Index {
 
     /**
      * Add several objects asynchronously
-     * 
+     *
      * @param objects contains an array of objects to add. If the object contains an objectID
      * @param listener the listener that will receive the result or error. If the listener is an instance of Activity, the result will be received directly on UIthread
      */
@@ -214,7 +214,7 @@ public class Index {
 
     /**
      * Get an object from this index
-     * 
+     *
      * @param objectID the unique identifier of the object to retrieve
      */
     public JSONObject getObject(String objectID) throws AlgoliaException {
@@ -227,7 +227,7 @@ public class Index {
 
     /**
      * Get an object from this index
-     * 
+     *
      * @param objectID the unique identifier of the object to retrieve
      * @param attributesToRetrieve, contains the list of attributes to retrieve.
      */
@@ -248,7 +248,7 @@ public class Index {
 
     /**
      * Get an object from this index asynchronously
-     * 
+     *
      * @param objectID the unique identifier of the object to retrieve
      * @param listener the listener that will receive the result or error. If the listener is an instance of Activity, the result will be received directly on UIthread
      */
@@ -259,7 +259,7 @@ public class Index {
 
     /**
      * Get an object from this index asynchronously
-     * 
+     *
      * @param objectID the unique identifier of the object to retrieve
      * @param attributesToRetrieve, contains the list of attributes to retrieve as a string separated by ","
      * @param listener the listener that will receive the result or error. If the listener is an instance of Activity, the result will be received directly on UIthread
@@ -277,18 +277,18 @@ public class Index {
      */
     public JSONObject getObjects(List<String> objectIDs) throws AlgoliaException {
         try {
-	    JSONArray requests = new JSONArray();
-	    for (String id : objectIDs) {
-		JSONObject request = new JSONObject();
-		request.put("indexName", this.indexName);
-		request.put("objectID", id);
-		requests.put(request);
-	    }
-	    JSONObject body = new JSONObject();
-	    body.put("requests", requests);
-	    return client.postRequest("/1/indexes/*/objects", body.toString(), true);
+            JSONArray requests = new JSONArray();
+            for (String id : objectIDs) {
+                JSONObject request = new JSONObject();
+                request.put("indexName", this.indexName);
+                request.put("objectID", id);
+                requests.put(request);
+            }
+            JSONObject body = new JSONObject();
+            body.put("requests", requests);
+            return client.postRequest("/1/indexes/*/objects", body.toString(), true);
         } catch (JSONException e){
-	    throw new AlgoliaException(e.getMessage());
+            throw new AlgoliaException(e.getMessage());
         }
     }
 
@@ -299,13 +299,13 @@ public class Index {
      * @throws AlgoliaException
      */
     public void getObjectsASync(List<String> objectIDs, IndexListener listener) throws AlgoliaException {
-	ASyncIndexTaskParams params = new ASyncIndexTaskParams(listener, ASyncIndexTaskKind.GetObjects, objectIDs);
+        ASyncIndexTaskParams params = new ASyncIndexTaskParams(listener, ASyncIndexTaskKind.GetObjects, objectIDs);
         new ASyncIndexTask().execute(params);
     }
 
     /**
      * Update partially an object (only update attributes passed in argument)
-     * 
+     *
      * @param partialObject the object attributes to override
      */
     public JSONObject partialUpdateObject(JSONObject partialObject, String objectID) throws AlgoliaException {
@@ -318,7 +318,7 @@ public class Index {
 
     /**
      * Update partially an object asynchronously (only update attributes passed in argument)
-     * 
+     *
      * @param partialObject the object attributes to override, the 
      *  object must contains an objectID attribute
      * @param listener the listener that will receive the result or error. If the listener is an instance of Activity, the result will be received directly on UIthread
@@ -330,7 +330,7 @@ public class Index {
 
     /**
      * Partially Override the content of several objects
-     * 
+     *
      * @param objects the array of objects to update (each object must contains an objectID attribute)
      */
     public JSONObject partialUpdateObjects(JSONArray inputArray) throws AlgoliaException {
@@ -338,7 +338,7 @@ public class Index {
             JSONArray array = new JSONArray();
             for(int n = 0; n < inputArray.length(); n++)
             {
-            	JSONObject obj = inputArray.getJSONObject(n);
+                JSONObject obj = inputArray.getJSONObject(n);
                 JSONObject action = new JSONObject();
                 action.put("action", "partialUpdateObject");
                 action.put("objectID", obj.getString("objectID"));
@@ -353,7 +353,7 @@ public class Index {
 
     /**
      * Override the content of several objects asynchronously
-     * 
+     *
      * @param objects contains an array of objects to update (each object must contains an objectID attribute)
      * @param listener the listener that will receive the result or error. If the listener is an instance of Activity, the result will be received directly on UIthread
      */
@@ -364,7 +364,7 @@ public class Index {
 
     /**
      * Partially Override the content of several objects
-     * 
+     *
      * @param objects the array of objects to update (each object must contains an objectID attribute)
      */
     public JSONObject partialUpdateObjects(List<JSONObject> objects) throws AlgoliaException {
@@ -385,7 +385,7 @@ public class Index {
 
     /**
      * Partially Override the content of several objects asynchronously
-     * 
+     *
      * @param objects contains an array of objects to update (each object must contains an objectID attribute)
      * @param listener the listener that will receive the result or error. If the listener is an instance of Activity, the result will be received directly on UIthread
      */
@@ -396,7 +396,7 @@ public class Index {
 
     /**
      * Override the content of object
-     * 
+     *
      * @param object the object to save
      */
     public JSONObject saveObject(JSONObject object, String objectID) throws AlgoliaException {
@@ -409,7 +409,7 @@ public class Index {
 
     /**
      * Override the content of object asynchronously
-     * 
+     *
      * @param object the object to save
      * @param listener the listener that will receive the result or error. If the listener is an instance of Activity, the result will be received directly on UIthread
      */
@@ -420,7 +420,7 @@ public class Index {
 
     /**
      * Override the content of several objects
-     * 
+     *
      * @param objects an array of objects to update (each object must contains an objectID attribute)
      */
     public JSONObject saveObjects(List<JSONObject> objects) throws AlgoliaException {
@@ -441,7 +441,7 @@ public class Index {
 
     /**
      * Override the content of several objects asynchronously
-     * 
+     *
      * @param objects contains an array of objects to update (each object must contains an objectID attribute)
      * @param listener the listener that will receive the result or error. If the listener is an instance of Activity, the result will be received directly on UIthread
      */
@@ -452,7 +452,7 @@ public class Index {
 
     /**
      * Override the content of several objects
-     * 
+     *
      * @param objects contains an array of objects to update (each object must contains an objectID attribute)
      */
     public JSONObject saveObjects(JSONArray inputArray) throws AlgoliaException {
@@ -460,7 +460,7 @@ public class Index {
             JSONArray array = new JSONArray();
             for(int n = 0; n < inputArray.length(); n++)
             {
-            	JSONObject obj = inputArray.getJSONObject(n);
+                JSONObject obj = inputArray.getJSONObject(n);
                 JSONObject action = new JSONObject();
                 action.put("action", "updateObject");
                 action.put("objectID", obj.getString("objectID"));
@@ -475,7 +475,7 @@ public class Index {
 
     /**
      * Override the content of several objects asynchronously
-     * 
+     *
      * @param objects contains an array of objects to update (each object must contains an objectID attribute)
      * @param listener the listener that will receive the result or error. If the listener is an instance of Activity, the result will be received directly on UIthread
      */
@@ -486,7 +486,7 @@ public class Index {
 
     /**
      * Delete an object from the index 
-     * 
+     *
      * @param objectID the unique identifier of object to delete
      */
     public JSONObject deleteObject(String objectID) throws AlgoliaException {
@@ -501,7 +501,7 @@ public class Index {
 
     /**
      * Delete an object from the index asynchronously
-     * 
+     *
      * @param objectID the unique identifier of object to delete
      * @param listener the listener that will receive the result or error. If the listener is an instance of Activity, the result will be received directly on UIthread
      */
@@ -512,7 +512,7 @@ public class Index {
 
     /**
      * Delete several objects
-     * 
+     *
      * @param objects the array of objectIDs to delete
      */
     public JSONObject deleteObjects(List<String> objects) throws AlgoliaException {
@@ -534,7 +534,7 @@ public class Index {
 
     /**
      * Delete several objects
-     * 
+     *
      * @param objects the array of objectIDs to delete
      */
     public JSONObject deleteObjects2(List<JSONObject> objects) throws AlgoliaException {
@@ -551,14 +551,14 @@ public class Index {
             throw new AlgoliaException(e.getMessage());
         }
     }
-    
+
     static class IndexBrower implements Iterator<JSONObject> {
-        
+
         IndexBrower(APIClient client, String encodedIndexName, Query params, String startingCursor) throws AlgoliaException {
             this.client = client;
             this.params = params;
             this.encodedIndexName = encodedIndexName;
-            
+
             doQuery(startingCursor);
             this.pos = 0;
         }
@@ -590,7 +590,7 @@ public class Index {
         public JSONObject next() {
             return hit;
         }
-        
+
         public String getCursor() {
             try {
                 return answer != null && answer.has("cursor") ? answer.getString("cursor") : null;
@@ -603,7 +603,7 @@ public class Index {
         public void remove() {
             throw new IllegalStateException("Cannot remove while browsing");
         }
-        
+
         private void doQuery(String cursor) throws AlgoliaException {
             String paramsString = params.getQueryString();
             if (cursor != null) {
@@ -615,7 +615,7 @@ public class Index {
             }
             this.answer = client.getRequest("/1/indexes/" + encodedIndexName + "/browse" + ((paramsString.length() > 0) ? ("?" + paramsString) : ""), true);
         }
-        
+
         final APIClient client;
         final Query params;
         final String encodedIndexName;
@@ -623,7 +623,7 @@ public class Index {
         JSONObject hit;
         int pos;
     }
-    
+
     /**
      * Browse all index content
      */
@@ -640,7 +640,7 @@ public class Index {
 
     /**
      * Delete several objects asynchronously
-     * 
+     *
      * @param objects the array of objectIDs to delete
      * @param listener the listener that will receive the result or error. If the listener is an instance of Activity, the result will be received directly on UIthread
      */
@@ -650,7 +650,7 @@ public class Index {
             try {
                 objects.add(new JSONObject().put("objectID", id));
             } catch (JSONException e) {
-                throw new AlgoliaException(e.getMessage()); 
+                throw new AlgoliaException(e.getMessage());
             }
         }
         ASyncIndexTaskParams params = new ASyncIndexTaskParams(listener, ASyncIndexTaskKind.DeleteObjects, objects);
@@ -659,9 +659,9 @@ public class Index {
 
     /**
      * Delete all objects matching a query
-     * 
+     *
      * @param query the query string
-     * @throws AlgoliaException 
+     * @throws AlgoliaException
      */
     public void deleteByQuery(Query query) throws AlgoliaException {
         List<String> attributesToRetrieve = new ArrayList<String>();
@@ -688,7 +688,7 @@ public class Index {
 
     /**
      * Delete all objects matching a query asynchronously
-     * 
+     *
      * @param query the query string
      * @param listener the listener that will receive the result or error. If the listener is an instance of Activity, the result will be received directly on UIthread
      */
@@ -716,11 +716,11 @@ public class Index {
         ASyncIndexTaskParams params = new ASyncIndexTaskParams(listener, query);
         new ASyncIndexTask().execute(params);
     }
-    
+
     /**
      * Wait the publication of a task on the server. 
      * All server task are asynchronous and you can check with this method that the task is published.
-     * 
+     *
      * @param taskID the id of the task returned by server
      * @param timeToWait time to sleep seed
      */
@@ -742,16 +742,16 @@ public class Index {
             throw new RuntimeException(e);
         }
     }
-    
+
     /**
      * Wait the publication of a task on the server. 
      * All server task are asynchronous and you can check with this method that the task is published.
-     * 
+     *
      *
      * @param taskID the id of the task returned by server
      */
     public void waitTask(String taskID) throws AlgoliaException {
-    	waitTask(taskID, 100);
+        waitTask(taskID, 100);
     }
 
     /**
@@ -785,7 +785,7 @@ public class Index {
 
     /**
      * Set settings for this index
-     * 
+     *
      * @param settigns the settings object that can contains :
      * - minWordSizefor1Typo: (integer) the minimum number of characters to accept one typo (default = 3).
      * - minWordSizefor2Typos: (integer) the minimum number of characters to accept two typos (default = 7).
@@ -868,7 +868,7 @@ public class Index {
     public JSONObject deleteUserKey(String key) throws AlgoliaException {
         return client.deleteRequest("/1/indexes/" + encodedIndexName + "/keys/" + key);
     }
-    
+
     /**
      * Create a new user key
      *
@@ -884,7 +884,7 @@ public class Index {
      *   - maxQueriesPerIPPerHour: integer
      */
     public JSONObject addUserKey(JSONObject params) throws AlgoliaException {
-    	return client.postRequest("/1/indexes/" + encodedIndexName + "/keys", params.toString(), false);
+        return client.postRequest("/1/indexes/" + encodedIndexName + "/keys", params.toString(), false);
     }
 
     /**
@@ -902,7 +902,7 @@ public class Index {
     public JSONObject addUserKey(List<String> acls) throws AlgoliaException {
         return addUserKey(acls, 0, 0, 0);
     }
-    
+
     /**
      * Update a new user key
      *
@@ -918,10 +918,10 @@ public class Index {
      *   - maxQueriesPerIPPerHour: integer
      */
     public JSONObject updateUserKey(String key, JSONObject params) throws AlgoliaException {
-    	return client.putRequest("/1/indexes/" + encodedIndexName + "/keys/" + key, params.toString());
+        return client.putRequest("/1/indexes/" + encodedIndexName + "/keys/" + key, params.toString());
     }
 
-     /**
+    /**
      * Update a user key
      *
      * @param acls the list of ACL for this key. Defined by an array of strings that 
@@ -951,7 +951,7 @@ public class Index {
      * @param validity the number of seconds after which the key will be automatically removed (0 means no time limit for this key)
      * @param maxQueriesPerIPPerHour Specify the maximum number of API calls allowed from an IP address per hour.  Defaults to 0 (no rate limit).
      * @param maxHitsPerQuery Specify the maximum number of hits this API key can retrieve in one call. Defaults to 0 (unlimited) 
-    */
+     */
     public JSONObject addUserKey(List<String> acls, int validity, int maxQueriesPerIPPerHour, int maxHitsPerQuery) throws AlgoliaException {
         JSONArray array = new JSONArray(acls);
         JSONObject jsonObject = new JSONObject();
@@ -1111,60 +1111,60 @@ public class Index {
         private void _sendResultImpl(ASyncIndexTaskParams p, JSONObject res)
         {
             switch (p.kind) {
-            case AddObject:
-                p.listener.addObjectResult(Index.this, p.objectContent, res);
-                break;
-            case AddObjects:
-                p.listener.addObjectsResult(Index.this, p.list, res);
-                break;
-            case AddObjects2:
-            	p.listener.addObjectsResult(Index.this, p.objects2, res);
-            	break;
-            case WaitTask:
-                p.listener.waitTaskResult(Index.this, p.objectID);
-                break;
-            case SaveObject:
-                p.listener.saveObjectResult(Index.this, p.objectContent, p.objectID, res);
-                break;
-            case SaveObjects:
-                p.listener.saveObjectsResult(Index.this, p.list, res);
-                break;
-            case SaveObjects2:
-            	p.listener.saveObjectsResult(Index.this, p.objects2, res);
-            	break;
-            case DeleteObject:
-                p.listener.deleteObjectResult(Index.this, p.objectID, res);
-                break;
-            case PartialSaveObject:
-                p.listener.partialUpdateResult(Index.this, p.objectContent, p.objectID, res);
-                break;
-            case PartialSaveObjects:
-            	p.listener.partialUpdateObjectsResult(Index.this, p.list, res);
-            	break;
-            case PartialSaveObjects2:
-            	p.listener.partialUpdateObjectsResult(Index.this, p.objects2, res);
-            	break;
-            case DeleteObjects:
-                p.listener.deleteObjectsResult(Index.this, p.objects2, res);
-                break;
-            case DeleteByQuery:
-                p.listener.deleteByQueryResult(Index.this);
-                break;
-            case GetObject:
-                p.listener.getObjectResult(Index.this, p.objectID, res);
-                break;
-            case GetObjects:
-		p.listener.getObjectsResult(Index.this, p.list, res);
-		break;
-            case Query:
-                p.listener.searchResult(Index.this, p.query, res);
-                break;
-            case GetSettings:
-                p.listener.getSettingsResult(Index.this, res);
-                break;
-            case SetSettings:
-                p.listener.setSettingsResult(Index.this, p.objectContent, res);
-                break;
+                case AddObject:
+                    p.listener.addObjectResult(Index.this, p.objectContent, res);
+                    break;
+                case AddObjects:
+                    p.listener.addObjectsResult(Index.this, p.list, res);
+                    break;
+                case AddObjects2:
+                    p.listener.addObjectsResult(Index.this, p.objects2, res);
+                    break;
+                case WaitTask:
+                    p.listener.waitTaskResult(Index.this, p.objectID);
+                    break;
+                case SaveObject:
+                    p.listener.saveObjectResult(Index.this, p.objectContent, p.objectID, res);
+                    break;
+                case SaveObjects:
+                    p.listener.saveObjectsResult(Index.this, p.list, res);
+                    break;
+                case SaveObjects2:
+                    p.listener.saveObjectsResult(Index.this, p.objects2, res);
+                    break;
+                case DeleteObject:
+                    p.listener.deleteObjectResult(Index.this, p.objectID, res);
+                    break;
+                case PartialSaveObject:
+                    p.listener.partialUpdateResult(Index.this, p.objectContent, p.objectID, res);
+                    break;
+                case PartialSaveObjects:
+                    p.listener.partialUpdateObjectsResult(Index.this, p.list, res);
+                    break;
+                case PartialSaveObjects2:
+                    p.listener.partialUpdateObjectsResult(Index.this, p.objects2, res);
+                    break;
+                case DeleteObjects:
+                    p.listener.deleteObjectsResult(Index.this, p.objects2, res);
+                    break;
+                case DeleteByQuery:
+                    p.listener.deleteByQueryResult(Index.this);
+                    break;
+                case GetObject:
+                    p.listener.getObjectResult(Index.this, p.objectID, res);
+                    break;
+                case GetObjects:
+                    p.listener.getObjectsResult(Index.this, p.list, res);
+                    break;
+                case Query:
+                    p.listener.searchResult(Index.this, p.query, res);
+                    break;
+                case GetSettings:
+                    p.listener.getSettingsResult(Index.this, res);
+                    break;
+                case SetSettings:
+                    p.listener.setSettingsResult(Index.this, p.objectContent, res);
+                    break;
             }
         }
 
@@ -1173,158 +1173,158 @@ public class Index {
             ASyncIndexTaskParams p = params[0];
             JSONObject res = null;
             switch (p.kind) {
-            case AddObject:
-                try {
-                    res = (p.objectID == null) ? addObject(p.objectContent) : addObject(p.objectContent, p.objectID);
-                } catch (AlgoliaException e) {
-                    p.listener.addObjectError(Index.this, p.objectContent, e);
-                    return null;
-                }
-                break;
-            case AddObjects:
-                try {
-                    res = addObjects(p.list);
-                } catch (AlgoliaException e) {
-                    p.listener.addObjectsError(Index.this, p.list, e);
-                    return null;
-                }
-                break;
-            case AddObjects2:
-            	try {
-            		res = addObjects(p.objects2);
-            	} catch (AlgoliaException e) {
-            		p.listener.addObjectsError(Index.this, p.objects2, e);
-            		return null;
-            	}
-            	break;
-            case WaitTask:
-                try {
-                    waitTask(p.objectID);
-                } catch (AlgoliaException e) {
-                    p.listener.waitTaskError(Index.this, p.objectID, e);
-                    return null;
-                }
-                break;
-            case SaveObject:
-                try {
-                    res = saveObject(p.objectContent, p.objectID);
-                } catch (AlgoliaException e) {
-                    p.listener.saveObjectError(Index.this, p.objectContent, p.objectID, e);
-                    return null;
-                }
-                break;
-            case SaveObjects:
-                try {
-                    res = saveObjects(p.list);
-                } catch (AlgoliaException e) {
-                    p.listener.saveObjectsError(Index.this, p.list, e);
-                    return null;
-                }
-                break;
-            case SaveObjects2:
-                try {
-                    res = saveObjects(p.objects2);
-                } catch (AlgoliaException e) {
-                    p.listener.saveObjectsError(Index.this, p.objects2, e);
-                    return null;
-                }
-                break;
-            case DeleteObject:
-                try {
-                    res = deleteObject(p.objectID);
-                } catch (AlgoliaException e) {
-                    p.listener.deleteObjectError(Index.this, p.objectID, e);
-                    return null;
-                }
-                break;
-            case DeleteByQuery:
-                try {
-                    deleteByQuery(p.query);
-                } catch (AlgoliaException e) {
-                    p.listener.deleteByQueryError(Index.this, p.query, e);
-                    return null;
-                }
-                break;
-            case PartialSaveObject:
-                try {
-                    res = partialUpdateObject(p.objectContent, p.objectID);
-                } catch (AlgoliaException e) {
-                    p.listener.partialUpdateError(Index.this, p.objectContent, p.objectID, e);
-                    return null;
-                }
-                break;
-            case PartialSaveObjects:
-            	try {
-                    res = partialUpdateObjects(p.list);
-                } catch (AlgoliaException e) {
-                    p.listener.partialUpdateObjectsError(Index.this, p.list, e);
-                    return null;
-                }
-            	break;
-            case PartialSaveObjects2:
-            	try {
-                    res = partialUpdateObjects(p.objects2);
-                } catch (AlgoliaException e) {
-                    p.listener.partialUpdateObjectsError(Index.this, p.objects2, e);
-                    return null;
-                }
-            	break;
-            case DeleteObjects:
-                try {
-                    res = deleteObjects2(p.list);
-                } catch (AlgoliaException e) {
-                    p.listener.deleteObjectsError(Index.this, p.list, e);
-                    return null;
-                }
-                break;
-	    case GetObjects:
-		try {
-		    res = getObjects(p.list);
-		} catch (AlgoliaException e) {
-		    p.listener.getObjectsError(Index.this, p.list, e);
-		    return null;
-		}
-		break;
-            case GetObject:
-                try {
-                    if (p.attributesToRetrieve == null) {
-                        res = getObject(p.objectID);
-                    } else {
-                        res = getObject(p.objectID, p.attributesToRetrieve);
+                case AddObject:
+                    try {
+                        res = (p.objectID == null) ? addObject(p.objectContent) : addObject(p.objectContent, p.objectID);
+                    } catch (AlgoliaException e) {
+                        p.listener.addObjectError(Index.this, p.objectContent, e);
+                        return null;
                     }
-                } catch (AlgoliaException e) {
-                    p.listener.getObjectError(Index.this, p.objectID, e);
-                    return null;
-                }
-                break;
-            case Query:
-                try {
-                    res = search(p.query);
-                } catch (AlgoliaException e) {
-                    p.listener.searchError(Index.this, p.query, e);
-                    return null;
-                }
-                break;
-            case GetSettings:
-                try {
-                    res = getSettings();
-                } catch (AlgoliaException e) {
-                    p.listener.getSettingsError(Index.this, e);
-                    return null;
-                }
-                break;
-            case SetSettings:
-                try {
-                    res = setSettings(p.objectContent);
-                } catch (AlgoliaException e) {
-                    p.listener.setSettingsError(Index.this, p.objectContent, e);
-                    return null;
-                }
-                break;
+                    break;
+                case AddObjects:
+                    try {
+                        res = addObjects(p.list);
+                    } catch (AlgoliaException e) {
+                        p.listener.addObjectsError(Index.this, p.list, e);
+                        return null;
+                    }
+                    break;
+                case AddObjects2:
+                    try {
+                        res = addObjects(p.objects2);
+                    } catch (AlgoliaException e) {
+                        p.listener.addObjectsError(Index.this, p.objects2, e);
+                        return null;
+                    }
+                    break;
+                case WaitTask:
+                    try {
+                        waitTask(p.objectID);
+                    } catch (AlgoliaException e) {
+                        p.listener.waitTaskError(Index.this, p.objectID, e);
+                        return null;
+                    }
+                    break;
+                case SaveObject:
+                    try {
+                        res = saveObject(p.objectContent, p.objectID);
+                    } catch (AlgoliaException e) {
+                        p.listener.saveObjectError(Index.this, p.objectContent, p.objectID, e);
+                        return null;
+                    }
+                    break;
+                case SaveObjects:
+                    try {
+                        res = saveObjects(p.list);
+                    } catch (AlgoliaException e) {
+                        p.listener.saveObjectsError(Index.this, p.list, e);
+                        return null;
+                    }
+                    break;
+                case SaveObjects2:
+                    try {
+                        res = saveObjects(p.objects2);
+                    } catch (AlgoliaException e) {
+                        p.listener.saveObjectsError(Index.this, p.objects2, e);
+                        return null;
+                    }
+                    break;
+                case DeleteObject:
+                    try {
+                        res = deleteObject(p.objectID);
+                    } catch (AlgoliaException e) {
+                        p.listener.deleteObjectError(Index.this, p.objectID, e);
+                        return null;
+                    }
+                    break;
+                case DeleteByQuery:
+                    try {
+                        deleteByQuery(p.query);
+                    } catch (AlgoliaException e) {
+                        p.listener.deleteByQueryError(Index.this, p.query, e);
+                        return null;
+                    }
+                    break;
+                case PartialSaveObject:
+                    try {
+                        res = partialUpdateObject(p.objectContent, p.objectID);
+                    } catch (AlgoliaException e) {
+                        p.listener.partialUpdateError(Index.this, p.objectContent, p.objectID, e);
+                        return null;
+                    }
+                    break;
+                case PartialSaveObjects:
+                    try {
+                        res = partialUpdateObjects(p.list);
+                    } catch (AlgoliaException e) {
+                        p.listener.partialUpdateObjectsError(Index.this, p.list, e);
+                        return null;
+                    }
+                    break;
+                case PartialSaveObjects2:
+                    try {
+                        res = partialUpdateObjects(p.objects2);
+                    } catch (AlgoliaException e) {
+                        p.listener.partialUpdateObjectsError(Index.this, p.objects2, e);
+                        return null;
+                    }
+                    break;
+                case DeleteObjects:
+                    try {
+                        res = deleteObjects2(p.list);
+                    } catch (AlgoliaException e) {
+                        p.listener.deleteObjectsError(Index.this, p.list, e);
+                        return null;
+                    }
+                    break;
+                case GetObjects:
+                    try {
+                        res = getObjects(p.list);
+                    } catch (AlgoliaException e) {
+                        p.listener.getObjectsError(Index.this, p.list, e);
+                        return null;
+                    }
+                    break;
+                case GetObject:
+                    try {
+                        if (p.attributesToRetrieve == null) {
+                            res = getObject(p.objectID);
+                        } else {
+                            res = getObject(p.objectID, p.attributesToRetrieve);
+                        }
+                    } catch (AlgoliaException e) {
+                        p.listener.getObjectError(Index.this, p.objectID, e);
+                        return null;
+                    }
+                    break;
+                case Query:
+                    try {
+                        res = search(p.query);
+                    } catch (AlgoliaException e) {
+                        p.listener.searchError(Index.this, p.query, e);
+                        return null;
+                    }
+                    break;
+                case GetSettings:
+                    try {
+                        res = getSettings();
+                    } catch (AlgoliaException e) {
+                        p.listener.getSettingsError(Index.this, e);
+                        return null;
+                    }
+                    break;
+                case SetSettings:
+                    try {
+                        res = setSettings(p.objectContent);
+                    } catch (AlgoliaException e) {
+                        p.listener.setSettingsError(Index.this, p.objectContent, e);
+                        return null;
+                    }
+                    break;
             }
             _sendResult(p, res);
             return null;
-        }      
+        }
 
         @Override
         protected void onPostExecute(Void result) {
@@ -1337,7 +1337,7 @@ public class Index {
         @Override
         protected void onProgressUpdate(Void... values) {
         }
-  }   
+    }
 
     /**
      * Perform a search with disjunctive facets generating as many queries as number of disjunctive facets
@@ -1345,131 +1345,131 @@ public class Index {
      * @param disjunctiveFacets the array of disjunctive facets
      * @param refinements Map<String, List<String>> representing the current refinements
      *     ex: { "my_facet1" => ["my_value1", "my_value2"], "my_disjunctive_facet1" => ["my_value1", "my_value2"] }
-     * @throws AlgoliaException 
+     * @throws AlgoliaException
      */
     public JSONObject disjunctiveFaceting(Query query, List<String> disjunctiveFacets, Map<String, List<String>> refinements) throws AlgoliaException {
-    	if (refinements == null) {
-    		refinements = new HashMap<String, List<String>>();
-    	}
-    	HashMap<String, List<String>> disjunctiveRefinements = new HashMap<String, List<String>>();
-    	for (Map.Entry<String, List<String>> elt : refinements.entrySet()) {
-    		if (disjunctiveFacets.contains(elt.getKey())) {
-    			disjunctiveRefinements.put(elt.getKey(), elt.getValue());
-    		}
-    	}
-    	
-    	// build queries
-    	List<IndexQuery> queries = new ArrayList<IndexQuery>();
-    	// hits + regular facets query
-    	StringBuilder filters = new StringBuilder();
-    	boolean first_global = true;
-    	for (Map.Entry<String, List<String>> elt : refinements.entrySet()) {
-    		StringBuilder or = new StringBuilder();
-    		or.append("(");
-    		boolean first = true;
-    		for (String val : elt.getValue()) {
-        		if (disjunctiveRefinements.containsKey(elt.getKey())) {
-        			// disjunctive refinements are ORed
-        			if (!first) {
-        				or.append(',');
-        			}
-        			first = false;
-        			or.append(String.format("%s:%s", elt.getKey(), val));
-        		} else {
-        			if (!first_global) {
-        				filters.append(',');
-        			}
-        			first_global = false;
-        			filters.append(String.format("%s:%s", elt.getKey(), val));
-        		}
-    		}
-    		// Add or
-    		if (disjunctiveRefinements.containsKey(elt.getKey())) {
-    			or.append(')');
-    			if (!first_global) {
-    				filters.append(',');
-    			}
-    			first_global = false;
-    			filters.append(or.toString());
-    		}
-    	}
-    	
-    	queries.add(new IndexQuery(this.indexName, new Query(query).setFacetFilters(filters.toString())));
-    	// one query per disjunctive facet (use all refinements but the current one + hitsPerPage=1 + single facet
-    	for (String disjunctiveFacet : disjunctiveFacets) {
-    		filters = new StringBuilder();
-    		first_global = true;
-    		for (Map.Entry<String, List<String>> elt : refinements.entrySet()) {
-    			if (disjunctiveFacet.equals(elt.getKey())) {
-    				continue;
-    			}
-    			StringBuilder or = new StringBuilder();
-        		or.append("(");
-        		boolean first = true;
-        		for (String val : elt.getValue()) {
-            		if (disjunctiveRefinements.containsKey(elt.getKey())) {
-            			// disjunctive refinements are ORed
-            			if (!first) {
-            				or.append(',');
-            			}
-            			first = false;
-            			or.append(String.format("%s:%s", elt.getKey(), val));
-            		} else {
-            			if (!first_global) {
-            				filters.append(',');
-            			}
-            			first_global = false;
-            			filters.append(String.format("%s:%s", elt.getKey(), val));
-            		}
-        		}
-        		// Add or
-        		if (disjunctiveRefinements.containsKey(elt.getKey())) {
-        			or.append(')');
-        			if (!first_global) {
-        				filters.append(',');
-        			}
-        			first_global = false;
-        			filters.append(or.toString());
-        		}
-    		}
-    		List<String> facets = new ArrayList<String>();
-    		facets.add(disjunctiveFacet);
-    		queries.add(new IndexQuery(this.indexName, new Query(query).setHitsPerPage(1).setAttributesToRetrieve(new ArrayList<String>()).setAttributesToHighlight(new ArrayList<String>()).setAttributesToSnippet(new ArrayList<String>()).setFacets(facets).setFacetFilters(filters.toString())));
-    	}
-    	JSONObject answers = this.client.multipleQueries(queries);
-    	
-    	// aggregate answers
-    	// first answer stores the hits + regular facets
-    	try {
-    		JSONArray results = answers.getJSONArray("results");
-			JSONObject aggregatedAnswer = results.getJSONObject(0);
-			JSONObject disjunctiveFacetsJSON = new JSONObject();
-			for (int i = 1; i < results.length(); ++i) {
-				JSONObject facets = results.getJSONObject(i).getJSONObject("facets");
-				Iterator<String> keys = facets.keys();
-				while(keys.hasNext()) {
-					String key = keys.next();
-					// Add the facet to the disjunctive facet hash
-					disjunctiveFacetsJSON.put(key, facets.getJSONObject(key));
-					// concatenate missing refinements
-					if (!disjunctiveRefinements.containsKey(key)) {
-						continue;
-					}
-					for (String refine : disjunctiveRefinements.get(key)) {
-						if (!disjunctiveFacetsJSON.getJSONObject(key).has(refine)) {
-							disjunctiveFacetsJSON.getJSONObject(key).put(refine, 0);
-						}
-					}
-				}
-			}
-			aggregatedAnswer.put("disjunctiveFacets", disjunctiveFacetsJSON);
-			return aggregatedAnswer;
-		} catch (JSONException e) {
-			throw new Error(e);
-		}
+        if (refinements == null) {
+            refinements = new HashMap<String, List<String>>();
+        }
+        HashMap<String, List<String>> disjunctiveRefinements = new HashMap<String, List<String>>();
+        for (Map.Entry<String, List<String>> elt : refinements.entrySet()) {
+            if (disjunctiveFacets.contains(elt.getKey())) {
+                disjunctiveRefinements.put(elt.getKey(), elt.getValue());
+            }
+        }
+
+        // build queries
+        List<IndexQuery> queries = new ArrayList<IndexQuery>();
+        // hits + regular facets query
+        StringBuilder filters = new StringBuilder();
+        boolean first_global = true;
+        for (Map.Entry<String, List<String>> elt : refinements.entrySet()) {
+            StringBuilder or = new StringBuilder();
+            or.append("(");
+            boolean first = true;
+            for (String val : elt.getValue()) {
+                if (disjunctiveRefinements.containsKey(elt.getKey())) {
+                    // disjunctive refinements are ORed
+                    if (!first) {
+                        or.append(',');
+                    }
+                    first = false;
+                    or.append(String.format("%s:%s", elt.getKey(), val));
+                } else {
+                    if (!first_global) {
+                        filters.append(',');
+                    }
+                    first_global = false;
+                    filters.append(String.format("%s:%s", elt.getKey(), val));
+                }
+            }
+            // Add or
+            if (disjunctiveRefinements.containsKey(elt.getKey())) {
+                or.append(')');
+                if (!first_global) {
+                    filters.append(',');
+                }
+                first_global = false;
+                filters.append(or.toString());
+            }
+        }
+
+        queries.add(new IndexQuery(this.indexName, new Query(query).setFacetFilters(filters.toString())));
+        // one query per disjunctive facet (use all refinements but the current one + hitsPerPage=1 + single facet
+        for (String disjunctiveFacet : disjunctiveFacets) {
+            filters = new StringBuilder();
+            first_global = true;
+            for (Map.Entry<String, List<String>> elt : refinements.entrySet()) {
+                if (disjunctiveFacet.equals(elt.getKey())) {
+                    continue;
+                }
+                StringBuilder or = new StringBuilder();
+                or.append("(");
+                boolean first = true;
+                for (String val : elt.getValue()) {
+                    if (disjunctiveRefinements.containsKey(elt.getKey())) {
+                        // disjunctive refinements are ORed
+                        if (!first) {
+                            or.append(',');
+                        }
+                        first = false;
+                        or.append(String.format("%s:%s", elt.getKey(), val));
+                    } else {
+                        if (!first_global) {
+                            filters.append(',');
+                        }
+                        first_global = false;
+                        filters.append(String.format("%s:%s", elt.getKey(), val));
+                    }
+                }
+                // Add or
+                if (disjunctiveRefinements.containsKey(elt.getKey())) {
+                    or.append(')');
+                    if (!first_global) {
+                        filters.append(',');
+                    }
+                    first_global = false;
+                    filters.append(or.toString());
+                }
+            }
+            List<String> facets = new ArrayList<String>();
+            facets.add(disjunctiveFacet);
+            queries.add(new IndexQuery(this.indexName, new Query(query).setHitsPerPage(1).setAttributesToRetrieve(new ArrayList<String>()).setAttributesToHighlight(new ArrayList<String>()).setAttributesToSnippet(new ArrayList<String>()).setFacets(facets).setFacetFilters(filters.toString())));
+        }
+        JSONObject answers = this.client.multipleQueries(queries);
+
+        // aggregate answers
+        // first answer stores the hits + regular facets
+        try {
+            JSONArray results = answers.getJSONArray("results");
+            JSONObject aggregatedAnswer = results.getJSONObject(0);
+            JSONObject disjunctiveFacetsJSON = new JSONObject();
+            for (int i = 1; i < results.length(); ++i) {
+                JSONObject facets = results.getJSONObject(i).getJSONObject("facets");
+                Iterator<String> keys = facets.keys();
+                while(keys.hasNext()) {
+                    String key = keys.next();
+                    // Add the facet to the disjunctive facet hash
+                    disjunctiveFacetsJSON.put(key, facets.getJSONObject(key));
+                    // concatenate missing refinements
+                    if (!disjunctiveRefinements.containsKey(key)) {
+                        continue;
+                    }
+                    for (String refine : disjunctiveRefinements.get(key)) {
+                        if (!disjunctiveFacetsJSON.getJSONObject(key).has(refine)) {
+                            disjunctiveFacetsJSON.getJSONObject(key).put(refine, 0);
+                        }
+                    }
+                }
+            }
+            aggregatedAnswer.put("disjunctiveFacets", disjunctiveFacetsJSON);
+            return aggregatedAnswer;
+        } catch (JSONException e) {
+            throw new Error(e);
+        }
     }
     public JSONObject disjunctiveFaceting(Query query, List<String> disjunctiveFacets) throws AlgoliaException {
-    	return disjunctiveFaceting(query, disjunctiveFacets, null);
+        return disjunctiveFaceting(query, disjunctiveFacets, null);
     }
 
 }
