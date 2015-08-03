@@ -7,16 +7,11 @@ import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URLEncoder;
-import java.security.InvalidKeyException;
-import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-
-import javax.crypto.Mac;
-import javax.crypto.spec.SecretKeySpec;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -167,7 +162,7 @@ public class APIClient {
      * Allow to set timeout
      * @param connectTimeout connection timeout in MS
      * @param readTimeout socket timeout in MS
-     * @param search socket timeout in MS
+     * @param searchTimeout socket timeout in MS
      */
     public void setTimeout(int connectTimeout, int readTimeout, int searchTimeout) {
         httpSocketTimeoutMS = readTimeout;
@@ -430,7 +425,7 @@ public class APIClient {
      * { "items": [ {"name": "contacts", "createdAt": "2013-01-18T15:33:13.556Z"},
      *              {"name": "notes", "createdAt": "2013-01-18T15:33:13.556Z"}]}
      */
-    public JSONObject listIndexes() throws AlgoliaException {
+    private JSONObject listIndexes() throws AlgoliaException {
         return getRequest("/1/indexes/", false);
     }
 
@@ -450,7 +445,7 @@ public class APIClient {
      * @param indexName the name of index to delete
      * return an object containing a "deletedAt" attribute
      */
-    public JSONObject deleteIndex(String indexName) throws AlgoliaException {
+    private JSONObject deleteIndex(String indexName) throws AlgoliaException {
         try {
             return deleteRequest("/1/indexes/" + URLEncoder.encode(indexName, "UTF-8"));
         } catch (UnsupportedEncodingException e) {
@@ -474,7 +469,7 @@ public class APIClient {
      * @param srcIndexName the name of index to copy.
      * @param dstIndexName the new index name that will contains a copy of srcIndexName (destination will be overriten if it already exist).
      */
-    public JSONObject moveIndex(String srcIndexName, String dstIndexName) throws AlgoliaException {
+    private JSONObject moveIndex(String srcIndexName, String dstIndexName) throws AlgoliaException {
         try {
             JSONObject content = new JSONObject();
             content.put("operation", "move");
@@ -502,7 +497,7 @@ public class APIClient {
      * @param srcIndexName the name of index to copy.
      * @param dstIndexName the new index name that will contains a copy of srcIndexName (destination will be overriten if it already exist).
      */
-    public JSONObject copyIndex(String srcIndexName, String dstIndexName) throws AlgoliaException {
+    private JSONObject copyIndex(String srcIndexName, String dstIndexName) throws AlgoliaException {
         try {
             JSONObject content = new JSONObject();
             content.put("operation", "copy");
@@ -540,7 +535,7 @@ public class APIClient {
     /**
      * Return 10 last log entries.
      */
-    public JSONObject getLogs() throws AlgoliaException {
+    private JSONObject getLogs() throws AlgoliaException {
         return getRequest("/1/logs", false);
     }
 
@@ -549,7 +544,7 @@ public class APIClient {
      * @param offset Specify the first entry to retrieve (0-based, 0 is the most recent log entry).
      * @param length Specify the maximum number of entries to retrieve starting at offset. Maximum allowed value: 1000.
      */
-    public JSONObject getLogs(int offset, int length) throws AlgoliaException {
+    private JSONObject getLogs(int offset, int length) throws AlgoliaException {
         return getLogs(offset, length, LogType.LOG_ALL);
     }
 
@@ -558,7 +553,7 @@ public class APIClient {
      * @param offset Specify the first entry to retrieve (0-based, 0 is the most recent log entry).
      * @param length Specify the maximum number of entries to retrieve starting at offset. Maximum allowed value: 1000.
      */
-    public JSONObject getLogs(int offset, int length, boolean onlyErrors) throws AlgoliaException {
+    private JSONObject getLogs(int offset, int length, boolean onlyErrors) throws AlgoliaException {
         return getLogs(offset, length, onlyErrors ? LogType.LOG_ERROR : LogType.LOG_ALL);
     }
 
@@ -568,7 +563,7 @@ public class APIClient {
      * @param length Specify the maximum number of entries to retrieve starting at offset. Maximum allowed value: 1000.
      * @param logType Specify the type of log to retrieve
      */
-    public JSONObject getLogs(int offset, int length, LogType logType) throws AlgoliaException {
+    private JSONObject getLogs(int offset, int length, LogType logType) throws AlgoliaException {
         String type = null;
         switch (logType) {
             case LOG_BUILD:
@@ -610,7 +605,7 @@ public class APIClient {
     /**
      * List all existing user keys with their associated ACLs
      */
-    public JSONObject listUserKeys() throws AlgoliaException {
+    private JSONObject listUserKeys() throws AlgoliaException {
         return getRequest("/1/keys", false);
     }
 
@@ -625,7 +620,7 @@ public class APIClient {
     /**
      * Get ACL of a user key
      */
-    public JSONObject getUserKeyACL(String key) throws AlgoliaException {
+    private JSONObject getUserKeyACL(String key) throws AlgoliaException {
         return getRequest("/1/keys/" + key, false);
     }
 
@@ -640,7 +635,7 @@ public class APIClient {
     /**
      * Delete an existing user key
      */
-    public JSONObject deleteUserKey(String key) throws AlgoliaException {
+    private JSONObject deleteUserKey(String key) throws AlgoliaException {
         return deleteRequest("/1/keys/" + key);
     }
 
@@ -667,7 +662,7 @@ public class APIClient {
      *   - maxQueriesPerIPPerHour: integer
      *
      */
-    public JSONObject addUserKey(JSONObject params) throws AlgoliaException {
+    private JSONObject addUserKey(JSONObject params) throws AlgoliaException {
         return postRequest("/1/keys", params.toString(), false);
     }
 
@@ -688,7 +683,7 @@ public class APIClient {
      *   - settings : allows to get index settings (https only)
      *   - editSettings : allows to change index settings (https only)
      */
-    public JSONObject addUserKey(List<String> acls) throws AlgoliaException {
+    private JSONObject addUserKey(List<String> acls) throws AlgoliaException {
         return addUserKey(acls, 0, 0, 0, null);
     }
     /**
@@ -705,14 +700,14 @@ public class APIClient {
      *   - queryParameters: string
      *   - maxQueriesPerIPPerHour: integer
      */
-    public JSONObject updateUserKey(String key, JSONObject params) throws AlgoliaException {
+    private JSONObject updateUserKey(String key, JSONObject params) throws AlgoliaException {
         return putRequest("/1/keys/" + key, params.toString());
     }
 
     /**
      * Update a user key asynchronously
      *
-     * @param params the list of parameters for this key. Defined by a JSONObject that 
+     * @param parameters the list of parameters for this key. Defined by a JSONObject that
      * can contains the following values:
      *   - acl: array of string
      *   - indices: array of string
@@ -740,7 +735,7 @@ public class APIClient {
      *   - settings : allows to get index settings (https only)
      *   - editSettings : allows to change index settings (https only)
      */
-    public JSONObject updateUserKey(String key, List<String> acls) throws AlgoliaException {
+    private JSONObject updateUserKey(String key, List<String> acls) throws AlgoliaException {
         return updateUserKey(key, acls, 0, 0, 0, null);
     }
 
@@ -759,7 +754,7 @@ public class APIClient {
      * @param maxQueriesPerIPPerHour Specify the maximum number of API calls allowed from an IP address per hour.  Defaults to 0 (no rate limit).
      * @param maxHitsPerQuery Specify the maximum number of hits this API key can retrieve in one call. Defaults to 0 (unlimited) 
      */
-    public JSONObject addUserKey(List<String> acls, int validity, int maxQueriesPerIPPerHour, int maxHitsPerQuery) throws AlgoliaException {
+    private JSONObject addUserKey(List<String> acls, int validity, int maxQueriesPerIPPerHour, int maxHitsPerQuery) throws AlgoliaException {
         return addUserKey(acls, validity, maxQueriesPerIPPerHour, maxHitsPerQuery, null);
     }
 
@@ -778,7 +773,7 @@ public class APIClient {
      * @param maxQueriesPerIPPerHour Specify the maximum number of API calls allowed from an IP address per hour.  Defaults to 0 (no rate limit).
      * @param maxHitsPerQuery Specify the maximum number of hits this API key can retrieve in one call. Defaults to 0 (unlimited) 
      */
-    public JSONObject updateUserKey(String key, List<String> acls, int validity, int maxQueriesPerIPPerHour, int maxHitsPerQuery) throws AlgoliaException {
+    private JSONObject updateUserKey(String key, List<String> acls, int validity, int maxQueriesPerIPPerHour, int maxHitsPerQuery) throws AlgoliaException {
         return updateUserKey(key, acls, validity, maxQueriesPerIPPerHour, maxHitsPerQuery, null);
     }
 
@@ -798,7 +793,7 @@ public class APIClient {
      * @param maxHitsPerQuery Specify the maximum number of hits this API key can retrieve in one call. Defaults to 0 (unlimited)
      * @param indexes the list of targeted indexes 
      */
-    public JSONObject addUserKey(List<String> acls, int validity, int maxQueriesPerIPPerHour, int maxHitsPerQuery, List<String> indexes) throws AlgoliaException {
+    private JSONObject addUserKey(List<String> acls, int validity, int maxQueriesPerIPPerHour, int maxHitsPerQuery, List<String> indexes) throws AlgoliaException {
         JSONArray array = new JSONArray(acls);
         JSONObject jsonObject = new JSONObject();
         try {
@@ -831,7 +826,7 @@ public class APIClient {
      * @param maxHitsPerQuery Specify the maximum number of hits this API key can retrieve in one call. Defaults to 0 (unlimited)
      * @param indexes the list of targeted indexes 
      */
-    public JSONObject updateUserKey(String key, List<String> acls, int validity, int maxQueriesPerIPPerHour, int maxHitsPerQuery, List<String> indexes) throws AlgoliaException {
+    private JSONObject updateUserKey(String key, List<String> acls, int validity, int maxQueriesPerIPPerHour, int maxHitsPerQuery, List<String> indexes) throws AlgoliaException {
         JSONArray array = new JSONArray(acls);
         JSONObject jsonObject = new JSONObject();
         try {
@@ -1032,7 +1027,7 @@ public class APIClient {
     /**
      * This method allows to query multiple indexes with one API call
      */
-    public JSONObject multipleQueries(List<IndexQuery> queries) throws AlgoliaException {
+    protected JSONObject multipleQueries(List<IndexQuery> queries) throws AlgoliaException {
         return multipleQueries(queries, "none");
     }
 
@@ -1044,7 +1039,7 @@ public class APIClient {
         new ASyncAPIClientTask().execute(params);
     }
 
-    public JSONObject multipleQueries(List<IndexQuery> queries, String strategy) throws AlgoliaException {
+    protected JSONObject multipleQueries(List<IndexQuery> queries, String strategy) throws AlgoliaException {
         try {
             JSONArray requests = new JSONArray();
             for (IndexQuery indexQuery : queries) {
@@ -1073,7 +1068,7 @@ public class APIClient {
      * @param actions the array of actions
      * @throws AlgoliaException
      */
-    public JSONObject batch(JSONArray actions) throws AlgoliaException {
+    private JSONObject batch(JSONArray actions) throws AlgoliaException {
         try {
             JSONObject content = new JSONObject();
             content.put("requests", actions);
@@ -1100,7 +1095,7 @@ public class APIClient {
      * @param actions the array of actions
      * @throws AlgoliaException
      */
-    public JSONObject batch(List<JSONObject> actions) throws AlgoliaException {
+    private JSONObject batch(List<JSONObject> actions) throws AlgoliaException {
         try {
             JSONObject content = new JSONObject();
             content.put("requests", actions);

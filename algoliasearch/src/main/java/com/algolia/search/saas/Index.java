@@ -183,7 +183,7 @@ public class Index {
     /**
      * Add several objects
      *
-     * @param objects contains an array of objects to add.
+     * @param inputArray contains an array of objects to add.
      */
     public JSONObject addObjects(JSONArray inputArray) throws AlgoliaException {
         try {
@@ -331,7 +331,7 @@ public class Index {
     /**
      * Partially Override the content of several objects
      *
-     * @param objects the array of objects to update (each object must contains an objectID attribute)
+     * @param inputArray the array of objects to update (each object must contains an objectID attribute)
      */
     public JSONObject partialUpdateObjects(JSONArray inputArray) throws AlgoliaException {
         try {
@@ -453,7 +453,7 @@ public class Index {
     /**
      * Override the content of several objects
      *
-     * @param objects contains an array of objects to update (each object must contains an objectID attribute)
+     * @param inputArray contains an array of objects to update (each object must contains an objectID attribute)
      */
     public JSONObject saveObjects(JSONArray inputArray) throws AlgoliaException {
         try {
@@ -641,7 +641,7 @@ public class Index {
     /**
      * Delete several objects asynchronously
      *
-     * @param objects the array of objectIDs to delete
+     * @param ids the array of objectIDs to delete
      * @param listener the listener that will receive the result or error. If the listener is an instance of Activity, the result will be received directly on UIthread
      */
     public void deleteObjectsASync(List<String> ids, IndexListener listener) throws AlgoliaException {
@@ -759,7 +759,6 @@ public class Index {
      * All server task are asynchronous and you can check with this method that the task is published.
      *
      * @param taskID the id of the task returned by server
-     * @param timeBeforeRetry the time in milliseconds before retry (default = 100ms)
      * @param listener the listener that will receive the result or error. If the listener is an instance of Activity, the result will be received directly on UIthread
      */
     public void waitTaskASync(String taskID, IndexListener listener) {
@@ -786,7 +785,7 @@ public class Index {
     /**
      * Set settings for this index
      *
-     * @param settigns the settings object that can contains :
+     * @param settings the settings object that can contains :
      * - minWordSizefor1Typo: (integer) the minimum number of characters to accept one typo (default = 3).
      * - minWordSizefor2Typos: (integer) the minimum number of characters to accept two typos (default = 7).
      * - hitsPerPage: (integer) the number of hits per page (default = 10).
@@ -827,7 +826,6 @@ public class Index {
      * - highlightPostTag: (string) Specify the string that is inserted after the highlighted parts in the query result (default to "</em>").
      * - optionalWords: (array of strings) Specify a list of words that should be considered as optional when found in the query.
      */
-
     public JSONObject setSettings(JSONObject settings) throws AlgoliaException {
         return client.putRequest("/1/indexes/" + encodedIndexName + "/settings", settings.toString());
     }

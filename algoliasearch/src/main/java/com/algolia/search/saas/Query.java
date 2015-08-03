@@ -248,7 +248,7 @@ public class Query {
 
     /**
      *
-     * @param If set to true, enable the distinct feature (disabled by default) if the attributeForDistinct index setting is set. 
+     * @param distinct If set to true, enable the distinct feature (disabled by default) if the attributeForDistinct index setting is set.
      *   This feature is similar to the SQL "distinct" keyword: when enabled in a query with the distinct=1 parameter, 
      *   all hits containing a duplicate value for the attributeForDistinct attribute are removed from results. 
      *   For example, if the chosen attribute is show_name and several hits have the same value for show_name, then only the best 
@@ -269,7 +269,7 @@ public class Query {
     }
 
     /**
-     * @param If set to false, this query will not be taken into account in analytics feature. Default to true.
+     * @param enabled If set to false, this query will not be taken into account in analytics feature. Default to true.
      */
     public Query enableAnalytics(boolean enabled) {
         this.analytics = enabled;
@@ -277,7 +277,7 @@ public class Query {
     }
 
     /**
-     * @param Set the analytics tags identifying the query
+     * @param analyticsTags Set the analytics tags identifying the query
      */
     public Query setAnalyticsTags(String analyticsTags) {
         this.analyticsTags = analyticsTags;
@@ -285,7 +285,7 @@ public class Query {
     }
 
     /**
-     * @param If set to false, this query will not use synonyms defined in configuration. Default to true.
+     * @param enabled If set to false, this query will not use synonyms defined in configuration. Default to true.
      */
     public Query enableSynonyms(boolean enabled) {
         this.synonyms = enabled;
@@ -293,7 +293,7 @@ public class Query {
     }
 
     /**
-     * @param If set to false, words matched via synonyms expansion will not be replaced by the matched synonym in highlight result. Default to true.
+     * @param enabled If set to false, words matched via synonyms expansion will not be replaced by the matched synonym in highlight result. Default to true.
      */
     public Query enableReplaceSynonymsInHighlight(boolean enabled) {
         this.replaceSynonyms = enabled;
@@ -302,7 +302,7 @@ public class Query {
 
     /**
 
-     * @param If set to false, disable typo-tolerance. Default to true.
+     * @param enabled If set to false, disable typo-tolerance. Default to true.
      */
     public Query enableTypoTolerance(boolean enabled) {
         if (enabled) {
@@ -314,7 +314,7 @@ public class Query {
     }
 
     /**
-     * @param This option allow to control the number of typo in the results set.
+     * @param typoTolerance This option allow to control the number of typo in the results set.
      */
     public Query setTypoTolerance(TypoTolerance typoTolerance) {
         this.typoTolerance = typoTolerance;
@@ -340,7 +340,7 @@ public class Query {
     }
 
     /**
-     * @param If set to false, disable typo-tolerance on numeric tokens. Default to true.
+     * @param enabled If set to false, disable typo-tolerance on numeric tokens. Default to true.
      */
     public Query enableTyposOnNumericTokens(boolean enabled) {
         this.allowTyposOnNumericTokens = enabled;
