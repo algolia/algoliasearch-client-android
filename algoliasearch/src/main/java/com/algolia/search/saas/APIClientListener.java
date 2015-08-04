@@ -5,10 +5,6 @@ import java.util.List;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import com.algolia.search.saas.APIClient.IndexQuery;
-import com.algolia.search.saas.APIClient.LogType;
-
-
 /*
  * Copyright (c) 2015 Algolia
  * http://www.algolia.com/

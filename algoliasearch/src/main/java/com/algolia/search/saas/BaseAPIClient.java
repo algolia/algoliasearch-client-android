@@ -245,15 +245,6 @@ abstract class BaseAPIClient {
     }
 
     /**
-     * Get the index object initialized (no server call needed for initialization)
-     *
-     * @param indexName the name of index
-     */
-//    public Index initIndex(String indexName) {
-//        return new Index(this, indexName);
-//    }
-
-    /**
      * List all existing user keys with their associated ACLs
      */
     protected JSONObject listUserKeys() throws AlgoliaException {
@@ -446,6 +437,59 @@ abstract class BaseAPIClient {
         return updateUserKey(key, jsonObject);
     }
 
+    /**
+     * This method allows to query multiple indexes with one API call
+     */
+    protected JSONObject multipleQueries(List<IndexQuery> queries) throws AlgoliaException {
+        return multipleQueries(queries, "none");
+    }
+
+    protected JSONObject multipleQueries(List<IndexQuery> queries, String strategy) throws AlgoliaException {
+        try {
+            JSONArray requests = new JSONArray();
+            for (IndexQuery indexQuery : queries) {
+                String paramsString = indexQuery.getQuery().getQueryString();
+                requests.put(new JSONObject().put("indexName", indexQuery.getIndex()).put("params", paramsString));
+            }
+            JSONObject body = new JSONObject().put("requests", requests);
+            return postRequest("/1/indexes/*/queries?strategy=" + strategy, body.toString(), true);
+        } catch (JSONException e) {
+            throw new AlgoliaException(e.getMessage());
+        }
+    }
+
+    /**
+     * Custom batch
+     *
+     * @param actions the array of actions
+     * @throws AlgoliaException
+     */
+    protected JSONObject batch(JSONArray actions) throws AlgoliaException {
+        try {
+            JSONObject content = new JSONObject();
+            content.put("requests", actions);
+            return postRequest("/1/indexes/*/batch", content.toString(), false);
+        } catch (JSONException e) {
+            throw new AlgoliaException(e.getMessage());
+        }
+    }
+
+    /**
+     * Custom batch
+     *
+     * @param actions the array of actions
+     * @throws AlgoliaException
+     */
+    protected JSONObject batch(List<JSONObject> actions) throws AlgoliaException {
+        try {
+            JSONObject content = new JSONObject();
+            content.put("requests", actions);
+            return postRequest("/1/indexes/*/batch", content.toString(), false);
+        } catch (JSONException e) {
+            throw new AlgoliaException(e.getMessage());
+        }
+    }
+
     public void setSecurityTags(String tagFilters) {
         this.tagFilters = tagFilters;
     }
@@ -458,19 +502,19 @@ abstract class BaseAPIClient {
         GET, POST, PUT, DELETE;
     }
 
-    private JSONObject getRequest(String url, boolean search) throws AlgoliaException {
+    protected JSONObject getRequest(String url, boolean search) throws AlgoliaException {
         return _request(Method.GET, url, null, readHostsArray, httpConnectTimeoutMS, search ? httpSearchTimeoutMS : httpSocketTimeoutMS);
     }
 
-    private JSONObject deleteRequest(String url) throws AlgoliaException {
+    protected JSONObject deleteRequest(String url) throws AlgoliaException {
         return _request(Method.DELETE, url, null, writeHostsArray, httpConnectTimeoutMS, httpSocketTimeoutMS);
     }
 
-    private JSONObject postRequest(String url, String obj, boolean readOperation) throws AlgoliaException {
+    protected JSONObject postRequest(String url, String obj, boolean readOperation) throws AlgoliaException {
         return _request(Method.POST, url, obj, (readOperation ? readHostsArray : writeHostsArray), httpConnectTimeoutMS, (readOperation ? httpSearchTimeoutMS : httpSocketTimeoutMS));
     }
 
-    private JSONObject putRequest(String url, String obj) throws AlgoliaException {
+    protected JSONObject putRequest(String url, String obj) throws AlgoliaException {
         return _request(Method.PUT, url, obj, writeHostsArray, httpConnectTimeoutMS, httpSocketTimeoutMS);
     }
 
@@ -605,59 +649,6 @@ abstract class BaseAPIClient {
             first = false;
         }
         throw new AlgoliaException(builder.toString());
-    }
-
-    /**
-     * This method allows to query multiple indexes with one API call
-     */
-    protected JSONObject multipleQueries(List<IndexQuery> queries) throws AlgoliaException {
-        return multipleQueries(queries, "none");
-    }
-
-    protected JSONObject multipleQueries(List<IndexQuery> queries, String strategy) throws AlgoliaException {
-        try {
-            JSONArray requests = new JSONArray();
-            for (IndexQuery indexQuery : queries) {
-                String paramsString = indexQuery.getQuery().getQueryString();
-                requests.put(new JSONObject().put("indexName", indexQuery.getIndex()).put("params", paramsString));
-            }
-            JSONObject body = new JSONObject().put("requests", requests);
-            return postRequest("/1/indexes/*/queries?strategy=" + strategy, body.toString(), true);
-        } catch (JSONException e) {
-            throw new AlgoliaException(e.getMessage());
-        }
-    }
-
-    /**
-     * Custom batch
-     *
-     * @param actions the array of actions
-     * @throws AlgoliaException
-     */
-    protected JSONObject batch(JSONArray actions) throws AlgoliaException {
-        try {
-            JSONObject content = new JSONObject();
-            content.put("requests", actions);
-            return postRequest("/1/indexes/*/batch", content.toString(), false);
-        } catch (JSONException e) {
-            throw new AlgoliaException(e.getMessage());
-        }
-    }
-
-    /**
-     * Custom batch
-     *
-     * @param actions the array of actions
-     * @throws AlgoliaException
-     */
-    protected JSONObject batch(List<JSONObject> actions) throws AlgoliaException {
-        try {
-            JSONObject content = new JSONObject();
-            content.put("requests", actions);
-            return postRequest("/1/indexes/*/batch", content.toString(), false);
-        } catch (JSONException e) {
-            throw new AlgoliaException(e.getMessage());
-        }
     }
 
     /**

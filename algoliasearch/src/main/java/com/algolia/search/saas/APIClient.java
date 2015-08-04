@@ -78,6 +78,15 @@ public class APIClient extends BaseAPIClient {
         super(applicationID, apiKey, hostsArray, enableDsn, dsnHost);
     }
 
+    /**
+     * Get the index object initialized (no server call needed for initialization)
+     *
+     * @param indexName the name of index
+     */
+    public Index initIndex(String indexName) {
+        return new Index(this, indexName);
+    }
+
     private enum ASyncAPIClientTaskKind
     {
         ListIndexes,
@@ -377,15 +386,6 @@ public class APIClient extends BaseAPIClient {
     public void getLogsASync(int offset, int length, LogType logType, APIClientListener listener) {
         ASyncAPIClientTaskParams params = new ASyncAPIClientTaskParams(listener, ASyncAPIClientTaskKind.GetLogs, offset, length, logType);
         new ASyncAPIClientTask().execute(params);
-    }
-
-    /**
-     * Get the index object initialized (no server call needed for initialization)
-     *
-     * @param indexName the name of index
-     */
-    public Index initIndex(String indexName) {
-        return new Index(this, indexName);
     }
 
     /**
