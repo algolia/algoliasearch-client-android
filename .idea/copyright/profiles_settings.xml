@@ -1,3 +1,5 @@
 <component name="CopyrightManager">
-  <settings default="" />
+  <settings default="Algolia">
+    <LanguageOptions name="JAVA" />
+  </settings>
 </component>

@@ -1,5 +1,3 @@
-package com.algolia.search.saas;
-
 /*
  * Copyright (c) 2015 Algolia
  * http://www.algolia.com/
@@ -22,6 +20,8 @@ package com.algolia.search.saas;
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
+
+package com.algolia.search.saas;
 
 public class IndexQuery {
     private String index;

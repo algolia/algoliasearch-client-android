@@ -21,16 +21,25 @@
  * THE SOFTWARE.
  */
 
-package com.algolia.search.saas;
+package com.algolia.search.saas.Listener;
 
-public enum LogType
-{
-    /// all query logs
-    LOG_QUERY,
-    /// all build logs
-    LOG_BUILD,
-    /// all error logs
-    LOG_ERROR,
-    /// all logs
-    LOG_ALL
+import com.algolia.search.saas.AlgoliaException;
+import com.algolia.search.saas.Index;
+import com.algolia.search.saas.Query;
+
+import org.json.JSONObject;
+
+/**
+ * Asynchronously receive result of search method
+ */
+public interface SearchListener {
+    /**
+     * Asynchronously receive result of Index.searchASync method.
+     */
+    void searchResult(Index index, Query query, JSONObject results);
+
+    /**
+     * Asynchronously receive error of Index.searchASync method.
+     */
+    void searchError(Index index, Query query, AlgoliaException e);
 }

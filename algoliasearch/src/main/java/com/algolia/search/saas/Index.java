@@ -1,29 +1,17 @@
-package com.algolia.search.saas;
-
-import java.util.ArrayList;
-import java.util.List;
-
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import android.app.Activity;
-import android.os.AsyncTask;
-
 /*
  * Copyright (c) 2015 Algolia
  * http://www.algolia.com/
- * 
+ *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
  * in the Software without restriction, including without limitation the rights
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -33,16 +21,25 @@ import android.os.AsyncTask;
  * THE SOFTWARE.
  */
 
+package com.algolia.search.saas;
+
+import android.app.Activity;
+import android.os.AsyncTask;
+
+import com.algolia.search.saas.Listener.IndexListener;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Contains all the functions related to one index
  * You should use APIClient.initIndex(indexName) to retrieve this object
  */
 public class Index extends BaseIndex {
-    private APIClient client;
-    private String encodedIndexName;
-    private String indexName;
-    private final long MAX_TIME_MS_TO_WAIT = 10000L;
-
     /**
      * Index initialization (You should not call this initialized yourself)
      */
@@ -70,7 +67,7 @@ public class Index extends BaseIndex {
         GetSettings,
         SetSettings,
         GetObjects
-    };
+    }
 
     private static class ASyncIndexTaskParams
     {
@@ -377,7 +374,7 @@ public class Index extends BaseIndex {
      *
      * @param obj the object to add. 
      *  The object is represented by an associative array
-     * @param listener the listener that will receive the result or error. If the listener is an instance of Activity, the result will be received directly on UIthread
+     * @param listener the listener that will receive the result or error. If the listener is an instance of Activity, the result will be received directly on UIThread
      */
     public void addObjectASync(JSONObject obj, IndexListener listener) {
         ASyncIndexTaskParams params = new ASyncIndexTaskParams(listener, ASyncIndexTaskKind.AddObject, null, obj);
@@ -391,7 +388,7 @@ public class Index extends BaseIndex {
      *  The object is represented by an associative array
      * @param objectID an objectID you want to attribute to this object 
      * (if the attribute already exist the old object will be overwrite)
-     * @param listener the listener that will receive the result or error. If the listener is an instance of Activity, the result will be received directly on UIthread
+     * @param listener the listener that will receive the result or error. If the listener is an instance of Activity, the result will be received directly on UIThread
      */
     public void addObjectASync(JSONObject obj, String objectID, IndexListener listener)  {
         ASyncIndexTaskParams params = new ASyncIndexTaskParams(listener, ASyncIndexTaskKind.AddObject, objectID, obj);
@@ -402,7 +399,7 @@ public class Index extends BaseIndex {
      * Add several objects asynchronously
      *
      * @param objects contains an array of objects to add. If the object contains an objectID
-     * @param listener the listener that will receive the result or error. If the listener is an instance of Activity, the result will be received directly on UIthread
+     * @param listener the listener that will receive the result or error. If the listener is an instance of Activity, the result will be received directly on UIThread
      */
     public void addObjectsASync(List<JSONObject> objects, IndexListener listener) {
         ASyncIndexTaskParams params = new ASyncIndexTaskParams(listener, ASyncIndexTaskKind.AddObjects, objects);
@@ -413,7 +410,7 @@ public class Index extends BaseIndex {
      * Add several objects asynchronously
      *
      * @param objects contains an array of objects to add. If the object contains an objectID
-     * @param listener the listener that will receive the result or error. If the listener is an instance of Activity, the result will be received directly on UIthread
+     * @param listener the listener that will receive the result or error. If the listener is an instance of Activity, the result will be received directly on UIThread
      */
     public void addObjectsASync(JSONArray objects, IndexListener listener) {
         ASyncIndexTaskParams params = new ASyncIndexTaskParams(listener, ASyncIndexTaskKind.AddObjects2, objects);
@@ -424,7 +421,7 @@ public class Index extends BaseIndex {
      * Get an object from this index asynchronously
      *
      * @param objectID the unique identifier of the object to retrieve
-     * @param listener the listener that will receive the result or error. If the listener is an instance of Activity, the result will be received directly on UIthread
+     * @param listener the listener that will receive the result or error. If the listener is an instance of Activity, the result will be received directly on UIThread
      */
     public void getObjectASync(String objectID, IndexListener listener) {
         ASyncIndexTaskParams params = new ASyncIndexTaskParams(listener, ASyncIndexTaskKind.GetObject, objectID, (List)null);
@@ -436,7 +433,7 @@ public class Index extends BaseIndex {
      *
      * @param objectID the unique identifier of the object to retrieve
      * @param attributesToRetrieve, contains the list of attributes to retrieve as a string separated by ","
-     * @param listener the listener that will receive the result or error. If the listener is an instance of Activity, the result will be received directly on UIthread
+     * @param listener the listener that will receive the result or error. If the listener is an instance of Activity, the result will be received directly on UIThread
      */
     public void getObjectASync(String objectID, List<String> attributesToRetrieve, IndexListener listener) {
         ASyncIndexTaskParams params = new ASyncIndexTaskParams(listener, ASyncIndexTaskKind.GetObject, objectID, attributesToRetrieve);
@@ -459,7 +456,7 @@ public class Index extends BaseIndex {
      *
      * @param partialObject the object attributes to override, the 
      *  object must contains an objectID attribute
-     * @param listener the listener that will receive the result or error. If the listener is an instance of Activity, the result will be received directly on UIthread
+     * @param listener the listener that will receive the result or error. If the listener is an instance of Activity, the result will be received directly on UIThread
      */
     public void partialUpdateObjectASync(JSONObject partialObject, String objectID, IndexListener listener) {
         ASyncIndexTaskParams params = new ASyncIndexTaskParams(listener, ASyncIndexTaskKind.PartialSaveObject, objectID, partialObject);
@@ -470,7 +467,7 @@ public class Index extends BaseIndex {
      * Override the content of several objects asynchronously
      *
      * @param objects contains an array of objects to update (each object must contains an objectID attribute)
-     * @param listener the listener that will receive the result or error. If the listener is an instance of Activity, the result will be received directly on UIthread
+     * @param listener the listener that will receive the result or error. If the listener is an instance of Activity, the result will be received directly on UIThread
      */
     public void partialUpdateObjectsASync(JSONArray objects, IndexListener listener) {
         ASyncIndexTaskParams params = new ASyncIndexTaskParams(listener, ASyncIndexTaskKind.PartialSaveObjects2, objects);
@@ -481,7 +478,7 @@ public class Index extends BaseIndex {
      * Partially Override the content of several objects asynchronously
      *
      * @param objects contains an array of objects to update (each object must contains an objectID attribute)
-     * @param listener the listener that will receive the result or error. If the listener is an instance of Activity, the result will be received directly on UIthread
+     * @param listener the listener that will receive the result or error. If the listener is an instance of Activity, the result will be received directly on UIThread
      */
     public void partialUpdateObjectsASync(List<JSONObject> objects, IndexListener listener) {
         ASyncIndexTaskParams params = new ASyncIndexTaskParams(listener, ASyncIndexTaskKind.PartialSaveObjects, objects);
@@ -492,7 +489,7 @@ public class Index extends BaseIndex {
      * Override the content of object asynchronously
      *
      * @param object the object to save
-     * @param listener the listener that will receive the result or error. If the listener is an instance of Activity, the result will be received directly on UIthread
+     * @param listener the listener that will receive the result or error. If the listener is an instance of Activity, the result will be received directly on UIThread
      */
     public void saveObjectASync(JSONObject object, String objectID, IndexListener listener) {
         ASyncIndexTaskParams params = new ASyncIndexTaskParams(listener, ASyncIndexTaskKind.SaveObject, objectID, object);
@@ -503,7 +500,7 @@ public class Index extends BaseIndex {
      * Override the content of several objects asynchronously
      *
      * @param objects contains an array of objects to update (each object must contains an objectID attribute)
-     * @param listener the listener that will receive the result or error. If the listener is an instance of Activity, the result will be received directly on UIthread
+     * @param listener the listener that will receive the result or error. If the listener is an instance of Activity, the result will be received directly on UIThread
      */
     public void saveObjectsASync(List<JSONObject> objects, IndexListener listener) {
         ASyncIndexTaskParams params = new ASyncIndexTaskParams(listener, ASyncIndexTaskKind.SaveObjects, objects);
@@ -514,7 +511,7 @@ public class Index extends BaseIndex {
      * Override the content of several objects asynchronously
      *
      * @param objects contains an array of objects to update (each object must contains an objectID attribute)
-     * @param listener the listener that will receive the result or error. If the listener is an instance of Activity, the result will be received directly on UIthread
+     * @param listener the listener that will receive the result or error. If the listener is an instance of Activity, the result will be received directly on UIThread
      */
     public void saveObjectsASync(JSONArray objects, IndexListener listener) {
         ASyncIndexTaskParams params = new ASyncIndexTaskParams(listener, ASyncIndexTaskKind.SaveObjects2, objects);
@@ -525,7 +522,7 @@ public class Index extends BaseIndex {
      * Delete an object from the index asynchronously
      *
      * @param objectID the unique identifier of object to delete
-     * @param listener the listener that will receive the result or error. If the listener is an instance of Activity, the result will be received directly on UIthread
+     * @param listener the listener that will receive the result or error. If the listener is an instance of Activity, the result will be received directly on UIThread
      */
     public void deleteObjectASync(String objectID, IndexListener listener) {
         ASyncIndexTaskParams params = new ASyncIndexTaskParams(listener, ASyncIndexTaskKind.DeleteObject, objectID, (List)null);
@@ -536,7 +533,7 @@ public class Index extends BaseIndex {
      * Delete several objects asynchronously
      *
      * @param ids the array of objectIDs to delete
-     * @param listener the listener that will receive the result or error. If the listener is an instance of Activity, the result will be received directly on UIthread
+     * @param listener the listener that will receive the result or error. If the listener is an instance of Activity, the result will be received directly on UIThread
      */
     public void deleteObjectsASync(List<String> ids, IndexListener listener) throws AlgoliaException {
         List<JSONObject> objects = new ArrayList<JSONObject>();
@@ -555,7 +552,7 @@ public class Index extends BaseIndex {
      * Delete all objects matching a query asynchronously
      *
      * @param query the query string
-     * @param listener the listener that will receive the result or error. If the listener is an instance of Activity, the result will be received directly on UIthread
+     * @param listener the listener that will receive the result or error. If the listener is an instance of Activity, the result will be received directly on UIThread
      */
     public void deleteByQueryASync(Query query, IndexListener listener) {
         ASyncIndexTaskParams params = new ASyncIndexTaskParams(listener, ASyncIndexTaskKind.DeleteByQuery, query);
@@ -564,7 +561,7 @@ public class Index extends BaseIndex {
 
     /**
      * Search inside the index asynchronously
-     * @param listener the listener that will receive the result or error. If the listener is an instance of Activity, the result will be received directly on UIthread
+     * @param listener the listener that will receive the result or error. If the listener is an instance of Activity, the result will be received directly on UIThread
      */
     public void searchASync(Query query, IndexListener listener) {
         ASyncIndexTaskParams params = new ASyncIndexTaskParams(listener, query);
@@ -576,7 +573,7 @@ public class Index extends BaseIndex {
      * All server task are asynchronous and you can check with this method that the task is published.
      *
      * @param taskID the id of the task returned by server
-     * @param listener the listener that will receive the result or error. If the listener is an instance of Activity, the result will be received directly on UIthread
+     * @param listener the listener that will receive the result or error. If the listener is an instance of Activity, the result will be received directly on UIThread
      */
     public void waitTaskASync(String taskID, IndexListener listener) {
         ASyncIndexTaskParams params = new ASyncIndexTaskParams(listener, ASyncIndexTaskKind.WaitTask, taskID, (List)null);
@@ -585,7 +582,7 @@ public class Index extends BaseIndex {
 
     /**
      * Get settings of this index asynchronously
-     * @param listener the listener that will receive the result or error. If the listener is an instance of Activity, the result will be received directly on UIthread
+     * @param listener the listener that will receive the result or error. If the listener is an instance of Activity, the result will be received directly on UIThread
      */
     public void getSettingsASync(IndexListener listener) {
         ASyncIndexTaskParams params = new ASyncIndexTaskParams(listener, ASyncIndexTaskKind.GetSettings, null, (List)null);
@@ -594,7 +591,7 @@ public class Index extends BaseIndex {
 
     /**
      * Set settings for this index asynchronously
-     * @param listener the listener that will receive the result or error. If the listener is an instance of Activity, the result will be received directly on UIthread
+     * @param listener the listener that will receive the result or error. If the listener is an instance of Activity, the result will be received directly on UIThread
      */
     public void setSettingsASync(JSONObject settings, IndexListener listener) {
         ASyncIndexTaskParams params = new ASyncIndexTaskParams(listener, ASyncIndexTaskKind.SetSettings, null, settings);

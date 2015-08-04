@@ -1,27 +1,17 @@
-package com.algolia.search.saas;
-
-import java.util.List;
-
-import org.json.JSONArray;
-import org.json.JSONObject;
-
-import android.app.Activity;
-import android.os.AsyncTask;
-
 /*
  * Copyright (c) 2015 Algolia
  * http://www.algolia.com/
- * 
+ *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
  * in the Software without restriction, including without limitation the rights
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -30,6 +20,18 @@ import android.os.AsyncTask;
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
+
+package com.algolia.search.saas;
+
+import android.app.Activity;
+import android.os.AsyncTask;
+
+import com.algolia.search.saas.Listener.APIClientListener;
+
+import org.json.JSONArray;
+import org.json.JSONObject;
+
+import java.util.List;
 
 /**
  * Entry point in the Java API.

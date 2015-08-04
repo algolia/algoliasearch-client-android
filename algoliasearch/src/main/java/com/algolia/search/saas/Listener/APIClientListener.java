@@ -1,24 +1,17 @@
-package com.algolia.search.saas;
-
-import java.util.List;
-
-import org.json.JSONArray;
-import org.json.JSONObject;
-
 /*
  * Copyright (c) 2015 Algolia
  * http://www.algolia.com/
- * 
+ *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
  * in the Software without restriction, including without limitation the rights
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -28,6 +21,18 @@ import org.json.JSONObject;
  * THE SOFTWARE.
  */
 
+package com.algolia.search.saas.Listener;
+
+import com.algolia.search.saas.APIClient;
+import com.algolia.search.saas.AlgoliaException;
+import com.algolia.search.saas.IndexQuery;
+import com.algolia.search.saas.LogType;
+
+import org.json.JSONArray;
+import org.json.JSONObject;
+
+import java.util.List;
+
 /**
  * Asynchronously receive result of Index asynchronous methods
  */
@@ -36,120 +41,120 @@ public interface APIClientListener {
     /**
      * Asynchronously receive result of APIClient.listIndexesASync methods.
      */
-    public void listIndexesResult(APIClient client, JSONObject result);
+    void listIndexesResult(APIClient client, JSONObject result);
 
     /**
      * Asynchronously receive error of APIClient.listIndexesASync methods.
      */
-    public void listIndexesError(APIClient client, AlgoliaException e);
+    void listIndexesError(APIClient client, AlgoliaException e);
 
     /**
      * Asynchronously receive result of APIClient.deleteIndexASync methods.
      */
-    public void deleteIndexResult(APIClient client, String indexName, JSONObject result);
+    void deleteIndexResult(APIClient client, String indexName, JSONObject result);
 
     /**
      * Asynchronously receive error of APIClient.deleteIndexASync methods.
      */
-    public void deleteIndexError(APIClient client, String indexName, AlgoliaException e);
+    void deleteIndexError(APIClient client, String indexName, AlgoliaException e);
 
     /**
      * Asynchronously receive result of APIClient.copyIndexASync methods.
      */
-    public void copyIndexResult(APIClient client, String srcIndex, String dstIndex, JSONObject result);
+    void copyIndexResult(APIClient client, String srcIndex, String dstIndex, JSONObject result);
 
     /**
      * Asynchronously receive error of APIClient.copyIndexASync methods.
      */
-    public void copyIndexError(APIClient client, String srcIndex, String dstIndex, AlgoliaException e);
+    void copyIndexError(APIClient client, String srcIndex, String dstIndex, AlgoliaException e);
 
     /**
      * Asynchronously receive result of APIClient.moveIndexASync methods.
      */
-    public void moveIndexResult(APIClient client, String srcIndex, String dstIndex, JSONObject result);
+    void moveIndexResult(APIClient client, String srcIndex, String dstIndex, JSONObject result);
 
     /**
      * Asynchronously receive error of APIClient.moveIndexASync methods.
      */
-    public void moveIndexError(APIClient client, String srcIndex, String dstIndex, AlgoliaException e);
+    void moveIndexError(APIClient client, String srcIndex, String dstIndex, AlgoliaException e);
 
     /**
      * Asynchronously receive result of APIClient.getLogsASync methods.
      */
-    public void getLogsResult(APIClient client, int offset, int length, LogType logType, JSONObject result);
+    void getLogsResult(APIClient client, int offset, int length, LogType logType, JSONObject result);
 
     /**
      * Asynchronously receive error of APIClient.getLogsASync methods.
      */
-    public void getLogsError(APIClient client, int offset, int length, LogType logType, AlgoliaException e);
+    void getLogsError(APIClient client, int offset, int length, LogType logType, AlgoliaException e);
 
     /**
      * Asynchronously receive result of APIClient.listUserKeysASync methods.
      */
-    public void listUserKeysResult(APIClient client, JSONObject result);
+    void listUserKeysResult(APIClient client, JSONObject result);
 
     /**
      * Asynchronously receive error of APIClient.listUserKeysASync methods.
      */
-    public void listUserKeysError(APIClient client, AlgoliaException e);
+    void listUserKeysError(APIClient client, AlgoliaException e);
 
     /**
      * Asynchronously receive result of APIClient.getUserKeyASync methods.
      */
-    public void getUserKeyResult(APIClient client, String key, JSONObject result);
+    void getUserKeyResult(APIClient client, String key, JSONObject result);
 
     /**
      * Asynchronously receive error of APIClient.getUserKeyASync methods.
      */
-    public void getUserKeyError(APIClient client, String key, AlgoliaException e);
+    void getUserKeyError(APIClient client, String key, AlgoliaException e);
 
     /**
      * Asynchronously receive result of APIClient.deleteUserKeyASync methods.
      */
-    public void deleteUserKeyResult(APIClient client, String key, JSONObject result);
+    void deleteUserKeyResult(APIClient client, String key, JSONObject result);
 
     /**
      * Asynchronously receive error of APIClient.deleteUserKeyASync methods.
      */
-    public void deleteUserKeyError(APIClient client, String key, AlgoliaException e);
+    void deleteUserKeyError(APIClient client, String key, AlgoliaException e);
 
     /**
      * Asynchronously receive result of APIClient.addUserKeyASync methods.
      */
-    public void addUserKeyResult(APIClient client, JSONObject param, JSONObject result);
+    void addUserKeyResult(APIClient client, JSONObject param, JSONObject result);
 
     /**
      * Asynchronously receive error of APIClient.addUserKeyASync methods.
      */
-    public void addUserKeyError(APIClient client, JSONObject param, AlgoliaException e);
+    void addUserKeyError(APIClient client, JSONObject param, AlgoliaException e);
 
     /**
      * Asynchronously receive result of APIClient.updateUserKeyASync methods.
      */
-    public void updateUserKeyResult(APIClient client, String key, JSONObject param, JSONObject result);
+    void updateUserKeyResult(APIClient client, String key, JSONObject param, JSONObject result);
 
     /**
      * Asynchronously receive error of APIClient.updateUserKeyASync methods.
      */
-    public void updateUserKeyError(APIClient client, String key, JSONObject param, AlgoliaException e);
+    void updateUserKeyError(APIClient client, String key, JSONObject param, AlgoliaException e);
 
     /**
      * Asynchronously receive result of APIClient.updateUserKeyASync methods.
      */
-    public void multipleQueriesResult(APIClient client, List<IndexQuery> queries, String strategy, JSONObject result);
+    void multipleQueriesResult(APIClient client, List<IndexQuery> queries, String strategy, JSONObject result);
 
     /**
      * Asynchronously receive error of APIClient.updateUserKeyASync methods.
      */
-    public void multipleQueriesError(APIClient client, List<IndexQuery> queries, String strategy, AlgoliaException e);
+    void multipleQueriesError(APIClient client, List<IndexQuery> queries, String strategy, AlgoliaException e);
 
     /**
      * Asynchronously receive result of APIClient.updateUserKeyASync methods.
      */
-    public void batchResult(APIClient client, JSONArray actions, JSONObject result);
+    void batchResult(APIClient client, JSONArray actions, JSONObject result);
 
     /**
      * Asynchronously receive error of APIClient.updateUserKeyASync methods.
      */
-    public void batchError(APIClient client, JSONArray actions, AlgoliaException e);
+    void batchError(APIClient client, JSONArray actions, AlgoliaException e);
 }

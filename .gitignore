@@ -28,3 +28,4 @@ proguard/
 # Android Studio
 .navigation/
 .idea/workspace.xml
+.idea/dictionaries/
