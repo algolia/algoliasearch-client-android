@@ -27,6 +27,7 @@ import android.app.Activity;
 import android.os.AsyncTask;
 
 import com.algolia.search.saas.Listener.IndexListener;
+import com.algolia.search.saas.Listener.SearchListener;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -63,7 +64,6 @@ public class Index extends BaseIndex {
         DeleteObjects,
         DeleteByQuery,
         WaitTask,
-        Query,
         GetSettings,
         SetSettings,
         GetObjects
@@ -80,12 +80,6 @@ public class Index extends BaseIndex {
         public JSONArray objects2;
         public List<String> attributesToRetrieve;
 
-        public ASyncIndexTaskParams(IndexListener listener, Query query) {
-            this.listener = listener;
-            this.query = query;
-            this.kind = ASyncIndexTaskKind.Query;
-        }
-
         public ASyncIndexTaskParams(IndexListener listener, ASyncIndexTaskKind kind, String objectID, JSONObject content)
         {
             this.listener = listener;
@@ -100,18 +94,21 @@ public class Index extends BaseIndex {
             this.kind = kind;
             this.list = objects;
         }
+
         public ASyncIndexTaskParams(IndexListener listener, ASyncIndexTaskKind kind, Query query)
         {
             this.listener = listener;
             this.kind = kind;
             this.query = query;
         }
+
         public ASyncIndexTaskParams(IndexListener listener, ASyncIndexTaskKind kind, JSONArray objects)
         {
             this.listener = listener;
             this.kind = kind;
             this.objects2 = objects;
         }
+
         public ASyncIndexTaskParams(IndexListener listener, ASyncIndexTaskKind kind, String objectID, List<String> attributesToRetrieve)
         {
             this.listener = listener;
@@ -185,9 +182,6 @@ public class Index extends BaseIndex {
                     break;
                 case GetObjects:
                     p.listener.getObjectsResult(Index.this, p.list, res);
-                    break;
-                case Query:
-                    p.listener.searchResult(Index.this, p.query, res);
                     break;
                 case GetSettings:
                     p.listener.getSettingsResult(Index.this, res);
@@ -327,14 +321,6 @@ public class Index extends BaseIndex {
                         return null;
                     }
                     break;
-                case Query:
-                    try {
-                        res = search(p.query);
-                    } catch (AlgoliaException e) {
-                        p.listener.searchError(Index.this, p.query, e);
-                        return null;
-                    }
-                    break;
                 case GetSettings:
                     try {
                         res = getSettings();
@@ -359,13 +345,23 @@ public class Index extends BaseIndex {
         @Override
         protected void onPostExecute(Void result) {
         }
+    }
 
+    private class ASyncSearchTask extends AsyncTask<TaskParams.Search, Void, TaskParams.Search> {
         @Override
-        protected void onPreExecute() {
+        protected TaskParams.Search doInBackground(TaskParams.Search... params) {
+            TaskParams.Search p = params[0];
+            try {
+                p.content = search(p.query);
+            } catch (AlgoliaException e) {
+                p.error = e;
+            }
+            return p;
         }
 
         @Override
-        protected void onProgressUpdate(Void... values) {
+        protected void onPostExecute(TaskParams.Search p) {
+            p.sendResult(Index.this);
         }
     }
 
@@ -563,9 +559,9 @@ public class Index extends BaseIndex {
      * Search inside the index asynchronously
      * @param listener the listener that will receive the result or error. If the listener is an instance of Activity, the result will be received directly on UIThread
      */
-    public void searchASync(Query query, IndexListener listener) {
-        ASyncIndexTaskParams params = new ASyncIndexTaskParams(listener, query);
-        new ASyncIndexTask().execute(params);
+    public void searchASync(Query query, SearchListener listener) {
+        TaskParams.Search params = new TaskParams.Search(listener, query);
+        new ASyncSearchTask().execute(params);
     }
 
     /**

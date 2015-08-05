@@ -3,7 +3,7 @@
 set -e
 set -o pipefail
 
-FILE=algoliasearch/src/androidTest/java/com/algolia/search/saas/ApplicationTest.java
+FILE=algoliasearch/src/androidTest/java/com/algolia/search/saas/Helpers.java
 
 if ! [[ $TRAVIS_JOB_NUMBER && ${TRAVIS_JOB_NUMBER-_} ]]; then
     echo "/!\ TRAVIS_JOB_NUMBER is not set."

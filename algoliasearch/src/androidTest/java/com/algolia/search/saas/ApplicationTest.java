@@ -25,18 +25,24 @@ package com.algolia.search.saas;
 
 import android.app.Application;
 import android.test.ApplicationTestCase;
+import android.test.UiThreadTest;
 
-import junit.framework.Assert;
+import com.algolia.search.saas.Listener.SearchListener;
 
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 
 /**
  * <a href="http://d.android.com/tools/testing/testing_android.html">Testing Fundamentals</a>
  */
+
 public class ApplicationTest extends ApplicationTestCase<Application> {
     APIClient client;
+    Index index;
+    String indexName;
 
     public ApplicationTest() {
         super(Application.class);
@@ -45,6 +51,45 @@ public class ApplicationTest extends ApplicationTestCase<Application> {
     @Override
     protected void setUp() throws Exception {
         super.setUp();
-        client = new APIClient("XXXXX", "XXXXX");
+        client = new APIClient(Helpers.app_id, Helpers.api_key);
+        indexName = Helpers.safeIndexName("àlgol?à-android");
+        index = client.initIndex(indexName);
+        JSONObject task = index.addObject(new JSONObject("{'name': 'Thibault'}"));
+        index.waitTask(task.getString("taskID"));
+    }
+
+    @Override
+    protected void tearDown() throws Exception {
+        client.deleteIndex(indexName);
+        super.tearDown();
+    }
+
+    @UiThreadTest
+    public void testSearchAsync() throws Exception {
+        final CountDownLatch signal = new CountDownLatch(1);
+
+        class Listener implements SearchListener {
+            @Override
+            public void searchResult(Index index, Query query, JSONObject results) {
+                try {
+                    assertTrue(results.getInt("nbHits") > 0);
+                } catch (JSONException e) {
+                    fail(String.format("Error during parsing JSON: %s", e.getMessage()));
+                }
+
+                signal.countDown();
+            }
+
+            @Override
+            public void searchError(Index index, Query query, AlgoliaException e) {
+                fail(String.format("Error during search: %s", e.getMessage()));
+                signal.countDown();
+            }
+        }
+
+        final Listener searchListener = new Listener();
+
+        index.searchASync(new Query(), searchListener);
+        assertTrue(signal.await(30, TimeUnit.SECONDS));
     }
 }
