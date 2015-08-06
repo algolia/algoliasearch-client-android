@@ -23,11 +23,14 @@
 
 package com.algolia.search.saas;
 
+import com.algolia.search.saas.Listener.Index.GetListener;
 import com.algolia.search.saas.Listener.Index.IndexingListener;
 import com.algolia.search.saas.Listener.Index.SearchListener;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
+
+import java.util.List;
 
 public class TaskParams {
     public static class Search {
@@ -85,6 +88,44 @@ public class TaskParams {
                 listener.indexingResult(index, this, content);
             } else {
                 listener.indexingError(index, this, error);
+            }
+        }
+    }
+
+    public static class Get {
+        protected GetListener listener;
+        public TaskKind kind;
+        public String objectID;
+        public List<String> objectIDs;
+        public List<String> attributesToRetrieve;
+
+        protected JSONObject content;
+        protected AlgoliaException error;
+
+        protected Get(GetListener listener, TaskKind kind, String objectID) {
+            this.listener = listener;
+            this.kind = kind;
+            this.objectID = objectID;
+        }
+
+        protected Get(GetListener listener, TaskKind kind, String objectID, List<String> attributesToRetrieve) {
+            this.listener = listener;
+            this.kind = kind;
+            this.objectID = objectID;
+            this.attributesToRetrieve = attributesToRetrieve;
+        }
+
+        protected Get(GetListener listener, TaskKind kind, List<String> objectIDs) {
+            this.listener = listener;
+            this.kind = kind;
+            this.objectIDs = objectIDs;
+        }
+
+        protected void sendResult(Index index) {
+            if (content != null) {
+                listener.getObjectsResult(index, this, content);
+            } else {
+                listener.getObjectsError(index, this, error);
             }
         }
     }

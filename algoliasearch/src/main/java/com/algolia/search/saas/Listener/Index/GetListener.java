@@ -21,27 +21,25 @@
  * THE SOFTWARE.
  */
 
-package com.algolia.search.saas;
+package com.algolia.search.saas.Listener.Index;
 
-public enum TaskKind
-{
-    AddObject,
-    AddObjectWithObjectID,
-    AddObjects,
-    SaveObject,
-    SaveObjects,
+import com.algolia.search.saas.AlgoliaException;
+import com.algolia.search.saas.Index;
+import com.algolia.search.saas.TaskParams;
 
-    GetObject,
-    GetObjectWithAttributesToRetrieve,
-    GetObjects,
+import org.json.JSONObject;
 
-    PartialSaveObject,
-    PartialSaveObjects,
-    PartialSaveObjects2,
-    DeleteObject,
-    DeleteObjects,
-    DeleteByQuery,
-    WaitTask,
-    GetSettings,
-    SetSettings
+/**
+ * Asynchronously receive result of search method
+ */
+public interface GetListener {
+    /**
+     * Asynchronously receive result of Index.getObject(s) method.
+     */
+    void getObjectsResult(Index index, TaskParams.Get context, JSONObject results);
+
+    /**
+     * Asynchronously receive error of Index.getObject(s) method.
+     */
+    void getObjectsError(Index index, TaskParams.Get context, AlgoliaException e);
 }

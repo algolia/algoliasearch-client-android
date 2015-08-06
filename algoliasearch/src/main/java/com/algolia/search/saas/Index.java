@@ -26,6 +26,7 @@ package com.algolia.search.saas;
 import android.app.Activity;
 import android.os.AsyncTask;
 
+import com.algolia.search.saas.Listener.Index.GetListener;
 import com.algolia.search.saas.Listener.Index.IndexingListener;
 import com.algolia.search.saas.Listener.Index.SearchListener;
 import com.algolia.search.saas.Listener.IndexListener;
@@ -51,7 +52,6 @@ public class Index extends BaseIndex {
 
     private enum ASyncIndexTaskKind
     {
-        GetObject,
         PartialSaveObject,
         PartialSaveObjects,
         PartialSaveObjects2,
@@ -61,7 +61,6 @@ public class Index extends BaseIndex {
         WaitTask,
         GetSettings,
         SetSettings,
-        GetObjects
     }
 
     private static class ASyncIndexTaskParams
@@ -154,12 +153,6 @@ public class Index extends BaseIndex {
                 case DeleteByQuery:
                     p.listener.deleteByQueryResult(Index.this);
                     break;
-                case GetObject:
-                    p.listener.getObjectResult(Index.this, p.objectID, res);
-                    break;
-                case GetObjects:
-                    p.listener.getObjectsResult(Index.this, p.list, res);
-                    break;
                 case GetSettings:
                     p.listener.getSettingsResult(Index.this, res);
                     break;
@@ -230,26 +223,6 @@ public class Index extends BaseIndex {
                         return null;
                     }
                     break;
-                case GetObjects:
-                    try {
-                        res = getObjects(p.list);
-                    } catch (AlgoliaException e) {
-                        p.listener.getObjectsError(Index.this, p.list, e);
-                        return null;
-                    }
-                    break;
-                case GetObject:
-                    try {
-                        if (p.attributesToRetrieve == null) {
-                            res = getObject(p.objectID);
-                        } else {
-                            res = getObject(p.objectID, p.attributesToRetrieve);
-                        }
-                    } catch (AlgoliaException e) {
-                        p.listener.getObjectError(Index.this, p.objectID, e);
-                        return null;
-                    }
-                    break;
                 case GetSettings:
                     try {
                         res = getSettings();
@@ -275,6 +248,10 @@ public class Index extends BaseIndex {
         protected void onPostExecute(Void result) {
         }
     }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////
+    /// SEARCH TASK
+    ////////////////////////////////////////////////////////////////////////////////////////////////
 
     private class ASyncSearchTask extends AsyncTask<TaskParams.Search, Void, TaskParams.Search> {
         @Override
@@ -303,6 +280,10 @@ public class Index extends BaseIndex {
         new ASyncSearchTask().execute(params);
     }
 
+    ////////////////////////////////////////////////////////////////////////////////////////////////
+    /// INDEXING TASK
+    ////////////////////////////////////////////////////////////////////////////////////////////////
+
     private class AsyncIndexingTask extends AsyncTask<TaskParams.Indexing, Void, TaskParams.Indexing> {
         @Override
         protected TaskParams.Indexing doInBackground(TaskParams.Indexing... params) {
@@ -328,7 +309,7 @@ public class Index extends BaseIndex {
                 p.error = e;
             }
 
-            return null;
+            return p;
         }
 
         @Override
@@ -396,13 +377,38 @@ public class Index extends BaseIndex {
         new AsyncIndexingTask().execute(params);
     }
 
+    ////////////////////////////////////////////////////////////////////////////////////////////////
+    /// GET TASK
+    ////////////////////////////////////////////////////////////////////////////////////////////////
 
+    private class AsyncGetTask extends AsyncTask<TaskParams.Get, Void, TaskParams.Get> {
+        @Override
+        protected TaskParams.Get doInBackground(TaskParams.Get... params) {
+            TaskParams.Get p = params[0];
+            try {
+                switch (p.kind) {
+                    case GetObject:
+                        p.content = getObject(p.objectID);
+                        break;
+                    case GetObjectWithAttributesToRetrieve:
+                        p.content = getObject(p.objectID, p.attributesToRetrieve);
+                        break;
+                    case GetObjects:
+                        p.content = getObjects(p.objectIDs);
+                        break;
+                }
+            } catch (AlgoliaException e) {
+                p.error = e;
+            }
 
+            return p;
+        }
 
-
-
-
-
+        @Override
+        protected void onPostExecute(TaskParams.Get p) {
+            p.sendResult(Index.this);
+        }
+    }
 
     /**
      * Get an object from this index asynchronously
@@ -410,9 +416,9 @@ public class Index extends BaseIndex {
      * @param objectID the unique identifier of the object to retrieve
      * @param listener the listener that will receive the result or error. If the listener is an instance of Activity, the result will be received directly on UIThread
      */
-    public void getObjectASync(String objectID, IndexListener listener) {
-        ASyncIndexTaskParams params = new ASyncIndexTaskParams(listener, ASyncIndexTaskKind.GetObject, objectID, (List)null);
-        new ASyncIndexTask().execute(params);
+    public void getObjectASync(String objectID, GetListener listener) {
+        TaskParams.Get params = new TaskParams.Get(listener, TaskKind.GetObject, objectID);
+        new AsyncGetTask().execute(params);
     }
 
     /**
@@ -422,9 +428,9 @@ public class Index extends BaseIndex {
      * @param attributesToRetrieve, contains the list of attributes to retrieve as a string separated by ","
      * @param listener the listener that will receive the result or error. If the listener is an instance of Activity, the result will be received directly on UIThread
      */
-    public void getObjectASync(String objectID, List<String> attributesToRetrieve, IndexListener listener) {
-        ASyncIndexTaskParams params = new ASyncIndexTaskParams(listener, ASyncIndexTaskKind.GetObject, objectID, attributesToRetrieve);
-        new ASyncIndexTask().execute(params);
+    public void getObjectASync(String objectID, List<String> attributesToRetrieve, GetListener listener) {
+        TaskParams.Get params = new TaskParams.Get(listener, TaskKind.GetObjectWithAttributesToRetrieve, objectID, attributesToRetrieve);
+        new AsyncGetTask().execute(params);
     }
 
     /**
@@ -433,10 +439,19 @@ public class Index extends BaseIndex {
      * @param objectIDs the array of unique identifier of objects to retrieve
      * @throws AlgoliaException
      */
-    public void getObjectsASync(List<String> objectIDs, IndexListener listener) throws AlgoliaException {
-        ASyncIndexTaskParams params = new ASyncIndexTaskParams(listener, ASyncIndexTaskKind.GetObjects, objectIDs);
-        new ASyncIndexTask().execute(params);
+    public void getObjectsASync(List<String> objectIDs, GetListener listener) throws AlgoliaException {
+        TaskParams.Get params = new TaskParams.Get(listener, TaskKind.GetObjects, objectIDs);
+        new AsyncGetTask().execute(params);
     }
+
+
+
+
+
+
+
+
+
 
     /**
      * Update partially an object asynchronously (only update attributes passed in argument)
