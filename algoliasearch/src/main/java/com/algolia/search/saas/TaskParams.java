@@ -23,28 +23,68 @@
 
 package com.algolia.search.saas;
 
-import com.algolia.search.saas.Listener.SearchListener;
+import com.algolia.search.saas.Listener.Index.IndexingListener;
+import com.algolia.search.saas.Listener.Index.SearchListener;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 
-class TaskParams {
-    static class Search {
-        SearchListener listener;
-        Query query;
+public class TaskParams {
+    public static class Search {
+        protected SearchListener listener;
+        public Query query;
 
-        JSONObject content;
-        AlgoliaException error;
+        protected JSONObject content;
+        protected AlgoliaException error;
 
-        Search(SearchListener listener, Query query) {
+        protected Search(SearchListener listener, Query query) {
             this.listener = listener;
             this.query = query;
         }
 
-        void sendResult(Index index) {
+        protected void sendResult(Index index) {
             if (content != null) {
                 listener.searchResult(index, query, content);
             } else {
                 listener.searchError(index, query, error);
+            }
+        }
+    }
+
+    public static class Indexing {
+        protected IndexingListener listener;
+        public TaskKind kind;
+        public JSONObject object;
+        public JSONArray objects;
+        public String objectID;
+
+        protected JSONObject content;
+        protected AlgoliaException error;
+
+        protected Indexing(IndexingListener listener, TaskKind kind, JSONObject object) {
+            this.listener = listener;
+            this.kind = kind;
+            this.object = object;
+        }
+
+        protected Indexing(IndexingListener listener, TaskKind kind, JSONObject object, String objectID) {
+            this.listener = listener;
+            this.kind = kind;
+            this.object = object;
+            this.objectID = objectID;
+        }
+
+        protected Indexing(IndexingListener listener, TaskKind kind, JSONArray objects) {
+            this.listener = listener;
+            this.kind = kind;
+            this.objects = objects;
+        }
+
+        protected void sendResult(Index index) {
+            if (content != null) {
+                listener.indexingResult(index, this, content);
+            } else {
+                listener.indexingError(index, this, error);
             }
         }
     }

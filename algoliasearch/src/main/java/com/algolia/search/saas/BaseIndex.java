@@ -30,10 +30,8 @@ import org.json.JSONObject;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 
 /*
  * Abstract class for Index methods
@@ -81,7 +79,7 @@ abstract class BaseIndex {
         try {
             return client.putRequest("/1/indexes/" + encodedIndexName + "/" + URLEncoder.encode(objectID, "UTF-8"), obj.toString());
         } catch (UnsupportedEncodingException e) {
-            throw new RuntimeException(e);
+            throw new AlgoliaException(e.getMessage());
         }
     }
 
@@ -468,7 +466,7 @@ abstract class BaseIndex {
     /**
      * Browse all index content starting from a cursor
      */
-    public Iterator<JSONObject> browseFrow(Query params, String cursor) throws AlgoliaException {
+    public Iterator<JSONObject> browseFrom(Query params, String cursor) throws AlgoliaException {
         return new IndexBrower(client, encodedIndexName, params, cursor);
     }
 
@@ -777,139 +775,5 @@ abstract class BaseIndex {
      */
     public JSONObject browse(int page, int hitsPerPage) throws AlgoliaException {
         return client.getRequest("/1/indexes/" + encodedIndexName + "/browse?page=" + page + "&hitsPerPage=" + hitsPerPage, false);
-    }
-
-    /**
-     * Perform a search with disjunctive facets generating as many queries as number of disjunctive facets
-     * @param query the query
-     * @param disjunctiveFacets the array of disjunctive facets
-     * @param refinements Map<String, List<String>> representing the current refinements
-     *     ex: { "my_facet1" => ["my_value1", "my_value2"], "my_disjunctive_facet1" => ["my_value1", "my_value2"] }
-     * @throws AlgoliaException
-     */
-    public JSONObject disjunctiveFaceting(Query query, List<String> disjunctiveFacets, Map<String, List<String>> refinements) throws AlgoliaException {
-        if (refinements == null) {
-            refinements = new HashMap<String, List<String>>();
-        }
-        HashMap<String, List<String>> disjunctiveRefinements = new HashMap<String, List<String>>();
-        for (Map.Entry<String, List<String>> elt : refinements.entrySet()) {
-            if (disjunctiveFacets.contains(elt.getKey())) {
-                disjunctiveRefinements.put(elt.getKey(), elt.getValue());
-            }
-        }
-
-        // build queries
-        List<IndexQuery> queries = new ArrayList<IndexQuery>();
-        // hits + regular facets query
-        StringBuilder filters = new StringBuilder();
-        boolean first_global = true;
-        for (Map.Entry<String, List<String>> elt : refinements.entrySet()) {
-            StringBuilder or = new StringBuilder();
-            or.append("(");
-            boolean first = true;
-            for (String val : elt.getValue()) {
-                if (disjunctiveRefinements.containsKey(elt.getKey())) {
-                    // disjunctive refinements are ORed
-                    if (!first) {
-                        or.append(',');
-                    }
-                    first = false;
-                    or.append(String.format("%s:%s", elt.getKey(), val));
-                } else {
-                    if (!first_global) {
-                        filters.append(',');
-                    }
-                    first_global = false;
-                    filters.append(String.format("%s:%s", elt.getKey(), val));
-                }
-            }
-            // Add or
-            if (disjunctiveRefinements.containsKey(elt.getKey())) {
-                or.append(')');
-                if (!first_global) {
-                    filters.append(',');
-                }
-                first_global = false;
-                filters.append(or.toString());
-            }
-        }
-
-        queries.add(new IndexQuery(this.indexName, new Query(query).setFacetFilters(filters.toString())));
-        // one query per disjunctive facet (use all refinements but the current one + hitsPerPage=1 + single facet
-        for (String disjunctiveFacet : disjunctiveFacets) {
-            filters = new StringBuilder();
-            first_global = true;
-            for (Map.Entry<String, List<String>> elt : refinements.entrySet()) {
-                if (disjunctiveFacet.equals(elt.getKey())) {
-                    continue;
-                }
-                StringBuilder or = new StringBuilder();
-                or.append("(");
-                boolean first = true;
-                for (String val : elt.getValue()) {
-                    if (disjunctiveRefinements.containsKey(elt.getKey())) {
-                        // disjunctive refinements are ORed
-                        if (!first) {
-                            or.append(',');
-                        }
-                        first = false;
-                        or.append(String.format("%s:%s", elt.getKey(), val));
-                    } else {
-                        if (!first_global) {
-                            filters.append(',');
-                        }
-                        first_global = false;
-                        filters.append(String.format("%s:%s", elt.getKey(), val));
-                    }
-                }
-                // Add or
-                if (disjunctiveRefinements.containsKey(elt.getKey())) {
-                    or.append(')');
-                    if (!first_global) {
-                        filters.append(',');
-                    }
-                    first_global = false;
-                    filters.append(or.toString());
-                }
-            }
-            List<String> facets = new ArrayList<String>();
-            facets.add(disjunctiveFacet);
-            queries.add(new IndexQuery(this.indexName, new Query(query).setHitsPerPage(1).setAttributesToRetrieve(new ArrayList<String>()).setAttributesToHighlight(new ArrayList<String>()).setAttributesToSnippet(new ArrayList<String>()).setFacets(facets).setFacetFilters(filters.toString())));
-        }
-        JSONObject answers = this.client.multipleQueries(queries);
-
-        // aggregate answers
-        // first answer stores the hits + regular facets
-        try {
-            JSONArray results = answers.getJSONArray("results");
-            JSONObject aggregatedAnswer = results.getJSONObject(0);
-            JSONObject disjunctiveFacetsJSON = new JSONObject();
-            for (int i = 1; i < results.length(); ++i) {
-                JSONObject facets = results.getJSONObject(i).getJSONObject("facets");
-                Iterator<String> keys = facets.keys();
-                while(keys.hasNext()) {
-                    String key = keys.next();
-                    // Add the facet to the disjunctive facet hash
-                    disjunctiveFacetsJSON.put(key, facets.getJSONObject(key));
-                    // concatenate missing refinements
-                    if (!disjunctiveRefinements.containsKey(key)) {
-                        continue;
-                    }
-                    for (String refine : disjunctiveRefinements.get(key)) {
-                        if (!disjunctiveFacetsJSON.getJSONObject(key).has(refine)) {
-                            disjunctiveFacetsJSON.getJSONObject(key).put(refine, 0);
-                        }
-                    }
-                }
-            }
-            aggregatedAnswer.put("disjunctiveFacets", disjunctiveFacetsJSON);
-            return aggregatedAnswer;
-        } catch (JSONException e) {
-            throw new Error(e);
-        }
-    }
-
-    public JSONObject disjunctiveFaceting(Query query, List<String> disjunctiveFacets) throws AlgoliaException {
-        return disjunctiveFaceting(query, disjunctiveFacets, null);
     }
 }

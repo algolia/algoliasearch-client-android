@@ -26,8 +26,9 @@ package com.algolia.search.saas;
 import android.app.Activity;
 import android.os.AsyncTask;
 
+import com.algolia.search.saas.Listener.Index.IndexingListener;
+import com.algolia.search.saas.Listener.Index.SearchListener;
 import com.algolia.search.saas.Listener.IndexListener;
-import com.algolia.search.saas.Listener.SearchListener;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -51,12 +52,6 @@ public class Index extends BaseIndex {
     private enum ASyncIndexTaskKind
     {
         GetObject,
-        AddObject,
-        AddObjects,
-        AddObjects2,
-        SaveObject,
-        SaveObjects,
-        SaveObjects2,
         PartialSaveObject,
         PartialSaveObjects,
         PartialSaveObjects2,
@@ -138,26 +133,8 @@ public class Index extends BaseIndex {
         private void _sendResultImpl(ASyncIndexTaskParams p, JSONObject res)
         {
             switch (p.kind) {
-                case AddObject:
-                    p.listener.addObjectResult(Index.this, p.objectContent, res);
-                    break;
-                case AddObjects:
-                    p.listener.addObjectsResult(Index.this, p.list, res);
-                    break;
-                case AddObjects2:
-                    p.listener.addObjectsResult(Index.this, p.objects2, res);
-                    break;
                 case WaitTask:
                     p.listener.waitTaskResult(Index.this, p.objectID);
-                    break;
-                case SaveObject:
-                    p.listener.saveObjectResult(Index.this, p.objectContent, p.objectID, res);
-                    break;
-                case SaveObjects:
-                    p.listener.saveObjectsResult(Index.this, p.list, res);
-                    break;
-                case SaveObjects2:
-                    p.listener.saveObjectsResult(Index.this, p.objects2, res);
                     break;
                 case DeleteObject:
                     p.listener.deleteObjectResult(Index.this, p.objectID, res);
@@ -197,59 +174,11 @@ public class Index extends BaseIndex {
             ASyncIndexTaskParams p = params[0];
             JSONObject res = null;
             switch (p.kind) {
-                case AddObject:
-                    try {
-                        res = (p.objectID == null) ? addObject(p.objectContent) : addObject(p.objectContent, p.objectID);
-                    } catch (AlgoliaException e) {
-                        p.listener.addObjectError(Index.this, p.objectContent, e);
-                        return null;
-                    }
-                    break;
-                case AddObjects:
-                    try {
-                        res = addObjects(p.list);
-                    } catch (AlgoliaException e) {
-                        p.listener.addObjectsError(Index.this, p.list, e);
-                        return null;
-                    }
-                    break;
-                case AddObjects2:
-                    try {
-                        res = addObjects(p.objects2);
-                    } catch (AlgoliaException e) {
-                        p.listener.addObjectsError(Index.this, p.objects2, e);
-                        return null;
-                    }
-                    break;
                 case WaitTask:
                     try {
                         waitTask(p.objectID);
                     } catch (AlgoliaException e) {
                         p.listener.waitTaskError(Index.this, p.objectID, e);
-                        return null;
-                    }
-                    break;
-                case SaveObject:
-                    try {
-                        res = saveObject(p.objectContent, p.objectID);
-                    } catch (AlgoliaException e) {
-                        p.listener.saveObjectError(Index.this, p.objectContent, p.objectID, e);
-                        return null;
-                    }
-                    break;
-                case SaveObjects:
-                    try {
-                        res = saveObjects(p.list);
-                    } catch (AlgoliaException e) {
-                        p.listener.saveObjectsError(Index.this, p.list, e);
-                        return null;
-                    }
-                    break;
-                case SaveObjects2:
-                    try {
-                        res = saveObjects(p.objects2);
-                    } catch (AlgoliaException e) {
-                        p.listener.saveObjectsError(Index.this, p.objects2, e);
                         return null;
                     }
                     break;
@@ -366,15 +295,58 @@ public class Index extends BaseIndex {
     }
 
     /**
+     * Search inside the index asynchronously
+     * @param listener the listener that will receive the result or error. If the listener is an instance of Activity, the result will be received directly on UIThread
+     */
+    public void searchASync(Query query, SearchListener listener) {
+        TaskParams.Search params = new TaskParams.Search(listener, query);
+        new ASyncSearchTask().execute(params);
+    }
+
+    private class AsyncIndexingTask extends AsyncTask<TaskParams.Indexing, Void, TaskParams.Indexing> {
+        @Override
+        protected TaskParams.Indexing doInBackground(TaskParams.Indexing... params) {
+            TaskParams.Indexing p = params[0];
+            try {
+                switch (p.kind) {
+                    case AddObject:
+                        p.content = addObject(p.object);
+                        break;
+                    case AddObjectWithObjectID:
+                        p.content = addObject(p.object, p.objectID);
+                    case AddObjects:
+                        p.content = addObjects(p.objects);
+                        break;
+                    case SaveObject:
+                        p.content = saveObject(p.object, p.objectID);
+                        break;
+                    case SaveObjects:
+                        p.content = saveObjects(p.objects);
+                        break;
+                }
+            } catch (AlgoliaException e) {
+                p.error = e;
+            }
+
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(TaskParams.Indexing p) {
+            p.sendResult(Index.this);
+        }
+    }
+
+    /**
      * Add an object in this index asynchronously
      *
      * @param obj the object to add. 
      *  The object is represented by an associative array
      * @param listener the listener that will receive the result or error. If the listener is an instance of Activity, the result will be received directly on UIThread
      */
-    public void addObjectASync(JSONObject obj, IndexListener listener) {
-        ASyncIndexTaskParams params = new ASyncIndexTaskParams(listener, ASyncIndexTaskKind.AddObject, null, obj);
-        new ASyncIndexTask().execute(params);
+    public void addObjectASync(JSONObject obj, IndexingListener listener) {
+        TaskParams.Indexing params = new TaskParams.Indexing(listener, TaskKind.AddObject, obj);
+        new AsyncIndexingTask().execute(params);
     }
 
     /**
@@ -386,9 +358,9 @@ public class Index extends BaseIndex {
      * (if the attribute already exist the old object will be overwrite)
      * @param listener the listener that will receive the result or error. If the listener is an instance of Activity, the result will be received directly on UIThread
      */
-    public void addObjectASync(JSONObject obj, String objectID, IndexListener listener)  {
-        ASyncIndexTaskParams params = new ASyncIndexTaskParams(listener, ASyncIndexTaskKind.AddObject, objectID, obj);
-        new ASyncIndexTask().execute(params);
+    public void addObjectASync(JSONObject obj, String objectID, IndexingListener listener)  {
+        TaskParams.Indexing params = new TaskParams.Indexing(listener, TaskKind.AddObjectWithObjectID, obj, objectID);
+        new AsyncIndexingTask().execute(params);
     }
 
     /**
@@ -397,21 +369,40 @@ public class Index extends BaseIndex {
      * @param objects contains an array of objects to add. If the object contains an objectID
      * @param listener the listener that will receive the result or error. If the listener is an instance of Activity, the result will be received directly on UIThread
      */
-    public void addObjectsASync(List<JSONObject> objects, IndexListener listener) {
-        ASyncIndexTaskParams params = new ASyncIndexTaskParams(listener, ASyncIndexTaskKind.AddObjects, objects);
-        new ASyncIndexTask().execute(params);
+    public void addObjectsASync(JSONArray objects, IndexingListener listener) {
+        TaskParams.Indexing params = new TaskParams.Indexing(listener, TaskKind.AddObjects, objects);
+        new AsyncIndexingTask().execute(params);
     }
 
     /**
-     * Add several objects asynchronously
+     * Override the content of object asynchronously
      *
-     * @param objects contains an array of objects to add. If the object contains an objectID
+     * @param obj the object to save
      * @param listener the listener that will receive the result or error. If the listener is an instance of Activity, the result will be received directly on UIThread
      */
-    public void addObjectsASync(JSONArray objects, IndexListener listener) {
-        ASyncIndexTaskParams params = new ASyncIndexTaskParams(listener, ASyncIndexTaskKind.AddObjects2, objects);
-        new ASyncIndexTask().execute(params);
+    public void saveObjectASync(JSONObject obj, String objectID, IndexingListener listener) {
+        TaskParams.Indexing params = new TaskParams.Indexing(listener, TaskKind.SaveObject, obj, objectID);
+        new AsyncIndexingTask().execute(params);
     }
+
+    /**
+     * Override the content of several objects asynchronously
+     *
+     * @param objects contains an array of objects to update (each object must contains an objectID attribute)
+     * @param listener the listener that will receive the result or error. If the listener is an instance of Activity, the result will be received directly on UIThread
+     */
+    public void saveObjectsASync(JSONArray objects, IndexingListener listener) {
+        TaskParams.Indexing params = new TaskParams.Indexing(listener, TaskKind.SaveObjects, objects);
+        new AsyncIndexingTask().execute(params);
+    }
+
+
+
+
+
+
+
+
 
     /**
      * Get an object from this index asynchronously
@@ -482,39 +473,6 @@ public class Index extends BaseIndex {
     }
 
     /**
-     * Override the content of object asynchronously
-     *
-     * @param object the object to save
-     * @param listener the listener that will receive the result or error. If the listener is an instance of Activity, the result will be received directly on UIThread
-     */
-    public void saveObjectASync(JSONObject object, String objectID, IndexListener listener) {
-        ASyncIndexTaskParams params = new ASyncIndexTaskParams(listener, ASyncIndexTaskKind.SaveObject, objectID, object);
-        new ASyncIndexTask().execute(params);
-    }
-
-    /**
-     * Override the content of several objects asynchronously
-     *
-     * @param objects contains an array of objects to update (each object must contains an objectID attribute)
-     * @param listener the listener that will receive the result or error. If the listener is an instance of Activity, the result will be received directly on UIThread
-     */
-    public void saveObjectsASync(List<JSONObject> objects, IndexListener listener) {
-        ASyncIndexTaskParams params = new ASyncIndexTaskParams(listener, ASyncIndexTaskKind.SaveObjects, objects);
-        new ASyncIndexTask().execute(params);
-    }
-
-    /**
-     * Override the content of several objects asynchronously
-     *
-     * @param objects contains an array of objects to update (each object must contains an objectID attribute)
-     * @param listener the listener that will receive the result or error. If the listener is an instance of Activity, the result will be received directly on UIThread
-     */
-    public void saveObjectsASync(JSONArray objects, IndexListener listener) {
-        ASyncIndexTaskParams params = new ASyncIndexTaskParams(listener, ASyncIndexTaskKind.SaveObjects2, objects);
-        new ASyncIndexTask().execute(params);
-    }
-
-    /**
      * Delete an object from the index asynchronously
      *
      * @param objectID the unique identifier of object to delete
@@ -553,15 +511,6 @@ public class Index extends BaseIndex {
     public void deleteByQueryASync(Query query, IndexListener listener) {
         ASyncIndexTaskParams params = new ASyncIndexTaskParams(listener, ASyncIndexTaskKind.DeleteByQuery, query);
         new ASyncIndexTask().execute(params);
-    }
-
-    /**
-     * Search inside the index asynchronously
-     * @param listener the listener that will receive the result or error. If the listener is an instance of Activity, the result will be received directly on UIThread
-     */
-    public void searchASync(Query query, SearchListener listener) {
-        TaskParams.Search params = new TaskParams.Search(listener, query);
-        new ASyncSearchTask().execute(params);
     }
 
     /**

@@ -27,7 +27,7 @@ import android.app.Application;
 import android.test.ApplicationTestCase;
 import android.test.UiThreadTest;
 
-import com.algolia.search.saas.Listener.SearchListener;
+import com.algolia.search.saas.Listener.Index.SearchListener;
 
 import org.json.JSONException;
 import org.json.JSONObject;

@@ -61,7 +61,7 @@ abstract class BaseAPIClient {
     private int httpConnectTimeoutMS = 2000;
     private int httpSearchTimeoutMS = 5000;
 
-    private final static String version = "1.6.6";
+    private final static String version = "2.0.0";
 
     private final String applicationID;
     private final String apiKey;

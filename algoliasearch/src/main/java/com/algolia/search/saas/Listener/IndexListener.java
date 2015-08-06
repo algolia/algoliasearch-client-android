@@ -38,46 +38,6 @@ import java.util.List;
 public interface IndexListener {
 
     /**
-     * Asynchronously receive result of Index.saveObjectASync methods.
-     */
-    void addObjectResult(Index index, JSONObject object, JSONObject result);
-
-    /**
-     * Asynchronously receive error of Index.saveObjectASync methods.
-     */
-    void addObjectError(Index index, JSONObject object, AlgoliaException e);
-
-    /**
-     * Asynchronously receive result of Index.saveObjectsASync method.
-     */
-    void addObjectsResult(Index index, List<JSONObject> objects, JSONObject result);
-
-    /**
-     * Asynchronously receive error of Index.saveObjectsASync method.
-     */
-    void addObjectsError(Index index, List<JSONObject> objects, AlgoliaException e);
-
-    /**
-     * Asynchronously receive result of Index.saveObjectsASync method.
-     */
-    void addObjectsResult(Index index, JSONArray objects, JSONObject result);
-
-    /**
-     * Asynchronously receive error of Index.saveObjectsASync method.
-     */
-    void addObjectsError(Index index, JSONArray objects, AlgoliaException e);
-
-    /**
-     * Asynchronously receive result of Index.searchASync method.
-     */
-    void searchResult(Index index, Query query, JSONObject results);
-
-    /**
-     * Asynchronously receive error of Index.searchASync method.
-     */
-    void searchError(Index index, Query query, AlgoliaException e);
-
-    /**
      * Asynchronously receive result of Index.deleteObjectASync method.
      */
     void deleteObjectResult(Index index, String objectID, JSONObject result);
@@ -106,36 +66,6 @@ public interface IndexListener {
      * Asynchronously receive error of Index.deleteObjectsASync method.
      */
     void deleteObjectsError(Index index, List<JSONObject> objects, AlgoliaException e);
-
-    /**
-     * Asynchronously receive result of Index.saveObjectASync methods.
-     */
-    void saveObjectResult(Index index, JSONObject object, String objectID, JSONObject result);
-
-    /**
-     * Asynchronously receive error of Index.saveObjectASync methods.
-     */
-    void saveObjectError(Index index, JSONObject object, String objectID, AlgoliaException e);
-
-    /**
-     * Asynchronously receive result of Index.saveObjectsASync method.
-     */
-    void saveObjectsResult(Index index, List<JSONObject> objects, JSONObject result);
-
-    /**
-     * Asynchronously receive error of Index.saveObjectsASync method.
-     */
-    void saveObjectsError(Index index, List<JSONObject> objects, AlgoliaException e);
-
-    /**
-     * Asynchronously receive result of Index.saveObjectsASync method.
-     */
-    void saveObjectsResult(Index index, JSONArray objects, JSONObject result);
-
-    /**
-     * Asynchronously receive error of Index.saveObjectsASync method.
-     */
-    void saveObjectsError(Index index, JSONArray objects, AlgoliaException e);
 
     /**
      * Asynchronously receive result of Index.partialUpdateObjectASync method.
