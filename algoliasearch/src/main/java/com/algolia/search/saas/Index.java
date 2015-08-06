@@ -23,20 +23,18 @@
 
 package com.algolia.search.saas;
 
-import android.app.Activity;
 import android.os.AsyncTask;
 
+import com.algolia.search.saas.Listener.Index.DeleteObjectsListener;
 import com.algolia.search.saas.Listener.Index.GetObjectsListener;
 import com.algolia.search.saas.Listener.Index.IndexingListener;
 import com.algolia.search.saas.Listener.Index.SearchListener;
+import com.algolia.search.saas.Listener.Index.SettingsListener;
 import com.algolia.search.saas.Listener.Index.WaitTaskListener;
-import com.algolia.search.saas.Listener.IndexListener;
 
 import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -49,157 +47,6 @@ public class Index extends BaseIndex {
      */
     protected Index(APIClient client, String indexName) {
         super(client, indexName);
-    }
-
-    private enum ASyncIndexTaskKind
-    {
-        DeleteObject,
-        DeleteObjects,
-        DeleteByQuery,
-        GetSettings,
-        SetSettings,
-    }
-
-    private static class ASyncIndexTaskParams
-    {
-        public IndexListener listener;
-        public Query query;
-        public ASyncIndexTaskKind kind;
-        public String objectID;
-        public List list;
-        public JSONObject objectContent;
-        public JSONArray objects2;
-        public List<String> attributesToRetrieve;
-
-        public ASyncIndexTaskParams(IndexListener listener, ASyncIndexTaskKind kind, String objectID, JSONObject content)
-        {
-            this.listener = listener;
-            this.kind = kind;
-            this.objectID = objectID;
-            this.objectContent = content;
-        }
-
-        public ASyncIndexTaskParams(IndexListener listener, ASyncIndexTaskKind kind, List<?> objects)
-        {
-            this.listener = listener;
-            this.kind = kind;
-            this.list = objects;
-        }
-
-        public ASyncIndexTaskParams(IndexListener listener, ASyncIndexTaskKind kind, Query query)
-        {
-            this.listener = listener;
-            this.kind = kind;
-            this.query = query;
-        }
-
-        public ASyncIndexTaskParams(IndexListener listener, ASyncIndexTaskKind kind, JSONArray objects)
-        {
-            this.listener = listener;
-            this.kind = kind;
-            this.objects2 = objects;
-        }
-
-        public ASyncIndexTaskParams(IndexListener listener, ASyncIndexTaskKind kind, String objectID, List<String> attributesToRetrieve)
-        {
-            this.listener = listener;
-            this.kind = kind;
-            this.objectID = objectID;
-            this.attributesToRetrieve = attributesToRetrieve;
-        }
-    }
-
-    private class ASyncIndexTask extends AsyncTask<ASyncIndexTaskParams, Void, Void> {
-
-        private void _sendResult(ASyncIndexTaskParams p, JSONObject res)
-        {
-            final ASyncIndexTaskParams fp = p;
-            final JSONObject fres = res;
-            if (p.listener instanceof Activity) {
-                ((Activity)p.listener).runOnUiThread(new Runnable() {
-                    public void run() {
-                        _sendResultImpl(fp, fres);
-                    }
-                });
-            } else {
-                _sendResultImpl(p, res);
-            }
-        }
-
-        private void _sendResultImpl(ASyncIndexTaskParams p, JSONObject res)
-        {
-            switch (p.kind) {
-                case DeleteObject:
-                    p.listener.deleteObjectResult(Index.this, p.objectID, res);
-                    break;
-                case DeleteObjects:
-                    p.listener.deleteObjectsResult(Index.this, p.objects2, res);
-                    break;
-                case DeleteByQuery:
-                    p.listener.deleteByQueryResult(Index.this);
-                    break;
-                case GetSettings:
-                    p.listener.getSettingsResult(Index.this, res);
-                    break;
-                case SetSettings:
-                    p.listener.setSettingsResult(Index.this, p.objectContent, res);
-                    break;
-            }
-        }
-
-        @Override
-        protected Void doInBackground(ASyncIndexTaskParams... params) {
-            ASyncIndexTaskParams p = params[0];
-            JSONObject res = null;
-            switch (p.kind) {
-                case DeleteObject:
-                    try {
-                        res = deleteObject(p.objectID);
-                    } catch (AlgoliaException e) {
-                        p.listener.deleteObjectError(Index.this, p.objectID, e);
-                        return null;
-                    }
-                    break;
-                case DeleteByQuery:
-                    try {
-                        deleteByQuery(p.query);
-                    } catch (AlgoliaException e) {
-                        p.listener.deleteByQueryError(Index.this, p.query, e);
-                        return null;
-                    }
-                    break;
-                case DeleteObjects:
-                    try {
-                        res = deleteObjects2(p.list);
-                    } catch (AlgoliaException e) {
-                        p.listener.deleteObjectsError(Index.this, p.list, e);
-                        return null;
-                    }
-                    break;
-                case GetSettings:
-                    try {
-                        res = getSettings();
-                    } catch (AlgoliaException e) {
-                        p.listener.getSettingsError(Index.this, e);
-                        return null;
-                    }
-                    break;
-                case SetSettings:
-                    try {
-                        res = setSettings(p.objectContent);
-                    } catch (AlgoliaException e) {
-                        p.listener.setSettingsError(Index.this, p.objectContent, e);
-                        return null;
-                    }
-                    break;
-            }
-            _sendResult(p, res);
-            return null;
-        }
-
-        @Override
-        protected void onPostExecute(Void result) {
-        }
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////
@@ -280,26 +127,26 @@ public class Index extends BaseIndex {
     /**
      * Add an object in this index asynchronously
      *
-     * @param obj the object to add. 
+     * @param object the object to add.
      *  The object is represented by an associative array
      * @param listener the listener that will receive the result or error.
      */
-    public void addObjectASync(JSONObject obj, IndexingListener listener) {
-        TaskParams.Indexing params = new TaskParams.Indexing(listener, TaskKind.AddObject, obj);
+    public void addObjectASync(JSONObject object, IndexingListener listener) {
+        TaskParams.Indexing params = new TaskParams.Indexing(listener, TaskKind.AddObject, object);
         new AsyncIndexingTask().execute(params);
     }
 
     /**
      * Add an object in this index asynchronously
      *
-     * @param obj the object to add. 
+     * @param object the object to add.
      *  The object is represented by an associative array
      * @param objectID an objectID you want to attribute to this object 
      * (if the attribute already exist the old object will be overwrite)
      * @param listener the listener that will receive the result or error.
      */
-    public void addObjectASync(JSONObject obj, String objectID, IndexingListener listener)  {
-        TaskParams.Indexing params = new TaskParams.Indexing(listener, TaskKind.AddObjectWithObjectID, obj, objectID);
+    public void addObjectASync(JSONObject object, String objectID, IndexingListener listener)  {
+        TaskParams.Indexing params = new TaskParams.Indexing(listener, TaskKind.AddObjectWithObjectID, object, objectID);
         new AsyncIndexingTask().execute(params);
     }
 
@@ -317,11 +164,12 @@ public class Index extends BaseIndex {
     /**
      * Override the content of object asynchronously
      *
-     * @param obj the object to save
+     * @param object the object to save
+     * @param objectID the objectID
      * @param listener the listener that will receive the result or error.
      */
-    public void saveObjectASync(JSONObject obj, String objectID, IndexingListener listener) {
-        TaskParams.Indexing params = new TaskParams.Indexing(listener, TaskKind.SaveObject, obj, objectID);
+    public void saveObjectASync(JSONObject object, String objectID, IndexingListener listener) {
+        TaskParams.Indexing params = new TaskParams.Indexing(listener, TaskKind.SaveObject, object, objectID);
         new AsyncIndexingTask().execute(params);
     }
 
@@ -339,8 +187,8 @@ public class Index extends BaseIndex {
     /**
      * Update partially an object asynchronously.
      *
-     * @param partialObject the object attributes to override, the
-     *  object must contains an objectID attribute
+     * @param partialObject the object attributes to override.
+     * @param objectID the objectID
      * @param listener the listener that will receive the result or error.
      */
     public void partialUpdateObjectASync(JSONObject partialObject, String objectID, IndexingListener listener) {
@@ -460,9 +308,39 @@ public class Index extends BaseIndex {
         new ASyncWaitTask().execute(params);
     }
 
+    ////////////////////////////////////////////////////////////////////////////////////////////////
+    /// DELETE TASK
+    ////////////////////////////////////////////////////////////////////////////////////////////////
 
+    private class AsyncDeleteTask extends AsyncTask<TaskParams.DeleteObjects, Void, TaskParams.DeleteObjects> {
+        @Override
+        protected TaskParams.DeleteObjects doInBackground(TaskParams.DeleteObjects... params) {
+            TaskParams.DeleteObjects p = params[0];
+            try {
+                switch (p.kind) {
+                    case DeleteObject:
+                        p.content = deleteObject(p.objectID);
+                        break;
+                    case DeleteObjects:
+                        p.content = deleteObjects(p.objectIDs);
+                        break;
+                    case DeleteByQuery:
+                        deleteByQuery(p.query);
+                        p.content = new JSONObject();
+                        break;
+                }
+            } catch (AlgoliaException e) {
+                p.error = e;
+            }
 
+            return p;
+        }
 
+        @Override
+        protected void onPostExecute(TaskParams.DeleteObjects p) {
+            p.sendResult(Index.this);
+        }
+    }
 
     /**
      * Delete an object from the index asynchronously
@@ -470,28 +348,20 @@ public class Index extends BaseIndex {
      * @param objectID the unique identifier of object to delete
      * @param listener the listener that will receive the result or error.
      */
-    public void deleteObjectASync(String objectID, IndexListener listener) {
-        ASyncIndexTaskParams params = new ASyncIndexTaskParams(listener, ASyncIndexTaskKind.DeleteObject, objectID, (List)null);
-        new ASyncIndexTask().execute(params);
+    public void deleteObjectASync(String objectID, DeleteObjectsListener listener) {
+        TaskParams.DeleteObjects params = new TaskParams.DeleteObjects(listener, TaskKind.DeleteObject, objectID);
+        new AsyncDeleteTask().execute(params);
     }
 
     /**
      * Delete several objects asynchronously
      *
-     * @param ids the array of objectIDs to delete
+     * @param objectIDs the array of objectIDs to delete
      * @param listener the listener that will receive the result or error.
      */
-    public void deleteObjectsASync(List<String> ids, IndexListener listener) throws AlgoliaException {
-        List<JSONObject> objects = new ArrayList<JSONObject>();
-        for (String id : ids) {
-            try {
-                objects.add(new JSONObject().put("objectID", id));
-            } catch (JSONException e) {
-                throw new AlgoliaException(e.getMessage());
-            }
-        }
-        ASyncIndexTaskParams params = new ASyncIndexTaskParams(listener, ASyncIndexTaskKind.DeleteObjects, objects);
-        new ASyncIndexTask().execute(params);
+    public void deleteObjectsASync(List<String> objectIDs, DeleteObjectsListener listener) {
+        TaskParams.DeleteObjects params = new TaskParams.DeleteObjects(listener, TaskKind.DeleteObjects, objectIDs);
+        new AsyncDeleteTask().execute(params);
     }
 
     /**
@@ -500,26 +370,59 @@ public class Index extends BaseIndex {
      * @param query the query string
      * @param listener the listener that will receive the result or error.
      */
-    public void deleteByQueryASync(Query query, IndexListener listener) {
-        ASyncIndexTaskParams params = new ASyncIndexTaskParams(listener, ASyncIndexTaskKind.DeleteByQuery, query);
-        new ASyncIndexTask().execute(params);
+    public void deleteByQueryASync(Query query, DeleteObjectsListener listener) {
+        TaskParams.DeleteObjects params = new TaskParams.DeleteObjects(listener, TaskKind.DeleteByQuery, query);
+        new AsyncDeleteTask().execute(params);
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////
+    /// SETTINGS TASK
+    ////////////////////////////////////////////////////////////////////////////////////////////////
+
+    private class AsyncSettingsTask extends AsyncTask<TaskParams.Settings, Void, TaskParams.Settings> {
+        @Override
+        protected TaskParams.Settings doInBackground(TaskParams.Settings... params) {
+            TaskParams.Settings p = params[0];
+            try {
+                switch (p.kind) {
+                    case GetSettings:
+                        p.content = getSettings();
+                        break;
+                    case SetSettings:
+                        p.content = setSettings(p.settings);
+                        break;
+                }
+            } catch (AlgoliaException e) {
+                p.error = e;
+            }
+
+            return p;
+        }
+
+        @Override
+        protected void onPostExecute(TaskParams.Settings p) {
+            p.sendResult(Index.this);
+        }
     }
 
     /**
      * Get settings of this index asynchronously
+     *
      * @param listener the listener that will receive the result or error.
      */
-    public void getSettingsASync(IndexListener listener) {
-        ASyncIndexTaskParams params = new ASyncIndexTaskParams(listener, ASyncIndexTaskKind.GetSettings, null, (List)null);
-        new ASyncIndexTask().execute(params);
+    public void getSettingsASync(SettingsListener listener) {
+        TaskParams.Settings params = new TaskParams.Settings(listener, TaskKind.GetSettings);
+        new AsyncSettingsTask().execute(params);
     }
 
     /**
      * Set settings for this index asynchronously
+     *
+     * @param settings the settings
      * @param listener the listener that will receive the result or error.
      */
-    public void setSettingsASync(JSONObject settings, IndexListener listener) {
-        ASyncIndexTaskParams params = new ASyncIndexTaskParams(listener, ASyncIndexTaskKind.SetSettings, null, settings);
-        new ASyncIndexTask().execute(params);
+    public void setSettingsASync(JSONObject settings, SettingsListener listener) {
+        TaskParams.Settings params = new TaskParams.Settings(listener, TaskKind.SetSettings, settings);
+        new AsyncSettingsTask().execute(params);
     }
 }

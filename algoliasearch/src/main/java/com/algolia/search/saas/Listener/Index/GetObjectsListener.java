@@ -30,7 +30,7 @@ import com.algolia.search.saas.TaskParams;
 import org.json.JSONObject;
 
 /**
- * Asynchronously receive result of search method
+ * Asynchronously receive result of getObject(s) methods
  */
 public interface GetObjectsListener {
     /**

@@ -25,48 +25,13 @@ package com.algolia.search.saas.Listener;
 
 import com.algolia.search.saas.AlgoliaException;
 import com.algolia.search.saas.Index;
-import com.algolia.search.saas.Query;
 
-import org.json.JSONArray;
 import org.json.JSONObject;
-
-import java.util.List;
 
 /**
  * Asynchronously receive result of Index asynchronous methods
  */
 public interface IndexListener {
-
-    /**
-     * Asynchronously receive result of Index.deleteObjectASync method.
-     */
-    void deleteObjectResult(Index index, String objectID, JSONObject result);
-
-    /**
-     * Asynchronously receive error of Index.deleteObjectASync method.
-     */
-    void deleteObjectError(Index index, String objectID, AlgoliaException e);
-
-    /**
-     * Asynchronously receive result of Index.deleteObjectsASync method.
-     */
-    void deleteObjectsResult(Index index, JSONArray objects, JSONObject result);
-
-    /**
-     * Asynchronously receive error of Index.deleteByQueryASync method.
-     */
-    void deleteByQueryError(Index index, Query query, AlgoliaException e);
-
-    /**
-     * Asynchronously receive result of Index.deleteByQueryASync method.
-     */
-    void deleteByQueryResult(Index index);
-
-    /**
-     * Asynchronously receive error of Index.deleteObjectsASync method.
-     */
-    void deleteObjectsError(Index index, List<JSONObject> objects, AlgoliaException e);
-
     /**
      * Asynchronously receive result of Index.getSettingsASync method.
      */

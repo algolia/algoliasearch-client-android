@@ -25,18 +25,21 @@ package com.algolia.search.saas.Listener.Index;
 
 import com.algolia.search.saas.AlgoliaException;
 import com.algolia.search.saas.Index;
+import com.algolia.search.saas.TaskParams;
+
+import org.json.JSONObject;
 
 /**
- * Asynchronously receive result of waitTask method
+ * Asynchronously receive result of Index.deleteObject(s) and Index.deleteByQuery methods.
  */
-public interface WaitTaskListener {
+public interface DeleteObjectsListener {
     /**
-     * Asynchronously receive result of Index.waitTaskASync method.
+     * Asynchronously receive result of Index.deleteObject(s) and Index.deleteByQuery methods.
      */
-    void waitTaskResult(Index index, String taskID);
+    void deleteObjectsResult(Index index, TaskParams.DeleteObjects context, JSONObject results);
 
     /**
-     * Asynchronously receive error of Index.waitTaskASync method.
+     * Asynchronously receive error of Index.deleteObject(s) and Index.deleteByQuery methods.
      */
-    void waitTaskError(Index index, String taskID, AlgoliaException e);
+    void deleteObjectsError(Index index, TaskParams.DeleteObjects context, AlgoliaException e);
 }

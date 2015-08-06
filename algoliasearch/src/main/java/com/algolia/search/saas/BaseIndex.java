@@ -364,29 +364,9 @@ abstract class BaseIndex {
         }
     }
 
-    /**
-     * Delete several objects
-     *
-     * @param objects the array of objectIDs to delete
-     */
-    public JSONObject deleteObjects2(List<JSONObject> objects) throws AlgoliaException {
-        try {
-            JSONArray array = new JSONArray();
-            for (JSONObject obj : objects) {
-                JSONObject action = new JSONObject();
-                action.put("action", "deleteObject");
-                action.put("body", obj);
-                array.put(action);
-            }
-            return batch(array);
-        } catch (JSONException e) {
-            throw new AlgoliaException(e.getMessage());
-        }
-    }
+    static class IndexBrowser implements Iterator<JSONObject> {
 
-    static class IndexBrower implements Iterator<JSONObject> {
-
-        IndexBrower(APIClient client, String encodedIndexName, Query params, String startingCursor) throws AlgoliaException {
+        IndexBrowser(APIClient client, String encodedIndexName, Query params, String startingCursor) throws AlgoliaException {
             this.client = client;
             this.params = params;
             this.encodedIndexName = encodedIndexName;
@@ -460,14 +440,14 @@ abstract class BaseIndex {
      * Browse all index content
      */
     public Iterator<JSONObject> browse(Query params) throws AlgoliaException {
-        return new IndexBrower(client, encodedIndexName, params, null);
+        return new IndexBrowser(client, encodedIndexName, params, null);
     }
 
     /**
      * Browse all index content starting from a cursor
      */
     public Iterator<JSONObject> browseFrom(Query params, String cursor) throws AlgoliaException {
-        return new IndexBrower(client, encodedIndexName, params, cursor);
+        return new IndexBrowser(client, encodedIndexName, params, cursor);
     }
 
     /**

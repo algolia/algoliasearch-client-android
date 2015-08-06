@@ -23,9 +23,11 @@
 
 package com.algolia.search.saas;
 
+import com.algolia.search.saas.Listener.Index.DeleteObjectsListener;
 import com.algolia.search.saas.Listener.Index.GetObjectsListener;
 import com.algolia.search.saas.Listener.Index.IndexingListener;
 import com.algolia.search.saas.Listener.Index.SearchListener;
+import com.algolia.search.saas.Listener.Index.SettingsListener;
 import com.algolia.search.saas.Listener.Index.WaitTaskListener;
 
 import org.json.JSONArray;
@@ -147,6 +149,71 @@ public class TaskParams {
                 listener.waitTaskResult(index, taskID);
             } else {
                 listener.waitTaskError(index, taskID, error);
+            }
+        }
+    }
+
+    public static class DeleteObjects {
+        protected DeleteObjectsListener listener;
+        public TaskKind kind;
+        public String objectID;
+        public List<String> objectIDs;
+        public Query query;
+
+        protected JSONObject content;
+        protected AlgoliaException error;
+
+        protected DeleteObjects(DeleteObjectsListener listener, TaskKind kind, String objectID) {
+            this.listener = listener;
+            this.kind = kind;
+            this.objectID = objectID;
+        }
+
+        protected DeleteObjects(DeleteObjectsListener listener, TaskKind kind, List<String> objectIDs) {
+            this.listener = listener;
+            this.kind = kind;
+            this.objectIDs = objectIDs;
+        }
+
+        protected DeleteObjects(DeleteObjectsListener listener, TaskKind kind, Query query) {
+            this.listener = listener;
+            this.kind = kind;
+            this.query = query;
+        }
+
+        protected void sendResult(Index index) {
+            if (error == null) {
+                listener.deleteObjectsResult(index, this, content);
+            } else {
+                listener.deleteObjectsError(index, this, error);
+            }
+        }
+    }
+
+    public static class Settings {
+        protected SettingsListener listener;
+        public TaskKind kind;
+        public JSONObject settings;
+
+        protected JSONObject content;
+        protected AlgoliaException error;
+
+        protected Settings(SettingsListener listener, TaskKind kind) {
+            this.listener = listener;
+            this.kind = kind;
+        }
+
+        protected Settings(SettingsListener listener, TaskKind kind, JSONObject settings) {
+            this.listener = listener;
+            this.kind = kind;
+            this.settings = settings;
+        }
+
+        protected void sendResult(Index index) {
+            if (error == null) {
+                listener.settingsResult(index, this, content);
+            } else {
+                listener.settingsError(index, this, error);
             }
         }
     }

@@ -103,7 +103,7 @@ public class APIClient extends BaseAPIClient {
         AddUserKey,
         UpdateUserKey,
         DeleteUserKey
-    };
+    }
 
     private static class ASyncAPIClientTaskParams
     {

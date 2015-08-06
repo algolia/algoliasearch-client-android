@@ -498,8 +498,8 @@ abstract class BaseAPIClient {
         this.userToken = userToken;
     }
 
-    private static enum Method {
-        GET, POST, PUT, DELETE;
+    private enum Method {
+        GET, POST, PUT, DELETE
     }
 
     protected JSONObject getRequest(String url, boolean search) throws AlgoliaException {
@@ -608,9 +608,9 @@ abstract class BaseAPIClient {
                 continue;
             }
             int code = response.getStatusLine().getStatusCode();
-            if ((int)code / 100 == 2) {
+            if (code / 100 == 2) {
                 // OK
-            } else if ((int)code / 100 == 4) {
+            } else if (code / 100 == 4) {
                 String message = "Error detected in backend";
                 try {
                     message = _getAnswerObject(response.getEntity().getContent()).getString("message");

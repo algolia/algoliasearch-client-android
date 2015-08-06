@@ -25,18 +25,21 @@ package com.algolia.search.saas.Listener.Index;
 
 import com.algolia.search.saas.AlgoliaException;
 import com.algolia.search.saas.Index;
+import com.algolia.search.saas.TaskParams;
+
+import org.json.JSONObject;
 
 /**
- * Asynchronously receive result of waitTask method
+ * Asynchronously receive result of Index.(get/set)SettingsASync methods
  */
-public interface WaitTaskListener {
+public interface SettingsListener {
     /**
-     * Asynchronously receive result of Index.waitTaskASync method.
+     * Asynchronously receive result of Index.(get/set)SettingsASync methods.
      */
-    void waitTaskResult(Index index, String taskID);
+    void settingsResult(Index index, TaskParams.Settings context, JSONObject results);
 
     /**
-     * Asynchronously receive error of Index.waitTaskASync method.
+     * Asynchronously receive error of Index.(get/set)SettingsASync methods.
      */
-    void waitTaskError(Index index, String taskID, AlgoliaException e);
+    void settingsError(Index index, TaskParams.Settings context, AlgoliaException e);
 }
