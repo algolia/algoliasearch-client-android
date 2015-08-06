@@ -21,30 +21,19 @@
  * THE SOFTWARE.
  */
 
-package com.algolia.search.saas;
+package com.algolia.search.saas.Listener.Index;
 
-public enum TaskKind
-{
-    Search,
+import com.algolia.search.saas.AlgoliaException;
+import com.algolia.search.saas.Index;
 
-    AddObject,
-    AddObjectWithObjectID,
-    AddObjects,
-    SaveObject,
-    SaveObjects,
-    PartialUpdateObject,
-    PartialUpdateObjects,
+public interface WaitTaskListener {
+    /**
+     * Asynchronously receive result of Index.waitTaskASync method.
+     */
+    void waitTaskResult(Index index, String taskID);
 
-    GetObject,
-    GetObjectWithAttributesToRetrieve,
-    GetObjects,
-
-    WaitTask,
-
-    DeleteObject,
-    DeleteObjects,
-    DeleteByQuery,
-
-    GetSettings,
-    SetSettings
+    /**
+     * Asynchronously receive error of Index.waitTaskASync method.
+     */
+    void waitTaskError(Index index, String taskID, AlgoliaException e);
 }

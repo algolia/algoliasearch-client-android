@@ -26,9 +26,10 @@ package com.algolia.search.saas;
 import android.app.Activity;
 import android.os.AsyncTask;
 
-import com.algolia.search.saas.Listener.Index.GetListener;
+import com.algolia.search.saas.Listener.Index.GetObjectsListener;
 import com.algolia.search.saas.Listener.Index.IndexingListener;
 import com.algolia.search.saas.Listener.Index.SearchListener;
+import com.algolia.search.saas.Listener.Index.WaitTaskListener;
 import com.algolia.search.saas.Listener.IndexListener;
 
 import org.json.JSONArray;
@@ -55,7 +56,6 @@ public class Index extends BaseIndex {
         DeleteObject,
         DeleteObjects,
         DeleteByQuery,
-        WaitTask,
         GetSettings,
         SetSettings,
     }
@@ -129,9 +129,6 @@ public class Index extends BaseIndex {
         private void _sendResultImpl(ASyncIndexTaskParams p, JSONObject res)
         {
             switch (p.kind) {
-                case WaitTask:
-                    p.listener.waitTaskResult(Index.this, p.objectID);
-                    break;
                 case DeleteObject:
                     p.listener.deleteObjectResult(Index.this, p.objectID, res);
                     break;
@@ -155,14 +152,6 @@ public class Index extends BaseIndex {
             ASyncIndexTaskParams p = params[0];
             JSONObject res = null;
             switch (p.kind) {
-                case WaitTask:
-                    try {
-                        waitTask(p.objectID);
-                    } catch (AlgoliaException e) {
-                        p.listener.waitTaskError(Index.this, p.objectID, e);
-                        return null;
-                    }
-                    break;
                 case DeleteObject:
                     try {
                         res = deleteObject(p.objectID);
@@ -374,10 +363,10 @@ public class Index extends BaseIndex {
     /// GET TASK
     ////////////////////////////////////////////////////////////////////////////////////////////////
 
-    private class AsyncGetTask extends AsyncTask<TaskParams.Get, Void, TaskParams.Get> {
+    private class AsyncGetTask extends AsyncTask<TaskParams.GetObjects, Void, TaskParams.GetObjects> {
         @Override
-        protected TaskParams.Get doInBackground(TaskParams.Get... params) {
-            TaskParams.Get p = params[0];
+        protected TaskParams.GetObjects doInBackground(TaskParams.GetObjects... params) {
+            TaskParams.GetObjects p = params[0];
             try {
                 switch (p.kind) {
                     case GetObject:
@@ -398,7 +387,7 @@ public class Index extends BaseIndex {
         }
 
         @Override
-        protected void onPostExecute(TaskParams.Get p) {
+        protected void onPostExecute(TaskParams.GetObjects p) {
             p.sendResult(Index.this);
         }
     }
@@ -409,8 +398,8 @@ public class Index extends BaseIndex {
      * @param objectID the unique identifier of the object to retrieve
      * @param listener the listener that will receive the result or error.
      */
-    public void getObjectASync(String objectID, GetListener listener) {
-        TaskParams.Get params = new TaskParams.Get(listener, TaskKind.GetObject, objectID);
+    public void getObjectASync(String objectID, GetObjectsListener listener) {
+        TaskParams.GetObjects params = new TaskParams.GetObjects(listener, TaskKind.GetObject, objectID);
         new AsyncGetTask().execute(params);
     }
 
@@ -421,8 +410,8 @@ public class Index extends BaseIndex {
      * @param attributesToRetrieve, contains the list of attributes to retrieve as a string separated by ","
      * @param listener the listener that will receive the result or error.
      */
-    public void getObjectASync(String objectID, List<String> attributesToRetrieve, GetListener listener) {
-        TaskParams.Get params = new TaskParams.Get(listener, TaskKind.GetObjectWithAttributesToRetrieve, objectID, attributesToRetrieve);
+    public void getObjectASync(String objectID, List<String> attributesToRetrieve, GetObjectsListener listener) {
+        TaskParams.GetObjects params = new TaskParams.GetObjects(listener, TaskKind.GetObjectWithAttributesToRetrieve, objectID, attributesToRetrieve);
         new AsyncGetTask().execute(params);
     }
 
@@ -432,13 +421,44 @@ public class Index extends BaseIndex {
      * @param objectIDs the array of unique identifier of objects to retrieve
      * @throws AlgoliaException
      */
-    public void getObjectsASync(List<String> objectIDs, GetListener listener) throws AlgoliaException {
-        TaskParams.Get params = new TaskParams.Get(listener, TaskKind.GetObjects, objectIDs);
+    public void getObjectsASync(List<String> objectIDs, GetObjectsListener listener) throws AlgoliaException {
+        TaskParams.GetObjects params = new TaskParams.GetObjects(listener, TaskKind.GetObjects, objectIDs);
         new AsyncGetTask().execute(params);
     }
 
+    ////////////////////////////////////////////////////////////////////////////////////////////////
+    /// WAIT TASK
+    ////////////////////////////////////////////////////////////////////////////////////////////////
 
+    private class ASyncWaitTask extends AsyncTask<TaskParams.WaitTask, Void, TaskParams.WaitTask> {
+        @Override
+        protected TaskParams.WaitTask doInBackground(TaskParams.WaitTask... params) {
+            TaskParams.WaitTask p = params[0];
+            try {
+                waitTask(p.taskID);
+            } catch (AlgoliaException e) {
+                p.error = e;
+            }
+            return p;
+        }
 
+        @Override
+        protected void onPostExecute(TaskParams.WaitTask p) {
+            p.sendResult(Index.this);
+        }
+    }
+
+    /**
+     * Wait the publication of a task on the server asynchronously.
+     * All server task are asynchronous and you can check with this method that the task is published.
+     *
+     * @param taskID the id of the task returned by server
+     * @param listener the listener that will receive the result or error.
+     */
+    public void waitTaskASync(String taskID, WaitTaskListener listener) {
+        TaskParams.WaitTask params = new TaskParams.WaitTask(listener, taskID);
+        new ASyncWaitTask().execute(params);
+    }
 
 
 
@@ -482,18 +502,6 @@ public class Index extends BaseIndex {
      */
     public void deleteByQueryASync(Query query, IndexListener listener) {
         ASyncIndexTaskParams params = new ASyncIndexTaskParams(listener, ASyncIndexTaskKind.DeleteByQuery, query);
-        new ASyncIndexTask().execute(params);
-    }
-
-    /**
-     * Wait the publication of a task on the server asynchronously. 
-     * All server task are asynchronous and you can check with this method that the task is published.
-     *
-     * @param taskID the id of the task returned by server
-     * @param listener the listener that will receive the result or error.
-     */
-    public void waitTaskASync(String taskID, IndexListener listener) {
-        ASyncIndexTaskParams params = new ASyncIndexTaskParams(listener, ASyncIndexTaskKind.WaitTask, taskID, (List)null);
         new ASyncIndexTask().execute(params);
     }
 

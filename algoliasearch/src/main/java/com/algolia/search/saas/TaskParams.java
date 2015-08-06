@@ -23,9 +23,10 @@
 
 package com.algolia.search.saas;
 
-import com.algolia.search.saas.Listener.Index.GetListener;
+import com.algolia.search.saas.Listener.Index.GetObjectsListener;
 import com.algolia.search.saas.Listener.Index.IndexingListener;
 import com.algolia.search.saas.Listener.Index.SearchListener;
+import com.algolia.search.saas.Listener.Index.WaitTaskListener;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -46,7 +47,7 @@ public class TaskParams {
         }
 
         protected void sendResult(Index index) {
-            if (content != null) {
+            if (error == null) {
                 listener.searchResult(index, query, content);
             } else {
                 listener.searchError(index, query, error);
@@ -84,7 +85,7 @@ public class TaskParams {
         }
 
         protected void sendResult(Index index) {
-            if (content != null) {
+            if (error == null) {
                 listener.indexingResult(index, this, content);
             } else {
                 listener.indexingError(index, this, error);
@@ -92,8 +93,8 @@ public class TaskParams {
         }
     }
 
-    public static class Get {
-        protected GetListener listener;
+    public static class GetObjects {
+        protected GetObjectsListener listener;
         public TaskKind kind;
         public String objectID;
         public List<String> objectIDs;
@@ -102,30 +103,50 @@ public class TaskParams {
         protected JSONObject content;
         protected AlgoliaException error;
 
-        protected Get(GetListener listener, TaskKind kind, String objectID) {
+        protected GetObjects(GetObjectsListener listener, TaskKind kind, String objectID) {
             this.listener = listener;
             this.kind = kind;
             this.objectID = objectID;
         }
 
-        protected Get(GetListener listener, TaskKind kind, String objectID, List<String> attributesToRetrieve) {
+        protected GetObjects(GetObjectsListener listener, TaskKind kind, String objectID, List<String> attributesToRetrieve) {
             this.listener = listener;
             this.kind = kind;
             this.objectID = objectID;
             this.attributesToRetrieve = attributesToRetrieve;
         }
 
-        protected Get(GetListener listener, TaskKind kind, List<String> objectIDs) {
+        protected GetObjects(GetObjectsListener listener, TaskKind kind, List<String> objectIDs) {
             this.listener = listener;
             this.kind = kind;
             this.objectIDs = objectIDs;
         }
 
         protected void sendResult(Index index) {
-            if (content != null) {
+            if (error == null) {
                 listener.getObjectsResult(index, this, content);
             } else {
                 listener.getObjectsError(index, this, error);
+            }
+        }
+    }
+
+    public static class WaitTask {
+        protected WaitTaskListener listener;
+        public String taskID;
+
+        protected AlgoliaException error;
+
+        protected WaitTask(WaitTaskListener listener, String taskID) {
+            this.listener = listener;
+            this.taskID = taskID;
+        }
+
+        protected void sendResult(Index index) {
+            if (error == null) {
+                listener.waitTaskResult(index, taskID);
+            } else {
+                listener.waitTaskError(index, taskID, error);
             }
         }
     }

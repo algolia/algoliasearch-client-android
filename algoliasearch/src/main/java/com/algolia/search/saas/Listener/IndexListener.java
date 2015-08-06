@@ -68,66 +68,6 @@ public interface IndexListener {
     void deleteObjectsError(Index index, List<JSONObject> objects, AlgoliaException e);
 
     /**
-     * Asynchronously receive result of Index.partialUpdateObjectASync method.
-     */
-    void partialUpdateResult(Index index, JSONObject object, String objectID, JSONObject result);
-
-    /**
-     * Asynchronously receive error of Index.partialUpdateObjectASync method.
-     */
-    void partialUpdateError(Index index, JSONObject object, String objectID, AlgoliaException e);
-
-    /**
-     * Asynchronously receive result of Index.partialUpdateObjectsASync method.
-     */
-    void partialUpdateObjectsResult(Index index, List<JSONObject> objects, JSONObject result);
-
-    /**
-     * Asynchronously receive error of Index.partialUpdateObjectsASync method.
-     */
-    void partialUpdateObjectsError(Index index, List<JSONObject> objects, AlgoliaException e);
-
-    /**
-     * Asynchronously receive result of Index.partialUpdateObjectsASync method.
-     */
-    void partialUpdateObjectsResult(Index index, JSONArray objects, JSONObject result);
-
-    /**
-     * Asynchronously receive error of Index.partialUpdateObjectsASync method.
-     */
-    void partialUpdateObjectsError(Index index, JSONArray objects, AlgoliaException e);
-
-    /**
-     * Asynchronously receive result of Index.getObjectASync method.
-     */
-    void getObjectResult(Index index, String objectID, JSONObject result);
-
-    /**
-     * Asynchronously receive error of Index.getObjectASync method.
-     */
-    void getObjectError(Index index, String objectID, AlgoliaException e);
-
-    /**
-     * Asynchronously receive result of Index.getObjectsASync method.
-     */
-    void getObjectsResult(Index index, List<String> objectIDs, JSONObject result);
-
-    /**
-     * Asynchronously receive error of Index.getObjectsASync method.
-     */
-    void getObjectsError(Index index, List<String> objectIDs, AlgoliaException e);
-
-    /**
-     * Asynchronously receive result of Index.waitTaskASync method.
-     */
-    void waitTaskResult(Index index, String taskID);
-
-    /**
-     * Asynchronously receive error of Index.waitTaskASync method.
-     */
-    void waitTaskError(Index index, String taskID, AlgoliaException e);
-
-    /**
      * Asynchronously receive result of Index.getSettingsASync method.
      */
     void getSettingsResult(Index index, JSONObject result);

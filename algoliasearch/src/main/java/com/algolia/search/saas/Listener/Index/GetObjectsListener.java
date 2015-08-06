@@ -32,14 +32,14 @@ import org.json.JSONObject;
 /**
  * Asynchronously receive result of search method
  */
-public interface GetListener {
+public interface GetObjectsListener {
     /**
      * Asynchronously receive result of Index.getObject(s) method.
      */
-    void getObjectsResult(Index index, TaskParams.Get context, JSONObject results);
+    void getObjectsResult(Index index, TaskParams.GetObjects context, JSONObject results);
 
     /**
      * Asynchronously receive error of Index.getObject(s) method.
      */
-    void getObjectsError(Index index, TaskParams.Get context, AlgoliaException e);
+    void getObjectsError(Index index, TaskParams.GetObjects context, AlgoliaException e);
 }
