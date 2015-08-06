@@ -30,7 +30,7 @@ import com.algolia.search.saas.TaskParams;
 import org.json.JSONObject;
 
 /**
- * Asynchronously receive result of addObject, addObjects, saveObject and saveObjects methods
+ * Asynchronously receive result of addObject(s), saveObject(s) and partialUpdateObject(s) methods
  */
 public interface IndexingListener {
     /**

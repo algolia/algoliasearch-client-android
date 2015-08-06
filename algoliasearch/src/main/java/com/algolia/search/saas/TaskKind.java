@@ -30,14 +30,13 @@ public enum TaskKind
     AddObjects,
     SaveObject,
     SaveObjects,
+    PartialUpdateObject,
+    PartialUpdateObjects,
 
     GetObject,
     GetObjectWithAttributesToRetrieve,
     GetObjects,
 
-    PartialSaveObject,
-    PartialSaveObjects,
-    PartialSaveObjects2,
     DeleteObject,
     DeleteObjects,
     DeleteByQuery,
