@@ -23,6 +23,7 @@
 
 package com.algolia.search.saas;
 
+import com.algolia.search.saas.Listener.APIClientListener;
 import com.algolia.search.saas.Listener.Index.DeleteObjectsListener;
 import com.algolia.search.saas.Listener.Index.GetObjectsListener;
 import com.algolia.search.saas.Listener.Index.IndexingListener;
@@ -59,7 +60,7 @@ public class TaskParams {
 
     public static class Indexing {
         protected IndexingListener listener;
-        public TaskKind kind;
+        public IndexTaskKind kind;
         public JSONObject object;
         public JSONArray objects;
         public String objectID;
@@ -67,20 +68,20 @@ public class TaskParams {
         protected JSONObject content;
         protected AlgoliaException error;
 
-        protected Indexing(IndexingListener listener, TaskKind kind, JSONObject object) {
+        protected Indexing(IndexingListener listener, IndexTaskKind kind, JSONObject object) {
             this.listener = listener;
             this.kind = kind;
             this.object = object;
         }
 
-        protected Indexing(IndexingListener listener, TaskKind kind, JSONObject object, String objectID) {
+        protected Indexing(IndexingListener listener, IndexTaskKind kind, JSONObject object, String objectID) {
             this.listener = listener;
             this.kind = kind;
             this.object = object;
             this.objectID = objectID;
         }
 
-        protected Indexing(IndexingListener listener, TaskKind kind, JSONArray objects) {
+        protected Indexing(IndexingListener listener, IndexTaskKind kind, JSONArray objects) {
             this.listener = listener;
             this.kind = kind;
             this.objects = objects;
@@ -97,7 +98,7 @@ public class TaskParams {
 
     public static class GetObjects {
         protected GetObjectsListener listener;
-        public TaskKind kind;
+        public IndexTaskKind kind;
         public String objectID;
         public List<String> objectIDs;
         public List<String> attributesToRetrieve;
@@ -105,20 +106,20 @@ public class TaskParams {
         protected JSONObject content;
         protected AlgoliaException error;
 
-        protected GetObjects(GetObjectsListener listener, TaskKind kind, String objectID) {
+        protected GetObjects(GetObjectsListener listener, IndexTaskKind kind, String objectID) {
             this.listener = listener;
             this.kind = kind;
             this.objectID = objectID;
         }
 
-        protected GetObjects(GetObjectsListener listener, TaskKind kind, String objectID, List<String> attributesToRetrieve) {
+        protected GetObjects(GetObjectsListener listener, IndexTaskKind kind, String objectID, List<String> attributesToRetrieve) {
             this.listener = listener;
             this.kind = kind;
             this.objectID = objectID;
             this.attributesToRetrieve = attributesToRetrieve;
         }
 
-        protected GetObjects(GetObjectsListener listener, TaskKind kind, List<String> objectIDs) {
+        protected GetObjects(GetObjectsListener listener, IndexTaskKind kind, List<String> objectIDs) {
             this.listener = listener;
             this.kind = kind;
             this.objectIDs = objectIDs;
@@ -155,7 +156,7 @@ public class TaskParams {
 
     public static class DeleteObjects {
         protected DeleteObjectsListener listener;
-        public TaskKind kind;
+        public IndexTaskKind kind;
         public String objectID;
         public List<String> objectIDs;
         public Query query;
@@ -163,19 +164,19 @@ public class TaskParams {
         protected JSONObject content;
         protected AlgoliaException error;
 
-        protected DeleteObjects(DeleteObjectsListener listener, TaskKind kind, String objectID) {
+        protected DeleteObjects(DeleteObjectsListener listener, IndexTaskKind kind, String objectID) {
             this.listener = listener;
             this.kind = kind;
             this.objectID = objectID;
         }
 
-        protected DeleteObjects(DeleteObjectsListener listener, TaskKind kind, List<String> objectIDs) {
+        protected DeleteObjects(DeleteObjectsListener listener, IndexTaskKind kind, List<String> objectIDs) {
             this.listener = listener;
             this.kind = kind;
             this.objectIDs = objectIDs;
         }
 
-        protected DeleteObjects(DeleteObjectsListener listener, TaskKind kind, Query query) {
+        protected DeleteObjects(DeleteObjectsListener listener, IndexTaskKind kind, Query query) {
             this.listener = listener;
             this.kind = kind;
             this.query = query;
@@ -192,18 +193,18 @@ public class TaskParams {
 
     public static class Settings {
         protected SettingsListener listener;
-        public TaskKind kind;
+        public IndexTaskKind kind;
         public JSONObject settings;
 
         protected JSONObject content;
         protected AlgoliaException error;
 
-        protected Settings(SettingsListener listener, TaskKind kind) {
+        protected Settings(SettingsListener listener, IndexTaskKind kind) {
             this.listener = listener;
             this.kind = kind;
         }
 
-        protected Settings(SettingsListener listener, TaskKind kind, JSONObject settings) {
+        protected Settings(SettingsListener listener, IndexTaskKind kind, JSONObject settings) {
             this.listener = listener;
             this.kind = kind;
             this.settings = settings;
@@ -214,6 +215,90 @@ public class TaskParams {
                 listener.settingsResult(index, this, content);
             } else {
                 listener.settingsError(index, this, error);
+            }
+        }
+    }
+
+    public static class Client {
+        protected APIClientListener listener;
+        public APIClientTaskKind kind;
+        public String indexName;
+        public String srcIndexName;
+        public String dstIndexName;
+        public int offset;
+        public int length;
+        public LogType logType;
+        public String key;
+        public JSONObject parameters;
+        public List<IndexQuery> queries;
+        public String strategy;
+        public JSONArray actions;
+
+        protected JSONObject content;
+        protected AlgoliaException error;
+
+        protected Client(APIClientListener listener, APIClientTaskKind kind) {
+            this.listener = listener;
+            this.kind = kind;
+        }
+
+        protected Client(APIClientListener listener, APIClientTaskKind kind, String str) {
+            this.listener = listener;
+            this.kind = kind;
+
+            if (kind == APIClientTaskKind.DeleteIndex) {
+                this.indexName = str;
+            } else {
+                this.key = str;
+            }
+        }
+
+        protected Client(APIClientListener listener, APIClientTaskKind kind, String srcIndexName, String dstIndexName) {
+            this.listener = listener;
+            this.kind = kind;
+            this.srcIndexName = srcIndexName;
+            this.dstIndexName = dstIndexName;
+        }
+
+        protected Client(APIClientListener listener, APIClientTaskKind kind, JSONArray actions) {
+            this.listener = listener;
+            this.kind = kind;
+            this.actions = actions;
+        }
+
+        protected Client(APIClientListener listener, APIClientTaskKind kind, List<IndexQuery> queries, String strategy) {
+            this.listener = listener;
+            this.kind = kind;
+            this.queries = queries;
+            this.strategy = strategy;
+        }
+
+        protected Client(APIClientListener listener, APIClientTaskKind kind, JSONObject parameters) {
+            this.listener = listener;
+            this.kind = kind;
+            this.parameters = parameters;
+        }
+
+        protected Client(APIClientListener listener, APIClientTaskKind kind, JSONObject parameters, String key) {
+            this.listener = listener;
+            this.kind = kind;
+            this.parameters = parameters;
+            this.key = key;
+        }
+
+        protected Client(APIClientListener listener, APIClientTaskKind kind, int offset, int length, LogType logType) {
+            this.listener = listener;
+            this.kind = kind;
+            this.offset = offset;
+            this.length = length;
+            this.logType = logType;
+        }
+
+        protected void sendResult(APIClient client) {
+            if (error == null) {
+                listener.apiClientResult(client, this, content);
+            } else {
+                listener.apiClientError(client, this, error);
             }
         }
     }

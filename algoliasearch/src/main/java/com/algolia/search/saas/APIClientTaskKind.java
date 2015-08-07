@@ -23,28 +23,17 @@
 
 package com.algolia.search.saas;
 
-public enum TaskKind
-{
-    Search,
-
-    AddObject,
-    AddObjectWithObjectID,
-    AddObjects,
-    SaveObject,
-    SaveObjects,
-    PartialUpdateObject,
-    PartialUpdateObjects,
-
-    GetObject,
-    GetObjectWithAttributesToRetrieve,
-    GetObjects,
-
-    WaitTask,
-
-    DeleteObject,
-    DeleteObjects,
-    DeleteByQuery,
-
-    GetSettings,
-    SetSettings
+public enum APIClientTaskKind {
+    ListIndexes,
+    DeleteIndex,
+    CopyIndex,
+    MoveIndex,
+    MultipleQueries,
+    Batch,
+    GetLogs,
+    ListUserKeys,
+    GetUserKey,
+    AddUserKey,
+    UpdateUserKey,
+    DeleteUserKey
 }

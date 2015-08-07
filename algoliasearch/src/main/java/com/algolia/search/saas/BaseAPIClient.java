@@ -80,7 +80,7 @@ abstract class BaseAPIClient {
      * @param enableDsn set to true if your account has the Distributed Search Option
      * @param dsnHost override the automatic computation of dsn hostname
      */
-    public BaseAPIClient(String applicationID, String apiKey, List<String> hostsArray, boolean enableDsn, String dsnHost) {
+    protected BaseAPIClient(String applicationID, String apiKey, List<String> hostsArray, boolean enableDsn, String dsnHost) {
         if (applicationID == null || applicationID.length() == 0) {
             throw new RuntimeException("AlgoliaSearch requires an applicationID.");
         }
@@ -132,6 +132,14 @@ abstract class BaseAPIClient {
         httpSocketTimeoutMS = readTimeout;
         httpConnectTimeoutMS = connectTimeout;
         httpSearchTimeoutMS = searchTimeout;
+    }
+
+    public void setSecurityTags(String tagFilters) {
+        this.tagFilters = tagFilters;
+    }
+
+    public void setUserToken(String userToken) {
+        this.userToken = userToken;
     }
 
     /**
@@ -195,31 +203,6 @@ abstract class BaseAPIClient {
     }
 
     /**
-     * Return 10 last log entries.
-     */
-    protected JSONObject getLogs() throws AlgoliaException {
-        return getRequest("/1/logs", false);
-    }
-
-    /**
-     * Return last logs entries.
-     * @param offset Specify the first entry to retrieve (0-based, 0 is the most recent log entry).
-     * @param length Specify the maximum number of entries to retrieve starting at offset. Maximum allowed value: 1000.
-     */
-    protected JSONObject getLogs(int offset, int length) throws AlgoliaException {
-        return getLogs(offset, length, LogType.LOG_ALL);
-    }
-
-    /**
-     * Return last logs entries.
-     * @param offset Specify the first entry to retrieve (0-based, 0 is the most recent log entry).
-     * @param length Specify the maximum number of entries to retrieve starting at offset. Maximum allowed value: 1000.
-     */
-    protected JSONObject getLogs(int offset, int length, boolean onlyErrors) throws AlgoliaException {
-        return getLogs(offset, length, onlyErrors ? LogType.LOG_ERROR : LogType.LOG_ALL);
-    }
-
-    /**
      * Return last logs entries.
      * @param offset Specify the first entry to retrieve (0-based, 0 is the most recent log entry).
      * @param length Specify the maximum number of entries to retrieve starting at offset. Maximum allowed value: 1000.
@@ -252,13 +235,6 @@ abstract class BaseAPIClient {
     }
 
     /**
-     * Get ACL of a user key
-     */
-    protected JSONObject getUserKeyACL(String key) throws AlgoliaException {
-        return getRequest("/1/keys/" + key, false);
-    }
-
-    /**
      * Delete an existing user key
      */
     protected JSONObject deleteUserKey(String key) throws AlgoliaException {
@@ -285,21 +261,6 @@ abstract class BaseAPIClient {
     }
 
     /**
-     * Create a new user key
-     *
-     * @param acls the list of ACL for this key. Defined by an array of strings that
-     * can contains the following values:
-     *   - search: allow to search (https and http)
-     *   - addObject: allows to add/update an object in the index (https only)
-     *   - deleteObject : allows to delete an existing object (https only)
-     *   - deleteIndex : allows to delete index content (https only)
-     *   - settings : allows to get index settings (https only)
-     *   - editSettings : allows to change index settings (https only)
-     */
-    protected JSONObject addUserKey(List<String> acls) throws AlgoliaException {
-        return addUserKey(acls, 0, 0, 0, null);
-    }
-    /**
      * Update a user key
      *
      * @param params the list of parameters for this key. Defined by a JSONObject that
@@ -315,133 +276,6 @@ abstract class BaseAPIClient {
      */
     protected JSONObject updateUserKey(String key, JSONObject params) throws AlgoliaException {
         return putRequest("/1/keys/" + key, params.toString());
-    }
-
-    /**
-     * Update a user key
-     *
-     * @param acls the list of ACL for this key. Defined by an array of strings that
-     * can contains the following values:
-     *   - search: allow to search (https and http)
-     *   - addObject: allows to add/update an object in the index (https only)
-     *   - deleteObject : allows to delete an existing object (https only)
-     *   - deleteIndex : allows to delete index content (https only)
-     *   - settings : allows to get index settings (https only)
-     *   - editSettings : allows to change index settings (https only)
-     */
-    protected JSONObject updateUserKey(String key, List<String> acls) throws AlgoliaException {
-        return updateUserKey(key, acls, 0, 0, 0, null);
-    }
-
-    /**
-     * Create a new user key
-     *
-     * @param acls the list of ACL for this key. Defined by an array of strings that
-     * can contains the following values:
-     *   - search: allow to search (https and http)
-     *   - addObject: allows to add/update an object in the index (https only)
-     *   - deleteObject : allows to delete an existing object (https only)
-     *   - deleteIndex : allows to delete index content (https only)
-     *   - settings : allows to get index settings (https only)
-     *   - editSettings : allows to change index settings (https only)
-     * @param validity the number of seconds after which the key will be automatically removed (0 means no time limit for this key)
-     * @param maxQueriesPerIPPerHour Specify the maximum number of API calls allowed from an IP address per hour.  Defaults to 0 (no rate limit).
-     * @param maxHitsPerQuery Specify the maximum number of hits this API key can retrieve in one call. Defaults to 0 (unlimited)
-     */
-    protected JSONObject addUserKey(List<String> acls, int validity, int maxQueriesPerIPPerHour, int maxHitsPerQuery) throws AlgoliaException {
-        return addUserKey(acls, validity, maxQueriesPerIPPerHour, maxHitsPerQuery, null);
-    }
-
-    /**
-     * Update a user key
-     *
-     * @param acls the list of ACL for this key. Defined by an array of strings that
-     * can contains the following values:
-     *   - search: allow to search (https and http)
-     *   - addObject: allows to add/update an object in the index (https only)
-     *   - deleteObject : allows to delete an existing object (https only)
-     *   - deleteIndex : allows to delete index content (https only)
-     *   - settings : allows to get index settings (https only)
-     *   - editSettings : allows to change index settings (https only)
-     * @param validity the number of seconds after which the key will be automatically removed (0 means no time limit for this key)
-     * @param maxQueriesPerIPPerHour Specify the maximum number of API calls allowed from an IP address per hour.  Defaults to 0 (no rate limit).
-     * @param maxHitsPerQuery Specify the maximum number of hits this API key can retrieve in one call. Defaults to 0 (unlimited)
-     */
-    protected JSONObject updateUserKey(String key, List<String> acls, int validity, int maxQueriesPerIPPerHour, int maxHitsPerQuery) throws AlgoliaException {
-        return updateUserKey(key, acls, validity, maxQueriesPerIPPerHour, maxHitsPerQuery, null);
-    }
-
-    /**
-     * Create a new user key
-     *
-     * @param acls the list of ACL for this key. Defined by an array of strings that
-     * can contains the following values:
-     *   - search: allow to search (https and http)
-     *   - addObject: allows to add/update an object in the index (https only)
-     *   - deleteObject : allows to delete an existing object (https only)
-     *   - deleteIndex : allows to delete index content (https only)
-     *   - settings : allows to get index settings (https only)
-     *   - editSettings : allows to change index settings (https only)
-     * @param validity the number of seconds after which the key will be automatically removed (0 means no time limit for this key)
-     * @param maxQueriesPerIPPerHour Specify the maximum number of API calls allowed from an IP address per hour.  Defaults to 0 (no rate limit).
-     * @param maxHitsPerQuery Specify the maximum number of hits this API key can retrieve in one call. Defaults to 0 (unlimited)
-     * @param indexes the list of targeted indexes
-     */
-    protected JSONObject addUserKey(List<String> acls, int validity, int maxQueriesPerIPPerHour, int maxHitsPerQuery, List<String> indexes) throws AlgoliaException {
-        JSONArray array = new JSONArray(acls);
-        JSONObject jsonObject = new JSONObject();
-        try {
-            jsonObject.put("acl", array);
-            jsonObject.put("validity", validity);
-            jsonObject.put("maxQueriesPerIPPerHour", maxQueriesPerIPPerHour);
-            jsonObject.put("maxHitsPerQuery", maxHitsPerQuery);
-            if (indexes != null) {
-                jsonObject.put("indexes", new JSONArray(indexes));
-            }
-        } catch (JSONException e) {
-            throw new RuntimeException(e);
-        }
-        return addUserKey(jsonObject);
-    }
-
-    /**
-     * Update a user key
-     *
-     * @param acls the list of ACL for this key. Defined by an array of strings that
-     * can contains the following values:
-     *   - search: allow to search (https and http)
-     *   - addObject: allows to add/update an object in the index (https only)
-     *   - deleteObject : allows to delete an existing object (https only)
-     *   - deleteIndex : allows to delete index content (https only)
-     *   - settings : allows to get index settings (https only)
-     *   - editSettings : allows to change index settings (https only)
-     * @param validity the number of seconds after which the key will be automatically removed (0 means no time limit for this key)
-     * @param maxQueriesPerIPPerHour Specify the maximum number of API calls allowed from an IP address per hour.  Defaults to 0 (no rate limit).
-     * @param maxHitsPerQuery Specify the maximum number of hits this API key can retrieve in one call. Defaults to 0 (unlimited)
-     * @param indexes the list of targeted indexes
-     */
-    protected JSONObject updateUserKey(String key, List<String> acls, int validity, int maxQueriesPerIPPerHour, int maxHitsPerQuery, List<String> indexes) throws AlgoliaException {
-        JSONArray array = new JSONArray(acls);
-        JSONObject jsonObject = new JSONObject();
-        try {
-            jsonObject.put("acl", array);
-            jsonObject.put("validity", validity);
-            jsonObject.put("maxQueriesPerIPPerHour", maxQueriesPerIPPerHour);
-            jsonObject.put("maxHitsPerQuery", maxHitsPerQuery);
-            if (indexes != null) {
-                jsonObject.put("indexes", new JSONArray(indexes));
-            }
-        } catch (JSONException e) {
-            throw new RuntimeException(e); // $COVERAGE-IGNORE$
-        }
-        return updateUserKey(key, jsonObject);
-    }
-
-    /**
-     * This method allows to query multiple indexes with one API call
-     */
-    protected JSONObject multipleQueries(List<IndexQuery> queries) throws AlgoliaException {
-        return multipleQueries(queries, "none");
     }
 
     protected JSONObject multipleQueries(List<IndexQuery> queries, String strategy) throws AlgoliaException {
@@ -472,30 +306,6 @@ abstract class BaseAPIClient {
         } catch (JSONException e) {
             throw new AlgoliaException(e.getMessage());
         }
-    }
-
-    /**
-     * Custom batch
-     *
-     * @param actions the array of actions
-     * @throws AlgoliaException
-     */
-    protected JSONObject batch(List<JSONObject> actions) throws AlgoliaException {
-        try {
-            JSONObject content = new JSONObject();
-            content.put("requests", actions);
-            return postRequest("/1/indexes/*/batch", content.toString(), false);
-        } catch (JSONException e) {
-            throw new AlgoliaException(e.getMessage());
-        }
-    }
-
-    public void setSecurityTags(String tagFilters) {
-        this.tagFilters = tagFilters;
-    }
-
-    public void setUserToken(String userToken) {
-        this.userToken = userToken;
     }
 
     private enum Method {

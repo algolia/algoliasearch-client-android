@@ -133,7 +133,7 @@ public class Index extends BaseIndex {
      * @param listener the listener that will receive the result or error.
      */
     public void addObjectASync(JSONObject object, IndexingListener listener) {
-        TaskParams.Indexing params = new TaskParams.Indexing(listener, TaskKind.AddObject, object);
+        TaskParams.Indexing params = new TaskParams.Indexing(listener, IndexTaskKind.AddObject, object);
         new AsyncIndexingTask().execute(params);
     }
 
@@ -147,7 +147,7 @@ public class Index extends BaseIndex {
      * @param listener the listener that will receive the result or error.
      */
     public void addObjectASync(JSONObject object, String objectID, IndexingListener listener)  {
-        TaskParams.Indexing params = new TaskParams.Indexing(listener, TaskKind.AddObjectWithObjectID, object, objectID);
+        TaskParams.Indexing params = new TaskParams.Indexing(listener, IndexTaskKind.AddObjectWithObjectID, object, objectID);
         new AsyncIndexingTask().execute(params);
     }
 
@@ -158,7 +158,7 @@ public class Index extends BaseIndex {
      * @param listener the listener that will receive the result or error.
      */
     public void addObjectsASync(JSONArray objects, IndexingListener listener) {
-        TaskParams.Indexing params = new TaskParams.Indexing(listener, TaskKind.AddObjects, objects);
+        TaskParams.Indexing params = new TaskParams.Indexing(listener, IndexTaskKind.AddObjects, objects);
         new AsyncIndexingTask().execute(params);
     }
 
@@ -170,7 +170,7 @@ public class Index extends BaseIndex {
      * @param listener the listener that will receive the result or error.
      */
     public void saveObjectASync(JSONObject object, String objectID, IndexingListener listener) {
-        TaskParams.Indexing params = new TaskParams.Indexing(listener, TaskKind.SaveObject, object, objectID);
+        TaskParams.Indexing params = new TaskParams.Indexing(listener, IndexTaskKind.SaveObject, object, objectID);
         new AsyncIndexingTask().execute(params);
     }
 
@@ -181,7 +181,7 @@ public class Index extends BaseIndex {
      * @param listener the listener that will receive the result or error.
      */
     public void saveObjectsASync(JSONArray objects, IndexingListener listener) {
-        TaskParams.Indexing params = new TaskParams.Indexing(listener, TaskKind.SaveObjects, objects);
+        TaskParams.Indexing params = new TaskParams.Indexing(listener, IndexTaskKind.SaveObjects, objects);
         new AsyncIndexingTask().execute(params);
     }
 
@@ -193,7 +193,7 @@ public class Index extends BaseIndex {
      * @param listener the listener that will receive the result or error.
      */
     public void partialUpdateObjectASync(JSONObject partialObject, String objectID, IndexingListener listener) {
-        TaskParams.Indexing params = new TaskParams.Indexing(listener, TaskKind.PartialUpdateObject, partialObject, objectID);
+        TaskParams.Indexing params = new TaskParams.Indexing(listener, IndexTaskKind.PartialUpdateObject, partialObject, objectID);
         new AsyncIndexingTask().execute(params);
     }
 
@@ -204,7 +204,7 @@ public class Index extends BaseIndex {
      * @param listener the listener that will receive the result or error.
      */
     public void partialUpdateObjectsASync(JSONArray partialObjects, IndexingListener listener) {
-        TaskParams.Indexing params = new TaskParams.Indexing(listener, TaskKind.PartialUpdateObjects, partialObjects);
+        TaskParams.Indexing params = new TaskParams.Indexing(listener, IndexTaskKind.PartialUpdateObjects, partialObjects);
         new AsyncIndexingTask().execute(params);
     }
 
@@ -248,7 +248,7 @@ public class Index extends BaseIndex {
      * @param listener the listener that will receive the result or error.
      */
     public void getObjectASync(String objectID, GetObjectsListener listener) {
-        TaskParams.GetObjects params = new TaskParams.GetObjects(listener, TaskKind.GetObject, objectID);
+        TaskParams.GetObjects params = new TaskParams.GetObjects(listener, IndexTaskKind.GetObject, objectID);
         new AsyncGetTask().execute(params);
     }
 
@@ -260,7 +260,7 @@ public class Index extends BaseIndex {
      * @param listener the listener that will receive the result or error.
      */
     public void getObjectASync(String objectID, List<String> attributesToRetrieve, GetObjectsListener listener) {
-        TaskParams.GetObjects params = new TaskParams.GetObjects(listener, TaskKind.GetObjectWithAttributesToRetrieve, objectID, attributesToRetrieve);
+        TaskParams.GetObjects params = new TaskParams.GetObjects(listener, IndexTaskKind.GetObjectWithAttributesToRetrieve, objectID, attributesToRetrieve);
         new AsyncGetTask().execute(params);
     }
 
@@ -271,7 +271,7 @@ public class Index extends BaseIndex {
      * @throws AlgoliaException
      */
     public void getObjectsASync(List<String> objectIDs, GetObjectsListener listener) throws AlgoliaException {
-        TaskParams.GetObjects params = new TaskParams.GetObjects(listener, TaskKind.GetObjects, objectIDs);
+        TaskParams.GetObjects params = new TaskParams.GetObjects(listener, IndexTaskKind.GetObjects, objectIDs);
         new AsyncGetTask().execute(params);
     }
 
@@ -350,7 +350,7 @@ public class Index extends BaseIndex {
      * @param listener the listener that will receive the result or error.
      */
     public void deleteObjectASync(String objectID, DeleteObjectsListener listener) {
-        TaskParams.DeleteObjects params = new TaskParams.DeleteObjects(listener, TaskKind.DeleteObject, objectID);
+        TaskParams.DeleteObjects params = new TaskParams.DeleteObjects(listener, IndexTaskKind.DeleteObject, objectID);
         new AsyncDeleteTask().execute(params);
     }
 
@@ -361,7 +361,7 @@ public class Index extends BaseIndex {
      * @param listener the listener that will receive the result or error.
      */
     public void deleteObjectsASync(List<String> objectIDs, DeleteObjectsListener listener) {
-        TaskParams.DeleteObjects params = new TaskParams.DeleteObjects(listener, TaskKind.DeleteObjects, objectIDs);
+        TaskParams.DeleteObjects params = new TaskParams.DeleteObjects(listener, IndexTaskKind.DeleteObjects, objectIDs);
         new AsyncDeleteTask().execute(params);
     }
 
@@ -372,7 +372,7 @@ public class Index extends BaseIndex {
      * @param listener the listener that will receive the result or error.
      */
     public void deleteByQueryASync(Query query, DeleteObjectsListener listener) {
-        TaskParams.DeleteObjects params = new TaskParams.DeleteObjects(listener, TaskKind.DeleteByQuery, query);
+        TaskParams.DeleteObjects params = new TaskParams.DeleteObjects(listener, IndexTaskKind.DeleteByQuery, query);
         new AsyncDeleteTask().execute(params);
     }
 
@@ -412,7 +412,7 @@ public class Index extends BaseIndex {
      * @param listener the listener that will receive the result or error.
      */
     public void getSettingsASync(SettingsListener listener) {
-        TaskParams.Settings params = new TaskParams.Settings(listener, TaskKind.GetSettings);
+        TaskParams.Settings params = new TaskParams.Settings(listener, IndexTaskKind.GetSettings);
         new AsyncSettingsTask().execute(params);
     }
 
@@ -423,7 +423,7 @@ public class Index extends BaseIndex {
      * @param listener the listener that will receive the result or error.
      */
     public void setSettingsASync(JSONObject settings, SettingsListener listener) {
-        TaskParams.Settings params = new TaskParams.Settings(listener, TaskKind.SetSettings, settings);
+        TaskParams.Settings params = new TaskParams.Settings(listener, IndexTaskKind.SetSettings, settings);
         new AsyncSettingsTask().execute(params);
     }
 }

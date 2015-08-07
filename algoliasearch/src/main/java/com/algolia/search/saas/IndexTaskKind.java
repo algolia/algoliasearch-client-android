@@ -21,19 +21,29 @@
  * THE SOFTWARE.
  */
 
-package com.algolia.search.saas.Listener;
+package com.algolia.search.saas;
 
-import com.algolia.search.saas.APIClient;
-import com.algolia.search.saas.AlgoliaException;
-import com.algolia.search.saas.TaskParams;
+public enum IndexTaskKind {
+    Search,
 
-import org.json.JSONObject;
+    AddObject,
+    AddObjectWithObjectID,
+    AddObjects,
+    SaveObject,
+    SaveObjects,
+    PartialUpdateObject,
+    PartialUpdateObjects,
 
-/**
- * Asynchronously receive result of Index asynchronous methods
- */
-public interface APIClientListener {
+    GetObject,
+    GetObjectWithAttributesToRetrieve,
+    GetObjects,
 
-    void apiClientResult(APIClient client, TaskParams.Client context, JSONObject result);
-    void apiClientError(APIClient client, TaskParams.Client context, AlgoliaException e);
+    WaitTask,
+
+    DeleteObject,
+    DeleteObjects,
+    DeleteByQuery,
+
+    GetSettings,
+    SetSettings
 }
