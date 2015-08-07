@@ -455,7 +455,7 @@ public class Query {
 
     /**
      *  Search for entries inside a given area defined by the two extreme points of a rectangle.
-     *    At indexing, geoloc of an object should be set with _geoloc attribute containing lat and lng attributes (for example {"_geoloc":{"lat":48.853409, "lng":2.348800}})
+     *  At indexing, geoloc of an object should be set with _geoloc attribute containing lat and lng attributes.
      */
     public Query insideBoundingBox(float latitudeP1, float longitudeP1, float latitudeP2, float longitudeP2) {
         insideBoundingBox = "insideBoundingBox=" + latitudeP1 + "," + longitudeP1 + "," + latitudeP2 + "," + longitudeP2;
@@ -499,8 +499,8 @@ public class Query {
 
     /**
      * Filter the query by a list of facets. Filters are separated by commas and each facet is encoded as `attributeName:value`.
-     * To OR facets, you must add parentheses. For example: `(category:Book,category:Movie),author:John%20Doe`.
-     * You can also use a JSON string array encoding, for example `"[[\"category:Book\",\"category:Movie\"],\"author:John Doe\"]"`.
+     * To OR facets, you must add parentheses.
+     * You can also use a JSON string array encoding.
      */
     public Query setFacetFilters(String facetsFilter) {
         this.facetFilters = facetsFilter;
@@ -508,7 +508,7 @@ public class Query {
     }
 
     /**
-     * List of object attributes that you want to use for faceting. <br/>
+     * List of object attributes that you want to use for faceting.
      * Only attributes that have been added in **attributesForFaceting** index setting can be used in this parameter. 
      * You can also use `*` to perform faceting on all attributes specified in **attributesForFaceting**.
      */
@@ -531,7 +531,7 @@ public class Query {
 
     /**
      * Filter the query by a set of tags. You can AND tags by separating them by commas. To OR tags, you must add parentheses. For example tag1,(tag2,tag3) means tag1 AND (tag2 OR tag3).
-     * At indexing, tags should be added in the _tags attribute of objects (for example {"_tags":["tag1","tag2"]} )
+     * At indexing, tags should be added in the _tags attribute of objects.
      */
     public Query setTagFilters(String tags) {
         this.tags = tags;
@@ -539,9 +539,7 @@ public class Query {
     }
 
     /**
-     * Add a list of numeric filters separated by a comma. 
-     * The syntax of one filter is `attributeName` followed by `operand` followed by `value. Supported operands are `<`, `<=`, `=`, `>` and `>=`. 
-     * You can have multiple conditions on one attribute like for example `numerics=price>100,price<1000`.
+     * Add a list of numeric filters separated by a comma.
      */
     public Query setNumericFilters(String numerics) {
         this.numerics = numerics;
@@ -549,9 +547,7 @@ public class Query {
     }
 
     /**
-     * Add a list of numeric filters separated by a comma. 
-     * The syntax of one filter is `attributeName` followed by `operand` followed by `value. Supported operands are `<`, `<=`, `=`, `>` and `>=`. 
-     * You can have multiple conditions on one attribute like for example `numerics=price>100,price<1000`.
+     * Add a list of numeric filters separated by a comma.
      */
     public Query setNumericFilters(List<String> numerics) {
         StringBuilder builder = new StringBuilder();
@@ -640,16 +636,13 @@ public class Query {
             if (minProximity > 1) {
                 if (stringBuilder.length() > 0)
                     stringBuilder.append('&');
-                stringBuilder.append("minProximity=");
-                stringBuilder.append(minProximity);
+                stringBuilder.append("minProximity=").append(minProximity);
             }
             if (highlightPreTag != null && highlightPostTag != null) {
                 if (stringBuilder.length() > 0)
                     stringBuilder.append('&');
-                stringBuilder.append("highlightPreTag=");
-                stringBuilder.append(highlightPreTag);
-                stringBuilder.append("&highlightPostTag=");
-                stringBuilder.append(highlightPostTag);
+                stringBuilder.append("highlightPreTag=").append(highlightPreTag);
+                stringBuilder.append("&highlightPostTag=").append(highlightPostTag);
             }
             if (!allowTyposOnNumericTokens) {
                 if (stringBuilder.length() > 0)
@@ -659,14 +652,12 @@ public class Query {
             if (minWordSizeForApprox1 != 3) {
                 if (stringBuilder.length() > 0)
                     stringBuilder.append('&');
-                stringBuilder.append("minWordSizefor1Typo=");
-                stringBuilder.append(minWordSizeForApprox1);
+                stringBuilder.append("minWordSizefor1Typo=").append(minWordSizeForApprox1);
             }
             if (minWordSizeForApprox2 != 7) {
                 if (stringBuilder.length() > 0)
                     stringBuilder.append('&');
-                stringBuilder.append("minWordSizefor2Typos=");
-                stringBuilder.append(minWordSizeForApprox2);
+                stringBuilder.append("minWordSizefor2Typos=").append(minWordSizeForApprox2);
             }
             if (getRankingInfo) {
                 if (stringBuilder.length() > 0)
@@ -686,7 +677,7 @@ public class Query {
             if (analyticsTags != null) {
                 if (stringBuilder.length() > 0)
                     stringBuilder.append('&');
-                stringBuilder.append("analyticsTags=" + analyticsTags);
+                stringBuilder.append("analyticsTags=").append(analyticsTags);
             }
             if (!synonyms) {
                 if (stringBuilder.length() > 0)
@@ -701,8 +692,7 @@ public class Query {
             if (distinct > 0) {
                 if (stringBuilder.length() > 0)
                     stringBuilder.append('&');
-                stringBuilder.append("distinct=");
-                stringBuilder.append(distinct);
+                stringBuilder.append("distinct=").append(distinct);
             }
             if (advancedSyntax) {
                 if (stringBuilder.length() > 0)
@@ -712,14 +702,12 @@ public class Query {
             if (page > 0) {
                 if (stringBuilder.length() > 0)
                     stringBuilder.append('&');
-                stringBuilder.append("page=");
-                stringBuilder.append(page);
+                stringBuilder.append("page=").append(page);
             }
             if (hitsPerPage != 20 && hitsPerPage > 0) {
                 if (stringBuilder.length() > 0)
                     stringBuilder.append('&');
-                stringBuilder.append("hitsPerPage=");
-                stringBuilder.append(hitsPerPage);
+                stringBuilder.append("hitsPerPage=").append(hitsPerPage);
             }
             if (tags != null) {
                 if (stringBuilder.length() > 0)
@@ -768,8 +756,7 @@ public class Query {
             if (maxNumberOfFacets > 0) {
                 if (stringBuilder.length() > 0)
                     stringBuilder.append('&');
-                stringBuilder.append("maxNumberOfFacets=");
-                stringBuilder.append(maxNumberOfFacets);
+                stringBuilder.append("maxNumberOfFacets=").append(maxNumberOfFacets);
             }
             if (optionalWords != null) {
                 if (stringBuilder.length() > 0)

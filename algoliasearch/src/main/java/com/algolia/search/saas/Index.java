@@ -95,6 +95,7 @@ public class Index extends BaseIndex {
                         break;
                     case AddObjectWithObjectID:
                         p.content = addObject(p.object, p.objectID);
+                        break;
                     case AddObjects:
                         p.content = addObjects(p.objects);
                         break;
