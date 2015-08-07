@@ -50,6 +50,10 @@ public class TaskParams {
         }
 
         protected void sendResult(Index index) {
+            if (listener == null) {
+                return;
+            }
+
             if (error == null) {
                 listener.searchResult(index, query, content);
             } else {
@@ -88,6 +92,10 @@ public class TaskParams {
         }
 
         protected void sendResult(Index index) {
+            if (listener == null) {
+                return;
+            }
+
             if (error == null) {
                 listener.indexingResult(index, this, content);
             } else {
@@ -146,6 +154,10 @@ public class TaskParams {
         }
 
         protected void sendResult(Index index) {
+            if (listener == null) {
+                return;
+            }
+
             if (error == null) {
                 listener.waitTaskResult(index, taskID);
             } else {
@@ -183,6 +195,10 @@ public class TaskParams {
         }
 
         protected void sendResult(Index index) {
+            if (listener == null) {
+                return;
+            }
+
             if (error == null) {
                 listener.deleteObjectsResult(index, this, content);
             } else {
@@ -211,6 +227,10 @@ public class TaskParams {
         }
 
         protected void sendResult(Index index) {
+            if (listener == null) {
+                return;
+            }
+
             if (error == null) {
                 listener.settingsResult(index, this, content);
             } else {
@@ -295,6 +315,10 @@ public class TaskParams {
         }
 
         protected void sendResult(APIClient client) {
+            if (listener == null) {
+                return;
+            }
+
             if (error == null) {
                 listener.apiClientResult(client, this, content);
             } else {
