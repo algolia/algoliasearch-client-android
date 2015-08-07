@@ -3,11 +3,15 @@
 
 
 
+
+
 [Algolia Search](http://www.algolia.com) is a hosted full-text, numerical, and faceted search engine capable of delivering realtime results from the first keystroke.
 
 Our Android client lets you easily use the [Algolia Search API](https://www.algolia.com/doc/rest_api) from your Android Application. It wraps the [Algolia Search REST API](http://www.algolia.com/doc/rest_api).
 
+
 It is based on our [Java API client](https://github.com/algolia/algoliasearch-client-java) and  includes an easy to use asynchronous API to avoid networks calls on UI Thread.
+
 [![Build Status](https://travis-ci.org/algolia/algoliasearch-client-android.svg?branch=master)](https://travis-ci.org/algolia/algoliasearch-client-android) [![GitHub version](https://badge.fury.io/gh/algolia%2Falgoliasearch-client-android.svg)](http://badge.fury.io/gh/algolia%2Falgoliasearch-client-android)
 
 
@@ -39,7 +43,6 @@ Table of Contents
 1. [Batch writes](#batch-writes)
 1. [Security / User API Keys](#security--user-api-keys)
 1. [Copy or rename an index](#copy-or-rename-an-index)
-1. [Backup / Retrieve all index content](#backup--retrieve-of-all-index-content)
 1. [Logs](#logs)
 
 
@@ -51,13 +54,22 @@ To setup your project, follow these steps:
 
 
 
-
- 1. Download the [latest algoliasearch-client-android-*.jar](https://github.com/algolia/algoliasearch-client-android/tree/master/dist) and add it to the lib folder of your project.
- 2. Initialize the client with your Application ID and API Key. You can find them on [your Algolia account](http://www.algolia.com/users/edit).
- 3. Make your Activity class implement the `IndexListener` interface to be able to use the asynchronous methods.
+1. Download the latest version from **JCenter**
+2. Initialize the client with your Application ID and API Key. You can find them on [your Algolia account](http://www.algolia.com/users/edit).
+3. Make your Activity class implement the listener interface that you need to be able to use the asynchronous methods (APIClientListener, SearchListener, IndexingListener, ...).
 
 ```java
-  APIClient client = new APIClient("YourApplicationID", "YourAPIKey");
+APIClient client = new APIClient("YourApplicationID", "YourAPIKey");
+```
+
+If you're using Gradle, add the following dependency to you build file:
+
+```gradle
+dependencies {
+    // [...]
+
+    compile 'com.algolia:android-algoliasearch:2.+'
+}
 ```
 
 
@@ -70,6 +82,7 @@ Quick Start
 In 30 seconds, this quick start tutorial will show you how to index and search objects.
 
 Without any prior configuration, you can start indexing contacts in the ```contacts``` index using the following code:
+
 ```java
 Index index = client.initIndex("contacts");
 index.addObjectASync(new JSONObject()
@@ -96,11 +109,11 @@ index.searchASync(new Query("california paint"), this);
 index.searchASync(new Query("jimmie paint"), this);
 ```
 
-You will get search results in the searchResult callback of your Activity:
+You will get search results in the `searchResult` methods of `SearchListener`:
 ```java
 @Override
 public void searchResult(Index index, Query query, JSONObject results) {
-  Log.d("search", results.toString());
+    Log.d("search", results.toString());
 }
 ```
 
@@ -175,11 +188,12 @@ index.addObjectASync(new JSONObject()
       .put("lastname", "Barninger"), this);
 ```
 
-You will get the assigned objectID in the `addObjectResult` callback of the IndexListener interface:
+You will get the assigned objectID in the `indexingResult` callback of the IndexingListener interface:
+
 ```java
 @Override
-public void addObjectResult(Index index, String object, JSONObject result) {
-  Log.d("debug", result.getString("objectID"));
+public void indexingResult(Index index, TaskParams.Indexing context, JSONObject result) {
+  Log.d("debug", result.optString("objectID"));
 }
 ```
 
@@ -221,37 +235,37 @@ You have many ways to update an object's attributes:
 Example to update only the city attribute of an existing object:
 
 ```java
-index.partialUpdateObjectASync("{ \"city":\"San Francisco\" }", "myID", this);
+index.partialUpdateObjectASync(new JSONObject("{\"city\": \"San Francisco\"}"), "myID", this);
 ```
 
 Example to add a tag:
 
 ```java
-index.partialUpdateObjectASync("{ \"_tags":{\"value\": \"MyTags\", \"_operation\":\"Add\" }", "myID", this);
+index.partialUpdateObjectASync(new JSONObject("{\"_tags\": {\"value\": \"MyTags\", \"_operation\": \"Add\"}}"), "myID", this);
 ```
 
 Example to remove a tag:
 
 ```java
-index.partialUpdateObjectASync("{ \"_tags":{\"value\": \"MyTags\", \"_operation\":\"Remove\" }", "myID", this);
+index.partialUpdateObjectASync(new JSONObject("{\"_tags": {\"value\": \"MyTags\", \"_operation\": \"Remove\"}}"), "myID", this);
 ```
 
 Example to add a tag if it doesn't exist:
 
 ```java
-index.partialUpdateObjectASync("{ \"_tags":{\"value\": \"MyTags\", \"_operation\":\"AddUnique\" }", "myID", this);
+index.partialUpdateObjectASync(new JSONObject("{\"_tags\": {\"value\": \"MyTags\", \"_operation\": \"AddUnique\"}}", "myID", this);
 ```
 
 Example to increment a numeric value:
 
 ```java
-index.partialUpdateObjectASync("{ \"price":{\"value\": 42, \"_operation\":\"Increment\" }", "myID", this);
+index.partialUpdateObjectASync(new JSONObject("{\"price\": {\"value\": 42, \"_operation\": \"Increment\"}}"), "myID", this);
 ```
 
 Example to decrement a numeric value:
 
 ```java
-index.partialUpdateObjectASync("{ \"price":{\"value\": 42, \"_operation\":\"Decrement\" }", "myID", this);
+index.partialUpdateObjectASync(new JSONObject("{\"price\": {\"value\": 42, \"_operation\": \"Decrement\"}}", "myID", this);
 ```
 
 Search
@@ -259,6 +273,8 @@ Search
 
 
 To perform a search, you only need to initialize the index and perform a call to the search function.
+
+The search query allows only to retrieve 1000 hits, if you need to retrieve more than 1000 hits for seo, you can use [Backup / Retrieve all index content](#backup--retrieve-of-all-index-content)
 
 You can use the following optional arguments:
 
@@ -274,7 +290,7 @@ You can use the following optional arguments:
  * **removeWordsIfNoResults**: This option is used to select a strategy in order to avoid having an empty result page. There are three different options:
   * **REMOVE_LAST_WORDS**: When a query does not return any results, the last word will be added as optional. The process is repeated with n-1 word, n-2 word, ... until there are results.
   * **REMOVE_FIRST_WORDS**: When a query does not return any results, the first word will be added as optional. The process is repeated with second word, third word, ... until there are results.
-  * **REMOVE_ALL_OPTIONAL**: When a query does not return any results, a second trial will be made with all words as optional. This is equivalent to transforming the AND operand between query terms to an OR operand. 
+  * **REMOVE_ALL_OPTIONAL**: When a query does not return any results, a second trial will be made with all words as optional. This is equivalent to transforming the AND operand between query terms to an OR operand.
   * **REMOVE_NONE**: No specific processing is done when a query does not return any results (default behavior).
  * **setMinWordSizeToAllowOneTypo**: The minimum number of characters in a query word to accept one typo in this word.<br/>Defaults to 4.
  * **setMinWordSizeToAllowTwoTypos**: The minimum number of characters in a query word to accept two typos in this word.<br/>Defaults to 8.
@@ -308,7 +324,6 @@ You can use the following optional arguments:
 
  * **aroundLatitudeLongitudeViaIP(int)**: Search for entries around the latitude/longitude automatically computed from user IP address.<br/>You specify the maximum distance in meters with the **radius** parameter.<br/>At indexing, you should specify the geo location of an object with the `_geoloc` attribute in the form ` {"_geoloc":{"lat":48.853409, "lng":2.348800}} `.
  * **aroundLatitudeLongitudeViaIP(int, int)**: Search for entries around a latitude/longitude automatically computed from user IP address with a given precision for ranking. For example if you set precision=100, two objects that are a distance of less than 100 meters will be considered as identical for the "geo" ranking parameter.
-
 
 
  * **insideBoundingBox**: Search entries inside a given area defined by the two extreme points of a rectangle (defined by 4 floats: p1Lat,p1Lng,p2Lat,p2Lng).<br/>For example, `insideBoundingBox=47.3165,4.9665,47.3424,5.0201`).<br/>At indexing, you should specify the geo location of an object with the _geoloc attribute in the form `{"_geoloc":{"lat":48.853409, "lng":2.348800}}`.
@@ -389,6 +404,9 @@ The server response will look like:
 ```
 
 
+
+
+
 Multiple queries
 --------------
 
@@ -399,15 +417,13 @@ You can send multiple queries with a single API call using a batch of queries:
 //  - 1st query targets index `categories`
 //  - 2nd and 3rd queries target index `products`
 
-List<APIClient.IndexQuery> queries = new ArrayList<APIClient.IndexQuery>();
+List<IndexQuery> queries = new ArrayList<IndexQuery>();
 
-queries.add(new APIClient.IndexQuery("categories", new Query(myQueryString).setHitsPerPage(3)));
-queries.add(new APIClient.IndexQuery("products", new Query(myQueryString).setHitsPerPage(3).setTagFilters("promotion"));
-queries.add(new APIClient.IndexQuery("products", new Query(myQueryString).setHitsPerPage(10)));
+queries.add(new IndexQuery("categories", new Query(myQueryString).setHitsPerPage(3)));
+queries.add(new IndexQuery("products", new Query(myQueryString).setHitsPerPage(3).setTagFilters("promotion"));
+queries.add(new IndexQuery("products", new Query(myQueryString).setHitsPerPage(10)));
 
-JSONObject res = client.multipleQueries(queries);
-
-System.out.println(res.getJSONArray("results").toString())
+client.multipleQueriesASync(queries, this);
 ```
 
 The resulting JSON answer contains a ```results``` array storing the underlying queries answers. The answers order is the same than the requests order.
@@ -523,12 +539,13 @@ You can easily retrieve settings or update them:
 index.getSettingsASync(this);
 ```
 
-You will get the index settings in the getSettingsResult callbacl of IndexListener:
+You will get the index settings in the `settingsResult` methods of SettingsListener:
+
 ```java
 @Override
-public void getSettingsResult(Index index, JSONObject result) {
-  Log.d("debug", result.toString());    
-}  
+public void settingsResult(Index index, TaskParams.Settings context, JSONObject results) {
+    Log.d("debug", results.toString());
+}
 ```
 
 ```java
@@ -540,7 +557,7 @@ List indices
 You can list all your indices along with their associated information (number of entries, disk size, etc.) with the `listIndexes` method:
 
 ```java
-client.listIndexes();
+client.listIndexesASync(this);
 ```
 
 Delete an index
@@ -548,16 +565,14 @@ Delete an index
 You can delete an index using its name:
 
 ```java
-client.deleteIndex("contacts");
+client.deleteIndexASync("contacts", this);
 ```
 
 Clear an index
 -------------
 You can delete the index contents without removing settings and index specific API keys by using the clearIndex command:
 
-```java
-index.clearIndex();
-```
+
 
 Wait indexing
 -------------
@@ -574,8 +589,7 @@ You can wait for a task to complete using the `waitTask` method on the `taskID` 
 
 For example, to wait for indexing of a new object:
 ```java
-JSONObject res = index.addObject(new JSONObject().put("firstname", "Jimmie").put("lastname", "Barninger"));
-index.waitTask(String.valueOf(res.getLong("taskID")));
+index.addObjectASync(new JSONObject().put("firstname", "Jimmie").put("lastname", "Barninger"), this);
 ```
 
 If you want to ensure multiple objects have been indexed, you only need to check
@@ -585,7 +599,7 @@ Batch writes
 -------------
 
 You may want to perform multiple operations with one API call to reduce latency.
-We expose three methods to perform batch operations:
+We expose four methods to perform batch operations:
  * `addObjects`: Add an array of objects using automatic `objectID` assignment.
  * `saveObjects`: Add or update an array of objects that contains an `objectID` attribute.
  * `deleteObjects`: Delete an array of objectIDs.
@@ -596,7 +610,7 @@ Example using automatic `objectID` assignment:
 List<JSONObject> array = new ArrayList<JSONObject>();
 array.add(new JSONObject().put("firstname", "Jimmie").put("lastname", "Barninger"));
 array.add(new JSONObject().put("firstname", "Warren").put("lastname", "Speach"));
-index.addObjects(array);
+index.addObjectsASync(new JSONArray(array), this);
 ```
 
 Example with user defined `objectID` (add or update):
@@ -604,7 +618,7 @@ Example with user defined `objectID` (add or update):
 List<JSONObject> array = new ArrayList<JSONObject>();
 array.add(new JSONObject().put("firstname", "Jimmie").put("lastname", "Barninger").put("objectID", "SFO"));
 array.add(new JSONObject().put("firstname", "Warren").put("lastname", "Speach").put("objectID", "LA"));
-index.saveObjects(array);
+index.saveObjectsASync(new JSONArray(array), this);
 ```
 
 Example that deletes a set of records:
@@ -612,7 +626,7 @@ Example that deletes a set of records:
 List<String> ids = new ArrayList<String>();
 ids.add("myID1");
 ids.add("myID2");
-index.deleteObjects(ids);
+index.deleteObjectsASync(ids, this);
 ```
 
 Example that updates only the `firstname` attribute:
@@ -620,7 +634,7 @@ Example that updates only the `firstname` attribute:
 List<JSONObject> array = new ArrayList<JSONObject>();
 array.add(new JSONObject().put("firstname", "Jimmie").put("objectID", "SFO"));
 array.add(new JSONObject().put("firstname", "Warren").put("objectID", "LA"));
-index.partialUpdateObjects(array);
+index.partialUpdateObjectsASync(new JSONArray(array), this);
 ```
 
 
@@ -633,7 +647,7 @@ array.add(new JSONObject().put("action". "addObject").put("indexName", "index1")
 	.put("body", new JSONObject().put("firstname", "Jimmie").put("lastname", "Barninger")));
 array.add(new JSONObject().put("action". "addObject").put("indexName", "index2")
 	.put("body", new JSONObject().put("firstname", "Warren").put("lastname", "Speach")));
-client.batch(array);
+client.batchASync(new JSONArray(array), this);
 ```
 
 The attribute **action** can have these values:
@@ -653,9 +667,7 @@ These API keys can be restricted to a set of operations or/and restricted to a g
 To list existing keys, you can use `listUserKeys` method:
 ```java
 // Lists global API Keys
-client.listUserKeys();
-// Lists API Keys that can access only to this index
-index.listUserKeys();
+client.listUserKeysASync(this);
 ```
 
 Each key is defined by a set of permissions that specify the authorized actions. The different permissions are:
@@ -672,23 +684,19 @@ Each key is defined by a set of permissions that specify the authorized actions.
 Example of API Key creation:
 ```java
 // Creates a new global API key that can only perform search actions
-JSONObject res = client.addUserKey(Arrays.asList("search"));
-Log.d("debug", "Key: " + res.getString("key"));
-// Creates a new API key that can only perform search action on this index
-JSONObject res = index.addUserKey(Arrays.asList("search"));
-Log.d("debug", "Key: " + res.getString("key"));
+client.addUserKeyASync(new JSONObject("{\"acl\": [\"search\"]}"), this);
 ```
 
 You can also create an API Key with advanced settings:
 
- * Add a validity period. The key will be valid for a specific period of time (in seconds).
- * Specify the maximum number of API calls allowed from an IP address per hour. Each time an API call is performed with this key, a check is performed. If the IP at the source of the call did more than this number of calls in the last hour, a 403 code is returned. Defaults to 0 (no rate limit). This parameter can be used to protect you from attempts at retrieving your entire index contents by massively querying the index.
+ * **validity**: Add a validity period. The key will be valid for a specific period of time (in seconds).
+ * **maxQueriesPerIPPerHour**: Specify the maximum number of API calls allowed from an IP address per hour. Each time an API call is performed with this key, a check is performed. If the IP at the source of the call did more than this number of calls in the last hour, a 403 code is returned. Defaults to 0 (no rate limit). This parameter can be used to protect you from attempts at retrieving your entire index contents by massively querying the index.
 
- * Specify the maximum number of hits this API key can retrieve in one call. Defaults to 0 (unlimited). This parameter can be used to protect you from attempts at retrieving your entire index contents by massively querying the index.
- * Specify the list of targeted indices. You can target all indices starting with a prefix or ending with a suffix using the '*' character. For example, "dev_*" matches all indices starting with "dev_" and "*_dev" matches all indices ending with "_dev". Defaults to all indices if empty or blank.
- * Specify the list of referers. You can target all referers starting with a prefix or ending with a suffix using the '*' character. For example, "algolia.com/*" matches all referers starting with "algolia.com/" and "*.algolia.com" matches all referers ending with ".algolia.com". Defaults to all referers if empty or blank.
- * Specify the list of query parameters. You can force the query parameters for a query using the url string format (param1=X&param2=Y...).
- * Specify a description to describe where the key is used.
+ * **maxHitsPerQuery**: Specify the maximum number of hits this API key can retrieve in one call. Defaults to 0 (unlimited). This parameter can be used to protect you from attempts at retrieving your entire index contents by massively querying the index.
+ * **indexes**: Specify the list of targeted indices. You can target all indices starting with a prefix or ending with a suffix using the '\*' character. For example, "dev\_\*" matches all indices starting with "dev\_" and "\*\_dev" matches all indices ending with "\_dev". Defaults to all indices if empty or blank.
+ * **referers**: Specify the list of referers. You can target all referers starting with a prefix or ending with a suffix using the '\*' character. For example, "algolia.com/\*" matches all referers starting with "algolia.com/" and "\*.algolia.com" matches all referers ending with ".algolia.com". Defaults to all referers if empty or blank.
+ * **queryParameters**: Specify the list of query parameters. You can force the query parameters for a query using the url string format (param1=X&param2=Y...).
+ * **description**: Specify a description to describe where the key is used.
 
 
 ```java
@@ -704,115 +712,24 @@ param.put("referers", Arrays.asList("algolia.com/*"));
 param.put("queryParameters", "typoTolerance=strict&ignorePlurals=false");
 param.put("description", "Limited search only API key for algolia.com");
 
-JSONObject res = client.addUserKey(param);
-Log.d("debug", "Key: " + res.getString("key"));
-// Creates a new index specific API key valid for 300 seconds, with a rate limit of 100 calls per hour per IP and a maximum of 20 hits
-JSONObject res = index.addUserKey(param);
-Log.d("debug", "Key: " + res.getString("key"));
+JSONObject res = client.addUserKeyASync(param, this);
 ```
 
 Update the permissions of an existing key:
 ```java
-// Creates a new global API key that is valid for 300 seconds
-JSONObject res = client.updateUserKey("myAPIKey", Arrays.asList("search"), 300, 0, 0);
-Log.d("debug", "Key: " + res.getString("key"));
-// Update a index specific API key valid for 300 seconds, with a rate limit of 100 calls per hour per IP and a maximum of 20 hits
-JSONObject res = index.updateUserKey("myAPIKey", Arrays.asList("search"), 300, 100, 20);
-Log.d("debug", "Key: " + res.getString("key"));
+// Update the validify of a global API Key
+client.updateUserKeyASync("myAPIKey", new JSONObject("{\"validity\": 300}"), this);
 ```
 Get the permissions of a given key:
 ```java
 // Gets the rights of a global key
-client.getUserKeyACL("f420238212c54dcfad07ea0aa6d5c45f");
-// Gets the rights of an index specific key
-index.getUserKeyACL("71671c38001bf3ac857bc82052485107");
+client.getUserKeyACLASync("f420238212c54dcfad07ea0aa6d5c45f", this);
 ```
 
 Delete an existing key:
 ```java
 // Deletes a global key
-client.deleteUserKey("f420238212c54dcfad07ea0aa6d5c45f");
-// Deletes an index specific key
-index.deleteUserKey("71671c38001bf3ac857bc82052485107");
-```
-
-
-
-You may have a single index containing per user data. In that case, all records should be tagged with their associated user_id in order to add a `tagFilters=user_42` filter at query time to retrieve only what a user has access to. If you're using the [JavaScript client](http://github.com/algolia/algoliasearch-client-js), it will result in a security breach since the user is able to modify the `tagFilters` you've set by modifying the code from the browser. To keep using the JavaScript client (recommended for optimal latency) and target secured records, you can generate a secured API key from your backend:
-
-```java
-// generate a public API key for user 42. Here, records are tagged with:
-//  - 'user_XXXX' if they are visible by user XXXX
-String publicKey = client.generateSecuredApiKey("YourSearchOnlyApiKey", "tagFilters=user_42");
-```
-
-This public API key can then be used in your JavaScript code as follow:
-
-```js
-var client = algoliasearch('YourApplicationID', '<%= public_api_key %>');
-client.setExtraHeader('X-Algolia-QueryParameters', 'tagFilters=user_42'); // must be same than those used at generation-time
-
-var index = client.initIndex('indexName')
-
-index.search('something', function(err, content) {
-  if (err) {
-    console.error(err);
-    return;
-  }
-
-  console.log(content);
-});
-```
-
-You can mix rate limits and secured API keys by setting an extra `user_token` attribute both at API key generation time and query time. When set, a unique user will be identified by her `IP + user_token` instead of only by her `IP`. This allows you to restrict a single user to performing a maximum of `N` API calls per hour, even if she shares her `IP` with another user.
-
-```java
-// generate a public API key for user 42. Here, records are tagged with:
-//  - 'user_XXXX' if they are visible by user XXXX
-String publicKey = client.generateSecuredApiKey("YourSearchOnlyApiKey", "tagFilters=user_42", "42");
-```
-
-This public API key can then be used in your JavaScript code as follow:
-
-```js
-var client = algoliasearch('YourApplicationID', '<%= public_api_key %>');
-
-// must be same than those used at generation-time
-client.setExtraHeader('X-Algolia-QueryParameters', 'tagFilters=user_42');
-
-// must be same than the one used at generation-time
-client.setUserToken('user_42');
-
-var index = client.initIndex('indexName')
-
-index.search('another query', function(err, content) {
-  if (err) {
-    console.error(err);
-    return;
-  }
-
-  console.log(content);
-});
-```
-
-You can also generate secured API keys to limit the usage of a key to a referer. The generation use the same function than the Per user restriction. This public API key can be used in your JavaScript code as follow:
-
-```js
-var client = algoliasearch('YourApplicationID', '<%= public_api_key %>');
-
-// must be same than those used at generation-time
-client.setExtraHeader('X-Algolia-AllowedReferer', 'algolia.com/*');
-
-var index = client.initIndex('indexName')
-
-index.search('another query', function(err, content) {
-  if (err) {
-    console.error(err);
-    return;
-  }
-
-  console.log(content);
-});
+client.deleteUserKeyASync("f420238212c54dcfad07ea0aa6d5c45f", this);
 ```
 
 
@@ -825,9 +742,9 @@ You can easily copy or rename an existing index using the `copy` and `move` comm
 
 ```java
 // Rename MyIndex in MyIndexNewName
-client.moveIndex("MyIndex", "MyIndexNewName");
+client.moveIndexASync("MyIndex", "MyIndexNewName", this);
 // Copy MyIndex in MyIndexCopy
-client.copyIndex("MyIndex", "MyIndexCopy");
+client.copyIndexASync("MyIndex", "MyIndexCopy", this);
 ```
 
 The move command is particularly useful if you want to update a big index atomically from one version to another. For example, if you recreate your index `MyIndex` each night from a database by batch, you only need to:
@@ -836,21 +753,10 @@ The move command is particularly useful if you want to update a big index atomic
 
 ```java
 // Rename MyNewIndex in MyIndex (and overwrite it)
-client.moveIndex("MyNewIndex", "MyIndex");
+client.moveIndexASync("MyNewIndex", "MyIndex", this);
 ```
 
-Backup / Retrieve of all index content
--------------
 
-You can retrieve all index content for backup purposes or for SEO using the browse method.
-This method retrieves 1,000 objects via an API call and supports pagination.
-
-```java
-// Get first page
-index.browse(0);
-// Get second page
-index.browse(1);
-```
 
 Logs
 -------------
@@ -876,10 +782,8 @@ You can retrieve the logs of your last 1,000 API calls and browse them using the
   * ***error***: Retrieve only the errors (same as ***onlyErrors*** parameters).
 
 ```java
-// Get last 10 log entries
-client.getLogs();
-// Get last 100 log entries
-client.getLogs(0, 100);
+// Get last 100 error log entries
+client.getLogsASync(0, 100, LogType.LOG_ERROR, this);
 ```
 
 
