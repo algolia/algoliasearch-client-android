@@ -28,6 +28,8 @@ public class Helpers {
     static String api_key = "API_KEY_REPLACE_ME";
     static String job_number = "JOB_NUMBER_REPLACE_ME";
 
+    static int wait = 30;
+
     static String safeIndexName(String name) {
         if (job_number.matches("\\d+\\.\\d+")) {
             name = String.format("%s_travis-%s", name, job_number);
