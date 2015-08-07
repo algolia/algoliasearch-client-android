@@ -24,7 +24,6 @@
 package com.algolia.search.saas;
 
 import android.app.Application;
-import android.support.annotation.UiThread;
 import android.test.ApplicationTestCase;
 import android.test.UiThreadTest;
 
