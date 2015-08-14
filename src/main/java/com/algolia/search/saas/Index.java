@@ -458,29 +458,36 @@ public class Index {
 
         @Override
         public boolean hasNext() {
-            try {
+        	try {
+				return pos < answer.getJSONArray("hits").length()
+						|| answer.has("cursor") && !answer.getString("cursor").isEmpty();
+			} catch (JSONException e) {
+				e.printStackTrace();
+			}
+        	return false;
+        }
+
+        @Override
+        public JSONObject next() {
+        	try {
                 do {
                     if (pos < answer.getJSONArray("hits").length()) {
                         hit = answer.getJSONArray("hits").getJSONObject(pos);
                         ++pos;
-                        return true;
+                        break;
                     }
                     if (answer.has("cursor") && !answer.getString("cursor").isEmpty()) {
                         pos = 0;
                         doQuery(getCursor());
                         continue;
                     }
-                    return false;
+                    return null;
                 } while (true);
             } catch (JSONException e) {
                 throw new IllegalStateException(e);
             } catch (AlgoliaException e) {
                 throw new IllegalArgumentException(e);
             }
-        }
-
-        @Override
-        public JSONObject next() {
             return hit;
         }
         
