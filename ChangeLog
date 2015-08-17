@@ -1,6 +1,14 @@
 Changelog
 =========
 
+1.3.11 (2015-08-17)
+-------------------
+- fixed the IndexBrowser iterator
+
+1.3.10 (2015-08-04)
+-------------------
+- fixed the way the query parameters were overriding the default one if not set
+
 1.3.9 (2015-07-17)
 -------------------
 - fixed a bug avoiding the hitsPerPage parameter to be sent to the API if equal to 20
