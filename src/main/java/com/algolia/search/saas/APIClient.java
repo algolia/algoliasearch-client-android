@@ -167,7 +167,7 @@ public class APIClient {
      * Allow to modify the user-agent in order to add the user agent of the integration
      */
     public void setUserAgent(String agent, String agentVersion) {
-    	userAgent = String.format("Algolia for Java %s %s (%s)", version, agent.toUpperCase(), agentVersion);
+    	userAgent = String.format("Algolia for Java %s %s (%s)", version, agent, agentVersion);
     }
     
     /**
