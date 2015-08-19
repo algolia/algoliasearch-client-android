@@ -109,6 +109,7 @@ public class APIClient {
     private String forwardAdminAPIKey;
     private HashMap<String, String> headers;
     private final boolean verbose;
+    private String userAgent;
     
     /**
      * Algolia Search initialization
@@ -141,6 +142,7 @@ public class APIClient {
      * @param queryHostsArray the list of hosts that you have received for the service
      */
     public APIClient(String applicationID, String apiKey, List<String> buildHostsArray, List<String> queryHostArray) {
+    	userAgent = "Algolia for Java " + version;
     	verbose = System.getenv("VERBOSE") != null;
     	forwardRateLimitAPIKey = forwardAdminAPIKey = forwardEndUserIP = null;
         if (applicationID == null || applicationID.length() == 0) {
@@ -159,6 +161,13 @@ public class APIClient {
         this.queryHostsArray = new ArrayList<String>(queryHostArray);
         httpClient = HttpClientBuilder.create().disableAutomaticRetries().build();
         headers = new HashMap<String, String>();
+    }
+    
+    /**
+     * Allow to modify the user-agent in order to add the user agent of the integration
+     */
+    public void setUserAgent(String agent, String agentVersion) {
+    	userAgent = String.format("Algolia for Java %s %s (%s)", version, agent.toUpperCase(), agentVersion);
     }
     
     /**
@@ -642,7 +651,7 @@ public class APIClient {
     	}
     	
     	// set user agent
-    	req.setHeader("User-Agent", "Algolia for Java " + version);
+    	req.setHeader("User-Agent", userAgent);
     	
         // set JSON entity
         if (json != null) {
