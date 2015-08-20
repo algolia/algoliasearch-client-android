@@ -409,7 +409,13 @@ public class Index {
      */
     public JSONObject search(Query params) throws AlgoliaException {
         String paramsString = params.getQueryString();
-        return client.getRequest("/1/indexes/" + encodedIndexName + ((paramsString.length() > 0) ? ("?" + paramsString) : ""), true);
+        JSONObject body = new JSONObject();
+        try {
+            body.put("params", paramsString);
+        } catch (JSONException e) {
+            throw new RuntimeException(e);
+        }
+        return client.postRequest("/1/indexes/" + encodedIndexName + "/query", body.toString(), false, true);
     }
     
     /**
