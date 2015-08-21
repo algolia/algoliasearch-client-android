@@ -71,6 +71,33 @@ uploadArchives {
         pom.groupId = groupId
         pom.artifactId = artifactId
         pom.version = version
+
+        pom.project {
+            name 'Algolia Search API Client for Android'
+            packaging 'aar'
+            description 'This Android library lets you easily use the Algolia Search API from your Android Application. It wraps the Algolia Search REST API.'
+            url 'https://github.com/algolia/algoliasearch-client-android'
+
+            scm {
+                url 'https://github.com/algolia/algoliasearch-client-android'
+                connection 'scm:git:https://github.com/algolia/algoliasearch-client-android.git'
+            }
+
+            licenses {
+                license {
+                    name 'MIT'
+                    url 'http://opensource.org/licenses/MIT'
+                }
+            }
+
+            developers {
+                developer {
+                    id 'algolia'
+                    name 'The Algolia Team'
+                    email 'support@algolia.com'
+                }
+            }
+        }
         
         pom.withXml {
             asNode().dependencies.dependency.findAll { xmlDep ->
