@@ -27,8 +27,7 @@ proguard/
 
 # Android Studio
 .navigation/
-.idea/workspace.xml
-.idea/dictionaries/
+.idea/
 
 # Eclipse
 .classpath
