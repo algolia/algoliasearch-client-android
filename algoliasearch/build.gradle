@@ -25,7 +25,7 @@ apply plugin: 'com.android.library'
 
 ext {
     PUBLISH_GROUP_ID = 'com.algolia'
-    PUBLISH_ARTIFACT_ID = 'android-algoliasearch'
+    PUBLISH_ARTIFACT_ID = 'algoliasearch-android'
     PUBLISH_VERSION = '2.0.0'
 }
 
