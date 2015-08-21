@@ -27,10 +27,10 @@ import android.app.Application;
 import android.test.ApplicationTestCase;
 import android.test.UiThreadTest;
 
-import com.algolia.search.saas.Listener.Index.GetObjectsListener;
-import com.algolia.search.saas.Listener.Index.IndexingListener;
-import com.algolia.search.saas.Listener.Index.SearchListener;
-import com.algolia.search.saas.Listener.Index.WaitTaskListener;
+import com.algolia.search.saas.listeners.GetObjectsListener;
+import com.algolia.search.saas.listeners.IndexingListener;
+import com.algolia.search.saas.listeners.SearchListener;
+import com.algolia.search.saas.listeners.WaitTaskListener;
 
 import org.json.JSONArray;
 import org.json.JSONObject;

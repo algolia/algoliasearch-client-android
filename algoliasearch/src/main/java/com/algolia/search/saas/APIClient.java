@@ -25,7 +25,7 @@ package com.algolia.search.saas;
 
 import android.os.AsyncTask;
 
-import com.algolia.search.saas.Listener.APIClientListener;
+import com.algolia.search.saas.listeners.APIClientListener;
 
 import org.json.JSONArray;
 import org.json.JSONObject;

@@ -25,12 +25,12 @@ package com.algolia.search.saas;
 
 import android.os.AsyncTask;
 
-import com.algolia.search.saas.Listener.Index.DeleteObjectsListener;
-import com.algolia.search.saas.Listener.Index.GetObjectsListener;
-import com.algolia.search.saas.Listener.Index.IndexingListener;
-import com.algolia.search.saas.Listener.Index.SearchListener;
-import com.algolia.search.saas.Listener.Index.SettingsListener;
-import com.algolia.search.saas.Listener.Index.WaitTaskListener;
+import com.algolia.search.saas.listeners.DeleteObjectsListener;
+import com.algolia.search.saas.listeners.GetObjectsListener;
+import com.algolia.search.saas.listeners.IndexingListener;
+import com.algolia.search.saas.listeners.SearchListener;
+import com.algolia.search.saas.listeners.SettingsListener;
+import com.algolia.search.saas.listeners.WaitTaskListener;
 
 import org.json.JSONArray;
 import org.json.JSONObject;

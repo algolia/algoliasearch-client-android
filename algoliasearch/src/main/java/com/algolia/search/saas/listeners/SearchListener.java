@@ -21,22 +21,25 @@
  * THE SOFTWARE.
  */
 
-package com.algolia.search.saas.Listener.Index;
+package com.algolia.search.saas.listeners;
 
 import com.algolia.search.saas.AlgoliaException;
 import com.algolia.search.saas.Index;
+import com.algolia.search.saas.Query;
+
+import org.json.JSONObject;
 
 /**
- * Asynchronously receive result of waitTask method
+ * Asynchronously receive result of search method
  */
-public interface WaitTaskListener {
+public interface SearchListener {
     /**
-     * Asynchronously receive result of Index.waitTaskASync method.
+     * Asynchronously receive result of Index.searchASync method.
      */
-    void waitTaskResult(Index index, String taskID);
+    void searchResult(Index index, Query query, JSONObject results);
 
     /**
-     * Asynchronously receive error of Index.waitTaskASync method.
+     * Asynchronously receive error of Index.searchASync method.
      */
-    void waitTaskError(Index index, String taskID, AlgoliaException e);
+    void searchError(Index index, Query query, AlgoliaException e);
 }

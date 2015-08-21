@@ -21,7 +21,7 @@
  * THE SOFTWARE.
  */
 
-package com.algolia.search.saas.Listener.Index;
+package com.algolia.search.saas.listeners;
 
 import com.algolia.search.saas.AlgoliaException;
 import com.algolia.search.saas.Index;
@@ -30,16 +30,16 @@ import com.algolia.search.saas.TaskParams;
 import org.json.JSONObject;
 
 /**
- * Asynchronously receive result of Index.deleteObject(s) and Index.deleteByQuery methods.
+ * Asynchronously receive result of Index.(get/set)SettingsASync methods
  */
-public interface DeleteObjectsListener {
+public interface SettingsListener {
     /**
-     * Asynchronously receive result of Index.deleteObject(s) and Index.deleteByQuery methods.
+     * Asynchronously receive result of Index.(get/set)SettingsASync methods.
      */
-    void deleteObjectsResult(Index index, TaskParams.DeleteObjects context, JSONObject results);
+    void settingsResult(Index index, TaskParams.Settings context, JSONObject results);
 
     /**
-     * Asynchronously receive error of Index.deleteObject(s) and Index.deleteByQuery methods.
+     * Asynchronously receive error of Index.(get/set)SettingsASync methods.
      */
-    void deleteObjectsError(Index index, TaskParams.DeleteObjects context, AlgoliaException e);
+    void settingsError(Index index, TaskParams.Settings context, AlgoliaException e);
 }

@@ -21,25 +21,19 @@
  * THE SOFTWARE.
  */
 
-package com.algolia.search.saas.Listener.Index;
+package com.algolia.search.saas.listeners;
 
+import com.algolia.search.saas.APIClient;
 import com.algolia.search.saas.AlgoliaException;
-import com.algolia.search.saas.Index;
 import com.algolia.search.saas.TaskParams;
 
 import org.json.JSONObject;
 
 /**
- * Asynchronously receive result of addObject(s), saveObject(s) and partialUpdateObject(s) methods
+ * Asynchronously receive result of Index asynchronous methods
  */
-public interface IndexingListener {
-    /**
-     * Asynchronously receive result of indexing operation.
-     */
-    void indexingResult(Index index, TaskParams.Indexing context, JSONObject results);
+public interface APIClientListener {
 
-    /**
-     * Asynchronously receive error of indexing operation.
-     */
-    void indexingError(Index index, TaskParams.Indexing context, AlgoliaException e);
+    void apiClientResult(APIClient client, TaskParams.Client context, JSONObject result);
+    void apiClientError(APIClient client, TaskParams.Client context, AlgoliaException e);
 }
