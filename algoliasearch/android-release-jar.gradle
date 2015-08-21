@@ -118,7 +118,7 @@ uploadArchives {
         repository(url: "file://${localReleaseDest}")
 
         repository(url: "https://oss.sonatype.org/service/local/staging/deploy/maven2/") {
-            authentication(userName: ossrhUsername, password: ossrhPassword)
+            authentication(userName: project.hasProperty('ossrhUsername') ? project['ossrhUsername'] : 'FIXME', password: project.hasProperty('ossrhPassword') ? project['ossrhPassword'] : 'FIXME')
         }
     }
 }
