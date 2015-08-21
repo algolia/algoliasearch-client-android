@@ -29,3 +29,8 @@ proguard/
 .navigation/
 .idea/workspace.xml
 .idea/dictionaries/
+
+# Eclipse
+.classpath
+.project
+.settings/
