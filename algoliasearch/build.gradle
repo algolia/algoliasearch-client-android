@@ -51,6 +51,6 @@ android {
 apply from: 'android-release-jar.gradle'
 
 dependencies {
-    compile 'com.android.support:appcompat-v7:21.+'
+    compile 'com.android.support:appcompat-v7:21.0.3'
     compile fileTree(dir: 'libs', include: ['*.jar'])
 }
