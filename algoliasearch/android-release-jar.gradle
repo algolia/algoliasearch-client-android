@@ -23,17 +23,21 @@
 
 // ./gradlew clean build generateRelease
 apply plugin: 'maven'
+apply plugin: 'signing'
 
 def groupId = project.PUBLISH_GROUP_ID
 def artifactId = project.PUBLISH_ARTIFACT_ID
 def version = project.PUBLISH_VERSION
+def localReleaseDest = "${buildDir}/release/${version}"
 
 configurations {
     optional
     compile.extendsFrom optional
 }
 
-def localReleaseDest = "${buildDir}/release/${version}"
+signing {
+    sign configurations.archives
+}
 
 android.libraryVariants.all { variant ->
     def name = variant.buildType.name
@@ -62,6 +66,8 @@ task androidSourcesJar(type: Jar) {
 
 uploadArchives {
     repositories.mavenDeployer {
+        beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
+
         pom.groupId = groupId
         pom.artifactId = artifactId
         pom.version = version
@@ -83,6 +89,10 @@ uploadArchives {
         
         // Add other pom properties here if you want (developer details / licenses)
         repository(url: "file://${localReleaseDest}")
+
+        repository(url: "https://oss.sonatype.org/service/local/staging/deploy/maven2/") {
+            authentication(userName: ossrhUsername, password: ossrhPassword)
+        }
     }
 }
 
