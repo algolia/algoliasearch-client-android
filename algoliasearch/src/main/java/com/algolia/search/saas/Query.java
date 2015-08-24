@@ -244,8 +244,8 @@ public class Query {
 
     /**
      *
-     * @param If
-     *            set to true, enable the distinct feature (disabled by default)
+     * @param distinct
+     *            If set to true, enable the distinct feature (disabled by default)
      *            if the attributeForDistinct index setting is set. This feature
      *            is similar to the SQL "distinct" keyword: when enabled in a
      *            query with the distinct=1 parameter, all hits containing a
@@ -274,8 +274,8 @@ public class Query {
     }
 
     /**
-     * @param If
-     *            set to false, this query will not be taken into account in
+     * @param enabled
+     *            If set to false, this query will not be taken into account in
      *            analytics feature. Default to true.
      */
     public Query enableAnalytics(boolean enabled) {
@@ -284,8 +284,8 @@ public class Query {
     }
 
     /**
-     * @param Set
-     *            the analytics tags identifying the query
+     * @param analyticsTags
+     *            Set the analytics tags identifying the query
      */
     public Query setAnalyticsTags(String analyticsTags) {
         this.analyticsTags = analyticsTags;
@@ -293,8 +293,8 @@ public class Query {
     }
 
     /**
-     * @param If
-     *            set to false, this query will not use synonyms defined in
+     * @param enabled
+     *            If set to false, this query will not use synonyms defined in
      *            configuration. Default to true.
      */
     public Query enableSynonyms(boolean enabled) {
@@ -303,8 +303,8 @@ public class Query {
     }
 
     /**
-     * @param If
-     *            set to false, words matched via synonyms expansion will not be
+     * @param enabled
+     *            If set to false, words matched via synonyms expansion will not be
      *            replaced by the matched synonym in highlight result. Default
      *            to true.
      */
@@ -314,8 +314,8 @@ public class Query {
     }
 
     /**
-     * @param If
-     *            set to false, disable typo-tolerance. Default to true.
+     * @param enabled
+     *            If set to false, disable typo-tolerance. Default to true.
      */
     public Query enableTypoTolerance(boolean enabled) {
         if (enabled) {
@@ -327,8 +327,8 @@ public class Query {
     }
 
     /**
-     * @param This
-     *            option allow to control the number of typo in the results set.
+     * @param typoTolerance
+     *            This option allow to control the number of typo in the results set.
      */
     public Query setTypoTolerance(TypoTolerance typoTolerance) {
         this.typoTolerance = typoTolerance;
@@ -380,8 +380,8 @@ public class Query {
     }
 
     /**
-     * @param If
-     *            set to false, disable typo-tolerance on numeric tokens.
+     * @param enabled
+     *            If set to false, disable typo-tolerance on numeric tokens.
      *            Default to true.
      */
     public Query enableTyposOnNumericTokens(boolean enabled) {
@@ -568,7 +568,7 @@ public class Query {
     }
 
     /**
-     * List of object attributes that you want to use for faceting. <br/>
+     * List of object attributes that you want to use for faceting.
      * Only attributes that have been added in **attributesForFaceting** index
      * setting can be used in this parameter. You can also use `*` to perform
      * faceting on all attributes specified in **attributesForFaceting**.
@@ -617,9 +617,9 @@ public class Query {
     /**
      * Add a list of numeric filters separated by a comma. The syntax of one
      * filter is `attributeName` followed by `operand` followed by `value.
-     * Supported operands are `<`, `<=`, `=`, `>` and `>=`. You can have
+     * Supported operands are `&lt;`, `&lt;=`, `=`, `&gt;` and `&lt;=`. You can have
      * multiple conditions on one attribute like for example
-     * `numerics=price>100,price<1000`.
+     * `numerics=price&gt;100,price&lt;1000`.
      */
     public Query setNumericFilters(List<String> numerics) {
         StringBuilder builder = new StringBuilder();
