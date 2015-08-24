@@ -1,17 +1,26 @@
+package com.algolia.search.saas;
+
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+import java.util.ArrayList;
+import java.util.List;
+
+import org.json.JSONArray;
+
 /*
  * Copyright (c) 2015 Algolia
  * http://www.algolia.com/
- *
+ * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
  * in the Software without restriction, including without limitation the rights
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- *
+ * 
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
- *
+ * 
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -21,121 +30,109 @@
  * THE SOFTWARE.
  */
 
-package com.algolia.search.saas;
-
-import org.json.JSONArray;
-
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
-import java.util.ArrayList;
-import java.util.List;
-
 public class Query {
-    public enum QueryType
-    {
-        /// all query words are interpreted as prefixes.
+    public enum QueryType {
+        // / all query words are interpreted as prefixes.
         PREFIX_ALL,
-        /// only the last word is interpreted as a prefix (default behavior).
+        // / only the last word is interpreted as a prefix (default behavior).
         PREFIX_LAST,
-        /// no query word is interpreted as a prefix. This option is not recommended.
-        PREFIX_NONE
+        // / no query word is interpreted as a prefix. This option is not
+        // recommended.
+        PREFIX_NONE,
+        // The parameter isn't set
+        PREFIX_NOTSET
     }
 
-    public enum RemoveWordsType
-    {
-        // when a query does not return any result, the final word will be removed until there is results. This option is particulary useful on e-commerce websites
+    public enum RemoveWordsType {
+        // / when a query does not return any result, the final word will be
+        // removed until there is results. This option is particulary useful on
+        // e-commerce websites
         REMOVE_LAST_WORDS,
-        // when a query does not return any result, the first word will be removed until there is results. This option is useful on adress search.
+        // / when a query does not return any result, the first word will be
+        // removed until there is results. This option is useful on adress
+        // search.
         REMOVE_FIRST_WORDS,
-        // No specific processing is done when a query does not return any result.
+        // / No specific processing is done when a query does not return any
+        // result.
         REMOVE_NONE,
-        /// When a query does not return any result, a second trial will be made with all words as optional (which is equivalent to transforming the AND operand between query terms in a OR operand)
-        REMOVE_ALLOPTIONAL
+        // / When a query does not return any result, a second trial will be
+        // made with all words as optional (which is equivalent to transforming
+        // the AND operand between query terms in a OR operand)
+        REMOVE_ALLOPTIONAL,
+        // The parameter isn't set
+        REMOVE_NOTSET
     }
 
-    public enum TypoTolerance
-    {
-        /// the typotolerance is enabled and all typos are retrieved. (Default behavior)
+    public enum TypoTolerance {
+        // / the typotolerance is enabled and all typos are retrieved. (Default
+        // behavior)
         TYPO_TRUE,
-        /// the typotolerance is disabled.
+        // / the typotolerance is disabled.
         TYPO_FALSE,
-        /// only keep results with the minimum number of typos.
+        // / only keep results with the minimum number of typos.
         TYPO_MIN,
-        /// the typotolerance with a distance=2 is disabled if the results contain hits without typo.
-        TYPO_STRICT
+        // / the typotolerance with a distance=2 is disabled if the results
+        // contain hits without typo.
+        TYPO_STRICT,
+        // The parameter isn't set
+        TYPO_NOTSET
     }
 
     protected List<String> attributes;
     protected List<String> attributesToHighlight;
     protected List<String> attributesToSnippet;
-    protected int minWordSizeForApprox1;
-    protected int minWordSizeForApprox2;
-    protected boolean getRankingInfo;
-    protected boolean ignorePlural;
-    protected int distinct;
-    protected boolean advancedSyntax;
-    protected int page;
-    protected int minProximity;
-    protected String highlightPreTag;
-    protected String highlightPostTag;
-    protected int hitsPerPage;
+    protected Integer minWordSizeForApprox1;
+    protected Integer minWordSizeForApprox2;
+    protected Boolean getRankingInfo;
+    protected Boolean ignorePlural;
+    protected Integer distinct;
+    protected Boolean advancedSyntax;
+    protected Integer page;
+    protected Integer hitsPerPage;
     protected String restrictSearchableAttributes;
     protected String tags;
+    protected String highlightPreTag;
+    protected String highlightPostTag;
+    protected Integer minProximity;
     protected String numerics;
     protected String insideBoundingBox;
     protected String aroundLatLong;
-    protected boolean aroundLatLongViaIP;
+    protected Boolean aroundLatLongViaIP;
     protected String query;
     protected QueryType queryType;
     protected String optionalWords;
     protected String facets;
     protected String facetFilters;
-    protected int maxNumberOfFacets;
-    protected boolean analytics;
-    protected boolean synonyms;
-    protected boolean replaceSynonyms;
-    protected boolean allowTyposOnNumericTokens;
+    protected Integer maxNumberOfFacets;
+    protected Boolean analytics;
+    protected Boolean synonyms;
+    protected Boolean replaceSynonyms;
+    protected Boolean allowTyposOnNumericTokens;
     protected RemoveWordsType removeWordsIfNoResult;
     protected TypoTolerance typoTolerance;
     protected String analyticsTags;
 
     public Query(String query) {
-        minProximity = 1;
-        minWordSizeForApprox1 = 3;
-        minWordSizeForApprox2 = 7;
-        getRankingInfo = false;
-        ignorePlural = false;
-        distinct = 0;
-        page = 0;
-        minProximity = 1;
-        hitsPerPage = 20;
+        minWordSizeForApprox1 = null;
+        minWordSizeForApprox2 = null;
+        getRankingInfo = null;
+        ignorePlural = null;
+        distinct = null;
+        page = null;
+        minProximity = null;
+        hitsPerPage = null;
         this.query = query;
-        queryType = QueryType.PREFIX_LAST;
-        maxNumberOfFacets = -1;
-        advancedSyntax = false;
-        analytics = synonyms = replaceSynonyms = allowTyposOnNumericTokens = true;
+        queryType = QueryType.PREFIX_NOTSET;
+        maxNumberOfFacets = null;
+        advancedSyntax = null;
+        analytics = synonyms = replaceSynonyms = allowTyposOnNumericTokens = null;
         analyticsTags = null;
-        typoTolerance = TypoTolerance.TYPO_TRUE;
-        removeWordsIfNoResult = RemoveWordsType.REMOVE_NONE;
+        typoTolerance = TypoTolerance.TYPO_NOTSET;
+        removeWordsIfNoResult = RemoveWordsType.REMOVE_NOTSET;
     }
 
     public Query() {
-        minProximity = 1;
-        minWordSizeForApprox1 = 3;
-        minWordSizeForApprox2 = 7;
-        getRankingInfo = false;
-        ignorePlural = false;
-        distinct = 0;
-        page = 0;
-        minProximity = 1;
-        hitsPerPage = 20;
-        queryType = QueryType.PREFIX_ALL;
-        maxNumberOfFacets = -1;
-        advancedSyntax = false;
-        analytics = synonyms = replaceSynonyms = allowTyposOnNumericTokens = true;
-        analyticsTags = null;
-        typoTolerance = TypoTolerance.TYPO_TRUE;
-        removeWordsIfNoResult = RemoveWordsType.REMOVE_NONE;
+        this((String) null);
     }
 
     public Query(Query other) {
@@ -148,13 +145,13 @@ public class Query {
         if (other.attributesToSnippet != null) {
             attributesToSnippet = new ArrayList<String>(other.attributesToSnippet);
         }
-        minProximity = other.minProximity;
-        highlightPreTag = other.highlightPreTag;
-        highlightPostTag = other.highlightPostTag;
         minWordSizeForApprox1 = other.minWordSizeForApprox1;
         minWordSizeForApprox2 = other.minWordSizeForApprox2;
         getRankingInfo = other.getRankingInfo;
         ignorePlural = other.ignorePlural;
+        minProximity = other.minProximity;
+        highlightPreTag = other.highlightPreTag;
+        highlightPostTag = other.highlightPostTag;
         distinct = other.distinct;
         advancedSyntax = other.advancedSyntax;
         page = other.page;
@@ -183,29 +180,28 @@ public class Query {
     /**
      * Select the strategy to adopt when a query does not return any result.
      */
-    public Query removeWordsIfNoResult(RemoveWordsType type)
-    {
+    public Query removeWordsIfNoResult(RemoveWordsType type) {
         this.removeWordsIfNoResult = type;
         return this;
     }
 
     /**
-     * List of attributes you want to use for textual search (must be a subset of the attributesToIndex 
-     * index setting). Attributes are separated with a comma (for example @"name,address").
-     * You can also use a JSON string array encoding (for example encodeURIComponent("[\"name\",\"address\"]")).
-     * By default, all attributes specified in attributesToIndex settings are used to search.
+     * List of object attributes you want to use for textual search (must be a
+     * subset of the attributesToIndex index setting). Attributes are separated
+     * with a comma (for example @"name,address"). You can also use a JSON
+     * string array encoding (for example
+     * encodeURIComponent("[\"name\",\"address\"]")). By default, all attributes
+     * specified in attributesToIndex settings are used to search.
      */
-    public Query restrictSearchableAttributes(String attributes)
-    {
+    public Query restrictSearchableAttributes(String attributes) {
         this.restrictSearchableAttributes = attributes;
         return this;
     }
 
     /**
-     *  Select how the query words are interpreted:
+     * Select how the query words are interpreted:
      */
-    public Query setQueryType(QueryType type)
-    {
+    public Query setQueryType(QueryType type) {
         this.queryType = type;
         return this;
     }
@@ -213,15 +209,14 @@ public class Query {
     /**
      * Set the full text query
      */
-    public Query setQueryString(String query)
-    {
+    public Query setQueryString(String query) {
         this.query = query;
         return this;
     }
 
     /**
-     * Specify the list of attribute names to retrieve. 
-     * By default all attributes are retrieved.
+     * Specify the list of attribute names to retrieve. By default all
+     * attributes are retrieved.
      */
     public Query setAttributesToRetrieve(List<String> attributes) {
         this.attributes = attributes;
@@ -229,8 +224,8 @@ public class Query {
     }
 
     /**
-     * Specify the list of attribute names to highlight. 
-     * By default indexed attributes are highlighted.
+     * Specify the list of attribute names to highlight. By default indexed
+     * attributes are highlighted.
      */
     public Query setAttributesToHighlight(List<String> attributes) {
         this.attributesToHighlight = attributes;
@@ -238,8 +233,9 @@ public class Query {
     }
 
     /**
-     * Specify the list of attribute names to Snippet alongside the number of words to return (syntax is 'attributeName:nbWords').
-     * By default no snippet is computed.
+     * Specify the list of attribute names to Snippet alongside the number of
+     * words to return (syntax is 'attributeName:nbWords'). By default no
+     * snippet is computed.
      */
     public Query setAttributesToSnippet(List<String> attributes) {
         this.attributesToSnippet = attributes;
@@ -248,11 +244,15 @@ public class Query {
 
     /**
      *
-     * @param distinct If set to true, enable the distinct feature (disabled by default) if the attributeForDistinct index setting is set.
-     *   This feature is similar to the SQL "distinct" keyword: when enabled in a query with the distinct=1 parameter, 
-     *   all hits containing a duplicate value for the attributeForDistinct attribute are removed from results. 
-     *   For example, if the chosen attribute is show_name and several hits have the same value for show_name, then only the best 
-     *   one is kept and others are removed.
+     * @param If
+     *            set to true, enable the distinct feature (disabled by default)
+     *            if the attributeForDistinct index setting is set. This feature
+     *            is similar to the SQL "distinct" keyword: when enabled in a
+     *            query with the distinct=1 parameter, all hits containing a
+     *            duplicate value for the attributeForDistinct attribute are
+     *            removed from results. For example, if the chosen attribute is
+     *            show_name and several hits have the same value for show_name,
+     *            then only the best one is kept and others are removed.
      */
     public Query enableDistinct(boolean distinct) {
         this.distinct = distinct ? 1 : 0;
@@ -260,8 +260,13 @@ public class Query {
     }
 
     /**
-     * This feature is similar to the distinct just before but instead of keeping the best value per value of attributeForDistinct, it allows to keep N values.
-     * @param nbHitsToKeep Specify the maximum number of hits to keep for each distinct value
+     * This feature is similar to the distinct just before but instead of
+     * keeping the best value per value of attributeForDistinct, it allows to
+     * keep N values.
+     *
+     * @param nbHitsToKeep
+     *            Specify the maximum number of hits to keep for each distinct
+     *            value
      */
     public Query enableDistinct(int nbHitsToKeep) {
         this.distinct = nbHitsToKeep;
@@ -269,7 +274,9 @@ public class Query {
     }
 
     /**
-     * @param enabled If set to false, this query will not be taken into account in analytics feature. Default to true.
+     * @param If
+     *            set to false, this query will not be taken into account in
+     *            analytics feature. Default to true.
      */
     public Query enableAnalytics(boolean enabled) {
         this.analytics = enabled;
@@ -277,7 +284,8 @@ public class Query {
     }
 
     /**
-     * @param analyticsTags Set the analytics tags identifying the query
+     * @param Set
+     *            the analytics tags identifying the query
      */
     public Query setAnalyticsTags(String analyticsTags) {
         this.analyticsTags = analyticsTags;
@@ -285,7 +293,9 @@ public class Query {
     }
 
     /**
-     * @param enabled If set to false, this query will not use synonyms defined in configuration. Default to true.
+     * @param If
+     *            set to false, this query will not use synonyms defined in
+     *            configuration. Default to true.
      */
     public Query enableSynonyms(boolean enabled) {
         this.synonyms = enabled;
@@ -293,7 +303,10 @@ public class Query {
     }
 
     /**
-     * @param enabled If set to false, words matched via synonyms expansion will not be replaced by the matched synonym in highlight result. Default to true.
+     * @param If
+     *            set to false, words matched via synonyms expansion will not be
+     *            replaced by the matched synonym in highlight result. Default
+     *            to true.
      */
     public Query enableReplaceSynonymsInHighlight(boolean enabled) {
         this.replaceSynonyms = enabled;
@@ -301,8 +314,8 @@ public class Query {
     }
 
     /**
-
-     * @param enabled If set to false, disable typo-tolerance. Default to true.
+     * @param If
+     *            set to false, disable typo-tolerance. Default to true.
      */
     public Query enableTypoTolerance(boolean enabled) {
         if (enabled) {
@@ -314,7 +327,8 @@ public class Query {
     }
 
     /**
-     * @param typoTolerance This option allow to control the number of typo in the results set.
+     * @param This
+     *            option allow to control the number of typo in the results set.
      */
     public Query setTypoTolerance(TypoTolerance typoTolerance) {
         this.typoTolerance = typoTolerance;
@@ -322,17 +336,43 @@ public class Query {
     }
 
     /**
-     * Specify the minimum number of characters in a query word to accept one typo in this word. 
-     * Defaults to 3.
+     * Specify the minimum number of characters in a query word to accept one
+     * typo in this word. Defaults to 3.
      */
     public Query setMinWordSizeToAllowOneTypo(int nbChars) {
         minWordSizeForApprox1 = nbChars;
         return this;
     }
 
+    /*
+     * Configure the precision of the proximity ranking criterion. By default,
+     * the minimum (and best) proximity value distance between 2 matching words
+     * is 1. Setting it to 2 (or 3) would allow 1 (or 2) words to be found
+     * between the matching words without degrading the proximity ranking value.
+     *
+     * Considering the query "javascript framework", if you set minProximity=2
+     * the records "JavaScript framework" and "JavaScript charting framework"
+     * will get the same proximity score, even if the second one contains a word
+     * between the 2 matching words. Default to 1.
+     */
+    public Query setMinProximity(int value) {
+        this.minProximity = value;
+        return this;
+    }
+
+    /*
+     * Specify the string that is inserted before/after the highlighted parts in
+     * the query result (default to "<em>" / "</em>").
+     */
+    public Query setHighlightingTags(String preTag, String postTag) {
+        this.highlightPreTag = preTag;
+        this.highlightPostTag = postTag;
+        return this;
+    }
+
     /**
-     * Specify the minimum number of characters in a query word to accept two typos in this word. 
-     * Defaults to 7.
+     * Specify the minimum number of characters in a query word to accept two
+     * typos in this word. Defaults to 7.
      */
     public Query setMinWordSizeToAllowTwoTypos(int nbChars) {
         minWordSizeForApprox2 = nbChars;
@@ -340,7 +380,9 @@ public class Query {
     }
 
     /**
-     * @param enabled If set to false, disable typo-tolerance on numeric tokens. Default to true.
+     * @param If
+     *            set to false, disable typo-tolerance on numeric tokens.
+     *            Default to true.
      */
     public Query enableTyposOnNumericTokens(boolean enabled) {
         this.allowTyposOnNumericTokens = enabled;
@@ -348,18 +390,20 @@ public class Query {
     }
 
     /**
-     * if set, the result hits will contain ranking information in _rankingInfo attribute.
+     * if set, the result hits will contain ranking information in _rankingInfo
+     * attribute.
      */
     public Query getRankingInfo(boolean enabled) {
-        this.getRankingInfo = enabled;
+        getRankingInfo = enabled;
         return this;
     }
 
     /**
-     * If set to true, plural won't be considered as a typo (for example car/cars will be considered as equals). Default to false.
+     * If set to true, plural won't be considered as a typo (for example
+     * car/cars will be considered as equals). Default to false.
      */
     public Query ignorePlural(boolean enabled) {
-        this.ignorePlural = enabled;
+        ignorePlural = enabled;
         return this;
     }
 
@@ -372,7 +416,7 @@ public class Query {
     }
 
     /**
-     *  Set the number of hits per page. Defaults to 10.
+     * Set the number of hits per page. Defaults to 10.
      */
     public Query setHitsPerPage(int nbHitsPerPage) {
         this.hitsPerPage = nbHitsPerPage;
@@ -380,39 +424,23 @@ public class Query {
     }
 
     /**
-     *  Set the number of hits per page. Defaults to 10.
-     *  @deprecated Use {@code setHitsPerPage}
+     * Set the number of hits per page. Defaults to 10.
+     *
+     * @deprecated Use {@code setHitsPerPage}
      */
     @Deprecated
     public Query setNbHitsPerPage(int nbHitsPerPage) {
         return setHitsPerPage(nbHitsPerPage);
     }
 
-
-    /*
-     * Configure the precision of the proximity ranking criterion. 
-     * By default, the minimum (and best) proximity value distance between 2 matching words is 1. Setting it to 2 (or 3) would allow 1 (or 2) words to be found between the matching words without degrading the proximity ranking value.
-     *
-     * Considering the query "javascript framework", if you set minProximity=2 the records "JavaScript framework" and "JavaScript charting framework" will get the same proximity score, even if the second one contains a word between the 2 matching words. Default to 1.
-     */
-    public Query setMinProximity(int value) {
-        this.minProximity = value;
-        return this;
-    }
-
-    /*
-     * Specify the string that is inserted before/after the highlighted parts in the query result (default to "<em>" / "</em>").
-     */
-    public Query setHighlightingTags(String preTag, String postTag) {
-        this.highlightPreTag = preTag;
-        this.highlightPostTag = postTag;
-        return this;
-    }
-
     /**
-     *  Search for entries around a given latitude/longitude. 
-     *  @param radius set the maximum distance in meters.
-     *  Note: at indexing, geoloc of an object should be set with _geoloc attribute containing lat and lng attributes (for example {"_geoloc":{"lat":48.853409, "lng":2.348800}})
+     * Search for entries around a given latitude/longitude.
+     *
+     * @param radius
+     *            set the maximum distance in meters. Note: at indexing, geoloc
+     *            of an object should be set with _geoloc attribute containing
+     *            lat and lng attributes (for example
+     *            {"_geoloc":{"lat":48.853409, "lng":2.348800}})
      */
     public Query aroundLatitudeLongitude(float latitude, float longitude, int radius) {
         aroundLatLong = "aroundLatLng=" + latitude + "," + longitude + "&aroundRadius=" + radius;
@@ -420,10 +448,17 @@ public class Query {
     }
 
     /**
-     *  Search for entries around a given latitude/longitude. 
-     *  @param radius set the maximum distance in meters.
-     *  @param precision set the precision for ranking (for example if you set precision=100, two objects that are distant of less than 100m will be considered as identical for "geo" ranking parameter).
-     *  Note: at indexing, geoloc of an object should be set with _geoloc attribute containing lat and lng attributes (for example {"_geoloc":{"lat":48.853409, "lng":2.348800}})
+     * Search for entries around a given latitude/longitude.
+     *
+     * @param radius
+     *            set the maximum distance in meters.
+     * @param precision
+     *            set the precision for ranking (for example if you set
+     *            precision=100, two objects that are distant of less than 100m
+     *            will be considered as identical for "geo" ranking parameter).
+     *            Note: at indexing, geoloc of an object should be set with
+     *            _geoloc attribute containing lat and lng attributes (for
+     *            example {"_geoloc":{"lat":48.853409, "lng":2.348800}})
      */
     public Query aroundLatitudeLongitude(float latitude, float longitude, int radius, int precision) {
         aroundLatLong = "aroundLatLng=" + latitude + "," + longitude + "&aroundRadius=" + radius + "&aroundPrecision=" + precision;
@@ -431,9 +466,14 @@ public class Query {
     }
 
     /**
-     * Search for entries around the latitude/longitude of user (using IP geolocation)
-     *  @param radius set the maximum distance in meters.
-     *  Note: at indexing, geoloc of an object should be set with _geoloc attribute containing lat and lng attributes (for example {"_geoloc":{"lat":48.853409, "lng":2.348800}})
+     * Search for entries around the latitude/longitude of user (using IP
+     * geolocation)
+     *
+     * @param radius
+     *            set the maximum distance in meters. Note: at indexing, geoloc
+     *            of an object should be set with _geoloc attribute containing
+     *            lat and lng attributes (for example
+     *            {"_geoloc":{"lat":48.853409, "lng":2.348800}})
      */
     public Query aroundLatitudeLongitudeViaIP(boolean enabled, int radius) {
         aroundLatLong = "aroundRadius=" + radius;
@@ -442,10 +482,18 @@ public class Query {
     }
 
     /**
-     * Search for entries around the latitude/longitude of user (using IP geolocation)
-     *  @param radius set the maximum distance in meters.
-     *  @param precision set the precision for ranking (for example if you set precision=100, two objects that are distant of less than 100m will be considered as identical for "geo" ranking parameter).
-     *  Note: at indexing, geoloc of an object should be set with _geoloc attribute containing lat and lng attributes (for example {"_geoloc":{"lat":48.853409, "lng":2.348800}})
+     * Search for entries around the latitude/longitude of user (using IP
+     * geolocation)
+     *
+     * @param radius
+     *            set the maximum distance in meters.
+     * @param precision
+     *            set the precision for ranking (for example if you set
+     *            precision=100, two objects that are distant of less than 100m
+     *            will be considered as identical for "geo" ranking parameter).
+     *            Note: at indexing, geoloc of an object should be set with
+     *            _geoloc attribute containing lat and lng attributes (for
+     *            example {"_geoloc":{"lat":48.853409, "lng":2.348800}})
      */
     public Query aroundLatitudeLongitudeViaIP(boolean enabled, int radius, int precision) {
         aroundLatLong = "aroundRadius=" + radius + "&aroundPrecision=" + precision;
@@ -454,8 +502,10 @@ public class Query {
     }
 
     /**
-     *  Search for entries inside a given area defined by the two extreme points of a rectangle.
-     *  At indexing, geoloc of an object should be set with _geoloc attribute containing lat and lng attributes.
+     * Search for entries inside a given area defined by the two extreme points
+     * of a rectangle. At indexing, geoloc of an object should be set with
+     * _geoloc attribute containing lat and lng attributes (for example
+     * {"_geoloc":{"lat":48.853409, "lng":2.348800}})
      */
     public Query insideBoundingBox(float latitudeP1, float longitudeP1, float latitudeP2, float longitudeP2) {
         insideBoundingBox = "insideBoundingBox=" + latitudeP1 + "," + longitudeP1 + "," + latitudeP2 + "," + longitudeP2;
@@ -463,8 +513,11 @@ public class Query {
     }
 
     /**
-     * Set the list of words that should be considered as optional when found in the query. 
-     * @param words The list of optional words, comma separated.
+     * Set the list of words that should be considered as optional when found in
+     * the query.
+     *
+     * @param words
+     *            The list of optional words, comma separated.
      */
     public Query setOptionalWords(String words) {
         this.optionalWords = words;
@@ -472,8 +525,11 @@ public class Query {
     }
 
     /**
-     * Set the list of words that should be considered as optional when found in the query. 
-     * @param words The list of optional words.
+     * Set the list of words that should be considered as optional when found in
+     * the query.
+     *
+     * @param words
+     *            The list of optional words.
      */
     public Query setOptionalWords(List<String> words) {
         StringBuilder builder = new StringBuilder();
@@ -486,7 +542,8 @@ public class Query {
     }
 
     /**
-     * Filter the query by a list of facets. Each filter is encoded as `attributeName:value`.
+     * Filter the query by a list of facets. Each filter is encoded as
+     * `attributeName:value`.
      */
     public Query setFacetFilters(List<String> facets) {
         JSONArray obj = new JSONArray();
@@ -498,19 +555,23 @@ public class Query {
     }
 
     /**
-     * Filter the query by a list of facets. Filters are separated by commas and each facet is encoded as `attributeName:value`.
-     * To OR facets, you must add parentheses.
-     * You can also use a JSON string array encoding.
+     * Filter the query by a list of facets. Filters are separated by commas and
+     * each facet is encoded as `attributeName:value`. To OR facets, you must
+     * add parentheses. For example:
+     * `(category:Book,category:Movie),author:John%20Doe`. You can also use a
+     * JSON string array encoding, for example
+     * `[[\"category:Book\",\"category:Movie\"],\"author:John Doe\"]`.
      */
-    public Query setFacetFilters(String facetsFilter) {
-        this.facetFilters = facetsFilter;
+    public Query setFacetFilters(String facetFilters) {
+        this.facetFilters = facetFilters;
         return this;
     }
 
     /**
-     * List of object attributes that you want to use for faceting.
-     * Only attributes that have been added in **attributesForFaceting** index setting can be used in this parameter. 
-     * You can also use `*` to perform faceting on all attributes specified in **attributesForFaceting**.
+     * List of object attributes that you want to use for faceting. <br/>
+     * Only attributes that have been added in **attributesForFaceting** index
+     * setting can be used in this parameter. You can also use `*` to perform
+     * faceting on all attributes specified in **attributesForFaceting**.
      */
     public Query setFacets(List<String> facets) {
         JSONArray obj = new JSONArray();
@@ -530,8 +591,11 @@ public class Query {
     }
 
     /**
-     * Filter the query by a set of tags. You can AND tags by separating them by commas. To OR tags, you must add parentheses. For example tag1,(tag2,tag3) means tag1 AND (tag2 OR tag3).
-     * At indexing, tags should be added in the _tags attribute of objects.
+     * Filter the query by a set of tags. You can AND tags by separating them by
+     * commas. To OR tags, you must add parentheses. For example
+     * tag1,(tag2,tag3) means tag1 AND (tag2 OR tag3). At indexing, tags should
+     * be added in the _tags attribute of objects (for example
+     * {"_tags":["tag1","tag2"]} )
      */
     public Query setTagFilters(String tags) {
         this.tags = tags;
@@ -539,7 +603,11 @@ public class Query {
     }
 
     /**
-     * Add a list of numeric filters separated by a comma.
+     * Add a list of numeric filters separated by a comma. The syntax of one
+     * filter is `attributeName` followed by `operand` followed by `value.
+     * Supported operands are `<`, `<=`, `=`, `>` and `>=`. You can have
+     * multiple conditions on one attribute like for example
+     * `numerics=price>100,price<1000`.
      */
     public Query setNumericFilters(String numerics) {
         this.numerics = numerics;
@@ -547,7 +615,11 @@ public class Query {
     }
 
     /**
-     * Add a list of numeric filters separated by a comma.
+     * Add a list of numeric filters separated by a comma. The syntax of one
+     * filter is `attributeName` followed by `operand` followed by `value.
+     * Supported operands are `<`, `<=`, `=`, `>` and `>=`. You can have
+     * multiple conditions on one attribute like for example
+     * `numerics=price>100,price<1000`.
      */
     public Query setNumericFilters(List<String> numerics) {
         StringBuilder builder = new StringBuilder();
@@ -563,13 +635,14 @@ public class Query {
     }
 
     /**
-     * Enable the advanced query syntax. Defaults to false.
-     *   - Phrase query: a phrase query defines a particular sequence of terms.
-     *     A phrase query is build by Algolia's query parser for words surrounded by ".
-     *     For example, "search engine" will retrieve records having search next to engine only.
-     *     Typo-tolerance is disabled on phrase queries.
-     *   - Prohibit operator: The prohibit operator excludes records that contain the term after the - symbol.
-     *     For example search -engine will retrieve records containing search but not engine.
+     * Enable the advanced query syntax. Defaults to false. - Phrase query: a
+     * phrase query defines a particular sequence of terms. A phrase query is
+     * build by Algolia's query parser for words surrounded by ". For example,
+     * "search engine" will retrieve records having search next to engine only.
+     * Typo-tolerance is disabled on phrase queries. - Prohibit operator: The
+     * prohibit operator excludes records that contain the term after the -
+     * symbol. For example search -engine will retrieve records containing
+     * search but not engine.
      */
     public Query enableAvancedSyntax(boolean advancedSyntax) {
         this.advancedSyntax = advancedSyntax;
@@ -614,7 +687,7 @@ public class Query {
                     first = false;
                 }
             }
-            if (typoTolerance != TypoTolerance.TYPO_TRUE) {
+            if (typoTolerance != TypoTolerance.TYPO_NOTSET) {
                 if (stringBuilder.length() > 0)
                     stringBuilder.append('&');
                 stringBuilder.append("typoTolerance=");
@@ -631,83 +704,118 @@ public class Query {
                     case TYPO_TRUE:
                         stringBuilder.append("true");
                         break;
+                    case TYPO_NOTSET:
+                        throw new IllegalStateException("code not reachable");
                 }
             }
-            if (minProximity > 1) {
+            if (allowTyposOnNumericTokens != null) {
                 if (stringBuilder.length() > 0)
                     stringBuilder.append('&');
-                stringBuilder.append("minProximity=").append(minProximity);
+                stringBuilder.append("allowTyposOnNumericTokens=").append(allowTyposOnNumericTokens ? '1' : '0');
             }
-            if (highlightPreTag != null && highlightPostTag != null) {
+            if (minWordSizeForApprox1 != null) {
                 if (stringBuilder.length() > 0)
                     stringBuilder.append('&');
-                stringBuilder.append("highlightPreTag=").append(highlightPreTag);
-                stringBuilder.append("&highlightPostTag=").append(highlightPostTag);
+                stringBuilder.append("minWordSizefor1Typo=");
+                stringBuilder.append(minWordSizeForApprox1);
             }
-            if (!allowTyposOnNumericTokens) {
+            if (minWordSizeForApprox2 != null) {
                 if (stringBuilder.length() > 0)
                     stringBuilder.append('&');
-                stringBuilder.append("allowTyposOnNumericTokens=false");
+                stringBuilder.append("minWordSizefor2Typos=");
+                stringBuilder.append(minWordSizeForApprox2);
             }
-            if (minWordSizeForApprox1 != 3) {
-                if (stringBuilder.length() > 0)
-                    stringBuilder.append('&');
-                stringBuilder.append("minWordSizefor1Typo=").append(minWordSizeForApprox1);
+            switch (removeWordsIfNoResult) {
+                case REMOVE_LAST_WORDS:
+                    if (stringBuilder.length() > 0)
+                        stringBuilder.append('&');
+                    stringBuilder.append("removeWordsIfNoResult=LastWords");
+                    break;
+                case REMOVE_FIRST_WORDS:
+                    if (stringBuilder.length() > 0)
+                        stringBuilder.append('&');
+                    stringBuilder.append("removeWordsIfNoResult=FirstWords");
+                    break;
+                case REMOVE_ALLOPTIONAL:
+                    if (stringBuilder.length() > 0)
+                        stringBuilder.append('&');
+                    stringBuilder.append("removeWordsIfNoResult=allOptional");
+                    break;
+                case REMOVE_NONE:
+                    if (stringBuilder.length() > 0)
+                        stringBuilder.append('&');
+                    stringBuilder.append("removeWordsIfNoResult=none");
+                    break;
+                case REMOVE_NOTSET:
+                    // Nothing to do
+                    break;
             }
-            if (minWordSizeForApprox2 != 7) {
+            if (getRankingInfo != null) {
                 if (stringBuilder.length() > 0)
                     stringBuilder.append('&');
-                stringBuilder.append("minWordSizefor2Typos=").append(minWordSizeForApprox2);
+                stringBuilder.append("getRankingInfo=").append(getRankingInfo ? '1' : '0');
             }
-            if (getRankingInfo) {
+            if (ignorePlural != null) {
                 if (stringBuilder.length() > 0)
                     stringBuilder.append('&');
-                stringBuilder.append("getRankingInfo=1");
+                stringBuilder.append("ignorePlural=").append(ignorePlural ? '1' : '0');
             }
-            if (ignorePlural) {
+            if (analytics != null) {
                 if (stringBuilder.length() > 0)
                     stringBuilder.append('&');
-                stringBuilder.append("ignorePlural=true");
-            }
-            if (!analytics) {
-                if (stringBuilder.length() > 0)
-                    stringBuilder.append('&');
-                stringBuilder.append("analytics=0");
+                stringBuilder.append("analytics=").append(analytics ? '1' : '0');
             }
             if (analyticsTags != null) {
                 if (stringBuilder.length() > 0)
                     stringBuilder.append('&');
-                stringBuilder.append("analyticsTags=").append(analyticsTags);
+                stringBuilder.append("analyticsTags=" + analyticsTags);
             }
-            if (!synonyms) {
+            if (synonyms != null) {
                 if (stringBuilder.length() > 0)
                     stringBuilder.append('&');
-                stringBuilder.append("synonyms=0");
+                stringBuilder.append("synonyms=").append(synonyms ? '1' : '0');
             }
-            if (!replaceSynonyms) {
+            if (replaceSynonyms != null) {
                 if (stringBuilder.length() > 0)
                     stringBuilder.append('&');
-                stringBuilder.append("replaceSynonymsInHighlight=0");
+                stringBuilder.append("replaceSynonymsInHighlight=").append(replaceSynonyms ? '1' : '0');
             }
-            if (distinct > 0) {
+            if (distinct != null) {
                 if (stringBuilder.length() > 0)
                     stringBuilder.append('&');
-                stringBuilder.append("distinct=").append(distinct);
+                stringBuilder.append("distinct=");
+                stringBuilder.append(distinct);
             }
-            if (advancedSyntax) {
+            if (advancedSyntax != null) {
                 if (stringBuilder.length() > 0)
                     stringBuilder.append('&');
-                stringBuilder.append("advancedSyntax=1");
+                stringBuilder.append("advancedSyntax=").append(advancedSyntax ? '1' : '0');
             }
-            if (page > 0) {
+            if (page != null) {
                 if (stringBuilder.length() > 0)
                     stringBuilder.append('&');
-                stringBuilder.append("page=").append(page);
+                stringBuilder.append("page=");
+                stringBuilder.append(page);
             }
-            if (hitsPerPage != 20 && hitsPerPage > 0) {
+            if (minProximity != null) {
                 if (stringBuilder.length() > 0)
                     stringBuilder.append('&');
-                stringBuilder.append("hitsPerPage=").append(hitsPerPage);
+                stringBuilder.append("minProximity=");
+                stringBuilder.append(minProximity);
+            }
+            if (highlightPreTag != null && highlightPostTag != null) {
+                if (stringBuilder.length() > 0)
+                    stringBuilder.append('&');
+                stringBuilder.append("highlightPreTag=");
+                stringBuilder.append(highlightPreTag);
+                stringBuilder.append("&highlightPostTag=");
+                stringBuilder.append(highlightPostTag);
+            }
+            if (hitsPerPage != null) {
+                if (stringBuilder.length() > 0)
+                    stringBuilder.append('&');
+                stringBuilder.append("hitsPerPage=");
+                stringBuilder.append(hitsPerPage);
             }
             if (tags != null) {
                 if (stringBuilder.length() > 0)
@@ -730,10 +838,10 @@ public class Query {
                     stringBuilder.append('&');
                 stringBuilder.append(aroundLatLong);
             }
-            if (aroundLatLongViaIP) {
+            if (aroundLatLongViaIP != null) {
                 if (stringBuilder.length() > 0)
                     stringBuilder.append('&');
-                stringBuilder.append("aroundLatLngViaIP=true");
+                stringBuilder.append("aroundLatLngViaIP=").append(aroundLatLongViaIP ? '1' : '0');
             }
             if (query != null) {
                 if (stringBuilder.length() > 0)
@@ -753,10 +861,11 @@ public class Query {
                 stringBuilder.append("facetFilters=");
                 stringBuilder.append(URLEncoder.encode(facetFilters, "UTF-8"));
             }
-            if (maxNumberOfFacets > 0) {
+            if (maxNumberOfFacets != null) {
                 if (stringBuilder.length() > 0)
                     stringBuilder.append('&');
-                stringBuilder.append("maxNumberOfFacets=").append(maxNumberOfFacets);
+                stringBuilder.append("maxNumberOfFacets=");
+                stringBuilder.append(maxNumberOfFacets);
             }
             if (optionalWords != null) {
                 if (stringBuilder.length() > 0)
@@ -770,25 +879,7 @@ public class Query {
                 stringBuilder.append("restrictSearchableAttributes=");
                 stringBuilder.append(URLEncoder.encode(restrictSearchableAttributes, "UTF-8"));
             }
-            switch (removeWordsIfNoResult) {
-                case REMOVE_LAST_WORDS:
-                    if (stringBuilder.length() > 0)
-                        stringBuilder.append('&');
-                    stringBuilder.append("removeWordsIfNoResult=LastWords");
-                    break;
-                case REMOVE_FIRST_WORDS:
-                    if (stringBuilder.length() > 0)
-                        stringBuilder.append('&');
-                    stringBuilder.append("removeWordsIfNoResult=FirstWords");
-                    break;
-                case REMOVE_ALLOPTIONAL:
-                    if (stringBuilder.length() > 0)
-                        stringBuilder.append('&');
-                    stringBuilder.append("removeWordsIfNoResult=allOptional");
-                    break;
-                case REMOVE_NONE:
-                    break;
-            }
+
             switch (queryType) {
                 case PREFIX_ALL:
                     if (stringBuilder.length() > 0)
@@ -796,6 +887,9 @@ public class Query {
                     stringBuilder.append("queryType=prefixAll");
                     break;
                 case PREFIX_LAST:
+                    if (stringBuilder.length() > 0)
+                        stringBuilder.append('&');
+                    stringBuilder.append("queryType=prefixLast");
                     break;
                 case PREFIX_NONE:
                     if (stringBuilder.length() > 0)
@@ -833,63 +927,63 @@ public class Query {
     /**
      * @return the minWordSizeForApprox1
      */
-    public int getMinWordSizeForApprox1() {
+    public Integer getMinWordSizeForApprox1() {
         return minWordSizeForApprox1;
     }
 
     /**
      * @return the minWordSizeForApprox2
      */
-    public int getMinWordSizeForApprox2() {
+    public Integer getMinWordSizeForApprox2() {
         return minWordSizeForApprox2;
     }
 
     /**
      * @return the getRankingInfo
      */
-    public boolean isGetRankingInfo() {
+    public Boolean isGetRankingInfo() {
         return getRankingInfo;
     }
 
     /**
      * @return the ignorePlural
      */
-    public boolean isIgnorePlural() {
+    public Boolean isIgnorePlural() {
         return ignorePlural;
-    }
-
-    /**
-     * @return if the distinct is set
-     */
-    public boolean isDistinct() {
-        return distinct != 0;
     }
 
     /**
      * @return the distinct
      */
-    public int getDistinct() {
+    public Boolean isDistinct() {
+        return distinct > 0;
+    }
+
+    /**
+     * @return the distinct
+     */
+    public Integer getDistinct() {
         return distinct;
     }
 
     /**
      * @return the advancedSyntax
      */
-    public boolean isAdvancedSyntax() {
+    public Boolean isAdvancedSyntax() {
         return advancedSyntax;
     }
 
     /**
      * @return the page
      */
-    public int getPage() {
+    public Integer getPage() {
         return page;
     }
 
     /**
      * @return the hitsPerPage
      */
-    public int getHitsPerPage() {
+    public Integer getHitsPerPage() {
         return hitsPerPage;
     }
 
@@ -931,7 +1025,7 @@ public class Query {
     /**
      * @return the aroundLatLongViaIP
      */
-    public boolean isAroundLatLongViaIP() {
+    public Boolean isAroundLatLongViaIP() {
         return aroundLatLongViaIP;
     }
 
@@ -973,14 +1067,14 @@ public class Query {
     /**
      * @return the maxNumberOfFacets
      */
-    public int getMaxNumberOfFacets() {
+    public Integer getMaxNumberOfFacets() {
         return maxNumberOfFacets;
     }
 
     /**
      * @return the analytics
      */
-    public boolean isAnalytics() {
+    public Boolean isAnalytics() {
         return analytics;
     }
 
@@ -994,21 +1088,21 @@ public class Query {
     /**
      * @return the synonyms
      */
-    public boolean isSynonyms() {
+    public Boolean isSynonyms() {
         return synonyms;
     }
 
     /**
      * @return the replaceSynonyms
      */
-    public boolean isReplaceSynonyms() {
+    public Boolean isReplaceSynonyms() {
         return replaceSynonyms;
     }
 
     /**
      * @return the allowTyposOnNumericTokens
      */
-    public boolean isAllowTyposOnNumericTokens() {
+    public Boolean isAllowTyposOnNumericTokens() {
         return allowTyposOnNumericTokens;
     }
 
