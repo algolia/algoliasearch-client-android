@@ -23,7 +23,7 @@
 
 package com.algolia.search.saas;
 
-public enum IndexTaskKind {
+public enum IndexMethod {
     Search,
 
     AddObject,

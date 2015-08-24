@@ -93,7 +93,7 @@ public class APIClient extends BaseAPIClient {
         protected TaskParams.Client doInBackground(TaskParams.Client... params) {
             TaskParams.Client p = params[0];
             try {
-                switch (p.kind) {
+                switch (p.method) {
                     case ListIndexes:
                         p.content = listIndexes();
                         break;
@@ -150,7 +150,7 @@ public class APIClient extends BaseAPIClient {
      * @param listener the listener that will receive the result or error.
      */
     public void listIndexesASync(APIClientListener listener) {
-        TaskParams.Client params = new TaskParams.Client(listener, APIClientTaskKind.ListIndexes);
+        TaskParams.Client params = new TaskParams.Client(listener, APIMethod.ListIndexes);
         new ASyncClientTask().execute(params);
     }
 
@@ -160,7 +160,7 @@ public class APIClient extends BaseAPIClient {
      * @param indexName the name of index to delete
      */
     public void deleteIndexASync(String indexName, APIClientListener listener) {
-        TaskParams.Client params = new TaskParams.Client(listener, APIClientTaskKind.DeleteIndex, indexName);
+        TaskParams.Client params = new TaskParams.Client(listener, APIMethod.DeleteIndex, indexName);
         new ASyncClientTask().execute(params);
     }
 
@@ -170,7 +170,7 @@ public class APIClient extends BaseAPIClient {
      * @param dstIndexName the new index name that will contains a copy of srcIndexName (destination will be overriten if it already exist).
      */
     public void moveIndexASync(String srcIndexName, String dstIndexName, APIClientListener listener) {
-        TaskParams.Client params = new TaskParams.Client(listener, APIClientTaskKind.MoveIndex, srcIndexName, dstIndexName);
+        TaskParams.Client params = new TaskParams.Client(listener, APIMethod.MoveIndex, srcIndexName, dstIndexName);
         new ASyncClientTask().execute(params);
     }
 
@@ -180,7 +180,7 @@ public class APIClient extends BaseAPIClient {
      * @param dstIndexName the new index name that will contains a copy of srcIndexName (destination will be overriten if it already exist).
      */
     public void copyIndexASync(String srcIndexName, String dstIndexName, APIClientListener listener) {
-        TaskParams.Client params = new TaskParams.Client(listener, APIClientTaskKind.CopyIndex, srcIndexName, dstIndexName);
+        TaskParams.Client params = new TaskParams.Client(listener, APIMethod.CopyIndex, srcIndexName, dstIndexName);
         new ASyncClientTask().execute(params);
     }
 
@@ -191,7 +191,7 @@ public class APIClient extends BaseAPIClient {
      * @param logType Specify the type of log to retrieve
      */
     public void getLogsASync(int offset, int length, LogType logType, APIClientListener listener) {
-        TaskParams.Client params = new TaskParams.Client(listener, APIClientTaskKind.GetLogs, offset, length, logType);
+        TaskParams.Client params = new TaskParams.Client(listener, APIMethod.GetLogs, offset, length, logType);
         new ASyncClientTask().execute(params);
     }
 
@@ -199,7 +199,7 @@ public class APIClient extends BaseAPIClient {
      * List all existing user keys with their associated ACLs
      */
     public void listUserKeysASync(APIClientListener listener) {
-        TaskParams.Client params = new TaskParams.Client(listener, APIClientTaskKind.ListUserKeys);
+        TaskParams.Client params = new TaskParams.Client(listener, APIMethod.ListUserKeys);
         new ASyncClientTask().execute(params);
     }
 
@@ -207,7 +207,7 @@ public class APIClient extends BaseAPIClient {
      * Get ACL of a user key
      */
     public void getUserKeyACLASync(String key, APIClientListener listener) {
-        TaskParams.Client params = new TaskParams.Client(listener, APIClientTaskKind.GetUserKey, key);
+        TaskParams.Client params = new TaskParams.Client(listener, APIMethod.GetUserKey, key);
         new ASyncClientTask().execute(params);
     }
 
@@ -215,7 +215,7 @@ public class APIClient extends BaseAPIClient {
      * Delete an existing user key
      */
     public void deleteUserKeyASync(String key, APIClientListener listener) {
-        TaskParams.Client params = new TaskParams.Client(listener, APIClientTaskKind.DeleteUserKey, key);
+        TaskParams.Client params = new TaskParams.Client(listener, APIMethod.DeleteUserKey, key);
         new ASyncClientTask().execute(params);
     }
 
@@ -223,7 +223,7 @@ public class APIClient extends BaseAPIClient {
      * Create a new user key
      */
     public void addUserKeyASync(JSONObject parameters, APIClientListener listener) {
-        TaskParams.Client params = new TaskParams.Client(listener, APIClientTaskKind.AddUserKey, parameters);
+        TaskParams.Client params = new TaskParams.Client(listener, APIMethod.AddUserKey, parameters);
         new ASyncClientTask().execute(params);
     }
 
@@ -242,7 +242,7 @@ public class APIClient extends BaseAPIClient {
      *   - maxQueriesPerIPPerHour: integer
      */
     public void updateUserKeyASync(String key, JSONObject parameters, APIClientListener listener) {
-        TaskParams.Client params = new TaskParams.Client(listener, APIClientTaskKind.UpdateUserKey, parameters, key);
+        TaskParams.Client params = new TaskParams.Client(listener, APIMethod.UpdateUserKey, parameters, key);
         new ASyncClientTask().execute(params);
     }
 
@@ -250,7 +250,7 @@ public class APIClient extends BaseAPIClient {
      * This method allows to query multiple indexes with one API call asynchronously
      */
     public void multipleQueriesASync(List<IndexQuery> queries, APIClientListener listener) {
-        TaskParams.Client params = new TaskParams.Client(listener, APIClientTaskKind.MultipleQueries, queries, "none");
+        TaskParams.Client params = new TaskParams.Client(listener, APIMethod.MultipleQueries, queries, "none");
         new ASyncClientTask().execute(params);
     }
 
@@ -258,7 +258,7 @@ public class APIClient extends BaseAPIClient {
      * This method allows to query multiple indexes with one API call asynchronously
      */
     public void multipleQueriesASync(List<IndexQuery> queries, String strategy, APIClientListener listener) {
-        TaskParams.Client params = new TaskParams.Client(listener, APIClientTaskKind.MultipleQueries, queries, strategy);
+        TaskParams.Client params = new TaskParams.Client(listener, APIMethod.MultipleQueries, queries, strategy);
         new ASyncClientTask().execute(params);
     }
 
@@ -268,7 +268,7 @@ public class APIClient extends BaseAPIClient {
      * @param actions the array of actions
      */
     public void batchASync(JSONArray actions, APIClientListener listener) {
-        TaskParams.Client params = new TaskParams.Client(listener, APIClientTaskKind.Batch, actions);
+        TaskParams.Client params = new TaskParams.Client(listener, APIMethod.Batch, actions);
         new ASyncClientTask().execute(params);
     }
 }

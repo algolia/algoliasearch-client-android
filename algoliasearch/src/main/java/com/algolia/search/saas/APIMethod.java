@@ -23,7 +23,7 @@
 
 package com.algolia.search.saas;
 
-public enum APIClientTaskKind {
+public enum APIMethod {
     ListIndexes,
     DeleteIndex,
     CopyIndex,

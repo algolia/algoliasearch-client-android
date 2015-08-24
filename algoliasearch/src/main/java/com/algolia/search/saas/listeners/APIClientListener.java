@@ -30,10 +30,10 @@ import com.algolia.search.saas.TaskParams;
 import org.json.JSONObject;
 
 /**
- * Asynchronously receive result of Index asynchronous methods
+ * Asynchronously receive result of API Client's asynchronous methods
  */
 public interface APIClientListener {
 
-    void apiClientResult(APIClient client, TaskParams.Client context, JSONObject result);
-    void apiClientError(APIClient client, TaskParams.Client context, AlgoliaException e);
+    void APIResult(APIClient client, TaskParams.Client context, JSONObject result);
+    void APIError(APIClient client, TaskParams.Client context, AlgoliaException e);
 }

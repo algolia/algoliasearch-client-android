@@ -12,7 +12,7 @@
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
  *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY method, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
  * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
@@ -64,7 +64,7 @@ public class TaskParams {
 
     public static class Indexing {
         protected IndexingListener listener;
-        public IndexTaskKind kind;
+        public IndexMethod method;
         public JSONObject object;
         public JSONArray objects;
         public String objectID;
@@ -72,22 +72,22 @@ public class TaskParams {
         protected JSONObject content;
         protected AlgoliaException error;
 
-        protected Indexing(IndexingListener listener, IndexTaskKind kind, JSONObject object) {
+        protected Indexing(IndexingListener listener, IndexMethod method, JSONObject object) {
             this.listener = listener;
-            this.kind = kind;
+            this.method = method;
             this.object = object;
         }
 
-        protected Indexing(IndexingListener listener, IndexTaskKind kind, JSONObject object, String objectID) {
+        protected Indexing(IndexingListener listener, IndexMethod method, JSONObject object, String objectID) {
             this.listener = listener;
-            this.kind = kind;
+            this.method = method;
             this.object = object;
             this.objectID = objectID;
         }
 
-        protected Indexing(IndexingListener listener, IndexTaskKind kind, JSONArray objects) {
+        protected Indexing(IndexingListener listener, IndexMethod method, JSONArray objects) {
             this.listener = listener;
-            this.kind = kind;
+            this.method = method;
             this.objects = objects;
         }
 
@@ -106,7 +106,7 @@ public class TaskParams {
 
     public static class GetObjects {
         protected GetObjectsListener listener;
-        public IndexTaskKind kind;
+        public IndexMethod method;
         public String objectID;
         public List<String> objectIDs;
         public List<String> attributesToRetrieve;
@@ -114,22 +114,22 @@ public class TaskParams {
         protected JSONObject content;
         protected AlgoliaException error;
 
-        protected GetObjects(GetObjectsListener listener, IndexTaskKind kind, String objectID) {
+        protected GetObjects(GetObjectsListener listener, IndexMethod method, String objectID) {
             this.listener = listener;
-            this.kind = kind;
+            this.method = method;
             this.objectID = objectID;
         }
 
-        protected GetObjects(GetObjectsListener listener, IndexTaskKind kind, String objectID, List<String> attributesToRetrieve) {
+        protected GetObjects(GetObjectsListener listener, IndexMethod method, String objectID, List<String> attributesToRetrieve) {
             this.listener = listener;
-            this.kind = kind;
+            this.method = method;
             this.objectID = objectID;
             this.attributesToRetrieve = attributesToRetrieve;
         }
 
-        protected GetObjects(GetObjectsListener listener, IndexTaskKind kind, List<String> objectIDs) {
+        protected GetObjects(GetObjectsListener listener, IndexMethod method, List<String> objectIDs) {
             this.listener = listener;
-            this.kind = kind;
+            this.method = method;
             this.objectIDs = objectIDs;
         }
 
@@ -168,7 +168,7 @@ public class TaskParams {
 
     public static class DeleteObjects {
         protected DeleteObjectsListener listener;
-        public IndexTaskKind kind;
+        public IndexMethod method;
         public String objectID;
         public List<String> objectIDs;
         public Query query;
@@ -176,21 +176,21 @@ public class TaskParams {
         protected JSONObject content;
         protected AlgoliaException error;
 
-        protected DeleteObjects(DeleteObjectsListener listener, IndexTaskKind kind, String objectID) {
+        protected DeleteObjects(DeleteObjectsListener listener, IndexMethod method, String objectID) {
             this.listener = listener;
-            this.kind = kind;
+            this.method = method;
             this.objectID = objectID;
         }
 
-        protected DeleteObjects(DeleteObjectsListener listener, IndexTaskKind kind, List<String> objectIDs) {
+        protected DeleteObjects(DeleteObjectsListener listener, IndexMethod method, List<String> objectIDs) {
             this.listener = listener;
-            this.kind = kind;
+            this.method = method;
             this.objectIDs = objectIDs;
         }
 
-        protected DeleteObjects(DeleteObjectsListener listener, IndexTaskKind kind, Query query) {
+        protected DeleteObjects(DeleteObjectsListener listener, IndexMethod method, Query query) {
             this.listener = listener;
-            this.kind = kind;
+            this.method = method;
             this.query = query;
         }
 
@@ -209,20 +209,20 @@ public class TaskParams {
 
     public static class Settings {
         protected SettingsListener listener;
-        public IndexTaskKind kind;
+        public IndexMethod method;
         public JSONObject settings;
 
         protected JSONObject content;
         protected AlgoliaException error;
 
-        protected Settings(SettingsListener listener, IndexTaskKind kind) {
+        protected Settings(SettingsListener listener, IndexMethod method) {
             this.listener = listener;
-            this.kind = kind;
+            this.method = method;
         }
 
-        protected Settings(SettingsListener listener, IndexTaskKind kind, JSONObject settings) {
+        protected Settings(SettingsListener listener, IndexMethod method, JSONObject settings) {
             this.listener = listener;
-            this.kind = kind;
+            this.method = method;
             this.settings = settings;
         }
 
@@ -241,7 +241,7 @@ public class TaskParams {
 
     public static class Client {
         protected APIClientListener listener;
-        public APIClientTaskKind kind;
+        public APIMethod method;
         public String indexName;
         public String srcIndexName;
         public String dstIndexName;
@@ -257,58 +257,58 @@ public class TaskParams {
         protected JSONObject content;
         protected AlgoliaException error;
 
-        protected Client(APIClientListener listener, APIClientTaskKind kind) {
+        protected Client(APIClientListener listener, APIMethod method) {
             this.listener = listener;
-            this.kind = kind;
+            this.method = method;
         }
 
-        protected Client(APIClientListener listener, APIClientTaskKind kind, String str) {
+        protected Client(APIClientListener listener, APIMethod method, String str) {
             this.listener = listener;
-            this.kind = kind;
+            this.method = method;
 
-            if (kind == APIClientTaskKind.DeleteIndex) {
+            if (method == APIMethod.DeleteIndex) {
                 this.indexName = str;
             } else {
                 this.key = str;
             }
         }
 
-        protected Client(APIClientListener listener, APIClientTaskKind kind, String srcIndexName, String dstIndexName) {
+        protected Client(APIClientListener listener, APIMethod method, String srcIndexName, String dstIndexName) {
             this.listener = listener;
-            this.kind = kind;
+            this.method = method;
             this.srcIndexName = srcIndexName;
             this.dstIndexName = dstIndexName;
         }
 
-        protected Client(APIClientListener listener, APIClientTaskKind kind, JSONArray actions) {
+        protected Client(APIClientListener listener, APIMethod method, JSONArray actions) {
             this.listener = listener;
-            this.kind = kind;
+            this.method = method;
             this.actions = actions;
         }
 
-        protected Client(APIClientListener listener, APIClientTaskKind kind, List<IndexQuery> queries, String strategy) {
+        protected Client(APIClientListener listener, APIMethod method, List<IndexQuery> queries, String strategy) {
             this.listener = listener;
-            this.kind = kind;
+            this.method = method;
             this.queries = queries;
             this.strategy = strategy;
         }
 
-        protected Client(APIClientListener listener, APIClientTaskKind kind, JSONObject parameters) {
+        protected Client(APIClientListener listener, APIMethod method, JSONObject parameters) {
             this.listener = listener;
-            this.kind = kind;
+            this.method = method;
             this.parameters = parameters;
         }
 
-        protected Client(APIClientListener listener, APIClientTaskKind kind, JSONObject parameters, String key) {
+        protected Client(APIClientListener listener, APIMethod method, JSONObject parameters, String key) {
             this.listener = listener;
-            this.kind = kind;
+            this.method = method;
             this.parameters = parameters;
             this.key = key;
         }
 
-        protected Client(APIClientListener listener, APIClientTaskKind kind, int offset, int length, LogType logType) {
+        protected Client(APIClientListener listener, APIMethod method, int offset, int length, LogType logType) {
             this.listener = listener;
-            this.kind = kind;
+            this.method = method;
             this.offset = offset;
             this.length = length;
             this.logType = logType;
@@ -320,9 +320,9 @@ public class TaskParams {
             }
 
             if (error == null) {
-                listener.apiClientResult(client, this, content);
+                listener.APIResult(client, this, content);
             } else {
-                listener.apiClientError(client, this, error);
+                listener.APIError(client, this, error);
             }
         }
     }
