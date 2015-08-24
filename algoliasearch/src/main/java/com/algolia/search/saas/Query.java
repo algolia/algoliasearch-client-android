@@ -605,9 +605,9 @@ public class Query {
     /**
      * Add a list of numeric filters separated by a comma. The syntax of one
      * filter is `attributeName` followed by `operand` followed by `value.
-     * Supported operands are `<`, `<=`, `=`, `>` and `>=`. You can have
+     * Supported operands are `&lt;`, `&lt;=`, `=`, `&gt;` and `&lt;=`. You can have
      * multiple conditions on one attribute like for example
-     * `numerics=price>100,price<1000`.
+     * `numerics=price&gt;100,price&lt;1000`.
      */
     public Query setNumericFilters(String numerics) {
         this.numerics = numerics;
