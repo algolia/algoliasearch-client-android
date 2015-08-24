@@ -23,13 +23,22 @@
 
 package com.algolia.search.saas;
 
-public class IndexQuery {
+public class IndexQuery extends Query {
     private String index;
-    private Query query;
 
-    public IndexQuery(String index, Query q)  {
+    public IndexQuery(String index)  {
+        super();
         this.index = index;
-        this.query = q;
+    }
+
+    public IndexQuery(String index, String query)  {
+        super(query);
+        this.index = index;
+    }
+
+    public IndexQuery(String index, Query other)  {
+        super(other);
+        this.index = index;
     }
 
     public String getIndex() {
@@ -38,13 +47,5 @@ public class IndexQuery {
 
     public void setIndex(String index) {
         this.index = index;
-    }
-
-    public Query getQuery() {
-        return query;
-    }
-
-    public void setQuery(Query query) {
-        this.query = query;
     }
 }
