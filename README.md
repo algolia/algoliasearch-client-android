@@ -262,11 +262,17 @@ Example to increment a numeric value:
 index.partialUpdateObjectASync(new JSONObject("{\"price\": {\"value\": 42, \"_operation\": \"Increment\"}}"), "myID", this);
 ```
 
+Note: Here we are incrementing the value by `42`. To increment just by one, put
+`value:1`.
+
 Example to decrement a numeric value:
 
 ```java
 index.partialUpdateObjectASync(new JSONObject("{\"price\": {\"value\": 42, \"_operation\": \"Decrement\"}}", "myID", this);
 ```
+
+Note: Here we are decrementing the value by `42`. To decrement just by one, put
+`value:1`.
 
 Search
 -------------
