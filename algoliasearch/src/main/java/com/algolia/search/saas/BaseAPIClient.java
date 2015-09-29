@@ -398,10 +398,10 @@ abstract class BaseAPIClient {
                 if (!(req instanceof HttpEntityEnclosingRequestBase)) {
                     throw new IllegalArgumentException("Method " + m + " cannot enclose entity");
                 }
-                req.setHeader("Content-type", "gzip");
+                req.setHeader("Content-type", "application/json");
                 try {
                     StringEntity se = new StringEntity(json, "UTF-8");
-                    se.setContentEncoding(new BasicHeader(HTTP.CONTENT_TYPE, "gzip"));
+                    se.setContentEncoding(new BasicHeader(HTTP.CONTENT_TYPE, "application/json"));
                     ((HttpEntityEnclosingRequestBase) req).setEntity(se);
                 } catch (UnsupportedEncodingException e) {
                     throw new AlgoliaException("Invalid JSON Object: " + json);
