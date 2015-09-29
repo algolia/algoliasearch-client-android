@@ -432,7 +432,7 @@ public class Query {
     /**
      * Change the radius or around latitude/longitude query
      */
-    public Query setAroundRadius(int value) {
+    public Query setAroundRadius(int radius) {
         aroundRadius = radius;
         return this;
     }
