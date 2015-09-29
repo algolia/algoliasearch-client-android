@@ -52,6 +52,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.zip.GZIPInputStream;
 
 /**
  * Abstract Entry point in the Java API.
@@ -390,6 +391,7 @@ abstract class BaseAPIClient {
             if (this.tagFilters != null) {
                 req.setHeader("X-Algolia-TagFilters", this.tagFilters);
             }
+            req.addHeader("Accept-Encoding","gzip");
 
             // set JSON entity
             if (json != null) {
@@ -442,7 +444,10 @@ abstract class BaseAPIClient {
                 continue;
             }
             try {
-                return _getAnswerObject(response.getEntity().getContent());
+                if (response.getEntity().getContentEncoding().getValue().contains("gzip"))
+                    return _getAnswerObject(new GZIPInputStream(response.getEntity().getContent()));
+                else
+                    return _getAnswerObject(response.getEntity().getContent());
             } catch (IOException e) {
                 continue;
             } catch (JSONException e) {
