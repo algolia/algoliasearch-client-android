@@ -445,7 +445,7 @@ abstract class BaseAPIClient {
             }
             try {
                 String encoding = response.getEntity().getContentEncoding() != null ? response.getEntity().getContentEncoding().getValue() : null;
-                if (encoding.contains("gzip"))
+                if (encoding != null && encoding.contains("gzip"))
                     return _getAnswerObject(new GZIPInputStream(response.getEntity().getContent()));
                 else
                     return _getAnswerObject(response.getEntity().getContent());
