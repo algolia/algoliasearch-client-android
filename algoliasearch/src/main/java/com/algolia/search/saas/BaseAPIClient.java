@@ -398,10 +398,10 @@ abstract class BaseAPIClient {
                 if (!(req instanceof HttpEntityEnclosingRequestBase)) {
                     throw new IllegalArgumentException("Method " + m + " cannot enclose entity");
                 }
-                req.setHeader("Content-type", "application/json");
+                req.setHeader("Content-type", "gzip");
                 try {
                     StringEntity se = new StringEntity(json, "UTF-8");
-                    se.setContentEncoding(new BasicHeader(HTTP.CONTENT_TYPE, "application/json"));
+                    se.setContentEncoding(new BasicHeader(HTTP.CONTENT_TYPE, "gzip"));
                     ((HttpEntityEnclosingRequestBase) req).setEntity(se);
                 } catch (UnsupportedEncodingException e) {
                     throw new AlgoliaException("Invalid JSON Object: " + json);
@@ -444,7 +444,8 @@ abstract class BaseAPIClient {
                 continue;
             }
             try {
-                if (response.getEntity().getContentEncoding().getValue().contains("gzip"))
+                String encoding = response.getEntity().getContentEncoding() != null ? response.getEntity().getContentEncoding().getValue() : null;
+                if (encoding.contains("gzip"))
                     return _getAnswerObject(new GZIPInputStream(response.getEntity().getContent()));
                 else
                     return _getAnswerObject(response.getEntity().getContent());
