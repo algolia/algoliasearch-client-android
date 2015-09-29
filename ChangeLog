@@ -1,6 +1,19 @@
 Changelog
 =========
 
+2.2.0 (2015-09-29)
+
+- Ensure all requests accept the GZIP encoding to reduce the JSON payloads size
+
+2.1.0 (2015-08-24)
+
+- Publish on MavenCentral
+
+2.0.0 (2015-08-01)
+
+- Rewrite the API Client as a Android package
+- Split the async listeners/interfaces
+
 1.6.7 (2015-07-14)
 ------------------
 
