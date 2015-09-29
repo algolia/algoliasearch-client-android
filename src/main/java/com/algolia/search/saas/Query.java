@@ -100,8 +100,8 @@ public class Query {
     protected RemoveWordsType removeWordsIfNoResult;
     protected TypoTolerance typoTolerance;
     protected String analyticsTags;
-    protected integer aroundPrecision;
-    protected integer aroundRadius;
+    protected int aroundPrecision;
+    protected int aroundRadius;
 
     public Query(String query) {
         minProximity = 1;
