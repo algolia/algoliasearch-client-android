@@ -1,5 +1,7 @@
 package com.algolia.search.saas;
 
+import android.util.Pair;
+
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.ArrayList;
@@ -81,6 +83,7 @@ public class Query {
     protected List<String> attributes;
     protected List<String> attributesToHighlight;
     protected List<String> attributesToSnippet;
+    protected List<String> disableTypoToleranceOn;
     protected Integer minWordSizeForApprox1;
     protected Integer minWordSizeForApprox2;
     protected Boolean getRankingInfo;
@@ -96,6 +99,7 @@ public class Query {
     protected Integer minProximity;
     protected String numerics;
     protected String insideBoundingBox;
+    protected String insidePolygon;
     protected String aroundLatLong;
     protected Boolean aroundLatLongViaIP;
     protected String query;
@@ -111,6 +115,8 @@ public class Query {
     protected RemoveWordsType removeWordsIfNoResult;
     protected TypoTolerance typoTolerance;
     protected String analyticsTags;
+    protected int aroundPrecision;
+    protected int aroundRadius;
 
     public Query(String query) {
         minWordSizeForApprox1 = null;
@@ -129,6 +135,7 @@ public class Query {
         analyticsTags = null;
         typoTolerance = TypoTolerance.TYPO_NOTSET;
         removeWordsIfNoResult = RemoveWordsType.REMOVE_NOTSET;
+        aroundPrecision = aroundRadius = 0;
     }
 
     public Query() {
@@ -144,6 +151,9 @@ public class Query {
         }
         if (other.attributesToSnippet != null) {
             attributesToSnippet = new ArrayList<String>(other.attributesToSnippet);
+        }
+        if (other.disableTypoToleranceOn != null) {
+            disableTypoToleranceOn = new ArrayList<String>(other.disableTypoToleranceOn);
         }
         minWordSizeForApprox1 = other.minWordSizeForApprox1;
         minWordSizeForApprox2 = other.minWordSizeForApprox2;
@@ -175,6 +185,9 @@ public class Query {
         typoTolerance = other.typoTolerance;
         allowTyposOnNumericTokens = other.allowTyposOnNumericTokens;
         removeWordsIfNoResult = other.removeWordsIfNoResult;
+        aroundPrecision = other.aroundPrecision;
+        aroundRadius = other.aroundRadius;
+        insidePolygon = other.insidePolygon;
     }
 
     /**
@@ -327,6 +340,14 @@ public class Query {
     }
 
     /**
+     * List of attributes on which you want to disable typo tolerance (must be a subset of the attributesToIndex index setting).
+     */
+    public Query disableTypoToleranceOnAttributes(List<String> attributes) {
+        this.disableTypoToleranceOn = attributes;
+        return this;
+    }
+
+    /**
      * @param typoTolerance
      *            This option allow to control the number of typo in the results set.
      */
@@ -424,6 +445,22 @@ public class Query {
     }
 
     /**
+     * Change the radius or around latitude/longitude query
+     */
+    public Query setAroundRadius(int radius) {
+        aroundRadius = radius;
+        return this;
+    }
+
+    /**
+     * Change the precision or around latitude/longitude query
+     */
+    public Query setAroundPrecision(int precision) {
+        aroundPrecision = precision;
+        return this;
+    }
+
+    /**
      * Set the number of hits per page. Defaults to 10.
      *
      * @deprecated Use {@code setHitsPerPage}
@@ -431,6 +468,16 @@ public class Query {
     @Deprecated
     public Query setNbHitsPerPage(int nbHitsPerPage) {
         return setHitsPerPage(nbHitsPerPage);
+    }
+
+
+    /**
+     * Search for entries around a given latitude/longitude.
+     *
+     */
+    public Query aroundLatitudeLongitude(float latitude, float longitude) {
+        aroundLatLong = "aroundLatLng=" + latitude + "," + longitude;
+        return this;
     }
 
     /**
@@ -442,6 +489,7 @@ public class Query {
      *            lat and lng attributes (for example
      *            {"_geoloc":{"lat":48.853409, "lng":2.348800}})
      */
+    @Deprecated
     public Query aroundLatitudeLongitude(float latitude, float longitude, int radius) {
         aroundLatLong = "aroundLatLng=" + latitude + "," + longitude + "&aroundRadius=" + radius;
         return this;
@@ -460,6 +508,7 @@ public class Query {
      *            _geoloc attribute containing lat and lng attributes (for
      *            example {"_geoloc":{"lat":48.853409, "lng":2.348800}})
      */
+    @Deprecated
     public Query aroundLatitudeLongitude(float latitude, float longitude, int radius, int precision) {
         aroundLatLong = "aroundLatLng=" + latitude + "," + longitude + "&aroundRadius=" + radius + "&aroundPrecision=" + precision;
         return this;
@@ -475,6 +524,22 @@ public class Query {
      *            lat and lng attributes (for example
      *            {"_geoloc":{"lat":48.853409, "lng":2.348800}})
      */
+    public Query aroundLatitudeLongitudeViaIP(boolean enabled) {
+        aroundLatLongViaIP = enabled;
+        return this;
+    }
+
+    /**
+     * Search for entries around the latitude/longitude of user (using IP
+     * geolocation)
+     *
+     * @param radius
+     *            set the maximum distance in meters. Note: at indexing, geoloc
+     *            of an object should be set with _geoloc attribute containing
+     *            lat and lng attributes (for example
+     *            {"_geoloc":{"lat":48.853409, "lng":2.348800}})
+     */
+    @Deprecated
     public Query aroundLatitudeLongitudeViaIP(boolean enabled, int radius) {
         aroundLatLong = "aroundRadius=" + radius;
         aroundLatLongViaIP = enabled;
@@ -495,6 +560,7 @@ public class Query {
      *            _geoloc attribute containing lat and lng attributes (for
      *            example {"_geoloc":{"lat":48.853409, "lng":2.348800}})
      */
+    @Deprecated
     public Query aroundLatitudeLongitudeViaIP(boolean enabled, int radius, int precision) {
         aroundLatLong = "aroundRadius=" + radius + "&aroundPrecision=" + precision;
         aroundLatLongViaIP = enabled;
@@ -506,9 +572,33 @@ public class Query {
      * of a rectangle. At indexing, geoloc of an object should be set with
      * _geoloc attribute containing lat and lng attributes (for example
      * {"_geoloc":{"lat":48.853409, "lng":2.348800}})
+     *
+     * You can use several bounding boxes (OR) by calling this method several times.
      */
     public Query insideBoundingBox(float latitudeP1, float longitudeP1, float latitudeP2, float longitudeP2) {
-        insideBoundingBox = "insideBoundingBox=" + latitudeP1 + "," + longitudeP1 + "," + latitudeP2 + "," + longitudeP2;
+        if (insideBoundingBox == null) {
+            insideBoundingBox = "insideBoundingBox=" + latitudeP1 + "," + longitudeP1 + "," + latitudeP2 + "," + longitudeP2;
+        } else {
+            insideBoundingBox += "," + latitudeP1 + "," + longitudeP1 + "," + latitudeP2 + "," + longitudeP2;
+        }
+        return this;
+    }
+
+    /**
+     * Add a point to the polygon of geo-search (requires a minimum of three points to define a valid polygon)
+     * At indexing, you should specify geoloc of an object with the _geoloc attribute (in the form "_geoloc":{"lat":48.853409, "lng":2.348800} or
+     * "_geoloc":[{"lat":48.853409, "lng":2.348800},{"lat":48.547456, "lng":2.972075}] if you have several geo-locations in your record).
+     */
+    public Query insidePolygon(List<Pair<Float, Float>> points) {
+        insidePolygon = "insidePolygon=";
+        boolean first = true;
+        for (Pair<Float, Float> p : points) {
+            if (!first) {
+                insidePolygon += ",";
+            }
+            insidePolygon += p.first + "," + p.second;
+            first = true;
+        }
         return this;
     }
 
@@ -687,6 +777,18 @@ public class Query {
                     first = false;
                 }
             }
+            if (disableTypoToleranceOn != null) {
+                if (stringBuilder.length() > 0)
+                    stringBuilder.append('&');
+                stringBuilder.append("disableTypoToleranceOnAttributes=");
+                boolean first = true;
+                for (String attr : this.disableTypoToleranceOn) {
+                    if (!first)
+                        stringBuilder.append(',');
+                    stringBuilder.append(URLEncoder.encode(attr, "UTF-8"));
+                    first = false;
+                }
+            }
             if (typoTolerance != TypoTolerance.TYPO_NOTSET) {
                 if (stringBuilder.length() > 0)
                     stringBuilder.append('&');
@@ -833,10 +935,26 @@ public class Query {
                 if (stringBuilder.length() > 0)
                     stringBuilder.append('&');
                 stringBuilder.append(insideBoundingBox);
-            } else if (aroundLatLong != null) {
+            }
+            if (aroundLatLong != null) {
                 if (stringBuilder.length() > 0)
                     stringBuilder.append('&');
                 stringBuilder.append(aroundLatLong);
+            }
+            if (insidePolygon != null) {
+                if (stringBuilder.length() > 0)
+                    stringBuilder.append('&');
+                stringBuilder.append(insidePolygon);
+            }
+            if (aroundRadius > 0) {
+                if (stringBuilder.length() > 0)
+                    stringBuilder.append('&');
+                stringBuilder.append("aroundRadius=" + aroundRadius);
+            }
+            if (aroundPrecision > 0) {
+                if (stringBuilder.length() > 0)
+                    stringBuilder.append('&');
+                stringBuilder.append("aroundPrecision=" + aroundPrecision);
             }
             if (aroundLatLongViaIP != null) {
                 if (stringBuilder.length() > 0)
