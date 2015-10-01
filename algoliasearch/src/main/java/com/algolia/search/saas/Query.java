@@ -518,11 +518,6 @@ public class Query {
      * Search for entries around the latitude/longitude of user (using IP
      * geolocation)
      *
-     * @param radius
-     *            set the maximum distance in meters. Note: at indexing, geoloc
-     *            of an object should be set with _geoloc attribute containing
-     *            lat and lng attributes (for example
-     *            {"_geoloc":{"lat":48.853409, "lng":2.348800}})
      */
     public Query aroundLatitudeLongitudeViaIP(boolean enabled) {
         aroundLatLongViaIP = enabled;
