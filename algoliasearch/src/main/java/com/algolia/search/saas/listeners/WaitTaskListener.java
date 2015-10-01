@@ -21,22 +21,22 @@
  * THE SOFTWARE.
  */
 
-// Top-level build file where you can add configuration options common to all sub-projects/modules.
+package com.algolia.search.saas.listeners;
 
-buildscript {
-    repositories {
-        jcenter()
-    }
-    dependencies {
-        classpath 'com.android.tools.build:gradle:1.2.3'
+import com.algolia.search.saas.AlgoliaException;
+import com.algolia.search.saas.Index;
 
-        // NOTE: Do not place your application dependencies here; they belong
-        // in the individual module build.gradle files
-    }
-}
+/**
+ * Asynchronously receive result of waitTask method
+ */
+public interface WaitTaskListener {
+    /**
+     * Asynchronously receive result of Index.waitTaskASync method.
+     */
+    void waitTaskResult(Index index, String taskID);
 
-allprojects {
-    repositories {
-        jcenter()
-    }
+    /**
+     * Asynchronously receive error of Index.waitTaskASync method.
+     */
+    void waitTaskError(Index index, String taskID, AlgoliaException e);
 }

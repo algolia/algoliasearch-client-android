@@ -21,22 +21,19 @@
  * THE SOFTWARE.
  */
 
-// Top-level build file where you can add configuration options common to all sub-projects/modules.
+package com.algolia.search.saas;
 
-buildscript {
-    repositories {
-        jcenter()
-    }
-    dependencies {
-        classpath 'com.android.tools.build:gradle:1.2.3'
+public class Helpers {
+    static String app_id = "APP_ID_REPLACE_ME";
+    static String api_key = "API_KEY_REPLACE_ME";
+    static String job_number = "JOB_NUMBER_REPLACE_ME";
 
-        // NOTE: Do not place your application dependencies here; they belong
-        // in the individual module build.gradle files
-    }
-}
+    static int wait = 30;
 
-allprojects {
-    repositories {
-        jcenter()
+    static String safeIndexName(String name) {
+        if (job_number.matches("\\d+\\.\\d+")) {
+            name = String.format("%s_travis-%s", name, job_number);
+        }
+        return name;
     }
 }

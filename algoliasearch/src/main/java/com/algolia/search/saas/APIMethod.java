@@ -21,22 +21,19 @@
  * THE SOFTWARE.
  */
 
-// Top-level build file where you can add configuration options common to all sub-projects/modules.
+package com.algolia.search.saas;
 
-buildscript {
-    repositories {
-        jcenter()
-    }
-    dependencies {
-        classpath 'com.android.tools.build:gradle:1.2.3'
-
-        // NOTE: Do not place your application dependencies here; they belong
-        // in the individual module build.gradle files
-    }
-}
-
-allprojects {
-    repositories {
-        jcenter()
-    }
+public enum APIMethod {
+    ListIndexes,
+    DeleteIndex,
+    CopyIndex,
+    MoveIndex,
+    MultipleQueries,
+    Batch,
+    GetLogs,
+    ListUserKeys,
+    GetUserKey,
+    AddUserKey,
+    UpdateUserKey,
+    DeleteUserKey
 }

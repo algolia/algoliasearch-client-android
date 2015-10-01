@@ -21,22 +21,19 @@
  * THE SOFTWARE.
  */
 
-// Top-level build file where you can add configuration options common to all sub-projects/modules.
+package com.algolia.search.saas.listeners;
 
-buildscript {
-    repositories {
-        jcenter()
-    }
-    dependencies {
-        classpath 'com.android.tools.build:gradle:1.2.3'
+import com.algolia.search.saas.APIClient;
+import com.algolia.search.saas.AlgoliaException;
+import com.algolia.search.saas.TaskParams;
 
-        // NOTE: Do not place your application dependencies here; they belong
-        // in the individual module build.gradle files
-    }
-}
+import org.json.JSONObject;
 
-allprojects {
-    repositories {
-        jcenter()
-    }
+/**
+ * Asynchronously receive result of API Client's asynchronous methods
+ */
+public interface APIClientListener {
+
+    void APIResult(APIClient client, TaskParams.Client context, JSONObject result);
+    void APIError(APIClient client, TaskParams.Client context, AlgoliaException e);
 }

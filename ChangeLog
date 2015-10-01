@@ -1,12 +1,26 @@
 Changelog
 =========
 
-1.6.8 (2015-09-30)
-------------------
+2.3.0 (2015-10-01)
+
 - Added support of multiple bounding box for geo-search
 - Added support	of polygon for geo-search
 - Added	support	of automatic radius computation	for geo-search
 - Added	support	of disableTypoToleranceOnAttributes
+
+2.2.0 (2015-09-29)
+
+- Ensure all requests accept the GZIP encoding to reduce the JSON payloads size
+
+2.1.0 (2015-08-24)
+
+- Publish on MavenCentral
+
+2.0.0 (2015-08-01)
+
+- Rewrite the API Client as a Android package
+- Split the async listeners/interfaces
+>>>>>>> develop
 
 1.6.7 (2015-07-14)
 ------------------
@@ -31,7 +45,7 @@ Changelog
 - Add batch method to target multiple indices
 - Add strategy parameter for the multipleQueries
 - Add new method to generate secured api key from query parameters
-- Add missing async methods 
+- Add missing async methods
 
 1.6.3 (2015-04-09)
 ------------------

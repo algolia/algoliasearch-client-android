@@ -1,8 +1,16 @@
-language: java
-jdk: oraclejdk7
-script: gradle check --stacktrace --debug
-sudo: false
+language: android
+android:
+  components:
+    - build-tools-21.0.1
+before_script:
+- echo no | android create avd --force -n test -t android-19 --abi armeabi-v7a
+- emulator -avd test -no-skin -no-audio -no-window &
+- android-wait-for-emulator
+- adb shell input keyevent 82 &
+script:
+- set -o pipefail
+- bash run_test.sh
 env:
   global:
-  - secure: dMSz8Mrk0qBxh+URavwoFih7FSsxLi0buo2S/Wm/2USLiBwL1IhHw76toOraljT1rsP2BxpcurOMQ0QGqHXR9FKvr37u2DhTM/YCdfLSZnQ2Cd2MabyjvOJP3212L4nZ/Dp3vrUUJj8QX4+i/76Mc0bVlTn+SU51ArVemuqzTYM=
-  - secure: dCe1RfzRgg8LUVG7rzFf45u/SOwz01RbijvkhkXZYzuYP94D2ei02A7eFVGAk7RPfrUYCgqW27pP+mm5P5BdTgdK2mcZRBaNcLz55gJzjVJlXf7ChoV/xOCPoFbET5NyPZEXeEqhGPjY+UHTYpc9RWY/7rgRZUcsPXdLggT+JOM=
+    - secure: DENCjlvzW54U9QH7mWO3LJVLYEiX0Mj9U44QoGQcienflSDlVN1UhAiT7xnCKwWT38B37CzeQlHc541z78vAj+YPzPbebowFW0aiq/LNdFMigsT1j3gLpqrICjylG08i1Ho95FLCOaJSQWZJ5nSd3OceWLLxCYUXtS9E3BuMHGg=
+    - secure: HBdvSvplPEJWEu7aij7cA+ZiQt2qmb9+Q8WsUGOJJ1uYIOt/MVHSo0bYYLfk90eFlnJecN+oBi92LCM9PUT3mKIHm9apRsK9os+W/6wIezD+rKVYPfOLZ4uINaFRDjXUJqKB46fzVR54vc4N2QO0+spn7Sv7sXaytYEPwrO6tmo=

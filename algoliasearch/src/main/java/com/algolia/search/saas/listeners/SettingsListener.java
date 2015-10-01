@@ -21,22 +21,25 @@
  * THE SOFTWARE.
  */
 
-// Top-level build file where you can add configuration options common to all sub-projects/modules.
+package com.algolia.search.saas.listeners;
 
-buildscript {
-    repositories {
-        jcenter()
-    }
-    dependencies {
-        classpath 'com.android.tools.build:gradle:1.2.3'
+import com.algolia.search.saas.AlgoliaException;
+import com.algolia.search.saas.Index;
+import com.algolia.search.saas.TaskParams;
 
-        // NOTE: Do not place your application dependencies here; they belong
-        // in the individual module build.gradle files
-    }
-}
+import org.json.JSONObject;
 
-allprojects {
-    repositories {
-        jcenter()
-    }
+/**
+ * Asynchronously receive result of Index.(get/set)SettingsASync methods
+ */
+public interface SettingsListener {
+    /**
+     * Asynchronously receive result of Index.(get/set)SettingsASync methods.
+     */
+    void settingsResult(Index index, TaskParams.Settings context, JSONObject results);
+
+    /**
+     * Asynchronously receive error of Index.(get/set)SettingsASync methods.
+     */
+    void settingsError(Index index, TaskParams.Settings context, AlgoliaException e);
 }
