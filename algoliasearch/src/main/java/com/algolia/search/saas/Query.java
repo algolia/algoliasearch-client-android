@@ -106,6 +106,7 @@ public class Query {
     protected QueryType queryType;
     protected String optionalWords;
     protected String facets;
+    protected String filters;
     protected String facetFilters;
     protected Integer maxNumberOfFacets;
     protected Boolean analytics;
@@ -176,6 +177,7 @@ public class Query {
         queryType = other.queryType;
         optionalWords = other.optionalWords;
         facets = other.facets;
+        filters = other.filters;
         facetFilters = other.facetFilters;
         maxNumberOfFacets = other.maxNumberOfFacets;
         analytics = other.analytics;
@@ -632,6 +634,23 @@ public class Query {
     }
 
     /**
+	 * Filter the query with numeric, facet or/and tag filters.
+	 * The syntax is a SQL like syntax, you can use the OR and AND keywords.
+	 * The syntax for the underlying numeric, facet and tag filters is the same than in the other filters:
+	 * available=1 AND (category:Book OR NOT category:Ebook) AND public
+     * date: 1441745506 TO 1441755506 AND inStock > 0 AND author:"John Doe"
+     * The list of keywords is:
+     * OR: create a disjunctive filter between two filters.
+     * AND: create a conjunctive filter between two filters.
+     * TO: used to specify a range for a numeric filter.
+     * NOT: used to negate a filter. The syntax with the ‘-‘ isn’t allowed.
+	 */
+	public Query setFilters(String filters) {
+		this.filters = filters;
+        return this;
+	}
+
+    /**
      * Filter the query by a list of facets. Each filter is encoded as
      * `attributeName:value`.
      */
@@ -973,6 +992,12 @@ public class Query {
                 stringBuilder.append("facets=");
                 stringBuilder.append(URLEncoder.encode(facets, "UTF-8"));
             }
+            if (filters != null) {
+                if (stringBuilder.length() > 0)
+                    stringBuilder.append('&');
+                stringBuilder.append("filters=");
+                stringBuilder.append(URLEncoder.encode(filters, "UTF-8"));
+            }
             if (facetFilters != null) {
                 if (stringBuilder.length() > 0)
                     stringBuilder.append('&');
@@ -1174,6 +1199,11 @@ public class Query {
     public String getFacets() {
         return facets;
     }
+
+    /**
+     * @return the filters
+     */
+    public  String getFilters() { return filters; }
 
     /**
      * @return the facetFilters
