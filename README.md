@@ -68,7 +68,7 @@ If you're using Gradle, add the following dependency to you build file:
 dependencies {
     // [...]
 
-    compile 'com.algolia:android-algoliasearch:2.+'
+    compile 'com.algolia:algoliasearch-android:2.+'
 }
 ```
 
@@ -226,9 +226,9 @@ index.saveObjectASync(new JSONObject()
 You have many ways to update an object's attributes:
 
  1. Set the attribute value
- 2. Add an element to an array
+ 2. Add a string or number element to an array
  3. Remove an element from an array
- 4. Add an element to an array if it doesn't exist
+ 4. Add a string or number element to an array if it doesn't exist
  5. Increment an attribute
  6. Decrement an attribute
 
@@ -262,11 +262,17 @@ Example to increment a numeric value:
 index.partialUpdateObjectASync(new JSONObject("{\"price\": {\"value\": 42, \"_operation\": \"Increment\"}}"), "myID", this);
 ```
 
+Note: Here we are incrementing the value by `42`. To increment just by one, put
+`value:1`.
+
 Example to decrement a numeric value:
 
 ```java
 index.partialUpdateObjectASync(new JSONObject("{\"price\": {\"value\": 42, \"_operation\": \"Decrement\"}}", "myID", this);
 ```
+
+Note: Here we are decrementing the value by `42`. To decrement just by one, put
+`value:1`.
 
 Search
 -------------
@@ -302,6 +308,7 @@ You can use the following optional arguments:
   * **TYPO_STRICT**: Hits matching with 2 typos are not retrieved if there are some matching without typos. This option is useful if you want to avoid false positives as much as possible.
  * **enableTyposOnNumericTokens**: If set to false, disables typo tolerance on numeric tokens (numbers). Defaults to true.
  * **ignorePlural**: If set to true, plural won't be considered as a typo. For example, car and cars will be considered as equals. Defaults to false.
+ * **disableTypoToleranceOnAttributes** List of attributes on which you want to disable typo tolerance (must be a subset of the `attributesToIndex` index setting). Attributes are separated with a comma such as `"name,address"`. You can also use JSON string array encoding such as `encodeURIComponent("[\"name\",\"address\"]")`. By default, this list is empty.
  * **restrictSearchableAttributes** List of attributes you want to use for textual search (must be a subset of the `attributesToIndex` index setting). Attributes are separated with a comma such as `"name,address"`. You can also use JSON string array encoding such as `encodeURIComponent("[\"name\",\"address\"]")`. By default, all attributes specified in `attributesToIndex` settings are used to search.
  * **enableAdvancedSyntax**: Enables the advanced query syntax. Defaults to 0 (false).
     * **Phrase query**: A phrase query defines a particular sequence of terms. A phrase query is built by Algolia's query parser for words surrounded by `"`. For example, `"search engine"` will retrieve records having `search` next to `engine` only. Typo tolerance is _disabled_ on phrase queries.
@@ -318,15 +325,16 @@ You can use the following optional arguments:
 
 #### Geo-search Parameters
 
- * **aroundLatitudeLongitude(float, float, int)**: Search for entries around a given latitude/longitude.<br/>You specify the maximum distance in meters with the **radius** parameter.<br/>At indexing, you should specify the geo location of an object with the `_geoloc` attribute in the form ` {"_geoloc":{"lat":48.853409, "lng":2.348800}} `.
- * **aroundLatitudeLongitude(float, float, int, int)**: Search for entries around a given latitude/longitude with a given precision for ranking. For example, if you set precision=100, two objects that are a distance of less than 100 meters will be considered as identical for the "geo" ranking parameter.
+ * **aroundLatitudeLongitude(float, float)**: Search for entries around a given latitude/longitude.<br/>The maximum distance is automatically guessed depending of the density of the area but you also manually specify the maximum distance in meters with the **radius** parameter.<br/>At indexing, you should specify the geo location of an object with the `_geoloc` attribute in the form ` {"_geoloc":{"lat":48.853409, "lng":2.348800}} `.
+ * **aroundLatitudeLongitude(float, float, int, int)**: Search for entries around a given latitude/longitude with a given precision for ranking. For example, if you set aroundPrecision=100, the distances will be considered by ranges of 100m, for example all distances 0 and 100m will be considered as identical for the "geo" ranking parameter.
 
 
- * **aroundLatitudeLongitudeViaIP(int)**: Search for entries around the latitude/longitude automatically computed from user IP address.<br/>You specify the maximum distance in meters with the **radius** parameter.<br/>At indexing, you should specify the geo location of an object with the `_geoloc` attribute in the form ` {"_geoloc":{"lat":48.853409, "lng":2.348800}} `.
+ * **aroundLatitudeLongitudeViaIP()**: Search for entries around the latitude/longitude automatically computed from user IP address.<br/>The radius is automatically guessed based on density but you can also specify it manually with the **radius** parameter (optional).<br/>At indexing, you should specify the geo location of an object with the `_geoloc` attribute in the form ` {"_geoloc":{"lat":48.853409, "lng":2.348800}} `.
  * **aroundLatitudeLongitudeViaIP(int, int)**: Search for entries around a latitude/longitude automatically computed from user IP address with a given precision for ranking. For example if you set precision=100, two objects that are a distance of less than 100 meters will be considered as identical for the "geo" ranking parameter.
 
 
- * **insideBoundingBox**: Search entries inside a given area defined by the two extreme points of a rectangle (defined by 4 floats: p1Lat,p1Lng,p2Lat,p2Lng).<br/>For example, `insideBoundingBox=47.3165,4.9665,47.3424,5.0201`).<br/>At indexing, you should specify the geo location of an object with the _geoloc attribute in the form `{"_geoloc":{"lat":48.853409, "lng":2.348800}}`.
+ * **insideBoundingBox**: Search entries inside a given area defined by the two extreme points of a rectangle (defined by 4 floats: p1Lat,p1Lng,p2Lat,p2Lng).<br/>For example, `insideBoundingBox=47.3165,4.9665,47.3424,5.0201`).<br/>At indexing, you should specify geoloc of an object with the _geoloc attribute (in the form `"_geoloc":{"lat":48.853409, "lng":2.348800}` or `"_geoloc":[{"lat":48.853409, "lng":2.348800},{"lat":48.547456, "lng":2.972075}]` if you have several geo-locations in your record). You can use several bounding boxes (OR) by passing more than 4 values. For example instead of having 4 values you can pass 8 to use or OR between two bounding boxes.
+ * **insidePolygon**: Search entries inside a given area defined by a set of points (defined by a minimum of 6 floats: p1Lat,p1Lng,p2Lat,p2Lng,p3Lat,p3Long).<br/>For example, `insideBoundingBox=47.3165,4.9665,47.3424,5.0201`).<br/>At indexing, you should specify geoloc of an object with the _geoloc attribute (in the form `"_geoloc":{"lat":48.853409, "lng":2.348800}` or `"_geoloc":[{"lat":48.853409, "lng":2.348800},{"lat":48.547456, "lng":2.972075}]` if you have several geo-locations in your record).
 
 #### Parameters to Control Results Content
 
@@ -356,9 +364,18 @@ You can also use a string array encoding (for example `numericFilters: ["price>1
  * **setFacets**: List of object attributes that you want to use for faceting. <br/>Attributes are separated with a comma. For example, `"category,author"`. You can also use JSON string array encoding. For example, `["category","author"]`. Only the attributes that have been added in **attributesForFaceting** index setting can be used in this parameter. You can also use `*` to perform faceting on all attributes specified in **attributesForFaceting**.
  * **setMaxValuesPerFacet**: Limit the number of facet values returned for each facet. For example, `maxValuesPerFacet=10` will retrieve a maximum of 10 values per facet.
 
+#### UNIFIED FILTER PARAMETER (SQL LIKE)
+ * **setFilters**: Filter the query with numeric, facet or/and tag filters. The syntax is a SQL like syntax, you can use the OR and AND keywords. The syntax for the underlying numeric, facet and tag filters is the same than in the other filters:
+  `available=1 AND (category:Book OR NOT category:Ebook) AND public`
+  `date: 1441745506 TO 1441755506 AND inStock > 0 AND author:"John Doe"`
+The list of keywords is:
+ **OR**: create a disjunctive filter between two filters.
+ **AND**: create a conjunctive filter between two filters.
+ **TO**: used to specify a range for a numeric filter.
+ **NOT**: used to negate a filter. The syntax with the ‘-‘ isn’t allowed.
+
 #### Distinct Parameter
  * **setDistinct**: If set to true, enables the distinct feature, disabled by default, if the `attributeForDistinct` index setting is set. This feature is similar to the SQL "distinct" keyword. When enabled in a query with the `distinct=1` parameter, all hits containing a duplicate value for the attributeForDistinct attribute are removed from results. For example, if the chosen attribute is `show_name` and several hits have the same value for `show_name`, then only the best one is kept and the others are removed.
-**Note**: This feature is disabled if the query string is empty and there aren't any `tagFilters`, `facetFilters`, nor `numericFilters` parameters.
 
 ```java
 Index index = client.initIndex("contacts");
@@ -486,7 +503,7 @@ You can retrieve all settings using the `getSettings` function. The result will 
 You can decide to have the same priority for two attributes by passing them in the same string using a comma as a separator. For example `title` and `alternative_title` have the same priority in this example, which is different than text priority: `attributesToIndex:["title,alternative_title", "text"]`.
 * **numericAttributesToIndex**: (array of strings) All numerical attributes are automatically indexed as numerical filters. If you don't need filtering on some of your numerical attributes, you can specify this list to speed up the indexing.<br/> If you only need to filter on a numeric value with the operator '=', you can speed up the indexing by specifying the attribute with `equalOnly(AttributeName)`. The other operators will be disabled.
  * **attributesForFaceting**: (array of strings) The list of fields you want to use for faceting. All strings in the attribute selected for faceting are extracted and added as a facet. If set to null, no attribute is used for faceting.
- * **attributeForDistinct**: The attribute name used for the `Distinct` feature. This feature is similar to the SQL "distinct" keyword. When enabled in queries with the `distinct=1` parameter, all hits containing a duplicate value for this attribute are removed from results. For example, if the chosen attribute is `show_name` and several hits have the same value for `show_name`, then only the best one is kept and others are removed. **Note**: This feature is disabled if the query string is empty and there aren't any `tagFilters`, `facetFilters`, nor `numericFilters` parameters.
+ * **attributeForDistinct**: The attribute name used for the `Distinct` feature. This feature is similar to the SQL "distinct" keyword. When enabled in queries with the `distinct=1` parameter, all hits containing a duplicate value for this attribute are removed from results. For example, if the chosen attribute is `show_name` and several hits have the same value for `show_name`, then only the best one is kept and others are removed.
  * **ranking**: (array of strings) Controls the way results are sorted.<br/>We have nine available criteria:
   * **typo**: Sort according to number of typos.
   * **geo**: Sort according to decreasing distance when performing a geo location based search.
