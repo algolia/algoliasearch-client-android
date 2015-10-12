@@ -90,6 +90,7 @@ public class Query {
     protected Boolean ignorePlural;
     protected Integer distinct;
     protected Boolean advancedSyntax;
+    protected Boolean removeStopWords;
     protected Integer page;
     protected Integer hitsPerPage;
     protected String restrictSearchableAttributes;
@@ -103,6 +104,7 @@ public class Query {
     protected String aroundLatLong;
     protected Boolean aroundLatLongViaIP;
     protected String query;
+    protected String similarQuery;
     protected QueryType queryType;
     protected String optionalWords;
     protected String facets;
@@ -128,9 +130,11 @@ public class Query {
         minProximity = null;
         hitsPerPage = null;
         this.query = query;
+	similarQuery = null;
         queryType = QueryType.PREFIX_NOTSET;
         maxNumberOfFacets = null;
         advancedSyntax = null;
+	removeStopWords = null;
         analytics = synonyms = replaceSynonyms = allowTyposOnNumericTokens = null;
         analyticsTags = null;
         typoTolerance = TypoTolerance.TYPO_NOTSET;
@@ -164,6 +168,7 @@ public class Query {
         highlightPostTag = other.highlightPostTag;
         distinct = other.distinct;
         advancedSyntax = other.advancedSyntax;
+	removeStopWords = other.removeStopWords;
         page = other.page;
         hitsPerPage = other.hitsPerPage;
         restrictSearchableAttributes = other.restrictSearchableAttributes;
@@ -173,6 +178,7 @@ public class Query {
         aroundLatLong = other.aroundLatLong;
         aroundLatLongViaIP = other.aroundLatLongViaIP;
         query = other.query;
+	similarQuery = other.similarQuery;
         queryType = other.queryType;
         optionalWords = other.optionalWords;
         facets = other.facets;
@@ -224,6 +230,14 @@ public class Query {
      */
     public Query setQueryString(String query) {
         this.query = query;
+        return this;
+    }
+
+    /**
+     * Set the full text similar query
+     */
+    public Query setSimilarQueryString(String query) {
+        this.similarQuery = query;
         return this;
     }
 
@@ -734,6 +748,14 @@ public class Query {
         return this;
     }
 
+    /**
+     * Enable the removal of stop words. Defaults to false.
+     */
+    public Query enableRemoveStopWords(boolean removeStopWords) {
+        this.removeStopWords = removeStopWords;
+        return this;
+    }
+
     protected String getQueryString() {
         StringBuilder stringBuilder = new StringBuilder();
 
@@ -888,6 +910,11 @@ public class Query {
                     stringBuilder.append('&');
                 stringBuilder.append("advancedSyntax=").append(advancedSyntax ? '1' : '0');
             }
+            if (removeStopWords != null) {
+                if (stringBuilder.length() > 0)
+                    stringBuilder.append('&');
+                stringBuilder.append("removeStopWords=").append(removeStopWords ? '1' : '0');
+            }
             if (page != null) {
                 if (stringBuilder.length() > 0)
                     stringBuilder.append('&');
@@ -961,6 +988,12 @@ public class Query {
                     stringBuilder.append('&');
                 stringBuilder.append("query=");
                 stringBuilder.append(URLEncoder.encode(query, "UTF-8"));
+            }
+            if (similarQuery != null) {
+                if (stringBuilder.length() > 0)
+                    stringBuilder.append('&');
+                stringBuilder.append("similarQuery=");
+                stringBuilder.append(URLEncoder.encode(similarQuery, "UTF-8"));
             }
             if (facets != null) {
                 if (stringBuilder.length() > 0)
