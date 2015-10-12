@@ -435,11 +435,19 @@ You can send multiple queries with a single API call using a batch of queries:
 //  - 2nd and 3rd queries target index `products`
 
 List<IndexQuery> queries = new ArrayList<IndexQuery>();
+<<<<<<< HEAD
 
 queries.add(new IndexQuery("categories", new Query(myQueryString).setHitsPerPage(3)));
 queries.add(new IndexQuery("products", new Query(myQueryString).setHitsPerPage(3).setTagFilters("promotion"));
 queries.add(new IndexQuery("products", new Query(myQueryString).setHitsPerPage(10)));
 
+=======
+
+queries.add(new IndexQuery("categories", new Query(myQueryString).setHitsPerPage(3)));
+queries.add(new IndexQuery("products", new Query(myQueryString).setHitsPerPage(3).setTagFilters("promotion"));
+queries.add(new IndexQuery("products", new Query(myQueryString).setHitsPerPage(10)));
+
+>>>>>>> develop
 client.multipleQueriesASync(queries, this);
 ```
 
