@@ -68,7 +68,7 @@ If you're using Gradle, add the following dependency to you build file:
 dependencies {
     // [...]
 
-    compile 'com.algolia:algoliasearch-android:2.+'
+    compile 'com.algolia:algoliasearch-android:2.+@aar'
 }
 ```
 
