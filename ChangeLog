@@ -1,7 +1,11 @@
 Changelog
 =========
 
+2.5.0 (2015-12-01)
+- Added support of Android SDK >= 14
+
 2.4.0 (2015-10-12)
+
 - Added remove stop words query parameter
 - Added support of similar queries
 	
@@ -24,7 +28,6 @@ Changelog
 
 - Rewrite the API Client as a Android package
 - Split the async listeners/interfaces
->>>>>>> develop
 
 1.6.7 (2015-07-14)
 ------------------

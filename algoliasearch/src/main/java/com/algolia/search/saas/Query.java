@@ -647,7 +647,7 @@ public class Query {
 	 * The syntax is a SQL like syntax, you can use the OR and AND keywords.
 	 * The syntax for the underlying numeric, facet and tag filters is the same than in the other filters:
 	 * available=1 AND (category:Book OR NOT category:Ebook) AND public
-     * date: 1441745506 TO 1441755506 AND inStock > 0 AND author:"John Doe"
+     * date: 1441745506 TO 1441755506 AND inStock &gt; 0 AND author:"John Doe"
      * The list of keywords is:
      * OR: create a disjunctive filter between two filters.
      * AND: create a conjunctive filter between two filters.
