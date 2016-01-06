@@ -1,6 +1,9 @@
 Changelog
 =========
 
+X.X.X (2016-01-06)
+- Fixed method used to generate the query parameters of multiqueries
+
 2.5.0 (2015-12-01)
 - Added support of Android SDK >= 14
 
