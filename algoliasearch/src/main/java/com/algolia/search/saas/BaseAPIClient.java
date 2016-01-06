@@ -283,7 +283,7 @@ abstract class BaseAPIClient {
         try {
             JSONArray requests = new JSONArray();
             for (IndexQuery indexQuery : queries) {
-                String paramsString = indexQuery.getQuery();
+                String paramsString = indexQuery.getQueryString();
                 requests.put(new JSONObject().put("indexName", indexQuery.getIndex()).put("params", paramsString));
             }
             JSONObject body = new JSONObject().put("requests", requests);
