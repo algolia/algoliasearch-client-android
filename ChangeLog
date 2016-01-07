@@ -1,6 +1,9 @@
 Changelog
 =========
 
+X.X.X (2016-01-XX)
+- Add disjunctive faceting method
+
 2.5.1 (2016-01-07)
 - Fixed method used to generate the query parameters of multiqueries
 
