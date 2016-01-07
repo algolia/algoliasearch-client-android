@@ -1,7 +1,7 @@
 Changelog
 =========
 
-X.X.X (2016-01-XX)
+2.6.0 (2016-01-07)
 - Add disjunctive faceting method
 
 2.5.1 (2016-01-07)
@@ -14,7 +14,7 @@ X.X.X (2016-01-XX)
 
 - Added remove stop words query parameter
 - Added support of similar queries
-	
+
 2.3.0 (2015-10-01)
 
 - Added support of multiple bounding box for geo-search
