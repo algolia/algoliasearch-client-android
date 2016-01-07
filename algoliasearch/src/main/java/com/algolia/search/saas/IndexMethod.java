@@ -25,6 +25,7 @@ package com.algolia.search.saas;
 
 public enum IndexMethod {
     Search,
+    searchDisjunctiveFaceting,
 
     AddObject,
     AddObjectWithObjectID,

@@ -28,6 +28,7 @@ import com.algolia.search.saas.listeners.DeleteObjectsListener;
 import com.algolia.search.saas.listeners.GetObjectsListener;
 import com.algolia.search.saas.listeners.IndexingListener;
 import com.algolia.search.saas.listeners.SearchListener;
+import com.algolia.search.saas.listeners.SearchDisjunctiveFacetingListener;
 import com.algolia.search.saas.listeners.SettingsListener;
 import com.algolia.search.saas.listeners.WaitTaskListener;
 
@@ -35,6 +36,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.util.List;
+import java.util.Map;
 
 public class TaskParams {
     public static class Search {
@@ -58,6 +60,35 @@ public class TaskParams {
                 listener.searchResult(index, query, content);
             } else {
                 listener.searchError(index, query, error);
+            }
+        }
+    }
+
+    public static class SearchDisjunctiveFaceting {
+        protected SearchDisjunctiveFacetingListener listener;
+        public Query query;
+        public List<String> disjunctiveFacets;
+        public Map<String, List<String>> refinements;
+
+        protected JSONObject content;
+        protected AlgoliaException error;
+
+        protected SearchDisjunctiveFaceting(SearchDisjunctiveFacetingListener listener, Query query, List<String> disjunctiveFacets, Map<String, List<String>> refinements) {
+            this.listener = listener;
+            this.query = query;
+            this.disjunctiveFacets = disjunctiveFacets;
+            this.refinements = refinements;
+        }
+
+        protected void sendResult(Index index) {
+            if (listener == null) {
+                return;
+            }
+
+            if (error == null) {
+                listener.searchDisjunctiveFacetingResult(index, query, disjunctiveFacets, refinements, content);
+            } else {
+                listener.searchDisjunctiveFacetingError(index, query, disjunctiveFacets, refinements, error);
             }
         }
     }

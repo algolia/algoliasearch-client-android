@@ -29,6 +29,7 @@ import android.test.UiThreadTest;
 
 import com.algolia.search.saas.listeners.GetObjectsListener;
 import com.algolia.search.saas.listeners.IndexingListener;
+import com.algolia.search.saas.listeners.SearchDisjunctiveFacetingListener;
 import com.algolia.search.saas.listeners.SearchListener;
 import com.algolia.search.saas.listeners.WaitTaskListener;
 
@@ -36,7 +37,9 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
@@ -104,6 +107,30 @@ public class ApplicationTest extends ApplicationTestCase<Application> {
         final Listener searchListener = new Listener();
 
         index.searchASync(new Query(), searchListener);
+        assertTrue(signal.await(Helpers.wait, TimeUnit.SECONDS));
+    }
+
+    @UiThreadTest
+    public void testSearchDisjunctiveFacetingAsync() throws Exception {
+        final CountDownLatch signal = new CountDownLatch(1);
+
+        class Listener implements SearchDisjunctiveFacetingListener {
+            @Override
+            public void searchDisjunctiveFacetingResult(Index index, Query query, List<String> disjunctiveFacets, Map<String, List<String>> refinements, JSONObject results) {
+                assertEquals(objects.size(), results.optInt("nbHits"));
+                signal.countDown();
+            }
+
+            @Override
+            public void searchDisjunctiveFacetingError(Index index, Query query, List<String> disjunctiveFacets, Map<String, List<String>> refinements, AlgoliaException e) {
+                fail(String.format("Error during search: %s", e.getMessage()));
+                signal.countDown();
+            }
+        }
+
+        final Listener searchListener = new Listener();
+
+        index.searchDisjunctiveFacetingAsync(new Query(), new ArrayList<String>(), new HashMap<String, List<String>>(), searchListener);
         assertTrue(signal.await(Helpers.wait, TimeUnit.SECONDS));
     }
 

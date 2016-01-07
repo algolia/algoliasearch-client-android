@@ -29,6 +29,7 @@ import com.algolia.search.saas.listeners.DeleteObjectsListener;
 import com.algolia.search.saas.listeners.GetObjectsListener;
 import com.algolia.search.saas.listeners.IndexingListener;
 import com.algolia.search.saas.listeners.SearchListener;
+import com.algolia.search.saas.listeners.SearchDisjunctiveFacetingListener;
 import com.algolia.search.saas.listeners.SettingsListener;
 import com.algolia.search.saas.listeners.WaitTaskListener;
 
@@ -36,6 +37,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * Contains all the functions related to one index
@@ -78,6 +80,41 @@ public class Index extends BaseIndex {
     public void searchASync(Query query, SearchListener listener) {
         TaskParams.Search params = new TaskParams.Search(listener, query);
         new ASyncSearchTask().execute(params);
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////
+    /// SEARCH DISJUNCTIVE FACETING TASK
+    ////////////////////////////////////////////////////////////////////////////////////////////////
+    private class AsyncSearchDisjunctiveFacetingTask extends AsyncTask<TaskParams.SearchDisjunctiveFaceting, Void, TaskParams.SearchDisjunctiveFaceting> {
+        @Override
+        protected TaskParams.SearchDisjunctiveFaceting doInBackground(TaskParams.SearchDisjunctiveFaceting... params) {
+            TaskParams.SearchDisjunctiveFaceting p = params[0];
+            try {
+                p.content = searchDisjunctiveFaceting(p.query, p.disjunctiveFacets, p.refinements);
+            } catch (AlgoliaException e) {
+                p.error = e;
+            }
+            return p;
+        }
+
+        @Override
+        protected void onPostExecute(TaskParams.SearchDisjunctiveFaceting p) {
+            p.sendResult(Index.this);
+        }
+    }
+
+    /**
+     * Perform a search with disjunctive facets generating as many queries as number of disjunctive facets
+     *
+     * @param query             the query
+     * @param disjunctiveFacets the array of disjunctive facets
+     * @param refinements       Map<String, List<String>> representing the current refinements
+     *                          ex: { "my_facet1" => ["my_value1", "my_value2"], "my_disjunctive_facet1" => ["my_value1", "my_value2"] }
+     * @param listener the listener that will receive the result or error.
+     */
+    public void searchDisjunctiveFacetingAsync(Query query, List<String> disjunctiveFacets, Map<String, List<String>> refinements, SearchDisjunctiveFacetingListener listener) {
+    TaskParams.SearchDisjunctiveFaceting params = new TaskParams.SearchDisjunctiveFaceting(listener, query, disjunctiveFacets, refinements);
+        new AsyncSearchDisjunctiveFacetingTask().execute(params);
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////
