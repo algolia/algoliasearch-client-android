@@ -108,8 +108,7 @@ public class Index extends BaseIndex {
      *
      * @param query             the query
      * @param disjunctiveFacets the array of disjunctive facets
-     * @param refinements       Map<String, List<String>> representing the current refinements
-     *                          ex: { "my_facet1" => ["my_value1", "my_value2"], "my_disjunctive_facet1" => ["my_value1", "my_value2"] }
+     * @param refinements       Map representing the current refinements
      * @param listener the listener that will receive the result or error.
      */
     public void searchDisjunctiveFacetingAsync(Query query, List<String> disjunctiveFacets, Map<String, List<String>> refinements, SearchDisjunctiveFacetingListener listener) {

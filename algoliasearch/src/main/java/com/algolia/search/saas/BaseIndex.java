@@ -413,11 +413,9 @@ abstract class BaseIndex {
      *
      * @param query             the query
      * @param disjunctiveFacets the array of disjunctive facets
-     * @param refinements       Map<String, List<String>> representing the current refinements
-     *                          ex: { "my_facet1" => ["my_value1", "my_value2"], "my_disjunctive_facet1" => ["my_value1", "my_value2"] }
+     * @param refinements       Map representing the current refinements
      * @throws AlgoliaException
      */
-
     public JSONObject searchDisjunctiveFaceting(Query query, List<String> disjunctiveFacets, Map<String, List<String>> refinements) throws AlgoliaException {
         if (refinements == null) {
             refinements = new HashMap<String, List<String>>();
