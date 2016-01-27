@@ -22,6 +22,7 @@ Table of Contents
 
 1. [Setup](#setup)
 1. [Quick Start](#quick-start)
+
 1. [Online documentation](#documentation)
 1. [Tutorials](#tutorials)
 
@@ -51,6 +52,7 @@ Table of Contents
 Setup
 -------------
 To setup your project, follow these steps:
+
 
 
 
@@ -135,6 +137,8 @@ Since the engine is designed to suggest results as you type, you'll generally se
 index.searchASync(new Query("or"), this);
 index.searchASync(new Query("jim"), this);
 ```
+
+
 
 
 
@@ -301,7 +305,6 @@ You can use the following optional arguments:
   * **REMOVE_NONE**: No specific processing is done when a query does not return any results (default behavior).
  * **setMinWordSizeToAllowOneTypo**: The minimum number of characters in a query word to accept one typo in this word.<br/>Defaults to 4.
  * **setMinWordSizeToAllowTwoTypos**: The minimum number of characters in a query word to accept two typos in this word.<br/>Defaults to 8.
- * **enableTyposOnNumericTokens**: If set to false, it disables typo tolerance on numeric tokens (numbers). Defaults to false.
  * **setTypoTolerance**: This option allows you to control the number of typos in the result set:
   * **TYPO_TRUE**: The typo tolerance is enabled and all matching hits are retrieved (default behavior).
   * **TYPO_FALSE**: The typo tolerance is disabled. For example, if one result matches without typos, then all results with typos will be hidden.
@@ -566,7 +569,7 @@ You can decide to have the same priority for two attributes by passing them in t
  * **advancedSyntax**: Enable the advanced query syntax. Defaults to 0 (false).
 
   * **Phrase query:** a phrase query defines a particular sequence of terms. A phrase query is build by Algolia's query parser for words surrounded by `"`. For example, `"search engine"` will retrieve records having `search` next to `engine` only. Typo-tolerance is disabled on phrase queries.
-  
+
   * **Prohibit operator:** The prohibit operator excludes records that contain the term after the `-` symbol. For example `search -engine` will retrieve records containing `search` but not `engine`.
  * **replaceSynonymsInHighlight**: (boolean) If set to false, words matched via synonyms expansion will not be replaced by the matched synonym in the highlighted result. Default to true.
  * **maxValuesPerFacet**: (integer) Limit the number of facet values returned for each facet. For example: `maxValuesPerFacet=10` will retrieve max 10 values per facet.
@@ -834,6 +837,8 @@ You can retrieve the logs of your last 1,000 API calls and browse them using the
 // Get last 100 error log entries
 client.getLogsASync(0, 100, LogType.LOG_ERROR, this);
 ```
+
+
 
 
 
