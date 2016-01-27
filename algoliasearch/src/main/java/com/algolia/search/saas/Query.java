@@ -97,6 +97,7 @@ public class Query {
     protected String tags;
     protected String highlightPreTag;
     protected String highlightPostTag;
+    protected String snippetEllipsisText;
     protected Integer minProximity;
     protected String numerics;
     protected String insideBoundingBox;
@@ -167,6 +168,7 @@ public class Query {
         minProximity = other.minProximity;
         highlightPreTag = other.highlightPreTag;
         highlightPostTag = other.highlightPostTag;
+        snippetEllipsisText = other.snippetEllipsisText;
         distinct = other.distinct;
         advancedSyntax = other.advancedSyntax;
 	removeStopWords = other.removeStopWords;
@@ -404,6 +406,15 @@ public class Query {
     public Query setHighlightingTags(String preTag, String postTag) {
         this.highlightPreTag = preTag;
         this.highlightPostTag = postTag;
+        return this;
+    }
+
+    /**
+     * Specify the string that is used as an ellipsis indicator when a snippet
+     * is truncated (defaults to the empty string).
+     */
+    public Query setSnippetEllipsisText(String snippetEllipsisText) {
+        this.snippetEllipsisText = snippetEllipsisText;
         return this;
     }
 
@@ -953,6 +964,12 @@ public class Query {
                 stringBuilder.append(highlightPreTag);
                 stringBuilder.append("&highlightPostTag=");
                 stringBuilder.append(highlightPostTag);
+            }
+            if (snippetEllipsisText != null) {
+                if (stringBuilder.length() > 0)
+                    stringBuilder.append('&');
+                stringBuilder.append("snippetEllipsisText=");
+                stringBuilder.append(URLEncoder.encode(snippetEllipsisText, "UTF-8"));
             }
             if (hitsPerPage != null) {
                 if (stringBuilder.length() > 0)
