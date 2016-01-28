@@ -1,6 +1,9 @@
 Changelog
 =========
 
+2.6.1 (2016-01-28)
+- Add snippetEllipsisText method
+
 2.6.0 (2016-01-07)
 - Add disjunctive faceting method
 
