@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015 Algolia
+ * Copyright (c) 2012-2016 Algolia
  * http://www.algolia.com/
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -21,42 +21,12 @@
  * THE SOFTWARE.
  */
 
-apply plugin: 'com.android.library'
+package com.algolia.search.saas;
 
-ext {
-    PUBLISH_GROUP_ID = 'com.algolia'
-    PUBLISH_ARTIFACT_ID = 'algoliasearch-android'
-    PUBLISH_VERSION = '2.6.1'
-}
-
-android {
-    compileSdkVersion 21
-    buildToolsVersion '21.1.2'
-    defaultConfig {
-        minSdkVersion 14
-        targetSdkVersion 21
-        versionCode 1
-        versionName PUBLISH_VERSION
+public class OfflineIndex extends Index
+{
+    protected OfflineIndex(APIClient client, String indexName)
+    {
+        super(client, indexName);
     }
-    buildTypes {
-        release {
-            minifyEnabled false
-            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
-        }
-    }
-    publishNonDefault true
-    productFlavors {
-        // The regular online API client.
-        online
-        // The offline-enabled API client, adding offline features on top of the online client.
-        // NOTE: Requires Algolia's SDK.
-        offline
-    }
-}
-
-dependencies {
-    compile 'com.android.support:appcompat-v7:21.0.3'
-    compile fileTree(include: ['*.jar'], dir: 'libs')
-    // TODO: Switch to published version.
-    offlineCompile project(':algoliasearchsdk')
 }
