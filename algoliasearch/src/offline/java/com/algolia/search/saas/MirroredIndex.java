@@ -263,37 +263,49 @@ public class MirroredIndex extends Index
 
     public void searchASync(Query query, SearchListener listener)
     {
-        // TODO: Should use offline only as a fallback mechanism.
         new SearchMirrorTask().execute(new TaskParams.Search(listener, query));
     }
 
-    private class SearchMirrorTask extends AsyncTask<TaskParams.Search, Void, JSONObject>
+    private class SearchMirrorTask extends AsyncTask<TaskParams.Search, Void, TaskParams.Search>
     {
         private SearchListener listener;
         private Query query;
 
         @Override
-        protected JSONObject doInBackground(TaskParams.Search... params)
+        protected TaskParams.Search doInBackground(TaskParams.Search... params)
         {
             TaskParams.Search p = params[0];
             listener = p.listener;
             query = p.query;
-            return _searchMirror(query.getQueryString());
+            // First search the online API.
+            try {
+                p.content = search(p.query);
+            }
+            catch (AlgoliaException e) {
+                // Fallback to the offline mirror if available.
+                if (mirrored) {
+                    try {
+                        p.content = _searchMirror(query.getQueryString());
+                    }
+                    catch (AlgoliaException e2) {
+                        p.error = e2;
+                    }
+                }
+                else {
+                    p.error = e;
+                }
+            }
+            return p;
         }
 
         @Override
-        protected void onPostExecute(JSONObject jsonResult)
+        protected void onPostExecute(TaskParams.Search p)
         {
-            if (jsonResult != null) {
-                listener.searchResult(MirroredIndex.this, query, jsonResult);
-            }
-            else {
-                listener.searchError(MirroredIndex.this, query, new AlgoliaException("TODO"));
-            }
+            p.sendResult(MirroredIndex.this);
         }
     }
 
-    private JSONObject _searchMirror(String query)
+    private JSONObject _searchMirror(String query) throws AlgoliaException
     {
         if (!mirrored)
             throw new IllegalArgumentException("Mirroring not activated on this index");
@@ -307,12 +319,11 @@ public class MirroredIndex extends Index
                 return json;
             }
             else {
-                // TODO: Handle error
+                throw new AlgoliaException(searchResults.errorMessage, searchResults.statusCode);
             }
         }
         catch (Exception e) {
-            Log.e(this.getClass().getName(), "Sync failed", e);
+            throw new AlgoliaException("Search failed", e);
         }
-        return null;
     }
 }
