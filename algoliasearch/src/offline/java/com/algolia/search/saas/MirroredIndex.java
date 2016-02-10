@@ -37,6 +37,7 @@ import java.io.FileOutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
@@ -50,8 +51,7 @@ public class MirroredIndex extends Index
     private LocalIndex localIndex;
 
     private boolean mirrored;
-    private List<String> queries = new ArrayList<>();
-    private long lastSyncDate;
+    private MirrorSettings mirrorSettings = new MirrorSettings();
     private long delayBetweenSyncs = 1000 * 60 * 60; // 1 hour
 
     private boolean syncing;
@@ -63,6 +63,10 @@ public class MirroredIndex extends Index
     {
         super(client, indexName);
     }
+
+    // ----------------------------------------------------------------------
+    // Accessors
+    // ----------------------------------------------------------------------
 
     public OfflineAPIClient getClient()
     {
@@ -76,6 +80,9 @@ public class MirroredIndex extends Index
 
     public void setMirrored(boolean mirrored)
     {
+        if (!this.mirrored && mirrored) {
+            loadMirroSettings();
+        }
         this.mirrored = mirrored;
     }
 
@@ -86,7 +93,24 @@ public class MirroredIndex extends Index
         tweakedQuery.setAttributesToHighlight(emptyList);
         tweakedQuery.setAttributesToSnippet(emptyList);
         tweakedQuery.getRankingInfo(false);
-        queries.add(tweakedQuery.getQueryString());
+        mirrorSettings.addQuery(tweakedQuery.getQueryString());
+        mirrorSettings.setQueriesModificationDate(new Date());
+        saveMirrorSettings();
+    }
+
+    public String[] getDataSelectionQueries()
+    {
+        return mirrorSettings.getQueries();
+    }
+
+    public long getDelayBetweenSyncs()
+    {
+        return delayBetweenSyncs;
+    }
+
+    public void setDelayBetweenSyncs(long delayBetweenSyncs)
+    {
+        this.delayBetweenSyncs = delayBetweenSyncs;
     }
 
     /**
@@ -104,6 +128,37 @@ public class MirroredIndex extends Index
         // TODO: Use better value
         return getClient().getRootDataDir();
     }
+
+    private File getDataDir()
+    {
+        return new File(new File(getClient().getRootDataDir(), getClient().getApplicationID()), getIndexName());
+    }
+
+    private File getSettingsFile()
+    {
+        return new File(getDataDir(), "mirror.json");
+    }
+
+    // ----------------------------------------------------------------------
+    // Settings
+    // ----------------------------------------------------------------------
+
+    private void saveMirrorSettings()
+    {
+        mirrorSettings.save(getSettingsFile());
+    }
+
+    private void loadMirroSettings()
+    {
+        File settingsFile = getSettingsFile();
+        if (settingsFile.exists()) {
+            mirrorSettings.load(settingsFile);
+        }
+    }
+
+    // ----------------------------------------------------------------------
+    // Sync
+    // ----------------------------------------------------------------------
 
     public void sync()
     {
@@ -125,7 +180,7 @@ public class MirroredIndex extends Index
     public void syncIfNeeded()
     {
         long currentDate = System.currentTimeMillis();
-        if (currentDate - lastSyncDate > delayBetweenSyncs /*|| mirrorSettings.queriesModificationDate.compare(mirrorSettings.lastSyncDate) == .OrderedDescending */) {
+        if (currentDate - mirrorSettings.getLastSyncDate().getTime() > delayBetweenSyncs || mirrorSettings.getQueriesModificationDate().compareTo(mirrorSettings.getLastSyncDate()) > 0) {
             sync();
         }
     }
@@ -157,8 +212,9 @@ public class MirroredIndex extends Index
 
             // Perform data selection queries.
             objectFiles = new ArrayList<>();
-            for (int i = 0; i < queries.size(); ++i) {
-                String query = queries.get(i);
+            final String[] queries = mirrorSettings.getQueries();
+            for (int i = 0; i < queries.length; ++i) {
+                String query = queries[i];
                 JSONObject objectsJSON = getClient().getRequest("/1/indexes/" + getEncodedIndexName() + "?" + query, true);
                 File file = new File(tmpDir, String.format("%d.json", i));
                 objectFiles.add(file);
@@ -177,6 +233,10 @@ public class MirroredIndex extends Index
             if (status != 200) {
                 throw new AlgoliaException("Build index failed", status);
             }
+
+            // Remember the last sync date.
+            mirrorSettings.setLastSyncDate(new Date());
+            saveMirrorSettings();
         }
         catch (Exception e) {
             Log.e(this.getClass().getName(), "Sync failed", e);
@@ -196,6 +256,10 @@ public class MirroredIndex extends Index
             }
         }
     }
+
+    // ----------------------------------------------------------------------
+    // Search
+    // ----------------------------------------------------------------------
 
     public void searchASync(Query query, SearchListener listener)
     {
