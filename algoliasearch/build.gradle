@@ -58,5 +58,5 @@ dependencies {
     compile 'com.android.support:appcompat-v7:21.0.3'
     compile fileTree(include: ['*.jar'], dir: 'libs')
     // TODO: Switch to published version.
-    offlineCompile project(':algoliasearchsdk')
+    offlineCompile project(path: ':algoliasearchsdk', configuration: 'debug')
 }

@@ -106,6 +106,11 @@ abstract class BaseAPIClient {
         headers = new HashMap<String, String>();
     }
 
+    public String getApplicationID()
+    {
+        return applicationID;
+    }
+
     /**
      * Allow to set custom headers
      */

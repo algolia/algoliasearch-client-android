@@ -61,6 +61,16 @@ abstract class BaseIndex {
         return indexName;
     }
 
+    public APIClient getClient()
+    {
+        return client;
+    }
+
+    protected String getEncodedIndexName()
+    {
+        return encodedIndexName;
+    }
+
     /**
      * Add an object in this index
      *
@@ -74,8 +84,8 @@ abstract class BaseIndex {
     /**
      * Add an object in this index
      *
-     * @param obj the object to add. 
-     * @param objectID an objectID you want to attribute to this object 
+     * @param obj the object to add.
+     * @param objectID an objectID you want to attribute to this object
      * (if the attribute already exist the old object will be overwrite)
      * @throws AlgoliaException
      */
@@ -261,7 +271,7 @@ abstract class BaseIndex {
     }
 
     /**
-     * Delete an object from the index 
+     * Delete an object from the index
      *
      * @param objectID the unique identifier of object to delete
      * @throws AlgoliaException
@@ -342,7 +352,7 @@ abstract class BaseIndex {
     }
 
     /**
-     * Wait the publication of a task on the server. 
+     * Wait the publication of a task on the server.
      * All server task are asynchronous and you can check with this method that the task is published.
      *
      * @param taskID the id of the task returned by server

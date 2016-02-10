@@ -23,10 +23,30 @@
 
 package com.algolia.search.saas;
 
-public class OfflineIndex extends Index
+import android.support.annotation.NonNull;
+
+import java.io.File;
+
+/**
+ * Various filesystem-related utilities.
+ */
+public class FileUtils
 {
-    protected OfflineIndex(APIClient client, String indexName)
+    /**
+     * Delete a file or directory, recursively deleting any descendant files/directories if it's a directory.
+     *
+     * @param item The item to delete.
+     * @return true if success, false if error.
+     */
+    public static boolean deleteRecursive(@NonNull File item)
     {
-        super(client, indexName);
+        boolean ok = true;
+        if (item.isDirectory()) {
+            for (File child : item.listFiles()) {
+                ok = ok && deleteRecursive(child);
+            }
+        }
+        ok = ok && item.delete();
+        return ok;
     }
 }
