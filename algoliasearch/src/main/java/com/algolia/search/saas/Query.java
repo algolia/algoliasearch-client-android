@@ -795,7 +795,7 @@ public class Query {
 
         try {
             if (attributes != null) {
-                stringBuilder.append("attributes=");
+                stringBuilder.append("attributesToRetrieve=");
                 boolean first = true;
                 for (String attr : this.attributes) {
                     if (!first)
