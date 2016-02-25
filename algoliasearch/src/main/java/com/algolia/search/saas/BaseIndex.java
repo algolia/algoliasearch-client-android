@@ -334,7 +334,7 @@ abstract class BaseIndex {
      * @throws AlgoliaException
      */
     protected JSONObject search(Query query) throws AlgoliaException {
-        String paramsString = query.getQueryString();
+        String paramsString = query.build();
         if (paramsString.length() > 0)
             return client.getRequest("/1/indexes/" + encodedIndexName + "?" + paramsString, true);
         else
