@@ -314,7 +314,7 @@ public class MirroredIndex extends Index
                 // Fallback to the offline mirror if available.
                 if (mirrored) {
                     try {
-                        p.content = _searchMirror(query.getQueryString());
+                        p.content = _searchMirror(query.build());
                     }
                     catch (AlgoliaException e2) {
                         p.error = e2;
