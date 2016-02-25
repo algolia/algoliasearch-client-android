@@ -965,9 +965,9 @@ public class Query {
                 if (stringBuilder.length() > 0)
                     stringBuilder.append('&');
                 stringBuilder.append("highlightPreTag=");
-                stringBuilder.append(highlightPreTag);
+                stringBuilder.append(URLEncoder.encode(highlightPreTag, "UTF-8"));
                 stringBuilder.append("&highlightPostTag=");
-                stringBuilder.append(highlightPostTag);
+                stringBuilder.append(URLEncoder.encode(highlightPostTag, "UTF-8"));
             }
             if (snippetEllipsisText != null) {
                 if (stringBuilder.length() > 0)
