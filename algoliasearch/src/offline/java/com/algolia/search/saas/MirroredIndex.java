@@ -24,6 +24,8 @@
 package com.algolia.search.saas;
 
 import android.os.AsyncTask;
+import android.os.Handler;
+import android.os.Looper;
 import android.util.Log;
 
 import com.algolia.search.saas.listeners.SearchListener;
@@ -38,7 +40,9 @@ import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 /**
@@ -58,6 +62,11 @@ public class MirroredIndex extends Index
     private File tmpDir;
     private File settingsFile;
     private List<File> objectFiles;
+    private Throwable error;
+
+    private Set<SyncListener> syncListeners = new HashSet<>();
+
+    private Handler mainHandler = new Handler(Looper.getMainLooper());
 
     protected MirroredIndex(OfflineAPIClient client, String indexName)
     {
@@ -175,6 +184,15 @@ public class MirroredIndex extends Index
                 _sync();
             }
         });
+        // Notify listeners (make sure it is on main thread).
+        mainHandler.post(new Runnable()
+        {
+            @Override
+            public void run()
+            {
+                fireSyncDidStart();
+            }
+        });
     }
 
     public void syncIfNeeded()
@@ -240,6 +258,7 @@ public class MirroredIndex extends Index
         }
         catch (Exception e) {
             Log.e(this.getClass().getName(), "Sync failed", e);
+            error = e;
         }
         finally {
             // Clean up.
@@ -254,6 +273,16 @@ public class MirroredIndex extends Index
             synchronized (this) {
                 syncing = false;
             }
+
+            // Notify listeners (on main thread).
+            mainHandler.post(new Runnable()
+            {
+                @Override
+                public void run()
+                {
+                    fireSyncDidFinish();
+                }
+            });
         }
     }
 
@@ -324,6 +353,34 @@ public class MirroredIndex extends Index
         }
         catch (Exception e) {
             throw new AlgoliaException("Search failed", e);
+        }
+    }
+
+    // ----------------------------------------------------------------------
+    // Listeners
+    // ----------------------------------------------------------------------
+
+    public void addSyncListener(SyncListener listener)
+    {
+        syncListeners.add(listener);
+    }
+
+    public void removeSyncListener(SyncListener listener)
+    {
+        syncListeners.remove(listener);
+    }
+
+    private void fireSyncDidStart()
+    {
+        for (SyncListener listener : syncListeners) {
+            listener.syncDidStart(this);
+        }
+    }
+
+    private void fireSyncDidFinish()
+    {
+        for (SyncListener listener : syncListeners) {
+            listener.syncDidFinish(this, error);
         }
     }
 }
