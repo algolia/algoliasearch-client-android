@@ -28,8 +28,12 @@ proguard/
 # Android Studio
 .navigation/
 .idea/
+*.iml
 
 # Eclipse
 .classpath
 .project
 .settings/
+
+# Apple
+*.DS_Store

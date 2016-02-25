@@ -23,19 +23,9 @@
 
 package com.algolia.search.saas;
 
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpResponse;
-import org.apache.http.client.methods.HttpDelete;
-import org.apache.http.client.methods.HttpEntityEnclosingRequestBase;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.client.methods.HttpPut;
-import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.entity.StringEntity;
-import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicHeader;
 import org.apache.http.protocol.HTTP;
-import org.apache.http.util.EntityUtils;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -45,8 +35,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
-import java.net.URI;
-import java.net.URISyntaxException;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.net.URLEncoder;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -68,7 +58,6 @@ abstract class BaseAPIClient {
     private final String apiKey;
     private final List<String> readHostsArray;
     private final List<String> writeHostsArray;
-    private final DefaultHttpClient httpClient;
     private String tagFilters;
     private String userToken;
     private HashMap<String, String> headers;
@@ -102,7 +91,6 @@ abstract class BaseAPIClient {
         } else {
             readHostsArray = writeHostsArray = hostsArray;
         }
-        httpClient = new DefaultHttpClient();
         headers = new HashMap<String, String>();
     }
 
@@ -329,7 +317,7 @@ abstract class BaseAPIClient {
         return _request(Method.PUT, url, obj, writeHostsArray, httpConnectTimeoutMS, httpSocketTimeoutMS);
     }
 
-    private JSONObject _getAnswerObject(InputStream istream) throws IOException, JSONException {
+    private String _getAnswer(InputStream istream) throws IOException {
         InputStreamReader is = new InputStreamReader(istream, "UTF-8");
         StringBuilder builder= new StringBuilder();
         char[] buf = new char[1000];
@@ -338,121 +326,144 @@ abstract class BaseAPIClient {
             builder.append(buf, 0, l);
             l = is.read(buf);
         }
-        JSONTokener tokener = new JSONTokener(builder.toString());
-        JSONObject res = new JSONObject(tokener);
         is.close();
-        return res;
+        return builder.toString();
+    }
+
+    private JSONObject _getJSONObject(String input) throws JSONException {
+        return new JSONObject(new JSONTokener(input));
+    }
+
+    private JSONObject _getAnswerObject(InputStream istream) throws IOException, JSONException {
+        return _getJSONObject(_getAnswer(istream));
     }
 
     private synchronized JSONObject _request(Method m, String url, String json, List<String> hostsArray, int connectTimeout, int readTimeout) throws AlgoliaException {
-        HttpRequestBase req;
+        String requestMethod;
         HashMap<String, String> errors = new HashMap<String, String>();
         // for each host
         for (String host : hostsArray) {
             switch (m) {
                 case DELETE:
-                    req = new HttpDelete();
+                    requestMethod = "DELETE";
                     break;
                 case GET:
-                    req = new HttpGet();
+                    requestMethod = "GET";
                     break;
                 case POST:
-                    req = new HttpPost();
+                    requestMethod = "POST";
                     break;
                 case PUT:
-                    req = new HttpPut();
+                    requestMethod = "PUT";
                     break;
                 default:
                     throw new IllegalArgumentException("Method " + m + " is not supported");
             }
 
             // set URL
-            try {
-                req.setURI(new URI("https://" + host + url));
-            } catch (URISyntaxException e) {
-                // never reached
-                throw new IllegalStateException(e);
+            URL hostURL;
+            HttpURLConnection hostConnection;
+            try{
+                hostURL = new URL("https://" + host + url);
+                hostConnection = (HttpURLConnection) hostURL.openConnection();
+                hostConnection.setRequestMethod(requestMethod);
+            } catch (IOException e) {
+                // on error continue on the next host
+                addError(errors, host, e);
+                continue;
             }
 
+            hostConnection.setConnectTimeout(connectTimeout);
+            hostConnection.setReadTimeout(readTimeout);
+
             // set auth headers
-            req.setHeader("X-Algolia-Application-Id", this.applicationID);
-            req.setHeader("X-Algolia-API-Key", this.apiKey);
+            hostConnection.setRequestProperty("X-Algolia-Application-Id", this.applicationID);
+            hostConnection.setRequestProperty("X-Algolia-API-Key", this.apiKey);
             for (Map.Entry<String, String> entry : headers.entrySet()) {
-                req.setHeader(entry.getKey(), entry.getValue());
+                hostConnection.setRequestProperty(entry.getKey(), entry.getValue());
             }
 
             // set user agent
-            req.setHeader("User-Agent", "Algolia for Android " + version);
+            hostConnection.setRequestProperty("User-Agent", "Algolia for Android " + version);
+
 
             // set optional headers
             if (this.userToken != null) {
-                req.setHeader("X-Algolia-UserToken", this.userToken);
+                hostConnection.setRequestProperty("X-Algolia-UserToken", this.userToken);
             }
             if (this.tagFilters != null) {
-                req.setHeader("X-Algolia-TagFilters", this.tagFilters);
+                hostConnection.setRequestProperty("X-Algolia-TagFilters", this.tagFilters);
             }
-            req.addHeader("Accept-Encoding","gzip");
 
-            // set JSON entity
+            // write JSON entity
             if (json != null) {
-                if (!(req instanceof HttpEntityEnclosingRequestBase)) {
+                if (!(requestMethod.equals("PUT") || requestMethod.equals("POST"))) {
                     throw new IllegalArgumentException("Method " + m + " cannot enclose entity");
                 }
-                req.setHeader("Content-type", "application/json");
+                hostConnection.setRequestProperty("Content-type", "application/json");
+                hostConnection.setDoOutput(true);
                 try {
                     StringEntity se = new StringEntity(json, "UTF-8");
                     se.setContentEncoding(new BasicHeader(HTTP.CONTENT_TYPE, "application/json"));
-                    ((HttpEntityEnclosingRequestBase) req).setEntity(se);
+                    se.writeTo(hostConnection.getOutputStream());
                 } catch (UnsupportedEncodingException e) {
                     throw new AlgoliaException("Invalid JSON Object: " + json);
+                } catch (IOException e) {
+                    throw new AlgoliaException("Could not open output stream: " + e.getLocalizedMessage());
                 }
             }
 
-            httpClient.getParams().setParameter("http.socket.timeout", readTimeout);
-            httpClient.getParams().setParameter("http.connection.timeout", connectTimeout);
-
-            HttpResponse response;
+            int code;
             try {
-                response = httpClient.execute(req);
+                code = hostConnection.getResponseCode();
             } catch (IOException e) {
                 // on error continue on the next host
-                errors.put(host, String.format("%s=%s", e.getClass().getName(), e.getMessage()));
+                addError(errors, host, e);
                 continue;
             }
-            int code = response.getStatusLine().getStatusCode();
+
+            InputStream stream = hostConnection.getErrorStream(); // Response is in ErrorStream unless code = 200
             if (code / 100 == 2) {
                 // OK
+                try {
+                    stream = hostConnection.getInputStream();
+                } catch (IOException e) {
+                    throw new AlgoliaException("Could not open input stream: " + e.getLocalizedMessage());
+                }
             } else if (code / 100 == 4) {
                 String message = "Error detected in backend";
                 try {
-                    message = _getAnswerObject(response.getEntity().getContent()).getString("message");
+                    message = _getAnswerObject(stream).getString("message");
                 } catch (IOException e) {
+                    addError(errors, host, e);
                     continue;
                 } catch (JSONException e) {
                     throw new AlgoliaException("JSON decode error:" + e.getMessage());
                 }
-                consumeQuietly(response.getEntity());
+                consumeQuietly(hostConnection);
                 throw new AlgoliaException(message);
             } else {
                 try {
-                    errors.put(host, EntityUtils.toString(response.getEntity()));
+                    errors.put(host, _getAnswer(stream));
                 } catch (IOException e) {
                     errors.put(host, String.valueOf(code));
                 }
-                consumeQuietly(response.getEntity());
+                consumeQuietly(hostConnection);
                 // KO, continue
                 continue;
             }
             try {
-                String encoding = response.getEntity().getContentEncoding() != null ? response.getEntity().getContentEncoding().getValue() : null;
-                if (encoding != null && encoding.contains("gzip"))
-                    return _getAnswerObject(new GZIPInputStream(response.getEntity().getContent()));
-                else
-                    return _getAnswerObject(response.getEntity().getContent());
-            } catch (IOException e) {
-                continue;
+                String encoding = hostConnection.getContentEncoding();
+                if (encoding != null && encoding.contains("gzip")) {
+                    return _getAnswerObject(new GZIPInputStream(stream));
+                }
+                else {
+                    return _getAnswerObject(stream);
+                }
             } catch (JSONException e) {
                 throw new AlgoliaException("JSON decode error:" + e.getMessage());
+            } catch (IOException e) {
+                throw new AlgoliaException("Data decoding error:" + e.getMessage());
             }
         }
         StringBuilder builder = new StringBuilder("Hosts unreachable: ");
@@ -467,23 +478,29 @@ abstract class BaseAPIClient {
         throw new AlgoliaException(builder.toString());
     }
 
+    private void addError(HashMap<String, String> errors, String host, IOException e) {
+        errors.put(host, String.format("%s=%s", e.getClass().getName(), e.getMessage()));
+    }
+
     /**
      * Ensures that the entity content is fully consumed and the content stream, if exists,
      * is closed.
      */
-    private void consumeQuietly(final HttpEntity entity) {
-        if (entity == null) {
-            return;
-        }
+    private void consumeQuietly(final HttpURLConnection connection) {
         try {
-            if (entity.isStreaming()) {
-                InputStream instream = entity.getContent();
-                if (instream != null) {
-                    instream.close();
-                }
+            int read = 0;
+            while (read != -1) {
+                read = connection.getInputStream().read();
             }
+            connection.getInputStream().close();
+            read = 0;
+            while (read != -1) {
+                read = connection.getErrorStream().read();
+            }
+            connection.getErrorStream().close();
+            connection.disconnect();
         } catch (IOException e) {
-            // not fatal
+            // no inputStream to close
         }
     }
 }
