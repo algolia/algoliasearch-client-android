@@ -203,6 +203,10 @@ public class Query {
         insidePolygon = other.insidePolygon;
     }
 
+    @Override public String toString() {
+        return String.format("%s{%s}", this.getClass().getSimpleName(), this.build());
+    }
+
     /**
      * Select the strategy to adopt when a query does not return any result.
      */
