@@ -786,7 +786,11 @@ public class Query {
         return this;
     }
 
-    protected String getQueryString() {
+    /**
+     * Build the URL query parameter string representing this object.
+     * @return A string suitable for use inside the query part of a URL (i.e. after the question mark).
+     */
+    public @NonNull String build() {
         StringBuilder stringBuilder = new StringBuilder();
 
         try {
