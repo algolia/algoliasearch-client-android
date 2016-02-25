@@ -62,7 +62,7 @@ abstract class BaseAPIClient {
     private int httpConnectTimeoutMS = 2000;
     private int httpSearchTimeoutMS = 5000;
 
-    private final static String version = "2.6.1";
+    private final static String version = "2.6.2";
 
     private final String applicationID;
     private final String apiKey;
@@ -288,7 +288,7 @@ abstract class BaseAPIClient {
         try {
             JSONArray requests = new JSONArray();
             for (IndexQuery indexQuery : queries) {
-                String paramsString = indexQuery.getQueryString();
+                String paramsString = indexQuery.build();
                 requests.put(new JSONObject().put("indexName", indexQuery.getIndex()).put("params", paramsString));
             }
             JSONObject body = new JSONObject().put("requests", requests);
