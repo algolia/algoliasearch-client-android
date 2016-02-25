@@ -1,13 +1,16 @@
 package com.algolia.search.saas;
 
+import android.support.annotation.NonNull;
 import android.util.Pair;
 
+import org.json.JSONArray;
+
 import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
-
-import org.json.JSONArray;
 
 /*
  * Copyright (c) 2015 Algolia
@@ -790,9 +793,8 @@ public class Query {
      * Build the URL query parameter string representing this object.
      * @return A string suitable for use inside the query part of a URL (i.e. after the question mark).
      */
-    public @NonNull String build() {
+    protected @NonNull String build() {
         StringBuilder stringBuilder = new StringBuilder();
-
         try {
             if (attributes != null) {
                 stringBuilder.append("attributesToRetrieve=");
@@ -1103,8 +1105,146 @@ public class Query {
     }
 
     /**
-     * @return the attributesToHighlight
+     * Parse a query object from a URL query parameter string.
+     * @param queryParameters URL query parameter string.
+     * @return The parsed query object.
      */
+    protected static @NonNull Query parse(@NonNull String queryParameters) {
+        try {
+            Query query = new Query();
+            String[] parameters = queryParameters.split("&");
+            for (String parameter : parameters) {
+                String[] components = parameter.split("=");
+                if (components.length < 1 || components.length > 2)
+                    continue; // ignore invalid values
+                String name = URLDecoder.decode(components[0], "UTF-8");
+                String value = components.length >= 2 ? URLDecoder.decode(components[1], "UTF-8") : null;
+
+                if ((name.equals("attributesToRetrieve") || name.equals("attributes") /* legacy name */) && value != null) {
+                    query.attributes = Arrays.asList(value.split(","));
+                } else if (name.equals("attributesToHighlight") && value != null) {
+                    query.attributesToHighlight = Arrays.asList(value.split(","));
+                } else if (name.equals("attributesToSnippet") && value != null) {
+                    query.attributesToSnippet = Arrays.asList(value.split(","));
+                } else if (name.equals("disableTypoToleranceOnAttributes") && value != null) {
+                    query.disableTypoToleranceOn = Arrays.asList(value.split(","));
+                } else if (name.equals("typoTolerance") && value != null) {
+                    if (value.equals("false")) {
+                        query.typoTolerance = TypoTolerance.TYPO_FALSE;
+                    } else if (value.equals("min")) {
+                        query.typoTolerance = TypoTolerance.TYPO_MIN;
+                    } else if (value.equals("strict")) {
+                        query.typoTolerance = TypoTolerance.TYPO_STRICT;
+                    } else if (value.equals("true")) {
+                        query.typoTolerance = TypoTolerance.TYPO_TRUE;
+                    }
+                } else if (name.equals("allowTyposOnNumericTokens") && value != null) {
+                    query.allowTyposOnNumericTokens = parseBoolean(value);
+                } else if (name.equals("minWordSizefor1Typo") && value != null) {
+                    query.minWordSizeForApprox1 = parseInt(value);
+                } else if (name.equals("minWordSizefor2Typos") && value != null) {
+                    query.minWordSizeForApprox2 = parseInt(value);
+                } else if (name.equals("removeWordsIfNoResult") && value != null) {
+                    if (value.equals("LastWords")) {
+                        query.removeWordsIfNoResult = RemoveWordsType.REMOVE_LAST_WORDS;
+                    } else if (value.equals("FirstWords")) {
+                        query.removeWordsIfNoResult = RemoveWordsType.REMOVE_FIRST_WORDS;
+                    } else if (value.equals("allOptional")) {
+                        query.removeWordsIfNoResult = RemoveWordsType.REMOVE_ALLOPTIONAL;
+                    } else if (value.equals("none")) {
+                        query.removeWordsIfNoResult = RemoveWordsType.REMOVE_NONE;
+                    }
+                } else if (name.equals("getRankingInfo") && value != null) {
+                    query.getRankingInfo = parseBoolean(value);
+                } else if (name.equals("ignorePlural") && value != null) {
+                    query.ignorePlural = parseBoolean(value);
+                } else if (name.equals("analytics") && value != null) {
+                    query.analytics = parseBoolean(value);
+                } else if (name.equals("analyticsTags") && value != null) {
+                    query.analyticsTags = value;
+                } else if (name.equals("synonyms") && value != null) {
+                    query.synonyms = parseBoolean(value);
+                } else if (name.equals("replaceSynonymsInHighlight") && value != null) {
+                    query.replaceSynonyms = parseBoolean(value);
+                } else if (name.equals("distinct") && value != null) {
+                    query.distinct = parseInt(value);
+                } else if (name.equals("advancedSyntax") && value != null) {
+                    query.advancedSyntax = parseBoolean(value);
+                } else if (name.equals("removeStopWords") && value != null) {
+                    query.removeStopWords = parseBoolean(value);
+                } else if (name.equals("page") && value != null) {
+                    query.page = parseInt(value);
+                } else if (name.equals("minProximity") && value != null) {
+                    query.minProximity = parseInt(value);
+                } else if (name.equals("highlightPreTag") && value != null) {
+                    query.highlightPreTag = value;
+                } else if (name.equals("highlightPostTag") && value != null) {
+                    query.highlightPostTag = value;
+                } else if (name.equals("snippetEllipsisText") && value != null) {
+                    query.snippetEllipsisText = value;
+                } else if (name.equals("hitsPerPage") && value != null) {
+                    query.hitsPerPage = parseInt(value);
+                } else if (name.equals("tagFilters") && value != null) {
+                    query.tags = value;
+                } else if (name.equals("numericFilters") && value != null) {
+                    query.numerics = value;
+                } else if (name.equals("insideBoundingBox") && value != null) {
+                    query.insideBoundingBox = value;
+                } else if (name.equals("aroundLatLng") && value != null) {
+                    query.aroundLatLong = value;
+                } else if (name.equals("insidePolygon") && value != null) {
+                    query.insidePolygon = value;
+                } else if (name.equals("aroundRadius") && value != null) {
+                    query.aroundRadius = parseInt(value);
+                } else if (name.equals("aroundPrecision") && value != null) {
+                    query.aroundPrecision = parseInt(value);
+                } else if (name.equals("aroundLatLngViaIP") && value != null) {
+                    query.aroundLatLongViaIP = parseBoolean(value);
+                } else if (name.equals("query") && value != null) {
+                    query.query = value;
+                } else if (name.equals("similarQuery") && value != null) {
+                    query.similarQuery = value;
+                } else if (name.equals("facets") && value != null) {
+                    query.facets = value;
+                } else if (name.equals("filters") && value != null) {
+                    query.filters = value;
+                } else if (name.equals("facetFilters") && value != null) {
+                    query.facetFilters = value;
+                } else if (name.equals("maxNumberOfFacets") && value != null) {
+                    query.maxNumberOfFacets = parseInt(value);
+                } else if (name.equals("optionalWords") && value != null) {
+                    query.optionalWords = value;
+                } else if (name.equals("restrictSearchableAttributes") && value != null) {
+                    query.restrictSearchableAttributes = value;
+                } else if (name.equals("queryType") && value != null) {
+                    if (value.equals("prefixAll")) {
+                        query.queryType = QueryType.PREFIX_ALL;
+                    } else if (value.equals("prefixLast")) {
+                        query.queryType = QueryType.PREFIX_LAST;
+                    } else if (value.equals("prefixNone")) {
+                        query.queryType = QueryType.PREFIX_NONE;
+                    }
+                }
+            } // for each parameter
+            return query;
+        } catch (UnsupportedEncodingException e) {
+            // Should never happen since UTF-8 is one of the default encodings.
+            throw new RuntimeException(e);
+        }
+    }
+
+    private static boolean parseBoolean(String value) {
+        return value.trim().toLowerCase().equals("true") || parseInt(value) != 0;
+    }
+
+    private static int parseInt(String value)  {
+        try {
+            return Integer.parseInt(value.trim());
+        } catch (NumberFormatException e) {
+            return 0;
+        }
+    }
+
     public List<String> getAttributesToHighlight() {
         return attributesToHighlight;
     }
