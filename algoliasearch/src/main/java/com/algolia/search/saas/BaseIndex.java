@@ -57,6 +57,11 @@ abstract class BaseIndex {
         }
     }
 
+    public String toString()
+    {
+        return String.format("%s{%s}", this.getClass().getSimpleName(), getIndexName());
+    }
+
     public String getIndexName() {
         return indexName;
     }
