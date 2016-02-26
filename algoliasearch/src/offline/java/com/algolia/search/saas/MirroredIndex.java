@@ -26,18 +26,21 @@ package com.algolia.search.saas;
 import android.os.AsyncTask;
 import android.os.Handler;
 import android.os.Looper;
+import android.support.annotation.NonNull;
 import android.util.Log;
 
 import com.algolia.search.saas.listeners.SearchListener;
 import com.algolia.search.sdk.LocalIndex;
 import com.algolia.search.sdk.SearchResults;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
@@ -63,10 +66,15 @@ public class MirroredIndex extends Index
     private File settingsFile;
     private List<File> objectFiles;
     private Throwable error;
+    private SyncStats stats;
 
     private Set<SyncListener> syncListeners = new HashSet<>();
 
     private Handler mainHandler = new Handler(Looper.getMainLooper());
+
+    // ----------------------------------------------------------------------
+    // Constructors
+    // ----------------------------------------------------------------------
 
     protected MirroredIndex(OfflineAPIClient client, String indexName)
     {
@@ -95,19 +103,36 @@ public class MirroredIndex extends Index
         this.mirrored = mirrored;
     }
 
-    public void addDataSelectionQuery(Query query)
+    /**
+     * Add a data selection query to this index.
+     * @note All queries are implicitly browse queries (and not search queries). The maximum number of items is
+     * specified using the `hitsPerPage` property.
+     * FIXME: We need a better mechanism.
+     * @param query The data selection query to add.
+     */
+    public void addDataSelectionQuery(@NonNull Query query)
     {
-        Query tweakedQuery = new Query(query);
-        final List<String> emptyList = new ArrayList<String>();
-        tweakedQuery.setAttributesToHighlight(emptyList);
-        tweakedQuery.setAttributesToSnippet(emptyList);
-        tweakedQuery.getRankingInfo(false);
-        mirrorSettings.addQuery(tweakedQuery.getQueryString());
+        mirrorSettings.addQuery(query.build());
         mirrorSettings.setQueriesModificationDate(new Date());
         saveMirrorSettings();
     }
 
-    public String[] getDataSelectionQueries()
+    /**
+     * Replace all data selection queries associated to this index.
+     * @param queries The new data selection queries. (May be empty, although this will actually empty your mirror!)
+     */
+    public void setDataSelectionQueries(@NonNull Query[] queries)
+    {
+        String[] queryStrings = new String[queries.length];
+        for (int i = 0; i < queries.length; ++i) {
+            queryStrings[i] = queries[i].build();
+        }
+        mirrorSettings.setQueries(queryStrings);
+        mirrorSettings.setQueriesModificationDate(new Date());
+        saveMirrorSettings();
+    }
+
+    public @NonNull String[] getDataSelectionQueries()
     {
         return mirrorSettings.getQueries();
     }
@@ -169,6 +194,48 @@ public class MirroredIndex extends Index
     // Sync
     // ----------------------------------------------------------------------
 
+    /**
+     * Statistics about a sync.
+     */
+    public static class SyncStats
+    {
+        protected int objectCount;
+        protected int fileCount;
+        protected long fetchTime;
+        protected long buildTime;
+        protected long totalTime;
+
+        public int getObjectCount()
+        {
+            return objectCount;
+        }
+
+        public int getFileCount()
+        {
+            return fileCount;
+        }
+
+        public long getFetchTime()
+        {
+            return fetchTime;
+        }
+
+        public long getBuildTime()
+        {
+            return buildTime;
+        }
+
+        public long getTotalTime()
+        {
+            return totalTime;
+        }
+
+        @Override public String toString()
+        {
+            return String.format("%s{objects=%d, files=%d, fetch=%dms, build=%dms, total=%dms}", this.getClass().getSimpleName(), objectCount, fileCount, fetchTime, buildTime, totalTime);
+        }
+    }
+
     public void sync()
     {
         synchronized (this) {
@@ -212,6 +279,10 @@ public class MirroredIndex extends Index
         if (!mirrored)
             throw new IllegalArgumentException("Mirroring not activated on this index");
 
+        // Reset statistics.
+        stats = new SyncStats();
+        long startTime = System.currentTimeMillis();
+
         try {
             // Create temporary directory.
             tmpDir = new File(getTempDir(), UUID.randomUUID().toString());
@@ -232,15 +303,51 @@ public class MirroredIndex extends Index
             objectFiles = new ArrayList<>();
             final String[] queries = mirrorSettings.getQueries();
             for (int i = 0; i < queries.length; ++i) {
-                String query = queries[i];
-                JSONObject objectsJSON = getClient().getRequest("/1/indexes/" + getEncodedIndexName() + "?" + query, true);
-                File file = new File(tmpDir, String.format("%d.json", i));
-                objectFiles.add(file);
-                String data = objectsJSON.toString();
-                Writer writer = new OutputStreamWriter(new FileOutputStream(file), "UTF-8");
-                writer.write(data);
-                writer.close();
+                Query query = Query.parse(queries[i]);
+                // FIXME: Dirty hack: we use `hitsPerPage` as a way to communicate the total number of objects to fetch.
+                int maxObjects = query.getHitsPerPage() != null ? query.getHitsPerPage() : 1000;
+                query.setHitsPerPage(1000);
+                String queryString = query.build();
+
+                String cursor = null;
+                int retrievedObjects = 0;
+                do {
+                    // Make next request.
+                    // TODO: JSON DOM is not strictly necessary. We could use SAX parsing and just extract the cursor.
+                    String url = "/1/indexes/" + getEncodedIndexName() + "/browse?" + queryString;
+                    if (cursor != null) {
+                        url += "&cursor=" + URLEncoder.encode(cursor, "UTF-8");
+                    }
+                    JSONObject objectsJSON = getClient().getRequest(url, true);
+
+                    // Write result to file.
+                    int objectFileNo = objectFiles.size();
+                    File file = new File(tmpDir, String.format("%d.json", objectFileNo));
+                    objectFiles.add(file);
+                    String data = objectsJSON.toString();
+                    Writer writer = new OutputStreamWriter(new FileOutputStream(file), "UTF-8");
+                    writer.write(data);
+                    writer.close();
+
+                    cursor = objectsJSON.optString("cursor");
+                    JSONArray hits = objectsJSON.optJSONArray("hits");
+                    if (hits == null) {
+                        // Something went wrong:
+                        // Report the error, and just abort this batch and proceed with the next query.
+                        Log.e(this.getClass().getName(), "No hits in result for query: " + queryString);
+                        break;
+                    }
+                    retrievedObjects += hits.length();
+                }
+                while (retrievedObjects < maxObjects && cursor != null);
+
+                stats.objectCount += retrievedObjects;
             }
+
+            // Update statistics.
+            long afterFetchTime = System.currentTimeMillis();
+            stats.fetchTime = afterFetchTime - startTime;
+            stats.fileCount = objectFiles.size();
 
             // Build the index.
             ensureLocalIndex();
@@ -252,9 +359,17 @@ public class MirroredIndex extends Index
                 throw new AlgoliaException("Build index failed", status);
             }
 
+            // Update statistics.
+            long afterBuildTime = System.currentTimeMillis();
+            stats.buildTime = afterBuildTime - afterFetchTime;
+            stats.totalTime = afterBuildTime - startTime;
+
             // Remember the last sync date.
             mirrorSettings.setLastSyncDate(new Date());
             saveMirrorSettings();
+
+            // Log statistics.
+            Log.d(this.getClass().getName(), "Sync stats: " + stats);
         }
         catch (Exception e) {
             Log.e(this.getClass().getName(), "Sync failed", e);
@@ -290,12 +405,18 @@ public class MirroredIndex extends Index
     // Search
     // ----------------------------------------------------------------------
 
+    /**
+     * Search the online API, falling back to the local mirror if enabled in case of error.
+     *
+     * @param query Search query.
+     * @param listener Listener to be notified of search results.
+     */
     public void searchASync(Query query, SearchListener listener)
     {
-        new SearchMirrorTask().execute(new TaskParams.Search(listener, query));
+        new SearchTask().execute(new TaskParams.Search(listener, query));
     }
 
-    private class SearchMirrorTask extends AsyncTask<TaskParams.Search, Void, TaskParams.Search>
+    private class SearchTask extends AsyncTask<TaskParams.Search, Void, TaskParams.Search>
     {
         private SearchListener listener;
         private Query query;
@@ -334,11 +455,49 @@ public class MirroredIndex extends Index
         }
     }
 
-    private JSONObject _searchMirror(String query) throws AlgoliaException
+    /**
+     * Search the local mirror.
+     *
+     * @param query Search query.
+     * @param listener Listener to be notified of search results.
+     * @throws IllegalStateException if mirroring is not activated on this index.
+     */
+    public void searchMirrorAsync(Query query, SearchListener listener)
     {
         if (!mirrored)
-            throw new IllegalArgumentException("Mirroring not activated on this index");
+            throw new IllegalStateException("Mirroring not activated on this index");
+        new SearchMirrorTask().execute(new TaskParams.Search(listener, query));
+    }
 
+    private class SearchMirrorTask extends AsyncTask<TaskParams.Search, Void, TaskParams.Search>
+    {
+        private SearchListener listener;
+        private Query query;
+
+        @Override
+        protected TaskParams.Search doInBackground(TaskParams.Search... params)
+        {
+            TaskParams.Search p = params[0];
+            listener = p.listener;
+            query = p.query;
+            try {
+                p.content = _searchMirror(query.build());
+            }
+            catch (AlgoliaException e) {
+                p.error = e;
+            }
+            return p;
+        }
+
+        @Override
+        protected void onPostExecute(TaskParams.Search p)
+        {
+            p.sendResult(MirroredIndex.this);
+        }
+    }
+
+    private JSONObject _searchMirror(String query) throws AlgoliaException
+    {
         try {
             ensureLocalIndex();
             SearchResults searchResults = localIndex.search(query);
@@ -380,7 +539,7 @@ public class MirroredIndex extends Index
     private void fireSyncDidFinish()
     {
         for (SyncListener listener : syncListeners) {
-            listener.syncDidFinish(this, error);
+            listener.syncDidFinish(this, error, stats);
         }
     }
 }
