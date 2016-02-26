@@ -207,6 +207,7 @@ public class Query {
         aroundPrecision = other.aroundPrecision;
         aroundRadius = other.aroundRadius;
         insidePolygon = other.insidePolygon;
+        parameters = new TreeMap<>(other.parameters);
     }
 
     @Override public String toString() {
