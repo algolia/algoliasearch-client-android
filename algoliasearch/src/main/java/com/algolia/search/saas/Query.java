@@ -927,7 +927,8 @@ public class Query {
             if (analyticsTags != null) {
                 if (stringBuilder.length() > 0)
                     stringBuilder.append('&');
-                stringBuilder.append("analyticsTags=" + analyticsTags);
+                stringBuilder.append("analyticsTags=");
+                stringBuilder.append(URLEncoder.encode(analyticsTags, "UTF-8"));
             }
             if (synonyms != null) {
                 if (stringBuilder.length() > 0)
