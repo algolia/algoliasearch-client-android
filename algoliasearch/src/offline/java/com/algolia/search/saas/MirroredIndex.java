@@ -124,9 +124,9 @@ public class MirroredIndex extends Index
      * FIXME: We need a better mechanism.
      * @param query The data selection query to add.
      */
-    public void addDataSelectionQuery(@NonNull Query query)
+    public void addDataSelectionQuery(@NonNull DataSelectionQuery query)
     {
-        mirrorSettings.addQuery(query.build());
+        mirrorSettings.addQuery(query);
         mirrorSettings.setQueriesModificationDate(new Date());
         saveMirrorSettings();
     }
@@ -135,18 +135,14 @@ public class MirroredIndex extends Index
      * Replace all data selection queries associated to this index.
      * @param queries The new data selection queries. (May be empty, although this will actually empty your mirror!)
      */
-    public void setDataSelectionQueries(@NonNull Query[] queries)
+    public void setDataSelectionQueries(@NonNull DataSelectionQuery[] queries)
     {
-        String[] queryStrings = new String[queries.length];
-        for (int i = 0; i < queries.length; ++i) {
-            queryStrings[i] = queries[i].build();
-        }
-        mirrorSettings.setQueries(queryStrings);
+        mirrorSettings.setQueries(queries);
         mirrorSettings.setQueriesModificationDate(new Date());
         saveMirrorSettings();
     }
 
-    public @NonNull String[] getDataSelectionQueries()
+    public @NonNull DataSelectionQuery[] getDataSelectionQueries()
     {
         return mirrorSettings.getQueries();
     }
@@ -250,6 +246,26 @@ public class MirroredIndex extends Index
         }
     }
 
+    /**
+     * A data selection query.
+     */
+    public static class DataSelectionQuery
+    {
+        /**
+         * Query parameters. Remember that data selection queries are browse queries, so certain options will not work.
+         */
+        public Query query;
+
+        /** Maximum number of objects to retrieve. */
+        public int maxObjects;
+
+        public DataSelectionQuery(Query query, int maxObjects)
+        {
+            this.query = query;
+            this.maxObjects = maxObjects;
+        }
+    }
+
     public void sync()
     {
         synchronized (this) {
@@ -315,14 +331,10 @@ public class MirroredIndex extends Index
 
             // Perform data selection queries.
             objectFiles = new ArrayList<>();
-            final String[] queries = mirrorSettings.getQueries();
+            final DataSelectionQuery[] queries = mirrorSettings.getQueries();
             for (int i = 0; i < queries.length; ++i) {
-                Query query = Query.parse(queries[i]);
-                // FIXME: Dirty hack: we use `hitsPerPage` as a way to communicate the total number of objects to fetch.
-                int maxObjects = query.getHitsPerPage() != null ? query.getHitsPerPage() : 1000;
-                query.setHitsPerPage(1000);
-                String queryString = query.build();
-
+                DataSelectionQuery query = queries[i];
+                String queryString = query.query.build();
                 String cursor = null;
                 int retrievedObjects = 0;
                 do {
@@ -353,7 +365,7 @@ public class MirroredIndex extends Index
                     }
                     retrievedObjects += hits.length();
                 }
-                while (retrievedObjects < maxObjects && cursor != null);
+                while (retrievedObjects < query.maxObjects && cursor != null);
 
                 stats.objectCount += retrievedObjects;
             }

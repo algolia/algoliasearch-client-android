@@ -62,7 +62,7 @@ class MirrorSettings
     public void load(@NonNull File file)
     {
         try {
-            String data = new Scanner(file, "UTF-8").useDelimiter("\\Z").next();
+            String data = new Scanner(file, "UTF-8").useDelimiter("\\Z").next(); // reads the entire file as one string
             json = new JSONObject(data);
         }
         catch (IOException | JSONException e) {
@@ -86,30 +86,35 @@ class MirrorSettings
         }
     }
 
-    public @NonNull String[] getQueries()
+    public @NonNull MirroredIndex.DataSelectionQuery[] getQueries()
     {
-        String[] result = new String[0];
+        MirroredIndex.DataSelectionQuery[] result = new MirroredIndex.DataSelectionQuery[0];
         JSONArray queriesJson = json.optJSONArray("queries");
         if (queriesJson != null) {
-            List<String> queries = new ArrayList<>();
+            List<MirroredIndex.DataSelectionQuery> queries = new ArrayList<>();
             for (int i = 0; i < queriesJson.length(); ++i) {
-                String query = queriesJson.optString(i, null);
-                if (query != null) {
-                    queries.add(query);
+                JSONObject queryJson = queriesJson.optJSONObject(i);
+                if (queryJson != null) {
+                    String queryString = queryJson.optString("query");
+                    int maxObjects = queryJson.optInt("maxObjects");
+                    if (queryString != null && maxObjects != 0) {
+                        MirroredIndex.DataSelectionQuery query = new MirroredIndex.DataSelectionQuery(Query.parse(queryString), maxObjects);
+                        queries.add(query);
+                    }
                 }
             }
-            result = queries.toArray(new String[queries.size()]);
+            result = queries.toArray(new MirroredIndex.DataSelectionQuery[queries.size()]);
         }
         return result;
     }
 
-    public void setQueries(@NonNull String[] queries)
+    public void setQueries(@NonNull MirroredIndex.DataSelectionQuery[] queries)
     {
         try {
             JSONArray queriesJson = new JSONArray();
-            for (String query : queries) {
+            for (MirroredIndex.DataSelectionQuery query : queries) {
                 if (query != null)
-                    queriesJson.put(query);
+                    queriesJson.put(serializeQuery(query));
             }
             json.put("queries", queriesJson);
         }
@@ -118,7 +123,7 @@ class MirrorSettings
         }
     }
 
-    public void addQuery(@NonNull String query)
+    public void addQuery(@NonNull MirroredIndex.DataSelectionQuery query)
     {
         try {
             JSONArray queriesJson = json.optJSONArray("queries");
@@ -126,11 +131,19 @@ class MirrorSettings
                 queriesJson = new JSONArray();
                 json.put("queries", queriesJson);
             }
-            queriesJson.put(query);
+            queriesJson.put(serializeQuery(query));
         }
         catch (JSONException e) {
             // Should never happen.
         }
+    }
+
+    private JSONObject serializeQuery(MirroredIndex.DataSelectionQuery query) throws JSONException
+    {
+        JSONObject queryJson = new JSONObject();
+        queryJson.put("query", query.query.build());
+        queryJson.put("maxObjects", query.maxObjects);
+        return queryJson;
     }
 
     public @NonNull Date getQueriesModificationDate()
