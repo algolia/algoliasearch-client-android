@@ -330,14 +330,14 @@ abstract class BaseAPIClient {
     }
 
     /**
-     * Reads the answer and return it as a String
+     * Reads the InputStream as UTF-8
      *
-     * @param istream the InputStream to read
-     * @return the stream's content
-     * @throws IOException if the stream can't be read or closed
+     * @param stream the InputStream to read
+     * @return the stream's content as a String
+     * @throws IOException if the stream can't be read, decoded as UTF-8 or closed
      */
-    private String _getAnswer(InputStream istream) throws IOException {
-        InputStreamReader is = new InputStreamReader(istream, "UTF-8");
+    private String _toCharArray(InputStream stream) throws IOException {
+        InputStreamReader is = new InputStreamReader(stream, "UTF-8");
         StringBuilder builder = new StringBuilder();
         char[] buf = new char[1000];
         int l = 0;
@@ -349,6 +349,30 @@ abstract class BaseAPIClient {
         return builder.toString();
     }
 
+    /**
+     * Reads the InputStream into a byte array
+     * @param stream the InputStream to read
+     * @return the stream's content as a byte[]
+     * @throws AlgoliaException if the stream can't be read or flushed
+     */
+    private byte[] _toByteArray(InputStream stream) throws AlgoliaException {
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        int read;
+        byte[] buffer = new byte[1024];
+
+        try {
+            while ((read = stream.read(buffer, 0, buffer.length)) != -1) {
+                out.write(buffer, 0, read);
+            }
+
+            out.flush();
+            return out.toByteArray();
+        } catch (IOException e) {
+            throw new AlgoliaException("Error while reading stream: " + e.getMessage());
+        }
+    }
+
+
     private JSONObject _getJSONObject(String input) throws JSONException {
         return new JSONObject(new JSONTokener(input));
     }
@@ -358,7 +382,7 @@ abstract class BaseAPIClient {
     }
 
     private JSONObject _getAnswerJSONObject(InputStream istream) throws IOException, JSONException {
-        return _getJSONObject(_getAnswer(istream));
+        return _getJSONObject(_toCharArray(istream));
     }
 
     /**
@@ -499,7 +523,7 @@ abstract class BaseAPIClient {
                 throw new AlgoliaException(message);
             } else {
                 try {
-                    errors.put(host, _getAnswer(stream));
+                    errors.put(host, _toCharArray(stream));
                 } catch (IOException e) {
                     errors.put(host, String.valueOf(code));
                 }
@@ -529,23 +553,6 @@ abstract class BaseAPIClient {
             first = false;
         }
         throw new AlgoliaException(builder.toString());
-    }
-
-    private byte[] _toByteArray(InputStream stream) throws AlgoliaException {
-        ByteArrayOutputStream out = new ByteArrayOutputStream();
-        int read;
-        byte[] buffer = new byte[1024];
-
-        try {
-            while ((read = stream.read(buffer, 0, buffer.length)) != -1) {
-                out.write(buffer, 0, read);
-            }
-
-            out.flush();
-            return out.toByteArray();
-        } catch (IOException e) {
-            throw new AlgoliaException("Error while reading stream: " + e.getMessage());
-        }
     }
 
     private void addError(HashMap<String, String> errors, String host, IOException e) {

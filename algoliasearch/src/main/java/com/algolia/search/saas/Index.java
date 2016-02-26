@@ -28,8 +28,8 @@ import android.os.AsyncTask;
 import com.algolia.search.saas.listeners.DeleteObjectsListener;
 import com.algolia.search.saas.listeners.GetObjectsListener;
 import com.algolia.search.saas.listeners.IndexingListener;
-import com.algolia.search.saas.listeners.SearchListener;
 import com.algolia.search.saas.listeners.SearchDisjunctiveFacetingListener;
+import com.algolia.search.saas.listeners.SearchListener;
 import com.algolia.search.saas.listeners.SettingsListener;
 import com.algolia.search.saas.listeners.WaitTaskListener;
 
@@ -80,6 +80,22 @@ public class Index extends BaseIndex {
     public void searchASync(Query query, SearchListener listener) {
         TaskParams.Search params = new TaskParams.Search(listener, query);
         new ASyncSearchTask().execute(params);
+    }
+
+    /**
+     * Search inside the index synchronously
+     * @return a JSONObject containing search results
+     */
+    public JSONObject searchSync(Query query) throws AlgoliaException {
+        return search(query);
+    }
+
+    /**
+     * Search inside the index synchronously
+     * @return a byte array containing search results
+     */
+    protected byte[] searchSyncRaw(Query query) throws AlgoliaException {
+        return searchRaw(query);
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////
@@ -178,7 +194,7 @@ public class Index extends BaseIndex {
      *
      * @param object the object to add.
      *  The object is represented by an associative array
-     * @param objectID an objectID you want to attribute to this object 
+     * @param objectID an objectID you want to attribute to this object
      * (if the attribute already exist the old object will be overwrite)
      * @param listener the listener that will receive the result or error.
      */
