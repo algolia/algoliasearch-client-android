@@ -11,21 +11,23 @@ import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 
 /*
  * Copyright (c) 2015 Algolia
  * http://www.algolia.com/
- * 
+ *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
  * in the Software without restriction, including without limitation the rights
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -82,6 +84,10 @@ public class Query {
         // The parameter isn't set
         TYPO_NOTSET
     }
+
+    /** Extra query parameters, as un untyped key-value array. */
+    // NOTE: Using a tree map to have parameters sorted by key on output.
+    private Map<String, String> parameters = new TreeMap<>();
 
     protected List<String> attributes;
     protected List<String> attributesToHighlight;
@@ -800,6 +806,7 @@ public class Query {
     protected @NonNull String build() {
         StringBuilder stringBuilder = new StringBuilder();
         try {
+            // Known parameters.
             if (attributes != null) {
                 stringBuilder.append("attributesToRetrieve=");
                 boolean first = true;
@@ -1080,7 +1087,6 @@ public class Query {
                 stringBuilder.append("restrictSearchableAttributes=");
                 stringBuilder.append(URLEncoder.encode(restrictSearchableAttributes, "UTF-8"));
             }
-
             switch (queryType) {
                 case PREFIX_ALL:
                     if (stringBuilder.length() > 0)
@@ -1097,6 +1103,19 @@ public class Query {
                         stringBuilder.append('&');
                     stringBuilder.append("queryType=prefixNone");
                     break;
+            }
+            // Unknown parameters.
+            // NOTE: They may shadow previous values; this is wanted (see the `set()` method).
+            for (Map.Entry<String, String> entry : parameters.entrySet()) {
+                String key = entry.getKey();
+                if (stringBuilder.length() > 0)
+                    stringBuilder.append('&');
+                stringBuilder.append(URLEncoder.encode(entry.getKey(), "UTF-8"));
+                String value = entry.getValue();
+                if (value != null) {
+                    stringBuilder.append('=');
+                    stringBuilder.append(URLEncoder.encode(value, "UTF-8"));
+                }
             }
         } catch (UnsupportedEncodingException e) {
             throw new RuntimeException(e);
@@ -1127,6 +1146,7 @@ public class Query {
                 String name = URLDecoder.decode(components[0], "UTF-8");
                 String value = components.length >= 2 ? URLDecoder.decode(components[1], "UTF-8") : null;
 
+                // Known parameters: parse to typed field.
                 if ((name.equals("attributesToRetrieve") || name.equals("attributes") /* legacy name */) && value != null) {
                     query.attributes = Arrays.asList(value.split(","));
                 } else if (name.equals("attributesToHighlight") && value != null) {
@@ -1232,6 +1252,12 @@ public class Query {
                         query.queryType = QueryType.PREFIX_NONE;
                     }
                 }
+                // Unknown parameter: add it to the "extra" map.
+                else {
+                    if (value != null) {
+                        query.parameters.put(name, value);
+                    }
+                }
             } // for each parameter
             return query;
         } catch (UnsupportedEncodingException e) {
@@ -1250,6 +1276,30 @@ public class Query {
         } catch (NumberFormatException e) {
             return 0;
         }
+    }
+
+    /**
+     * Set an extra (untyped) parameter.
+     * This low-level accessor is intended to access parameters that this client does not yet support.
+     * WARNING: Any parameter specified here will shadow any typed parameter with the same name.
+     * @param name The parameter's name.
+     * @param value The parameter's value, or null to remove it.
+     */
+    public void set(@NonNull String name, String value) {
+        if (value == null) {
+            parameters.remove(name);
+        } else {
+            parameters.put(name, value);
+        }
+    }
+
+    /**
+     * Get an extra (untyped) parameter.
+     * @param name The parameter's name.
+     * @return The parameter's value, or null if a parameter with the specified name does not exist.
+     */
+    public String get(@NonNull String name) {
+        return parameters.get(name);
     }
 
     public List<String> getAttributesToHighlight() {
