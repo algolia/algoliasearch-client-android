@@ -538,6 +538,71 @@ public class MirroredIndex extends Index
     }
 
     // ----------------------------------------------------------------------
+    // Browse
+    // ----------------------------------------------------------------------
+    // NOTE: Contrary to search, there is no point in transparently switching from online to offline when browsing,
+    // as the results would likely be inconsistent. Anyway, the cursor is not portable across instances, so the
+    // fall back could only work for the first query.
+
+    /**
+     * Browse the local mirror.
+     *
+     * @param query Browse query. Same restrictions as the online API.
+     * @param listener Listener to be notified of results.
+     * @throws IllegalStateException if mirroring is not activated on this index.
+     */
+    public void browseMirrorAsync(Query query, SearchListener listener)
+    {
+        if (!mirrored)
+            throw new IllegalStateException("Mirroring not activated on this index");
+        new BrowseMirrorTask().execute(new TaskParams.Search(listener, query));
+    }
+
+    private class BrowseMirrorTask extends AsyncTask<TaskParams.Search, Void, TaskParams.Search>
+    {
+        @Override
+        protected TaskParams.Search doInBackground(TaskParams.Search... params)
+        {
+            TaskParams.Search p = params[0];
+            Query query = p.query;
+            try {
+                p.content = _browseMirror(query.build());
+            }
+            catch (AlgoliaException e) {
+                p.error = e;
+            }
+            return p;
+        }
+
+        @Override
+        protected void onPostExecute(TaskParams.Search p)
+        {
+            p.sendResult(MirroredIndex.this);
+        }
+    }
+
+    private JSONObject _browseMirror(String query) throws AlgoliaException
+    {
+        try {
+            ensureLocalIndex();
+            SearchResults searchResults = localIndex.browse(query);
+            if (searchResults.statusCode == 200) {
+                String jsonString = new String(searchResults.data, "UTF-8");
+                JSONObject json = new JSONObject(jsonString);
+                // Indicate that the results come from the local mirror.
+                json.put(JSON_KEY_ORIGIN, JSON_VALUE_ORIGIN_LOCAL);
+                return json;
+            }
+            else {
+                throw new AlgoliaException(searchResults.errorMessage, searchResults.statusCode);
+            }
+        }
+        catch (Exception e) {
+            throw new AlgoliaException("Search failed", e);
+        }
+    }
+
+    // ----------------------------------------------------------------------
     // Listeners
     // ----------------------------------------------------------------------
 

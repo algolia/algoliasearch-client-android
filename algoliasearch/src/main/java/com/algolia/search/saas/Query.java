@@ -124,6 +124,7 @@ public class Query {
     protected String analyticsTags;
     protected int aroundPrecision;
     protected int aroundRadius;
+    protected String cursor;
 
     public Query(String query) {
         minWordSizeForApprox1 = null;
@@ -1077,7 +1078,6 @@ public class Query {
                 stringBuilder.append("restrictSearchableAttributes=");
                 stringBuilder.append(URLEncoder.encode(restrictSearchableAttributes, "UTF-8"));
             }
-
             switch (queryType) {
                 case PREFIX_ALL:
                     if (stringBuilder.length() > 0)
@@ -1094,6 +1094,12 @@ public class Query {
                         stringBuilder.append('&');
                     stringBuilder.append("queryType=prefixNone");
                     break;
+            }
+            if (cursor != null) {
+                if (stringBuilder.length() > 0)
+                    stringBuilder.append('&');
+                stringBuilder.append("cursor=");
+                stringBuilder.append(URLEncoder.encode(cursor, "UTF-8"));
             }
         } catch (UnsupportedEncodingException e) {
             throw new RuntimeException(e);
@@ -1228,6 +1234,8 @@ public class Query {
                     } else if (value.equals("prefixNone")) {
                         query.queryType = QueryType.PREFIX_NONE;
                     }
+                } else if (name.equals("cursor") && value != null) {
+                    query.cursor = value;
                 }
             } // for each parameter
             return query;
@@ -1459,5 +1467,15 @@ public class Query {
      */
     public TypoTolerance getTypoTolerance() {
         return typoTolerance;
+    }
+
+    public String getCursor()
+    {
+        return cursor;
+    }
+
+    public void setCursor(String cursor)
+    {
+        this.cursor = cursor;
     }
 }
