@@ -1284,12 +1284,13 @@ public class Query {
      * WARNING: Any parameter specified here will shadow any typed parameter with the same name.
      * @param name The parameter's name.
      * @param value The parameter's value, or null to remove it.
+     *              It will first be converted to a String by the `toString()` method.
      */
-    public void set(@NonNull String name, String value) {
+    public void set(@NonNull String name, Object value) {
         if (value == null) {
             parameters.remove(name);
         } else {
-            parameters.put(name, value);
+            parameters.put(name, value.toString());
         }
     }
 
