@@ -34,6 +34,7 @@ import com.algolia.search.sdk.LocalIndex;
 import com.algolia.search.sdk.SearchResults;
 
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.File;
@@ -71,6 +72,19 @@ public class MirroredIndex extends Index
     private Set<SyncListener> syncListeners = new HashSet<>();
 
     private Handler mainHandler = new Handler(Looper.getMainLooper());
+
+    // ----------------------------------------------------------------------
+    // Constants
+    // ----------------------------------------------------------------------
+
+    /** Key used to indicate the origin of results in the returned JSON. */
+    public static final String JSON_KEY_ORIGIN = "origin";
+
+    /** Value for `JSON_KEY_ORIGIN` indicating that the results come from the local mirror. */
+    public static final String JSON_VALUE_ORIGIN_LOCAL = "local";
+
+    /** Value for `JSON_KEY_ORIGIN` indicating that the results come from the online API. */
+    public static final String JSON_VALUE_ORIGIN_REMOTE = "remote";
 
     // ----------------------------------------------------------------------
     // Constructors
@@ -430,6 +444,8 @@ public class MirroredIndex extends Index
             // First search the online API.
             try {
                 p.content = search(p.query);
+                // Indicate that the results come from the online API.
+                p.content.put(JSON_KEY_ORIGIN, JSON_VALUE_ORIGIN_REMOTE);
             }
             catch (AlgoliaException e) {
                 // Fallback to the offline mirror if available.
@@ -444,6 +460,10 @@ public class MirroredIndex extends Index
                 else {
                     p.error = e;
                 }
+            }
+            catch (JSONException e) {
+                // Should never happen.
+                p.error = new AlgoliaException("Failed to patch online result JSON", e);
             }
             return p;
         }
@@ -504,6 +524,8 @@ public class MirroredIndex extends Index
             if (searchResults.statusCode == 200) {
                 String jsonString = new String(searchResults.data, "UTF-8");
                 JSONObject json = new JSONObject(jsonString);
+                // Indicate that the results come from the local mirror.
+                json.put(JSON_KEY_ORIGIN, JSON_VALUE_ORIGIN_LOCAL);
                 return json;
             }
             else {
