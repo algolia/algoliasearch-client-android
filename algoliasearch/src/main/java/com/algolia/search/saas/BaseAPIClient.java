@@ -64,11 +64,12 @@ abstract class BaseAPIClient {
 
     /**
      * Algolia Search initialization
+     *
      * @param applicationID the application ID you have in your admin interface
-     * @param apiKey a valid API key for the service
-     * @param hostsArray the list of hosts that you have received for the service
-     * @param enableDsn set to true if your account has the Distributed Search Option
-     * @param dsnHost override the automatic computation of dsn hostname
+     * @param apiKey        a valid API key for the service
+     * @param hostsArray    the list of hosts that you have received for the service
+     * @param enableDsn     set to true if your account has the Distributed Search Option
+     * @param dsnHost       override the automatic computation of dsn hostname
      */
     protected BaseAPIClient(String applicationID, String apiKey, List<String> hostsArray, boolean enableDsn, String dsnHost) {
         if (applicationID == null || applicationID.length() == 0) {
@@ -103,8 +104,9 @@ abstract class BaseAPIClient {
 
     /**
      * Allow to set timeout
+     *
      * @param connectTimeout connection timeout in MS
-     * @param readTimeout socket timeout in MS
+     * @param readTimeout    socket timeout in MS
      */
     public void setTimeout(int connectTimeout, int readTimeout) {
         httpSocketTimeoutMS = readTimeout;
@@ -113,9 +115,10 @@ abstract class BaseAPIClient {
 
     /**
      * Allow to set timeout
+     *
      * @param connectTimeout connection timeout in MS
-     * @param readTimeout socket timeout in MS
-     * @param searchTimeout socket timeout in MS
+     * @param readTimeout    socket timeout in MS
+     * @param searchTimeout  socket timeout in MS
      */
     public void setTimeout(int connectTimeout, int readTimeout, int searchTimeout) {
         httpSocketTimeoutMS = readTimeout;
@@ -133,6 +136,7 @@ abstract class BaseAPIClient {
 
     /**
      * List all existing indexes
+     *
      * @return a JSON Object in the form:
      * { "items": [ {"name": "contacts", "createdAt": "2013-01-18T15:33:13.556Z"},
      *              {"name": "notes", "createdAt": "2013-01-18T15:33:13.556Z"}]}
@@ -157,6 +161,7 @@ abstract class BaseAPIClient {
 
     /**
      * Move an existing index.
+     *
      * @param srcIndexName the name of index to copy.
      * @param dstIndexName the new index name that will contains a copy of srcIndexName (destination will be overriten if it already exist).
      */
@@ -175,6 +180,7 @@ abstract class BaseAPIClient {
 
     /**
      * Copy an existing index.
+     *
      * @param srcIndexName the name of index to copy.
      * @param dstIndexName the new index name that will contains a copy of srcIndexName (destination will be overriten if it already exist).
      */
@@ -193,8 +199,9 @@ abstract class BaseAPIClient {
 
     /**
      * Return last logs entries.
-     * @param offset Specify the first entry to retrieve (0-based, 0 is the most recent log entry).
-     * @param length Specify the maximum number of entries to retrieve starting at offset. Maximum allowed value: 1000.
+     *
+     * @param offset  Specify the first entry to retrieve (0-based, 0 is the most recent log entry).
+     * @param length  Specify the maximum number of entries to retrieve starting at offset. Maximum allowed value: 1000.
      * @param logType Specify the type of log to retrieve
      */
     protected JSONObject getLogs(int offset, int length, LogType logType) throws AlgoliaException {
@@ -318,7 +325,7 @@ abstract class BaseAPIClient {
     }
 
     /**
-     *  Reads the answer and return it as a String
+     * Reads the answer and return it as a String
      *
      * @param istream the InputStream to read
      * @return the stream's content
@@ -326,7 +333,7 @@ abstract class BaseAPIClient {
      */
     private String _getAnswer(InputStream istream) throws IOException {
         InputStreamReader is = new InputStreamReader(istream, "UTF-8");
-        StringBuilder builder= new StringBuilder();
+        StringBuilder builder = new StringBuilder();
         char[] buf = new char[1000];
         int l = 0;
         while (l >= 0) {
