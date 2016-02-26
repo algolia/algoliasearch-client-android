@@ -151,8 +151,9 @@ abstract class BaseIndex {
             StringBuilder params = new StringBuilder();
             params.append("?attributes=");
             for (int i = 0; i < attributesToRetrieve.size(); ++i) {
-                if (i > 0)
+                if (i > 0) {
                     params.append(",");
+                }
                 params.append(URLEncoder.encode(attributesToRetrieve.get(i), "UTF-8"));
             }
             return client.getRequest("/1/indexes/" + encodedIndexName + "/" + URLEncoder.encode(objectID, "UTF-8") + params.toString(), false);
@@ -267,8 +268,9 @@ abstract class BaseIndex {
      * @throws AlgoliaException
      */
     protected JSONObject deleteObject(String objectID) throws AlgoliaException {
-        if (objectID.length() == 0)
+        if (objectID.length() == 0) {
             throw new AlgoliaException("Invalid objectID");
+        }
         try {
             return client.deleteRequest("/1/indexes/" + encodedIndexName + "/" + URLEncoder.encode(objectID, "UTF-8"));
         } catch (UnsupportedEncodingException e) {
@@ -335,10 +337,11 @@ abstract class BaseIndex {
      */
     protected JSONObject search(Query query) throws AlgoliaException {
         String paramsString = query.getQueryString();
-        if (paramsString.length() > 0)
+        if (paramsString.length() > 0) {
             return client.getRequest("/1/indexes/" + encodedIndexName + "?" + paramsString, true);
-        else
+        } else {
             return client.getRequest("/1/indexes/" + encodedIndexName, true);
+        }
     }
 
     /**
@@ -348,10 +351,11 @@ abstract class BaseIndex {
      */
     protected byte[] searchRaw(Query query) throws AlgoliaException {
         String paramsString = query.getQueryString();
-        if (paramsString.length() > 0)
+        if (paramsString.length() > 0) {
             return client.getRequestRaw("/1/indexes/" + encodedIndexName + "?" + paramsString, true);
-        else
+        } else {
             return client.getRequestRaw("/1/indexes/" + encodedIndexName, true);
+        }
     }
 
     /**
@@ -366,8 +370,9 @@ abstract class BaseIndex {
         try {
             while (true) {
                 JSONObject obj = client.getRequest("/1/indexes/" + encodedIndexName + "/task/" + URLEncoder.encode(taskID, "UTF-8"), false);
-                if (obj.getString("status").equals("published"))
+                if (obj.getString("status").equals("published")) {
                     return;
+                }
                 try {
                     Thread.sleep(timeToWait >= MAX_TIME_MS_TO_WAIT ? MAX_TIME_MS_TO_WAIT : timeToWait);
                 } catch (InterruptedException e) {
