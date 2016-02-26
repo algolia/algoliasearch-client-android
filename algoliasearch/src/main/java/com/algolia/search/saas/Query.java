@@ -1017,12 +1017,14 @@ public class Query {
             if (aroundRadius > 0) {
                 if (stringBuilder.length() > 0)
                     stringBuilder.append('&');
-                stringBuilder.append("aroundRadius=" + aroundRadius);
+                stringBuilder.append("aroundRadius=");
+                stringBuilder.append(aroundRadius);
             }
             if (aroundPrecision > 0) {
                 if (stringBuilder.length() > 0)
                     stringBuilder.append('&');
-                stringBuilder.append("aroundPrecision=" + aroundPrecision);
+                stringBuilder.append("aroundPrecision=");
+                stringBuilder.append(aroundPrecision);
             }
             if (aroundLatLongViaIP != null) {
                 if (stringBuilder.length() > 0)
