@@ -377,8 +377,8 @@ abstract class BaseAPIClient {
         return new JSONObject(new JSONTokener(input));
     }
 
-    private JSONObject _getJSONObject(byte[] array) throws JSONException {
-        return new JSONObject(new JSONTokener(new String(array)));
+    private JSONObject _getJSONObject(byte[] array) throws JSONException, UnsupportedEncodingException {
+        return new JSONObject(new String(array, "UTF-8"));
     }
 
     private JSONObject _getAnswerJSONObject(InputStream istream) throws IOException, JSONException {
@@ -402,6 +402,8 @@ abstract class BaseAPIClient {
             return _getJSONObject(_requestRaw(m, url, json, hostsArray, connectTimeout, readTimeout));
         } catch (JSONException e) {
             throw new AlgoliaException("JSON decode error:" + e.getMessage());
+        } catch (UnsupportedEncodingException e) {
+            throw new AlgoliaException("UTF-8 decode error:" + e.getMessage());
         }
     }
 
