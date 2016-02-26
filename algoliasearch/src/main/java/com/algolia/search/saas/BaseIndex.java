@@ -74,8 +74,8 @@ abstract class BaseIndex {
     /**
      * Add an object in this index
      *
-     * @param obj the object to add. 
-     * @param objectID an objectID you want to attribute to this object 
+     * @param obj the object to add.
+     * @param objectID an objectID you want to attribute to this object
      * (if the attribute already exist the old object will be overwrite)
      * @throws AlgoliaException
      */
@@ -261,7 +261,7 @@ abstract class BaseIndex {
     }
 
     /**
-     * Delete an object from the index 
+     * Delete an object from the index
      *
      * @param objectID the unique identifier of object to delete
      * @throws AlgoliaException
@@ -330,7 +330,7 @@ abstract class BaseIndex {
 
     /**
      * Search inside the index
-     *
+     * @return a JSONObject containing search results
      * @throws AlgoliaException
      */
     protected JSONObject search(Query query) throws AlgoliaException {
@@ -342,7 +342,20 @@ abstract class BaseIndex {
     }
 
     /**
-     * Wait the publication of a task on the server. 
+     * Search inside the index
+     * @return a byte array containing search results
+     * @throws AlgoliaException
+     */
+    protected byte[] searchRaw(Query query) throws AlgoliaException {
+        String paramsString = query.getQueryString();
+        if (paramsString.length() > 0)
+            return client.getRequestRaw("/1/indexes/" + encodedIndexName + "?" + paramsString, true);
+        else
+            return client.getRequestRaw("/1/indexes/" + encodedIndexName, true);
+    }
+
+    /**
+     * Wait the publication of a task on the server.
      * All server task are asynchronous and you can check with this method that the task is published.
      *
      * @param taskID the id of the task returned by server
