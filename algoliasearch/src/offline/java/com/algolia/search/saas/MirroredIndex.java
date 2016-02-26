@@ -491,15 +491,11 @@ public class MirroredIndex extends Index
 
     private class SearchMirrorTask extends AsyncTask<TaskParams.Search, Void, TaskParams.Search>
     {
-        private SearchListener listener;
-        private Query query;
-
         @Override
         protected TaskParams.Search doInBackground(TaskParams.Search... params)
         {
             TaskParams.Search p = params[0];
-            listener = p.listener;
-            query = p.query;
+            Query query = p.query;
             try {
                 p.content = _searchMirror(query.build());
             }
