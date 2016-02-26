@@ -133,7 +133,7 @@ abstract class BaseAPIClient {
 
     /**
      * List all existing indexes
-     * return an JSON Object in the form:
+     * @return a JSON Object in the form:
      * { "items": [ {"name": "contacts", "createdAt": "2013-01-18T15:33:13.556Z"},
      *              {"name": "notes", "createdAt": "2013-01-18T15:33:13.556Z"}]}
      */
@@ -145,7 +145,7 @@ abstract class BaseAPIClient {
      * Delete an index
      *
      * @param indexName the name of index to delete
-     * return an object containing a "deletedAt" attribute
+     * @return an object containing a "deletedAt" attribute
      */
     protected JSONObject deleteIndex(String indexName) throws AlgoliaException {
         try {
@@ -317,6 +317,13 @@ abstract class BaseAPIClient {
         return _request(Method.PUT, url, obj, writeHostsArray, httpConnectTimeoutMS, httpSocketTimeoutMS);
     }
 
+    /**
+     *  Reads the answer and return it as a String
+     *
+     * @param istream the InputStream to read
+     * @return the stream's content
+     * @throws IOException
+     */
     private String _getAnswer(InputStream istream) throws IOException {
         InputStreamReader is = new InputStreamReader(istream, "UTF-8");
         StringBuilder builder= new StringBuilder();
@@ -338,6 +345,18 @@ abstract class BaseAPIClient {
         return _getJSONObject(_getAnswer(istream));
     }
 
+    /**
+     * Send the query according to parameters and returns its result as a JSONObject
+     *
+     * @param m HTTP Method to use
+     * @param url endpoint URL
+     * @param json optional JSON Object to send
+     * @param hostsArray array of hosts to try successively
+     * @param connectTimeout maximum wait time to open connection
+     * @param readTimeout maximum time to read data on socket
+     * @return a JSONObject containing the resulting data or error
+     * @throws AlgoliaException
+     */
     private synchronized JSONObject _request(Method m, String url, String json, List<String> hostsArray, int connectTimeout, int readTimeout) throws AlgoliaException {
         String requestMethod;
         HashMap<String, String> errors = new HashMap<String, String>();
