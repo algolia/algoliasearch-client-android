@@ -74,8 +74,8 @@ abstract class BaseIndex {
     /**
      * Add an object in this index
      *
-     * @param obj the object to add. 
-     * @param objectID an objectID you want to attribute to this object 
+     * @param obj the object to add.
+     * @param objectID an objectID you want to attribute to this object
      * (if the attribute already exist the old object will be overwrite)
      * @throws AlgoliaException
      */
@@ -151,8 +151,9 @@ abstract class BaseIndex {
             StringBuilder params = new StringBuilder();
             params.append("?attributes=");
             for (int i = 0; i < attributesToRetrieve.size(); ++i) {
-                if (i > 0)
+                if (i > 0) {
                     params.append(",");
+                }
                 params.append(URLEncoder.encode(attributesToRetrieve.get(i), "UTF-8"));
             }
             return client.getRequest("/1/indexes/" + encodedIndexName + "/" + URLEncoder.encode(objectID, "UTF-8") + params.toString(), false);
@@ -261,14 +262,15 @@ abstract class BaseIndex {
     }
 
     /**
-     * Delete an object from the index 
+     * Delete an object from the index
      *
      * @param objectID the unique identifier of object to delete
      * @throws AlgoliaException
      */
     protected JSONObject deleteObject(String objectID) throws AlgoliaException {
-        if (objectID.length() == 0)
+        if (objectID.length() == 0) {
             throw new AlgoliaException("Invalid objectID");
+        }
         try {
             return client.deleteRequest("/1/indexes/" + encodedIndexName + "/" + URLEncoder.encode(objectID, "UTF-8"));
         } catch (UnsupportedEncodingException e) {
@@ -330,19 +332,34 @@ abstract class BaseIndex {
 
     /**
      * Search inside the index
-     *
+     * @return a JSONObject containing search results
      * @throws AlgoliaException
      */
     protected JSONObject search(Query query) throws AlgoliaException {
         String paramsString = query.getQueryString();
-        if (paramsString.length() > 0)
+        if (paramsString.length() > 0) {
             return client.getRequest("/1/indexes/" + encodedIndexName + "?" + paramsString, true);
-        else
+        } else {
             return client.getRequest("/1/indexes/" + encodedIndexName, true);
+        }
     }
 
     /**
-     * Wait the publication of a task on the server. 
+     * Search inside the index
+     * @return a byte array containing search results
+     * @throws AlgoliaException
+     */
+    protected byte[] searchRaw(Query query) throws AlgoliaException {
+        String paramsString = query.getQueryString();
+        if (paramsString.length() > 0) {
+            return client.getRequestRaw("/1/indexes/" + encodedIndexName + "?" + paramsString, true);
+        } else {
+            return client.getRequestRaw("/1/indexes/" + encodedIndexName, true);
+        }
+    }
+
+    /**
+     * Wait the publication of a task on the server.
      * All server task are asynchronous and you can check with this method that the task is published.
      *
      * @param taskID the id of the task returned by server
@@ -353,8 +370,9 @@ abstract class BaseIndex {
         try {
             while (true) {
                 JSONObject obj = client.getRequest("/1/indexes/" + encodedIndexName + "/task/" + URLEncoder.encode(taskID, "UTF-8"), false);
-                if (obj.getString("status").equals("published"))
+                if (obj.getString("status").equals("published")) {
                     return;
+                }
                 try {
                     Thread.sleep(timeToWait >= MAX_TIME_MS_TO_WAIT ? MAX_TIME_MS_TO_WAIT : timeToWait);
                 } catch (InterruptedException e) {
