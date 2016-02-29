@@ -74,8 +74,8 @@ abstract class BaseIndex {
     /**
      * Add an object in this index
      *
-     * @param obj the object to add. 
-     * @param objectID an objectID you want to attribute to this object 
+     * @param obj the object to add.
+     * @param objectID an objectID you want to attribute to this object
      * (if the attribute already exist the old object will be overwrite)
      * @throws AlgoliaException
      */
@@ -261,7 +261,7 @@ abstract class BaseIndex {
     }
 
     /**
-     * Delete an object from the index 
+     * Delete an object from the index
      *
      * @param objectID the unique identifier of object to delete
      * @throws AlgoliaException
@@ -306,9 +306,7 @@ abstract class BaseIndex {
      * @throws AlgoliaException
      */
     protected void deleteByQuery(Query query) throws AlgoliaException {
-        List<String> attributesToRetrieve = new ArrayList<String>();
-        attributesToRetrieve.add("objectID");
-        query.setAttributesToRetrieve(attributesToRetrieve);
+        query.setAttributesToRetrieve("objectID");
         query.setHitsPerPage(100);
 
         JSONObject results = this.search(query);
@@ -342,7 +340,7 @@ abstract class BaseIndex {
     }
 
     /**
-     * Wait the publication of a task on the server. 
+     * Wait the publication of a task on the server.
      * All server task are asynchronous and you can check with this method that the task is published.
      *
      * @param taskID the id of the task returned by server
@@ -501,9 +499,10 @@ abstract class BaseIndex {
                     filters.append(or.toString());
                 }
             }
-            List<String> facets = new ArrayList<String>();
-            facets.add(disjunctiveFacet);
-            queries.add(new IndexQuery(this.indexName, new Query(query).setHitsPerPage(0).enableAnalytics(false).setAttributesToRetrieve(new ArrayList<String>()).setAttributesToHighlight(new ArrayList<String>()).setAttributesToSnippet(new ArrayList<String>()).setFacets(facets).setFacetFilters(filters.toString())));
+            String[] facets = new String[]{disjunctiveFacet};
+            queries.add(new IndexQuery(this.indexName, new Query(query).setHitsPerPage(0).enableAnalytics(false)
+                    .setAttributesToRetrieve("").setAttributesToHighlight("").setAttributesToSnippet("")
+                    .setFacets(facets).setFacetFilters(filters.toString())));
         }
         JSONObject answers = this.client.multipleQueries(queries, null);
 
