@@ -2,27 +2,28 @@ package com.algolia.search.saas;
 
 import android.util.Pair;
 
+import org.json.JSONArray;
+
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
-
-import org.json.JSONArray;
 
 /*
  * Copyright (c) 2015 Algolia
  * http://www.algolia.com/
- * 
+ *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
  * in the Software without restriction, including without limitation the rights
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -248,18 +249,54 @@ public class Query {
     /**
      * Specify the list of attribute names to retrieve. By default all
      * attributes are retrieved.
+     * @deprecated use {@code setAttributesToRetrieve(String... attributes)}
      */
+    @Deprecated
     public Query setAttributesToRetrieve(List<String> attributes) {
         this.attributes = attributes;
         return this;
     }
 
     /**
+     * Specify the list of attribute names to retrieve. By default all
+     * attributes are retrieved.
+     *
+     */
+    public Query setAttributesToRetrieve(String... attributes) {
+        this.attributes = Arrays.asList(attributes);
+        return this;
+    }
+
+    /**
+     * Specify the list of attribute names to highlight. By default indexed
+     * attributes are highlighted.
+     * @deprecated use {@link #setAttributesToHighlight(String...)}
+     */
+    @Deprecated
+    public Query setAttributesToHighlight(List<String> attributes) {
+        this.attributesToHighlight = attributes;
+        return this;
+    }
+
+
+    /**
      * Specify the list of attribute names to highlight. By default indexed
      * attributes are highlighted.
      */
-    public Query setAttributesToHighlight(List<String> attributes) {
-        this.attributesToHighlight = attributes;
+    public Query setAttributesToHighlight(String... attributes) {
+        this.attributesToHighlight = Arrays.asList(attributes);
+        return this;
+    }
+
+    /**
+     * Specify the list of attribute names to Snippet alongside the number of
+     * words to return (syntax is 'attributeName:nbWords'). By default no
+     * snippet is computed.
+     * @deprecated use {@link #setFacets(String...)}
+     */
+    @Deprecated
+    public Query setAttributesToSnippet(List<String> attributes) {
+        this.attributesToSnippet = attributes;
         return this;
     }
 
@@ -268,8 +305,8 @@ public class Query {
      * words to return (syntax is 'attributeName:nbWords'). By default no
      * snippet is computed.
      */
-    public Query setAttributesToSnippet(List<String> attributes) {
-        this.attributesToSnippet = attributes;
+    public Query setAttributesToSnippet(String... attributes) {
+        this.attributesToSnippet = Arrays.asList(attributes);
         return this;
     }
 
@@ -490,7 +527,7 @@ public class Query {
     /**
      * Set the number of hits per page. Defaults to 10.
      *
-     * @deprecated Use {@code setHitsPerPage}
+     * @deprecated Use {@link #setHitsPerPage(int)}
      */
     @Deprecated
     public Query setNbHitsPerPage(int nbHitsPerPage) {
@@ -642,8 +679,27 @@ public class Query {
      *
      * @param words
      *            The list of optional words.
+     * @deprecated use {@link #setOptionalWords(String...)}
      */
+    @Deprecated
     public Query setOptionalWords(List<String> words) {
+        StringBuilder builder = new StringBuilder();
+        for (String word : words) {
+            builder.append(word);
+            builder.append(",");
+        }
+        this.optionalWords = builder.toString();
+        return this;
+    }
+
+    /**
+     * Set the list of words that should be considered as optional when found in
+     * the query.
+     *
+     * @param words
+     *            The list of optional words.
+     */
+    public Query setOptionalWords(String... words) {
         StringBuilder builder = new StringBuilder();
         for (String word : words) {
             builder.append(word);
@@ -673,8 +729,23 @@ public class Query {
     /**
      * Filter the query by a list of facets. Each filter is encoded as
      * `attributeName:value`.
+     * @deprecated use {@link #setFacetFilters(String...)}
      */
+    @Deprecated
     public Query setFacetFilters(List<String> facets) {
+        JSONArray obj = new JSONArray();
+        for (String facet : facets) {
+            obj.put(facet);
+        }
+        this.facetFilters = obj.toString();
+        return this;
+    }
+
+    /**
+     * Filter the query by a list of facets. Each filter is encoded as
+     * `attributeName:value`.
+     */
+    public Query setFacetFilters(String... facets) {
         JSONArray obj = new JSONArray();
         for (String facet : facets) {
             obj.put(facet);
@@ -701,8 +772,25 @@ public class Query {
      * Only attributes that have been added in **attributesForFaceting** index
      * setting can be used in this parameter. You can also use `*` to perform
      * faceting on all attributes specified in **attributesForFaceting**.
+     * @deprecated use {@link #setFacets(String...)}
      */
+    @Deprecated
     public Query setFacets(List<String> facets) {
+        JSONArray obj = new JSONArray();
+        for (String facet : facets) {
+            obj.put(facet);
+        }
+        this.facets = obj.toString();
+        return this;
+    }
+
+    /**
+     * List of object attributes that you want to use for faceting.
+     * Only attributes that have been added in **attributesForFaceting** index
+     * setting can be used in this parameter. You can also use `*` to perform
+     * faceting on all attributes specified in **attributesForFaceting**.
+     */
+    public Query setFacets(String... facets) {
         JSONArray obj = new JSONArray();
         for (String facet : facets) {
             obj.put(facet);
@@ -749,8 +837,30 @@ public class Query {
      * Supported operands are `&lt;`, `&lt;=`, `=`, `&gt;` and `&lt;=`. You can have
      * multiple conditions on one attribute like for example
      * `numerics=price&gt;100,price&lt;1000`.
+     * @deprecated use {@link #setNumericFilters(String...)}
      */
+    @Deprecated
     public Query setNumericFilters(List<String> numerics) {
+        StringBuilder builder = new StringBuilder();
+        boolean first = true;
+        for (String n : numerics) {
+            if (!first)
+                builder.append(",");
+            builder.append(n);
+            first = false;
+        }
+        this.numerics = builder.toString();
+        return this;
+    }
+
+    /**
+     * Add a list of numeric filters separated by a comma. The syntax of one
+     * filter is `attributeName` followed by `operand` followed by `value.
+     * Supported operands are `&lt;`, `&lt;=`, `=`, `&gt;` and `&lt;=`. You can have
+     * multiple conditions on one attribute like for example
+     * `numerics=price&gt;100,price&lt;1000`.
+     */
+    public Query setNumericFilters(String... numerics) {
         StringBuilder builder = new StringBuilder();
         boolean first = true;
         for (String n : numerics) {
