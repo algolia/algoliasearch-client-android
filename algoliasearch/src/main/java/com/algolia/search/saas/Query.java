@@ -683,12 +683,7 @@ public class Query {
      */
     @Deprecated
     public Query setOptionalWords(List<String> words) {
-        StringBuilder builder = new StringBuilder();
-        for (String word : words) {
-            builder.append(word);
-            builder.append(",");
-        }
-        this.optionalWords = builder.toString();
+        setOptionalWords(words.toArray(new String[words.size()]));
         return this;
     }
 
@@ -733,11 +728,7 @@ public class Query {
      */
     @Deprecated
     public Query setFacetFilters(List<String> facets) {
-        JSONArray obj = new JSONArray();
-        for (String facet : facets) {
-            obj.put(facet);
-        }
-        this.facetFilters = obj.toString();
+        setFacetFilters(facets.toArray(new String[facets.size()]));
         return this;
     }
 
@@ -776,11 +767,7 @@ public class Query {
      */
     @Deprecated
     public Query setFacets(List<String> facets) {
-        JSONArray obj = new JSONArray();
-        for (String facet : facets) {
-            obj.put(facet);
-        }
-        this.facets = obj.toString();
+        setFacets(facets.toArray(new String[facets.size()]));
         return this;
     }
 
@@ -841,15 +828,7 @@ public class Query {
      */
     @Deprecated
     public Query setNumericFilters(List<String> numerics) {
-        StringBuilder builder = new StringBuilder();
-        boolean first = true;
-        for (String n : numerics) {
-            if (!first)
-                builder.append(",");
-            builder.append(n);
-            first = false;
-        }
-        this.numerics = builder.toString();
+        setNumericFilters(numerics.toArray(new String[numerics.size()]));
         return this;
     }
 
