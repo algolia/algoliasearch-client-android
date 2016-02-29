@@ -308,9 +308,7 @@ abstract class BaseIndex {
      * @throws AlgoliaException
      */
     protected void deleteByQuery(Query query) throws AlgoliaException {
-        List<String> attributesToRetrieve = new ArrayList<String>();
-        attributesToRetrieve.add("objectID");
-        query.setAttributesToRetrieve(attributesToRetrieve);
+        query.setAttributesToRetrieve("objectID");
         query.setHitsPerPage(100);
 
         JSONObject results = this.search(query);
@@ -519,9 +517,10 @@ abstract class BaseIndex {
                     filters.append(or.toString());
                 }
             }
-            List<String> facets = new ArrayList<String>();
-            facets.add(disjunctiveFacet);
-            queries.add(new IndexQuery(this.indexName, new Query(query).setHitsPerPage(0).enableAnalytics(false).setAttributesToRetrieve(new ArrayList<String>()).setAttributesToHighlight(new ArrayList<String>()).setAttributesToSnippet(new ArrayList<String>()).setFacets(facets).setFacetFilters(filters.toString())));
+            String[] facets = new String[]{disjunctiveFacet};
+            queries.add(new IndexQuery(this.indexName, new Query(query).setHitsPerPage(0).enableAnalytics(false)
+                    .setAttributesToRetrieve("").setAttributesToHighlight("").setAttributesToSnippet("")
+                    .setFacets(facets).setFacetFilters(filters.toString())));
         }
         JSONObject answers = this.client.multipleQueries(queries, null);
 
