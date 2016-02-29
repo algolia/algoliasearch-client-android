@@ -93,7 +93,7 @@ public class ApplicationTest extends ApplicationTestCase<Application> {
         class Listener implements SearchListener {
             @Override
             public void searchResult(Index index, Query query, JSONObject results) {
-                assertEquals(objects.size(), results.optInt("nbHits"));
+                assertEquals("Result length does not match nbHits", objects.size(), results.optInt("nbHits"));
                 signal.countDown();
             }
 
@@ -107,7 +107,7 @@ public class ApplicationTest extends ApplicationTestCase<Application> {
         final Listener searchListener = new Listener();
 
         index.searchASync(new Query(), searchListener);
-        assertTrue(signal.await(Helpers.wait, TimeUnit.SECONDS));
+        assertTrue("No callback was called", signal.await(Helpers.wait, TimeUnit.SECONDS));
     }
 
     @UiThreadTest
@@ -117,7 +117,7 @@ public class ApplicationTest extends ApplicationTestCase<Application> {
         class Listener implements SearchDisjunctiveFacetingListener {
             @Override
             public void searchDisjunctiveFacetingResult(Index index, Query query, List<String> disjunctiveFacets, Map<String, List<String>> refinements, JSONObject results) {
-                assertEquals(objects.size(), results.optInt("nbHits"));
+                assertEquals("Result length does not match nbHits", objects.size(), results.optInt("nbHits"));
                 signal.countDown();
             }
 
@@ -131,7 +131,7 @@ public class ApplicationTest extends ApplicationTestCase<Application> {
         final Listener searchListener = new Listener();
 
         index.searchDisjunctiveFacetingAsync(new Query(), new ArrayList<String>(), new HashMap<String, List<String>>(), searchListener);
-        assertTrue(signal.await(Helpers.wait, TimeUnit.SECONDS));
+        assertTrue("No callback was called", signal.await(Helpers.wait, TimeUnit.SECONDS));
     }
 
     @UiThreadTest
@@ -141,7 +141,7 @@ public class ApplicationTest extends ApplicationTestCase<Application> {
         class Listener implements IndexingListener {
             @Override
             public void indexingResult(Index index, TaskParams.Indexing context, JSONObject results) {
-                assertFalse(results.optString("objectID").equals(""));
+                assertFalse("Result has no objectId", results.optString("objectID").equals(""));
                 signal.countDown();
             }
 
@@ -155,7 +155,7 @@ public class ApplicationTest extends ApplicationTestCase<Application> {
         final Listener indexingListener = new Listener();
 
         index.addObjectASync(new JSONObject("{\"city\": \"New York\"}"), indexingListener);
-        assertTrue(signal.await(Helpers.wait, TimeUnit.SECONDS));
+        assertTrue("No callback was called", signal.await(Helpers.wait, TimeUnit.SECONDS));
     }
 
     @UiThreadTest
@@ -165,7 +165,7 @@ public class ApplicationTest extends ApplicationTestCase<Application> {
         class Listener implements IndexingListener {
             @Override
             public void indexingResult(Index index, TaskParams.Indexing context, JSONObject results) {
-                assertTrue(results.optString("objectID").equals("a1b2c3"));
+                assertTrue("Object has unexpected objectId", results.optString("objectID").equals("a1b2c3"));
                 signal.countDown();
             }
 
@@ -179,7 +179,7 @@ public class ApplicationTest extends ApplicationTestCase<Application> {
         final Listener indexingListener = new Listener();
 
         index.addObjectASync(new JSONObject("{\"city\": \"New York\"}"), "a1b2c3", indexingListener);
-        assertTrue(signal.await(Helpers.wait, TimeUnit.SECONDS));
+        assertTrue("No callback was called", signal.await(Helpers.wait, TimeUnit.SECONDS));
     }
 
     @UiThreadTest
@@ -189,7 +189,7 @@ public class ApplicationTest extends ApplicationTestCase<Application> {
         class Listener implements IndexingListener {
             @Override
             public void indexingResult(Index index, TaskParams.Indexing context, JSONObject results) {
-                assertEquals(2, results.optJSONArray("objectIDs").length());
+                assertEquals("Objects have unexpected objectId count", 2, results.optJSONArray("objectIDs").length());
                 signal.countDown();
             }
 
@@ -203,7 +203,7 @@ public class ApplicationTest extends ApplicationTestCase<Application> {
         final Listener indexingListener = new Listener();
 
         index.addObjectsASync(new JSONArray("[{\"city\": \"New York\"}, {\"city\": \"Paris\"}]"), indexingListener);
-        assertTrue(signal.await(Helpers.wait, TimeUnit.SECONDS));
+        assertTrue("No callback was called", signal.await(Helpers.wait, TimeUnit.SECONDS));
     }
 
     @UiThreadTest
@@ -213,7 +213,7 @@ public class ApplicationTest extends ApplicationTestCase<Application> {
         class Listener implements IndexingListener {
             @Override
             public void indexingResult(Index index, TaskParams.Indexing context, JSONObject results) {
-                assertTrue(results.optString("objectID").equals("a1b2c3"));
+                assertTrue("Object has unexpected objectId", results.optString("objectID").equals("a1b2c3"));
                 signal.countDown();
             }
 
@@ -227,7 +227,7 @@ public class ApplicationTest extends ApplicationTestCase<Application> {
         final Listener indexingListener = new Listener();
 
         index.saveObjectASync(new JSONObject("{\"city\": \"New York\"}"), "a1b2c3", indexingListener);
-        assertTrue(signal.await(Helpers.wait, TimeUnit.SECONDS));
+        assertTrue("No callback was called", signal.await(Helpers.wait, TimeUnit.SECONDS));
     }
 
     @UiThreadTest
@@ -237,9 +237,9 @@ public class ApplicationTest extends ApplicationTestCase<Application> {
         class Listener implements IndexingListener {
             @Override
             public void indexingResult(Index index, TaskParams.Indexing context, JSONObject results) {
-                assertEquals(2, results.optJSONArray("objectIDs").length());
-                assertEquals(123, results.optJSONArray("objectIDs").optInt(0));
-                assertEquals(456, results.optJSONArray("objectIDs").optInt(1));
+                assertEquals("Objects have unexpected objectId count", 2, results.optJSONArray("objectIDs").length());
+                assertEquals("Object has unexpected objectId", 123, results.optJSONArray("objectIDs").optInt(0));
+                assertEquals("Object has unexpected objectId", 456, results.optJSONArray("objectIDs").optInt(1));
                 signal.countDown();
             }
 
@@ -253,7 +253,7 @@ public class ApplicationTest extends ApplicationTestCase<Application> {
         final Listener indexingListener = new Listener();
 
         index.saveObjectsASync(new JSONArray("[{\"city\": \"New York\", \"objectID\": 123}, {\"city\": \"Paris\", \"objectID\": 456}]"), indexingListener);
-        assertTrue(signal.await(Helpers.wait, TimeUnit.SECONDS));
+        assertTrue("No callback was called", signal.await(Helpers.wait, TimeUnit.SECONDS));
     }
 
     @UiThreadTest
@@ -263,8 +263,8 @@ public class ApplicationTest extends ApplicationTestCase<Application> {
         class Listener implements GetObjectsListener {
             @Override
             public void getObjectsResult(Index index, TaskParams.GetObjects context, JSONObject results) {
-                assertTrue(results.optString("objectID").equals(ids.get(0)));
-                assertTrue(results.optString("city").equals("San Francisco"));
+                assertTrue("Object has unexpected objectId", results.optString("objectID").equals(ids.get(0)));
+                assertTrue("Object has unexpected 'city' attribute", results.optString("city").equals("San Francisco"));
                 signal.countDown();
             }
 
@@ -278,7 +278,7 @@ public class ApplicationTest extends ApplicationTestCase<Application> {
         final Listener getObjectsListener = new Listener();
 
         index.getObjectASync(ids.get(0), getObjectsListener);
-        assertTrue(signal.await(Helpers.wait, TimeUnit.SECONDS));
+        assertTrue("No callback was called", signal.await(Helpers.wait, TimeUnit.SECONDS));
     }
 
     @UiThreadTest
@@ -288,8 +288,8 @@ public class ApplicationTest extends ApplicationTestCase<Application> {
         class Listener implements GetObjectsListener {
             @Override
             public void getObjectsResult(Index index, TaskParams.GetObjects context, JSONObject results) {
-                assertTrue(results.optString("objectID").equals(ids.get(0)));
-                assertFalse(results.has("city"));
+                assertTrue("Object has unexpected objectId", results.optString("objectID").equals(ids.get(0)));
+                assertFalse("Object has unexpected 'city' attribute", results.has("city"));
                 signal.countDown();
             }
 
@@ -305,7 +305,7 @@ public class ApplicationTest extends ApplicationTestCase<Application> {
         List<String> attributesToRetrieve = new ArrayList<String>();
         attributesToRetrieve.add("objectID");
         index.getObjectASync(ids.get(0), attributesToRetrieve, getObjectsListener);
-        assertTrue(signal.await(Helpers.wait, TimeUnit.SECONDS));
+        assertTrue("No callback was called", signal.await(Helpers.wait, TimeUnit.SECONDS));
     }
 
     @UiThreadTest
@@ -316,8 +316,8 @@ public class ApplicationTest extends ApplicationTestCase<Application> {
             @Override
             public void getObjectsResult(Index index, TaskParams.GetObjects context, JSONObject results) {
                 JSONArray res = results.optJSONArray("results");
-                assertTrue(res.optJSONObject(0).optString("objectID").equals(ids.get(0)));
-                assertTrue(res.optJSONObject(1).optString("objectID").equals(ids.get(1)));
+                assertTrue("Object has unexpected objectId", res.optJSONObject(0).optString("objectID").equals(ids.get(0)));
+                assertTrue("Object has unexpected objectId", res.optJSONObject(1).optString("objectID").equals(ids.get(1)));
                 signal.countDown();
             }
 
@@ -331,7 +331,7 @@ public class ApplicationTest extends ApplicationTestCase<Application> {
         final Listener getObjectsListener = new Listener();
 
         index.getObjectsASync(ids, getObjectsListener);
-        assertTrue(signal.await(Helpers.wait, TimeUnit.SECONDS));
+        assertTrue("No callback was called", signal.await(Helpers.wait, TimeUnit.SECONDS));
     }
 
     @UiThreadTest
@@ -353,7 +353,7 @@ public class ApplicationTest extends ApplicationTestCase<Application> {
 
             @Override
             public void waitTaskResult(Index index, String taskID) {
-                assertFalse(taskID.equals(""));
+                assertFalse("Task ID not found", taskID.equals(""));
                 signal.countDown();
             }
 
@@ -367,6 +367,6 @@ public class ApplicationTest extends ApplicationTestCase<Application> {
         final Listener listener = new Listener();
 
         index.addObjectASync(new JSONObject("{\"city\": \"New York\"}"), listener);
-        assertTrue(signal.await(Helpers.wait, TimeUnit.SECONDS));
+        assertTrue("No callback was called", signal.await(Helpers.wait, TimeUnit.SECONDS));
     }
 }
