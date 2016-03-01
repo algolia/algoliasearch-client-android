@@ -37,3 +37,7 @@ proguard/
 
 # Apple
 *.DS_Store
+
+# Temporary files
+*.bak
+*.tmp
