@@ -86,7 +86,7 @@ public class MirroredIndex extends Index
     // Constructors
     // ----------------------------------------------------------------------
 
-    protected MirroredIndex(OfflineAPIClient client, String indexName)
+    protected MirroredIndex(@NonNull OfflineAPIClient client, @NonNull String indexName)
     {
         super(client, indexName);
     }

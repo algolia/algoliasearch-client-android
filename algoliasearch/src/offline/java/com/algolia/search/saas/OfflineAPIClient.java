@@ -81,4 +81,14 @@ public class OfflineAPIClient extends APIClient
     {
         return rootDataDir;
     }
+
+    /**
+     * Enable the offline mode.
+     * @param licenseData License for Algolia's SDK.
+     */
+    public void enableOfflineMode(@NonNull String licenseData) {
+        // Init the SDK.
+        Sdk.getInstance().init(licenseData);
+        // TODO: Report any error.
+    }
 }
