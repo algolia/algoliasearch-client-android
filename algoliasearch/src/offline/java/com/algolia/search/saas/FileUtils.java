@@ -30,7 +30,7 @@ import java.io.File;
 /**
  * Various filesystem-related utilities.
  */
-public class FileUtils
+class FileUtils
 {
     /**
      * Delete a file or directory, recursively deleting any descendant files/directories if it's a directory.
