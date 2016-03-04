@@ -25,6 +25,9 @@ package com.algolia.search.saas;
 
 import android.os.Handler;
 import android.os.Looper;
+import android.support.annotation.NonNull;
+
+import com.algolia.search.sdk.Sdk;
 
 import java.io.File;
 import java.util.List;
@@ -34,7 +37,8 @@ import java.util.concurrent.Executors;
 /**
  * An API client that adds offline features on top of the regular online API client.
  *
- * @note Requires Algolia's SDK.
+ * <p>NOTE: Requires Algolia's SDK. The {@link #enableOfflineMode(String)} method must be called with a valid license
+ * key prior to calling any offline-related method.</p>
  */
 public class OfflineAPIClient extends APIClient
 {
@@ -50,33 +54,75 @@ public class OfflineAPIClient extends APIClient
     /** Handler used to execute operations on the main thread. */
     protected Handler mainHandler = new Handler(Looper.getMainLooper());
 
-    public OfflineAPIClient(String applicationID, String apiKey, File dataDir)
+    /**
+     * Construct a new offline-enabled API client.
+     *
+     * @param applicationID See {@link APIClient}.
+     * @param apiKey See {@link APIClient}.
+     * @param dataDir Path to the directory where the local data will be stored.
+     */
+    public OfflineAPIClient(@NonNull String applicationID, @NonNull String apiKey, @NonNull File dataDir)
     {
         this(applicationID, apiKey, dataDir, null, false, null);
     }
 
-    public OfflineAPIClient(String applicationID, String apiKey, File dataDir, List<String> hostsArray)
+    /**
+     * Construct a new offline-enabled API client.
+     *
+     * @param applicationID See {@link APIClient}.
+     * @param apiKey See {@link APIClient}.
+     * @param dataDir Path to the directory where the local data will be stored.
+     * @param hostsArray See {@link APIClient}.
+     */
+    public OfflineAPIClient(@NonNull String applicationID, @NonNull String apiKey, @NonNull File dataDir, List<String> hostsArray)
     {
         this(applicationID, apiKey, dataDir, hostsArray, false, null);
     }
 
-    public OfflineAPIClient(String applicationID, String apiKey, File dataDir, boolean enableDsn)
+    /**
+     * Construct a new offline-enabled API client.
+     *
+     * @param applicationID See {@link APIClient}.
+     * @param apiKey See {@link APIClient}.
+     * @param dataDir Path to the directory where the local data will be stored.
+     * @param enableDsn See {@link APIClient}.
+     */
+    public OfflineAPIClient(@NonNull String applicationID, @NonNull String apiKey, @NonNull File dataDir, boolean enableDsn)
     {
         this(applicationID, apiKey, dataDir, null, enableDsn, null);
     }
 
-    public OfflineAPIClient(String applicationID, String apiKey, File dataDir, List<String> hostsArray, boolean enableDsn, String dsnHost)
+    /**
+     * Construct a new offline-enabled API client.
+     *
+     * @param applicationID See {@link APIClient}
+     * @param apiKey See {@link APIClient}
+     * @param dataDir Path to the directory where the local data will be stored.
+     * @param hostsArray See {@link APIClient}.
+     * @param enableDsn See {@link APIClient}.
+     * @param dsnHost See {@link APIClient}.
+     */
+    public OfflineAPIClient(@NonNull String applicationID, @NonNull String apiKey, @NonNull File dataDir, List<String> hostsArray, boolean enableDsn, String dsnHost)
     {
         super(applicationID, apiKey, hostsArray, enableDsn, dsnHost);
         this.rootDataDir = dataDir;
     }
 
+    /**
+     * Create a new index. Although this will always be an instance of {@link MirroredIndex}, mirroring is deactivated
+     * by default.
+     * @param indexName the name of index
+     * @return The newly created index.
+     */
     @Override
-    public MirroredIndex initIndex(String indexName)
+    public MirroredIndex initIndex(@NonNull String indexName)
     {
         return new MirroredIndex(this, indexName);
     }
 
+    /**
+     * Get the path to directory where the local data is stored.
+     */
     public File getRootDataDir()
     {
         return rootDataDir;

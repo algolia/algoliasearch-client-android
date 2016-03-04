@@ -50,7 +50,20 @@ import java.util.UUID;
 /**
  * An online index that can also be mirrored locally.
  *
- * @note Requires Algolia's SDK.
+ * <p>When created, an instance of this class has its <code>mirrored</code> flag set to false, and behaves like a normal,
+ * online {@link Index}. When the <code>mirrored</code> flag is set to true, the index becomes capable of acting upon
+ * local data.</p>
+ *
+ * <p>It is a programming error to call methods acting on the local data when <code>mirrored</code> is false. Doing so
+ * will result in an {@link IllegalStateException} being thrown.</p>
+ *
+ * <p>Native resources are lazily instantiated at the first method call requiring them. They are released when the
+ * object is garbage-collected. Although the client guards against concurrent accesses, it is strongly discouraged
+ * to create more than one <code>MirroredIndex</code> instance pointing to the same index, as that would duplicate
+ * native resources.</p>
+ *
+ * <p>NOTE: Requires Algolia's SDK. The {@link OfflineAPIClient#enableOfflineMode(String)} method must be called with
+ * a valid license key prior to calling any offline-related method.</p>
  */
 public class MirroredIndex extends Index
 {
