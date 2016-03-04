@@ -23,6 +23,9 @@
 
 package com.algolia.search.saas;
 
+import android.os.Handler;
+import android.os.Looper;
+
 import java.io.File;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
@@ -37,8 +40,15 @@ public class OfflineAPIClient extends APIClient
 {
     private File rootDataDir;
 
+    // Threading facilities
+    // --------------------
+    // Used by the indices to coordinate their execution.
+
+    /** Background queue used to build indices. */
     protected ExecutorService buildExecutorService = Executors.newSingleThreadExecutor();
-    protected ExecutorService searchExecutorService = Executors.newSingleThreadExecutor();
+
+    /** Handler used to execute operations on the main thread. */
+    protected Handler mainHandler = new Handler(Looper.getMainLooper());
 
     public OfflineAPIClient(String applicationID, String apiKey, File dataDir)
     {

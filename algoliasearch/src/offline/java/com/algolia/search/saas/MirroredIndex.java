@@ -24,8 +24,6 @@
 package com.algolia.search.saas;
 
 import android.os.AsyncTask;
-import android.os.Handler;
-import android.os.Looper;
 import android.support.annotation.NonNull;
 import android.util.Log;
 
@@ -70,8 +68,6 @@ public class MirroredIndex extends Index
     private SyncStats stats;
 
     private Set<SyncListener> syncListeners = new HashSet<>();
-
-    private Handler mainHandler = new Handler(Looper.getMainLooper());
 
     // ----------------------------------------------------------------------
     // Constants
@@ -152,6 +148,10 @@ public class MirroredIndex extends Index
         return delayBetweenSyncs;
     }
 
+    /**
+     * Set the delay after which data is considered to be obsolete. Default: 1 hour.
+     * @param delayBetweenSyncs The dealy between syncs, in milliseconds.
+     */
     public void setDelayBetweenSyncs(long delayBetweenSyncs)
     {
         this.delayBetweenSyncs = delayBetweenSyncs;
@@ -199,6 +199,20 @@ public class MirroredIndex extends Index
             mirrorSettings.load(settingsFile);
         }
     }
+
+    // ----------------------------------------------------------------------
+    // NOTE: THREAD-SAFETY
+    // ----------------------------------------------------------------------
+    // It is the client's responsibility to guard against concurrent access on a local index. The native SDK doesn't
+    // do it. Therefore:
+    //
+    // - Sync uses a synchronized boolean as mutex (`syncing`).
+    // - All syncs for all indices are executed on a sequential queue. (Building an index is CPU and memory intensive
+    //   and we don't want to kill the device!)
+    //
+    // NOTE: Although the SDK supports concurrent read accesses, search and browse use `AsyncTask`s, which are always
+    // executed sequentially since Android 3.0 (see <http://developer.android.com/reference/android/os/AsyncTask.html>).
+    // ----------------------------------------------------------------------
 
     // ----------------------------------------------------------------------
     // Sync
@@ -266,6 +280,12 @@ public class MirroredIndex extends Index
         }
     }
 
+    /**
+     * Launch a sync.
+     * If a sync is already running, this call is ignored. Otherwise, the sync is enqueued and runs in the background.
+     *
+     * NOTE: All index syncs are sequential: no two syncs can run at the same time.
+     */
     public void sync()
     {
         synchronized (this) {
@@ -281,17 +301,13 @@ public class MirroredIndex extends Index
                 _sync();
             }
         });
-        // Notify listeners (make sure it is on main thread).
-        mainHandler.post(new Runnable()
-        {
-            @Override
-            public void run()
-            {
-                fireSyncDidStart();
-            }
-        });
     }
 
+    /**
+     * Launch a sync only if the data is obsolete.
+     * The data is obsolete if the last successful sync is older than the delay between syncs, or if the data selection
+     * queries have been changed in the meantime.
+     */
     public void syncIfNeeded()
     {
         long currentDate = System.currentTimeMillis();
@@ -312,6 +328,16 @@ public class MirroredIndex extends Index
         // Reset statistics.
         stats = new SyncStats();
         long startTime = System.currentTimeMillis();
+
+        // Notify listeners (on main thread).
+        getClient().mainHandler.post(new Runnable()
+        {
+            @Override
+            public void run()
+            {
+                fireSyncDidStart();
+            }
+        });
 
         try {
             // Create temporary directory.
@@ -416,7 +442,7 @@ public class MirroredIndex extends Index
             }
 
             // Notify listeners (on main thread).
-            mainHandler.post(new Runnable()
+            getClient().mainHandler.post(new Runnable()
             {
                 @Override
                 public void run()
@@ -614,12 +640,20 @@ public class MirroredIndex extends Index
     // Listeners
     // ----------------------------------------------------------------------
 
-    public void addSyncListener(SyncListener listener)
+    /**
+     * Add a listener for sync events.
+     * @param listener The listener to add.
+     */
+    public void addSyncListener(@NonNull SyncListener listener)
     {
         syncListeners.add(listener);
     }
 
-    public void removeSyncListener(SyncListener listener)
+    /**
+     * Remove a listener for sync events.
+     * @param listener The listener to remove.
+     */
+    public void removeSyncListener(@NonNull SyncListener listener)
     {
         syncListeners.remove(listener);
     }
