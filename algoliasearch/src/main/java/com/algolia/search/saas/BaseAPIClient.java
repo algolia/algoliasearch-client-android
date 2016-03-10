@@ -96,6 +96,11 @@ abstract class BaseAPIClient {
         headers = new HashMap<String, String>();
     }
 
+    public String getApplicationID()
+    {
+        return applicationID;
+    }
+
     /**
      * Allow to set custom headers
      */
@@ -279,7 +284,7 @@ abstract class BaseAPIClient {
         try {
             JSONArray requests = new JSONArray();
             for (IndexQuery indexQuery : queries) {
-                String paramsString = indexQuery.getQueryString();
+                String paramsString = indexQuery.build();
                 requests.put(new JSONObject().put("indexName", indexQuery.getIndex()).put("params", paramsString));
             }
             JSONObject body = new JSONObject().put("requests", requests);

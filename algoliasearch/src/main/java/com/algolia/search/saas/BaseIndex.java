@@ -57,8 +57,23 @@ abstract class BaseIndex {
         }
     }
 
+    public String toString()
+    {
+        return String.format("%s{%s}", this.getClass().getSimpleName(), getIndexName());
+    }
+
     public String getIndexName() {
         return indexName;
+    }
+
+    public APIClient getClient()
+    {
+        return client;
+    }
+
+    protected String getEncodedIndexName()
+    {
+        return encodedIndexName;
     }
 
     /**
@@ -334,7 +349,7 @@ abstract class BaseIndex {
      * @throws AlgoliaException
      */
     protected JSONObject search(Query query) throws AlgoliaException {
-        String paramsString = query.getQueryString();
+        String paramsString = query.build();
         if (paramsString.length() > 0) {
             return client.getRequest("/1/indexes/" + encodedIndexName + "?" + paramsString, true);
         } else {
@@ -348,7 +363,7 @@ abstract class BaseIndex {
      * @throws AlgoliaException
      */
     protected byte[] searchRaw(Query query) throws AlgoliaException {
-        String paramsString = query.getQueryString();
+        String paramsString = query.build();
         if (paramsString.length() > 0) {
             return client.getRequestRaw("/1/indexes/" + encodedIndexName + "?" + paramsString, true);
         } else {

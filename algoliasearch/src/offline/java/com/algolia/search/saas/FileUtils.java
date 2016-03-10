@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015 Algolia
+ * Copyright (c) 2012-2016 Algolia
  * http://www.algolia.com/
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -21,42 +21,32 @@
  * THE SOFTWARE.
  */
 
-apply plugin: 'com.android.library'
+package com.algolia.search.saas;
 
-ext {
-    PUBLISH_GROUP_ID = 'com.algolia'
-    PUBLISH_ARTIFACT_ID = 'algoliasearch-android'
-    PUBLISH_VERSION = '2.6.4'
-}
+import android.support.annotation.NonNull;
 
-android {
-    compileSdkVersion 21
-    buildToolsVersion '21.1.2'
-    defaultConfig {
-        minSdkVersion 14
-        targetSdkVersion 21
-        versionCode 1
-        versionName PUBLISH_VERSION
-    }
-    buildTypes {
-        release {
-            minifyEnabled false
-            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+import java.io.File;
+
+/**
+ * Various filesystem-related utilities.
+ */
+class FileUtils
+{
+    /**
+     * Delete a file or directory, recursively deleting any descendant files/directories if it's a directory.
+     *
+     * @param item The item to delete.
+     * @return true if success, false if error.
+     */
+    public static boolean deleteRecursive(@NonNull File item)
+    {
+        boolean ok = true;
+        if (item.isDirectory()) {
+            for (File child : item.listFiles()) {
+                ok = ok && deleteRecursive(child);
+            }
         }
+        ok = ok && item.delete();
+        return ok;
     }
-    publishNonDefault true
-    productFlavors {
-        // The regular online API client.
-        online
-        // The offline-enabled API client, adding offline features on top of the online client.
-        // NOTE: Requires Algolia's SDK.
-        offline
-    }
-}
-
-dependencies {
-    compile 'com.android.support:appcompat-v7:21.0.3'
-    compile fileTree(include: ['*.jar'], dir: 'libs')
-    // TODO: Switch to published version.
-    offlineCompile project(path: ':algoliasearchsdk', configuration: 'debug')
 }
