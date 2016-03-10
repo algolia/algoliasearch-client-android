@@ -494,7 +494,7 @@ abstract class BaseIndex {
             }
         }
 
-        queries.add(new IndexQuery(this.indexName, new Query(query).setFacetFilters(filters.toString())));
+        queries.add(new IndexQuery(this.indexName, new Query(query).set("facetFilters", filters.toString())));
         // one query per disjunctive facet (use all refinements but the current one + hitsPerPage=1 + single facet
         for (String disjunctiveFacet : disjunctiveFacets) {
             filters = new StringBuilder();
@@ -533,9 +533,9 @@ abstract class BaseIndex {
                 }
             }
             String[] facets = new String[]{disjunctiveFacet};
-            queries.add(new IndexQuery(this.indexName, new Query(query).setHitsPerPage(0).enableAnalytics(false)
+            queries.add(new IndexQuery(this.indexName, new Query(query).setHitsPerPage(0).setAnalytics(false)
                     .setAttributesToRetrieve("").setAttributesToHighlight("").setAttributesToSnippet("")
-                    .setFacets(facets).setFacetFilters(filters.toString())));
+                    .setFacets(facets).set("facetFilters", filters.toString())));
         }
         JSONObject answers = this.client.multipleQueries(queries, null);
 
