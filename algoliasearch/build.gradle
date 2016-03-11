@@ -53,4 +53,14 @@ apply from: 'android-release-jar.gradle'
 dependencies {
     compile 'com.android.support:appcompat-v7:21.0.3'
     compile fileTree(include: ['*.jar'], dir: 'libs')
+
+    testCompile "junit:junit:4.12"
+    testCompile "org.assertj:assertj-core:1.7.0"
+    testCompile "org.robolectric:robolectric:3.0"
+
+    // PowerMock brings in the mockito dependency
+    testCompile "org.powermock:powermock-module-junit4:1.6.1"
+    testCompile "org.powermock:powermock-module-junit4-rule:1.6.1"
+    testCompile "org.powermock:powermock-classloading-xstream:1.6.1"
+    testCompile "org.powermock:powermock-api-mockito:1.6.1"
 }

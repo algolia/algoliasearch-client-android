@@ -3,7 +3,7 @@
 set -e
 set -o pipefail
 
-FILE=algoliasearch/src/androidTest/java/com/algolia/search/saas/Helpers.java
+FILE=algoliasearch/src/test/java/com/algolia/search/saas/Helpers.java
 export FILE
 
 if ! [[ $TRAVIS_JOB_NUMBER && ${TRAVIS_JOB_NUMBER-_} ]]; then
@@ -13,5 +13,5 @@ fi
 
 echo "Running Android test..."
 ./setup_tests.sh
-./gradlew connectedAndroidTest
+./gradlew test
 ./teardown_tests.sh
