@@ -31,6 +31,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.json.JSONTokener;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -52,7 +53,7 @@ abstract class BaseAPIClient {
     private int httpConnectTimeoutMS = 2000;
     private int httpSearchTimeoutMS = 5000;
 
-    private final static String version = "2.6.3";
+    private final static String version = "2.6.4";
 
     private final String applicationID;
     private final String apiKey;
@@ -64,11 +65,12 @@ abstract class BaseAPIClient {
 
     /**
      * Algolia Search initialization
+     *
      * @param applicationID the application ID you have in your admin interface
-     * @param apiKey a valid API key for the service
-     * @param hostsArray the list of hosts that you have received for the service
-     * @param enableDsn set to true if your account has the Distributed Search Option
-     * @param dsnHost override the automatic computation of dsn hostname
+     * @param apiKey        a valid API key for the service
+     * @param hostsArray    the list of hosts that you have received for the service
+     * @param enableDsn     set to true if your account has the Distributed Search Option
+     * @param dsnHost       override the automatic computation of dsn hostname
      */
     protected BaseAPIClient(String applicationID, String apiKey, List<String> hostsArray, boolean enableDsn, String dsnHost) {
         if (applicationID == null || applicationID.length() == 0) {
@@ -103,8 +105,9 @@ abstract class BaseAPIClient {
 
     /**
      * Allow to set timeout
+     *
      * @param connectTimeout connection timeout in MS
-     * @param readTimeout socket timeout in MS
+     * @param readTimeout    socket timeout in MS
      */
     public void setTimeout(int connectTimeout, int readTimeout) {
         httpSocketTimeoutMS = readTimeout;
@@ -113,9 +116,10 @@ abstract class BaseAPIClient {
 
     /**
      * Allow to set timeout
+     *
      * @param connectTimeout connection timeout in MS
-     * @param readTimeout socket timeout in MS
-     * @param searchTimeout socket timeout in MS
+     * @param readTimeout    socket timeout in MS
+     * @param searchTimeout  socket timeout in MS
      */
     public void setTimeout(int connectTimeout, int readTimeout, int searchTimeout) {
         httpSocketTimeoutMS = readTimeout;
@@ -133,7 +137,8 @@ abstract class BaseAPIClient {
 
     /**
      * List all existing indexes
-     * return an JSON Object in the form:
+     *
+     * @return a JSON Object in the form:
      * { "items": [ {"name": "contacts", "createdAt": "2013-01-18T15:33:13.556Z"},
      *              {"name": "notes", "createdAt": "2013-01-18T15:33:13.556Z"}]}
      */
@@ -145,7 +150,7 @@ abstract class BaseAPIClient {
      * Delete an index
      *
      * @param indexName the name of index to delete
-     * return an object containing a "deletedAt" attribute
+     * @return an object containing a "deletedAt" attribute
      */
     protected JSONObject deleteIndex(String indexName) throws AlgoliaException {
         try {
@@ -157,6 +162,7 @@ abstract class BaseAPIClient {
 
     /**
      * Move an existing index.
+     *
      * @param srcIndexName the name of index to copy.
      * @param dstIndexName the new index name that will contains a copy of srcIndexName (destination will be overriten if it already exist).
      */
@@ -175,6 +181,7 @@ abstract class BaseAPIClient {
 
     /**
      * Copy an existing index.
+     *
      * @param srcIndexName the name of index to copy.
      * @param dstIndexName the new index name that will contains a copy of srcIndexName (destination will be overriten if it already exist).
      */
@@ -193,8 +200,9 @@ abstract class BaseAPIClient {
 
     /**
      * Return last logs entries.
-     * @param offset Specify the first entry to retrieve (0-based, 0 is the most recent log entry).
-     * @param length Specify the maximum number of entries to retrieve starting at offset. Maximum allowed value: 1000.
+     *
+     * @param offset  Specify the first entry to retrieve (0-based, 0 is the most recent log entry).
+     * @param length  Specify the maximum number of entries to retrieve starting at offset. Maximum allowed value: 1000.
      * @param logType Specify the type of log to retrieve
      */
     protected JSONObject getLogs(int offset, int length, LogType logType) throws AlgoliaException {
@@ -285,7 +293,7 @@ abstract class BaseAPIClient {
      * Custom batch
      *
      * @param actions the array of actions
-     * @throws AlgoliaException
+     * @throws AlgoliaException if the response is not valid json
      */
     protected JSONObject batch(JSONArray actions) throws AlgoliaException {
         try {
@@ -299,6 +307,10 @@ abstract class BaseAPIClient {
 
     private enum Method {
         GET, POST, PUT, DELETE
+    }
+
+    protected byte[] getRequestRaw(String url, boolean search) throws AlgoliaException {
+        return _requestRaw(Method.GET, url, null, readHostsArray, httpConnectTimeoutMS, search ? httpSearchTimeoutMS : httpSocketTimeoutMS);
     }
 
     protected JSONObject getRequest(String url, boolean search) throws AlgoliaException {
@@ -317,9 +329,16 @@ abstract class BaseAPIClient {
         return _request(Method.PUT, url, obj, writeHostsArray, httpConnectTimeoutMS, httpSocketTimeoutMS);
     }
 
-    private String _getAnswer(InputStream istream) throws IOException {
-        InputStreamReader is = new InputStreamReader(istream, "UTF-8");
-        StringBuilder builder= new StringBuilder();
+    /**
+     * Reads the InputStream as UTF-8
+     *
+     * @param stream the InputStream to read
+     * @return the stream's content as a String
+     * @throws IOException if the stream can't be read, decoded as UTF-8 or closed
+     */
+    private String _toCharArray(InputStream stream) throws IOException {
+        InputStreamReader is = new InputStreamReader(stream, "UTF-8");
+        StringBuilder builder = new StringBuilder();
         char[] buf = new char[1000];
         int l = 0;
         while (l >= 0) {
@@ -330,15 +349,77 @@ abstract class BaseAPIClient {
         return builder.toString();
     }
 
+    /**
+     * Reads the InputStream into a byte array
+     * @param stream the InputStream to read
+     * @return the stream's content as a byte[]
+     * @throws AlgoliaException if the stream can't be read or flushed
+     */
+    private byte[] _toByteArray(InputStream stream) throws AlgoliaException {
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        int read;
+        byte[] buffer = new byte[1024];
+
+        try {
+            while ((read = stream.read(buffer, 0, buffer.length)) != -1) {
+                out.write(buffer, 0, read);
+            }
+
+            out.flush();
+            return out.toByteArray();
+        } catch (IOException e) {
+            throw new AlgoliaException("Error while reading stream: " + e.getMessage());
+        }
+    }
+
+
     private JSONObject _getJSONObject(String input) throws JSONException {
         return new JSONObject(new JSONTokener(input));
     }
 
-    private JSONObject _getAnswerObject(InputStream istream) throws IOException, JSONException {
-        return _getJSONObject(_getAnswer(istream));
+    private JSONObject _getJSONObject(byte[] array) throws JSONException, UnsupportedEncodingException {
+        return new JSONObject(new String(array, "UTF-8"));
     }
 
+    private JSONObject _getAnswerJSONObject(InputStream istream) throws IOException, JSONException {
+        return _getJSONObject(_toCharArray(istream));
+    }
+
+    /**
+     * Send the query according to parameters and returns its result as a JSONObject
+     *
+     * @param m HTTP Method to use
+     * @param url endpoint URL
+     * @param json optional JSON Object to send
+     * @param hostsArray array of hosts to try successively
+     * @param connectTimeout maximum wait time to open connection
+     * @param readTimeout maximum time to read data on socket
+     * @return a JSONObject containing the resulting data or error
+     * @throws AlgoliaException if the request data is not valid json
+     */
     private synchronized JSONObject _request(Method m, String url, String json, List<String> hostsArray, int connectTimeout, int readTimeout) throws AlgoliaException {
+        try {
+            return _getJSONObject(_requestRaw(m, url, json, hostsArray, connectTimeout, readTimeout));
+        } catch (JSONException e) {
+            throw new AlgoliaException("JSON decode error:" + e.getMessage());
+        } catch (UnsupportedEncodingException e) {
+            throw new AlgoliaException("UTF-8 decode error:" + e.getMessage());
+        }
+    }
+
+    /**
+     * Send the query according to parameters and returns its result as a JSONObject
+     *
+     * @param m HTTP Method to use
+     * @param url endpoint URL
+     * @param json optional JSON Object to send
+     * @param hostsArray array of hosts to try successively
+     * @param connectTimeout maximum wait time to open connection
+     * @param readTimeout maximum time to read data on socket
+     * @return a JSONObject containing the resulting data or error
+     * @throws AlgoliaException in case of connection or data handling error
+     */
+    private synchronized byte[] _requestRaw(Method m, String url, String json, List<String> hostsArray, int connectTimeout, int readTimeout) throws AlgoliaException {
         String requestMethod;
         HashMap<String, String> errors = new HashMap<String, String>();
         // for each host
@@ -433,7 +514,7 @@ abstract class BaseAPIClient {
             } else if (code / 100 == 4) {
                 String message = "Error detected in backend";
                 try {
-                    message = _getAnswerObject(stream).getString("message");
+                    message = _getAnswerJSONObject(stream).getString("message");
                 } catch (IOException e) {
                     addError(errors, host, e);
                     continue;
@@ -444,7 +525,7 @@ abstract class BaseAPIClient {
                 throw new AlgoliaException(message);
             } else {
                 try {
-                    errors.put(host, _getAnswer(stream));
+                    errors.put(host, _toCharArray(stream));
                 } catch (IOException e) {
                     errors.put(host, String.valueOf(code));
                 }
@@ -455,13 +536,11 @@ abstract class BaseAPIClient {
             try {
                 String encoding = hostConnection.getContentEncoding();
                 if (encoding != null && encoding.contains("gzip")) {
-                    return _getAnswerObject(new GZIPInputStream(stream));
+                    return _toByteArray(new GZIPInputStream(stream));
                 }
                 else {
-                    return _getAnswerObject(stream);
+                    return _toByteArray(stream);
                 }
-            } catch (JSONException e) {
-                throw new AlgoliaException("JSON decode error:" + e.getMessage());
             } catch (IOException e) {
                 throw new AlgoliaException("Data decoding error:" + e.getMessage());
             }
