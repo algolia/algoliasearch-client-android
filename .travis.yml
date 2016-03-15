@@ -9,7 +9,7 @@ before_script:
 - adb shell input keyevent 82 &
 script:
 - set -o pipefail
-- bash run_test.sh
+- travis_retry bash run_test.sh
 env:
   global:
     - secure: DENCjlvzW54U9QH7mWO3LJVLYEiX0Mj9U44QoGQcienflSDlVN1UhAiT7xnCKwWT38B37CzeQlHc541z78vAj+YPzPbebowFW0aiq/LNdFMigsT1j3gLpqrICjylG08i1Ho95FLCOaJSQWZJ5nSd3OceWLLxCYUXtS9E3BuMHGg=
