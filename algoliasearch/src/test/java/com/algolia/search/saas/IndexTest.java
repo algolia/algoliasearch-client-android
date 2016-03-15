@@ -32,6 +32,8 @@ import com.algolia.search.saas.listeners.WaitTaskListener;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.junit.Test;
+import org.mockito.internal.util.reflection.Whitebox;
+import org.powermock.core.classloader.annotations.PrepareForTest;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -49,7 +51,7 @@ import static junit.framework.Assert.fail;
  * <a href="http://d.android.com/tools/testing/testing_android.html">Testing Fundamentals</a>
  */
 
-public class IndexTest extends RobolectricTestCase {
+public class IndexTest extends PowerMockTestCase {
     APIClient client;
     Index index;
     String indexName;
@@ -365,5 +367,32 @@ public class IndexTest extends RobolectricTestCase {
 
         index.addObjectASync(new JSONObject("{\"city\": \"New York\"}"), listener);
         assertTrue("No callback was called", signal.await(Helpers.wait, TimeUnit.SECONDS));
+    }
+
+    @Test
+    public void testHostSwitch() throws Exception {
+        // Given first host as an unreachable domain
+        List<String> hostsArray = (List<String>) Whitebox.getInternalState(client, "readHostsArray");
+        hostsArray.set(0, "thissentenceshouldbeuniqueenoughtoguaranteeinexistentdomain.com");
+        Whitebox.setInternalState(client, "readHostsArray", hostsArray);
+
+        // Expect a switch to the next URL and successful search
+        testSearchAsync();
+    }
+
+
+    @Test
+    public void testSNI() throws Exception {
+        // Given all hosts using SNI
+        String appId = (String) Whitebox.getInternalState(client, "applicationID");
+        List<String> hostsArray = (List<String>) Whitebox.getInternalState(client, "readHostsArray");
+        hostsArray.set(0, appId + "-1.algolianet.com");
+        hostsArray.set(1, appId + "-2.algolianet.com");
+        hostsArray.set(2, appId + "-3.algolianet.com");
+        hostsArray.set(3, appId + "-3.algolianet.com");
+        Whitebox.setInternalState(client, "readHostsArray", hostsArray);
+
+        // Expect correct certificate handling and successful search
+        testSearchAsync();
     }
 }

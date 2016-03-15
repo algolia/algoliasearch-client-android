@@ -4,6 +4,7 @@ import android.os.Build;
 
 import com.algolia.search.saas.android.BuildConfig;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.runner.RunWith;
@@ -23,9 +24,13 @@ public abstract class PowerMockTestCase {
     public PowerMockRule rule = new PowerMockRule();
 
     @Before
-    public void setUp() {
+    public void setUp() throws Exception{
         ShadowLog.stream = System.out;
         MockitoAnnotations.initMocks(this);
+    }
+
+    @After
+    public void tearDown() throws Exception {
     }
 
 }
