@@ -33,7 +33,7 @@ android {
     compileSdkVersion 21
     buildToolsVersion '21.1.2'
     defaultConfig {
-        minSdkVersion 14
+        minSdkVersion 7
         targetSdkVersion 21
         versionCode 1
         versionName PUBLISH_VERSION
