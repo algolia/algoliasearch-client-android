@@ -310,6 +310,7 @@ abstract class BaseIndex {
     protected void deleteByQuery(Query query) throws AlgoliaException {
         query.setAttributesToRetrieve("objectID");
         query.setHitsPerPage(100);
+        query.enableDistinct(false);
 
         JSONObject results = this.search(query);
         try {
