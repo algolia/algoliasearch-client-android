@@ -1,6 +1,6 @@
 package com.algolia.search.saas;
 
-import android.util.LruCache;
+import android.support.v4.util.LruCache;
 import android.util.Pair;
 
 import java.util.concurrent.TimeUnit;
