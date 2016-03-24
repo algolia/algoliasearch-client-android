@@ -34,7 +34,7 @@ import java.util.List;
 
 /**
  * Entry point in the Java API.
- * You should instantiate a Client object with your ApplicationID, ApiKey and Hosts 
+ * You should instantiate a Client object with your ApplicationID, ApiKey and Hosts
  * to start using Algolia Search API
  */
 public class APIClient extends BaseAPIClient {
@@ -54,29 +54,7 @@ public class APIClient extends BaseAPIClient {
      * @param hostsArray the list of hosts that you have received for the service
      */
     public APIClient(String applicationID, String apiKey, List<String> hostsArray) {
-        this(applicationID, apiKey, hostsArray, false, null);
-    }
-
-    /**
-     * Algolia Search initialization
-     * @param applicationID the application ID you have in your admin interface
-     * @param apiKey a valid API key for the service
-     * @param enableDsn set to true if your account has the Distributed Search Option
-     */
-    public APIClient(String applicationID, String apiKey, boolean enableDsn) {
-        this(applicationID, apiKey, null, enableDsn, null);
-    }
-
-    /**
-     * Algolia Search initialization
-     * @param applicationID the application ID you have in your admin interface
-     * @param apiKey a valid API key for the service
-     * @param hostsArray the list of hosts that you have received for the service
-     * @param enableDsn set to true if your account has the Distributed Search Option
-     * @param dsnHost override the automatic computation of dsn hostname
-     */
-    public APIClient(String applicationID, String apiKey, List<String> hostsArray, boolean enableDsn, String dsnHost) {
-        super(applicationID, apiKey, hostsArray, enableDsn, dsnHost);
+        super(applicationID, apiKey, hostsArray);
     }
 
     /**

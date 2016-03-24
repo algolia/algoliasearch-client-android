@@ -71,10 +71,8 @@ abstract class BaseAPIClient {
      * @param applicationID the application ID you have in your admin interface
      * @param apiKey        a valid API key for the service
      * @param hostsArray    the list of hosts that you have received for the service
-     * @param enableDsn     set to true if your account has the Distributed Search Option
-     * @param dsnHost       override the automatic computation of dsn hostname
      */
-    protected BaseAPIClient(String applicationID, String apiKey, List<String> hostsArray, boolean enableDsn, String dsnHost) {
+    protected BaseAPIClient(String applicationID, String apiKey, List<String> hostsArray) {
         if (applicationID == null || applicationID.length() == 0) {
             throw new RuntimeException("AlgoliaSearch requires an applicationID.");
         }
