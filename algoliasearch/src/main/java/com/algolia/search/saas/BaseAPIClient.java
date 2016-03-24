@@ -23,6 +23,8 @@
 
 package com.algolia.search.saas;
 
+import android.support.annotation.NonNull;
+
 import org.apache.http.entity.StringEntity;
 import org.apache.http.message.BasicHeader;
 import org.apache.http.protocol.HTTP;
@@ -59,8 +61,8 @@ abstract class BaseAPIClient {
     private final String apiKey;
     private final List<String> readHostsArray;
     private final List<String> writeHostsArray;
-    private String tagFilters;
-    private String userToken;
+
+    /** HTTP headers that will be sent with every request. */
     private HashMap<String, String> headers;
 
     /**
@@ -102,10 +104,26 @@ abstract class BaseAPIClient {
     }
 
     /**
-     * Allow to set custom headers
+     * Set an HTTP header that will be sent with every request.
+     *
+     * @param name Header name.
+     * @param value Value for the header. If null, the header will be removed.
      */
-    public void setExtraHeader(String key, String value) {
-        headers.put(key, value);
+    public void setHeader(@NonNull String name, String value) {
+        if (value == null) {
+            headers.remove(name);
+        } else {
+            headers.put(name, value);
+        }
+    }
+
+    /**
+     * Get an HTTP header.
+     *
+     * @param name Header name.
+     */
+    public String getHeader(@NonNull String name) {
+        return headers.get(name);
     }
 
     /**
@@ -130,14 +148,6 @@ abstract class BaseAPIClient {
         httpSocketTimeoutMS = readTimeout;
         httpConnectTimeoutMS = connectTimeout;
         httpSearchTimeoutMS = searchTimeout;
-    }
-
-    public void setSecurityTags(String tagFilters) {
-        this.tagFilters = tagFilters;
-    }
-
-    public void setUserToken(String userToken) {
-        this.userToken = userToken;
     }
 
     /**
@@ -471,15 +481,6 @@ abstract class BaseAPIClient {
 
             // set user agent
             hostConnection.setRequestProperty("User-Agent", "Algolia for Android " + version);
-
-
-            // set optional headers
-            if (this.userToken != null) {
-                hostConnection.setRequestProperty("X-Algolia-UserToken", this.userToken);
-            }
-            if (this.tagFilters != null) {
-                hostConnection.setRequestProperty("X-Algolia-TagFilters", this.tagFilters);
-            }
 
             // write JSON entity
             if (json != null) {
