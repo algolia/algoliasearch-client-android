@@ -24,6 +24,7 @@
 package com.algolia.search.saas;
 
 import android.os.AsyncTask;
+import android.support.annotation.NonNull;
 
 import com.algolia.search.saas.listeners.APIClientListener;
 
@@ -43,7 +44,7 @@ public class APIClient extends BaseAPIClient {
      * @param applicationID the application ID you have in your admin interface
      * @param apiKey a valid API key for the service
      */
-    public APIClient(String applicationID, String apiKey) {
+    public APIClient(@NonNull String applicationID, @NonNull String apiKey) {
         this(applicationID, apiKey, null);
     }
 
@@ -51,10 +52,10 @@ public class APIClient extends BaseAPIClient {
      * Algolia Search initialization
      * @param applicationID the application ID you have in your admin interface
      * @param apiKey a valid API key for the service
-     * @param hostsArray the list of hosts that you have received for the service
+     * @param hosts the list of hosts that you have received for the service
      */
-    public APIClient(String applicationID, String apiKey, List<String> hostsArray) {
-        super(applicationID, apiKey, hostsArray);
+    public APIClient(@NonNull String applicationID, @NonNull String apiKey, String[] hosts) {
+        super(applicationID, apiKey, hosts);
     }
 
     /**
@@ -62,7 +63,7 @@ public class APIClient extends BaseAPIClient {
      *
      * @param indexName the name of index
      */
-    public Index initIndex(String indexName) {
+    public Index initIndex(@NonNull String indexName) {
         return new Index(this, indexName);
     }
 

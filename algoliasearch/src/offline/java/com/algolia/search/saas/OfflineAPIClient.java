@@ -30,7 +30,6 @@ import android.support.annotation.NonNull;
 import com.algolia.search.sdk.Sdk;
 
 import java.io.File;
-import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -63,7 +62,7 @@ public class OfflineAPIClient extends APIClient
      */
     public OfflineAPIClient(@NonNull String applicationID, @NonNull String apiKey, @NonNull File dataDir)
     {
-        this(applicationID, apiKey, dataDir, null, false, null);
+        this(applicationID, apiKey, dataDir, null);
     }
 
     /**
@@ -72,39 +71,11 @@ public class OfflineAPIClient extends APIClient
      * @param applicationID See {@link APIClient}.
      * @param apiKey See {@link APIClient}.
      * @param dataDir Path to the directory where the local data will be stored.
-     * @param hostsArray See {@link APIClient}.
+     * @param hosts See {@link APIClient}.
      */
-    public OfflineAPIClient(@NonNull String applicationID, @NonNull String apiKey, @NonNull File dataDir, List<String> hostsArray)
+    public OfflineAPIClient(@NonNull String applicationID, @NonNull String apiKey, @NonNull File dataDir, String[] hosts)
     {
-        this(applicationID, apiKey, dataDir, hostsArray, false, null);
-    }
-
-    /**
-     * Construct a new offline-enabled API client.
-     *
-     * @param applicationID See {@link APIClient}.
-     * @param apiKey See {@link APIClient}.
-     * @param dataDir Path to the directory where the local data will be stored.
-     * @param enableDsn See {@link APIClient}.
-     */
-    public OfflineAPIClient(@NonNull String applicationID, @NonNull String apiKey, @NonNull File dataDir, boolean enableDsn)
-    {
-        this(applicationID, apiKey, dataDir, null, enableDsn, null);
-    }
-
-    /**
-     * Construct a new offline-enabled API client.
-     *
-     * @param applicationID See {@link APIClient}
-     * @param apiKey See {@link APIClient}
-     * @param dataDir Path to the directory where the local data will be stored.
-     * @param hostsArray See {@link APIClient}.
-     * @param enableDsn See {@link APIClient}.
-     * @param dsnHost See {@link APIClient}.
-     */
-    public OfflineAPIClient(@NonNull String applicationID, @NonNull String apiKey, @NonNull File dataDir, List<String> hostsArray, boolean enableDsn, String dsnHost)
-    {
-        super(applicationID, apiKey, hostsArray, enableDsn, dsnHost);
+        super(applicationID, apiKey, hosts);
         this.rootDataDir = dataDir;
     }
 

@@ -59,8 +59,8 @@ abstract class BaseAPIClient {
 
     private final String applicationID;
     private final String apiKey;
-    private final List<String> readHostsArray;
-    private final List<String> writeHostsArray;
+    private List<String> readHosts;
+    private List<String> writeHosts;
 
     /** HTTP headers that will be sent with every request. */
     private HashMap<String, String> headers;
@@ -70,9 +70,9 @@ abstract class BaseAPIClient {
      *
      * @param applicationID the application ID you have in your admin interface
      * @param apiKey        a valid API key for the service
-     * @param hostsArray    the list of hosts that you have received for the service
+     * @param hosts    the list of hosts that you have received for the service
      */
-    protected BaseAPIClient(String applicationID, String apiKey, List<String> hostsArray) {
+    protected BaseAPIClient(String applicationID, String apiKey, String[] hosts) {
         if (applicationID == null || applicationID.length() == 0) {
             throw new RuntimeException("AlgoliaSearch requires an applicationID.");
         }
@@ -81,17 +81,22 @@ abstract class BaseAPIClient {
             throw new RuntimeException("AlgoliaSearch requires an apiKey.");
         }
         this.apiKey = apiKey;
-        if (hostsArray == null || hostsArray.size() == 0) {
-            readHostsArray = Arrays.asList(applicationID + "-dsn.algolia.net",
-                    applicationID + "-1.algolianet.com",
-                    applicationID + "-2.algolianet.com",
-                    applicationID + "-3.algolianet.com");
-            writeHostsArray = Arrays.asList(applicationID + ".algolia.net",
-                    applicationID + "-1.algolianet.com",
-                    applicationID + "-2.algolianet.com",
-                    applicationID + "-3.algolianet.com");
+        if (hosts != null) {
+            setReadHosts(hosts);
+            setWriteHosts(hosts);
         } else {
-            readHostsArray = writeHostsArray = hostsArray;
+            setReadHosts(
+                applicationID + "-dsn.algolia.net",
+                applicationID + "-1.algolianet.com",
+                applicationID + "-2.algolianet.com",
+                applicationID + "-3.algolianet.com"
+            );
+            setWriteHosts(
+                applicationID + ".algolia.net",
+                applicationID + "-1.algolianet.com",
+                applicationID + "-2.algolianet.com",
+                applicationID + "-3.algolianet.com"
+            );
         }
         headers = new HashMap<String, String>();
     }
@@ -122,6 +127,38 @@ abstract class BaseAPIClient {
      */
     public String getHeader(@NonNull String name) {
         return headers.get(name);
+    }
+
+    public String[] getReadHosts() {
+        return readHosts.toArray(new String[readHosts.size()]);
+    }
+
+    public void setReadHosts(@NonNull String... hosts) {
+        if (hosts.length == 0) {
+            throw new IllegalArgumentException("Hosts array cannot be empty");
+        }
+        readHosts = Arrays.asList(hosts);
+    }
+
+    public String[] getWriteHosts() {
+        return writeHosts.toArray(new String[writeHosts.size()]);
+    }
+
+    public void setWriteHosts(@NonNull String... hosts) {
+        if (hosts.length == 0) {
+            throw new IllegalArgumentException("Hosts array cannot be empty");
+        }
+        writeHosts = Arrays.asList(hosts);
+    }
+
+    /**
+     * Set read and write hosts to the same value (convenience method).
+     *
+     * @param hosts New hosts. Must not be empty.
+     */
+    public void setHosts(@NonNull String... hosts) {
+        setReadHosts(hosts);
+        setWriteHosts(hosts);
     }
 
     /**
@@ -323,23 +360,23 @@ abstract class BaseAPIClient {
     }
 
     protected byte[] getRequestRaw(String url, boolean search) throws AlgoliaException {
-        return _requestRaw(Method.GET, url, null, readHostsArray, httpConnectTimeoutMS, search ? httpSearchTimeoutMS : httpSocketTimeoutMS);
+        return _requestRaw(Method.GET, url, null, readHosts, httpConnectTimeoutMS, search ? httpSearchTimeoutMS : httpSocketTimeoutMS);
     }
 
     protected JSONObject getRequest(String url, boolean search) throws AlgoliaException {
-        return _request(Method.GET, url, null, readHostsArray, httpConnectTimeoutMS, search ? httpSearchTimeoutMS : httpSocketTimeoutMS);
+        return _request(Method.GET, url, null, readHosts, httpConnectTimeoutMS, search ? httpSearchTimeoutMS : httpSocketTimeoutMS);
     }
 
     protected JSONObject deleteRequest(String url) throws AlgoliaException {
-        return _request(Method.DELETE, url, null, writeHostsArray, httpConnectTimeoutMS, httpSocketTimeoutMS);
+        return _request(Method.DELETE, url, null, writeHosts, httpConnectTimeoutMS, httpSocketTimeoutMS);
     }
 
     protected JSONObject postRequest(String url, String obj, boolean readOperation) throws AlgoliaException {
-        return _request(Method.POST, url, obj, (readOperation ? readHostsArray : writeHostsArray), httpConnectTimeoutMS, (readOperation ? httpSearchTimeoutMS : httpSocketTimeoutMS));
+        return _request(Method.POST, url, obj, (readOperation ? readHosts : writeHosts), httpConnectTimeoutMS, (readOperation ? httpSearchTimeoutMS : httpSocketTimeoutMS));
     }
 
     protected JSONObject putRequest(String url, String obj) throws AlgoliaException {
-        return _request(Method.PUT, url, obj, writeHostsArray, httpConnectTimeoutMS, httpSocketTimeoutMS);
+        return _request(Method.PUT, url, obj, writeHosts, httpConnectTimeoutMS, httpSocketTimeoutMS);
     }
 
     /**
