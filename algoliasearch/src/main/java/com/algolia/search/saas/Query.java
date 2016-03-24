@@ -186,7 +186,7 @@ public class Query {
 
     private static final String KEY_AROUND_LAT_LNG = "aroundLatLng";
 
-    static class LatLng {
+    public static final class LatLng {
         public float lat;
         public float lng;
     }
@@ -432,7 +432,7 @@ public class Query {
         return parseBoolean(get(KEY_IGNORE_PLURALS));
     }
 
-    public static class BoundingBox
+    public static final class BoundingBox
     {
         public float lat1;
         public float lng1;
