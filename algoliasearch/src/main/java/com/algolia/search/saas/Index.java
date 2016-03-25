@@ -424,6 +424,7 @@ public class Index extends BaseIndex {
      * @param listener the listener that will receive the result or error.
      */
     public void deleteByQueryASync(Query query, DeleteObjectsListener listener) {
+        query.enableDistinct(false);
         TaskParams.DeleteObjects params = new TaskParams.DeleteObjects(listener, IndexMethod.DeleteByQuery, query);
         new AsyncDeleteTask().execute(params);
     }
