@@ -5,7 +5,7 @@ set -o pipefail
 
 if [ -z "$FILE" ]; 
 then 
-    FILE="algoliasearch/src/androidTest/java/com/algolia/search/saas/Helpers.java"
+    FILE="algoliasearch/src/test/java/com/algolia/search/saas/Helpers.java"
 fi
 echo "Helper file: $FILE."
 cp $FILE $FILE.bak
