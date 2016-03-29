@@ -2,7 +2,6 @@ package com.algolia.search.saas;
 
 import android.support.annotation.NonNull;
 import android.text.TextUtils;
-import android.util.Pair;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -10,7 +9,6 @@ import org.json.JSONException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
-import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -187,8 +185,8 @@ public class Query {
     private static final String KEY_AROUND_LAT_LNG = "aroundLatLng";
 
     public static final class LatLng {
-        public float lat;
-        public float lng;
+        public double lat;
+        public double lng;
     }
 
     /**
@@ -313,16 +311,6 @@ public class Query {
         return parseArray(get(KEY_ATTRIBUTES_TO_SNIPPET));
     }
 
-    private static final String KEY_CURSOR = "cursor";
-
-    public @NonNull Query setCursor(String cursor) {
-        return set(KEY_CURSOR, cursor);
-    }
-
-    public String getCursor() {
-        return get(KEY_CURSOR);
-    }
-
     private static final String KEY_DISABLE_TYPO_TOLERANCE_ON_ATTRIBUTES = "disableTypoToleranceOnAttributes";
 
     /**
@@ -370,6 +358,27 @@ public class Query {
     public String[] getFacets() {
         return parseArray(get(KEY_FACETS));
     }
+
+    private static final String KEY_FACET_FILTERS = "facetFilters";
+
+    public @NonNull Query setFacetFilters(JSONArray filters) {
+        return set(KEY_FACET_FILTERS, filters);
+    }
+
+    public JSONArray getFacetFilters() {
+        try {
+            String value = get(KEY_FACET_FILTERS);
+            if (value != null) {
+                return new JSONArray(value);
+            }
+        }
+        catch (JSONException e) {
+            // Will return null
+        }
+        return null;
+    }
+
+    // NOTE: `filters` left out because type too complex.
 
     private static final String KEY_GET_RANKING_INFO = "getRankingInfo";
 
@@ -432,12 +441,10 @@ public class Query {
         return parseBoolean(get(KEY_IGNORE_PLURALS));
     }
 
-    public static final class BoundingBox
+    public static final class GeoRect
     {
-        public float lat1;
-        public float lng1;
-        public float lat2;
-        public float lng2;
+        public LatLng p1;
+        public LatLng p2;
     }
 
     private static final String KEY_INSIDE_BOUNDING_BOX = "insideBoundingBox";
@@ -450,13 +457,51 @@ public class Query {
      *
      * You can use several bounding boxes (OR) by calling this method several times.
      */
-    public @NonNull Query setInsideBoundingBox(BoundingBox bb) {
-        if (bb == null) {
+    public @NonNull Query setInsideBoundingBox(GeoRect... boxes) {
+        if (boxes == null) {
             set(KEY_INSIDE_BOUNDING_BOX, null);
         } else {
-            set(KEY_INSIDE_BOUNDING_BOX, String.format("%f,%f,%f,%f", bb.lat1, bb.lng1, bb.lat2, bb.lng2));
+            StringBuilder sb = new StringBuilder();
+            for (GeoRect box : boxes) {
+                if (sb.length() != 0) {
+                    sb.append(',');
+                }
+                sb.append(box.p1.lat);
+                sb.append(',');
+                sb.append(box.p1.lng);
+                sb.append(',');
+                sb.append(box.p2.lat);
+                sb.append(',');
+                sb.append(box.p2.lng);
+            }
+            set(KEY_INSIDE_BOUNDING_BOX, sb.toString());
         }
         return this;
+    }
+
+    public GeoRect[] getInsideBoundingBox() {
+        try {
+            String value = get(KEY_INSIDE_BOUNDING_BOX);
+            if (value != null) {
+                String[] fields = value.split(",");
+                if (fields.length % 4 == 0) {
+                    GeoRect[] result = new GeoRect[fields.length / 4];
+                    for (int i = 0; i < result.length; ++i) {
+                        GeoRect box = new GeoRect();
+                        box.p1.lat = Double.parseDouble(fields[4 * i]);
+                        box.p1.lng = Double.parseDouble(fields[4 * i + 1]);
+                        box.p2.lat = Double.parseDouble(fields[4 * i + 2]);
+                        box.p2.lng = Double.parseDouble(fields[4 * i + 3]);
+                        result[i] = box;
+                    }
+                    return result;
+                }
+            }
+            return null;
+        }
+        catch (NumberFormatException e) {
+            return null;
+        }
     }
 
     private static final String KEY_INSIDE_POLYGON = "insidePolygon";
@@ -466,14 +511,47 @@ public class Query {
      * At indexing, you should specify geoloc of an object with the _geoloc attribute (in the form "_geoloc":{"lat":48.853409, "lng":2.348800} or
      * "_geoloc":[{"lat":48.853409, "lng":2.348800},{"lat":48.547456, "lng":2.972075}] if you have several geo-locations in your record).
      */
-    public @NonNull Query setInsidePolygon(List<Pair<Float, Float>> points) {
-        // FIXME: Implement this
+    public @NonNull Query setInsidePolygon(LatLng... points) {
+        if (points == null) {
+            set(KEY_INSIDE_POLYGON, null);
+        } else if (points.length < 3) {
+            throw new IllegalArgumentException("A polygon must have at least three vertices");
+        } else {
+            StringBuilder sb = new StringBuilder();
+            for (LatLng point : points) {
+                if (sb.length() != 0) {
+                    sb.append(',');
+                }
+                sb.append(point.lat);
+                sb.append(',');
+                sb.append(point.lng);
+            }
+            set(KEY_INSIDE_POLYGON, sb.toString());
+        }
         return this;
     }
 
-    public Object getInsidePolygon() {
-        // FIXME: Implement this
-        return null;
+    public LatLng[] getInsidePolygon() {
+        try {
+            String value = get(KEY_INSIDE_POLYGON);
+            if (value != null) {
+                String[] fields = value.split(",");
+                if (fields.length % 2 == 0 && fields.length / 2 >= 3) {
+                    LatLng[] result = new LatLng[fields.length / 2];
+                    for (int i = 0; i < result.length; ++i) {
+                        LatLng point = new LatLng();
+                        point.lat = Double.parseDouble(fields[2 * i]);
+                        point.lng = Double.parseDouble(fields[2 * i + 1]);
+                        result[i] = point;
+                    }
+                    return result;
+                }
+            }
+            return null;
+        }
+        catch (NumberFormatException e) {
+            return null;
+        }
     }
 
     private static final String KEY_MAX_VALUES_PER_FACET = "maxValuesPerFacet";
@@ -487,6 +565,20 @@ public class Query {
 
     public Integer getMaxValuesPerFacet() {
         return parseInt(get(KEY_MAX_VALUES_PER_FACET));
+    }
+
+    private static final String KEY_MINIMUM_AROUND_RADIUS = "minimumAroundRadius";
+
+    /**
+     * Specify the minimum number of characters in a query word to accept one
+     * typo in this word. Defaults to 3.
+     */
+    public @NonNull Query setMinimumAroundRadius(Integer minimumAroundRadius) {
+        return set(KEY_MINIMUM_AROUND_RADIUS, minimumAroundRadius);
+    }
+
+    public Integer getMinimumAroundRadius() {
+        return parseInt(get(KEY_MINIMUM_AROUND_RADIUS));
     }
 
     private static final String KEY_MIN_PROXIMITY = "minProximity";
@@ -530,6 +622,8 @@ public class Query {
     public Integer getMinWordSizeFor2Typos() {
         return parseInt(get(KEY_MIN_WORD_SIZE_FOR_2_TYPOS));
     }
+
+    // NOTE: `numericFilters` left out because type too complex.
 
     private static final String KEY_OPTIONAL_WORDS = "optionalWords";
 
@@ -619,7 +713,7 @@ public class Query {
     /**
      * Enable the removal of stop words. Defaults to false.
      */
-    public @NonNull Query setRemoveStopWords(boolean removeStopWords) {
+    public @NonNull Query setRemoveStopWords(Boolean removeStopWords) {
         return set(KEY_REMOVE_STOP_WORDS, removeStopWords);
     }
 
@@ -734,6 +828,25 @@ public class Query {
 
     public Boolean getSynonyms() {
         return parseBoolean(get(KEY_SYNONYMS));
+    }
+
+    private static final String KEY_TAG_FILTERS = "tagFilters";
+
+    public @NonNull Query setTagFilters(JSONArray tagFilters) {
+        return set(KEY_TAG_FILTERS, tagFilters);
+    }
+
+    public JSONArray getTagFilters() {
+        try {
+            String value = get(KEY_TAG_FILTERS);
+            if (value != null) {
+                return new JSONArray(value);
+            }
+        }
+        catch (JSONException e) {
+            // Will return null
+        }
+        return null;
     }
 
     private static final String KEY_TYPO_TOLERANCE = "typoTolerance";
