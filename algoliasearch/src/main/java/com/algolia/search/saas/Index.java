@@ -77,9 +77,9 @@ public class Index extends BaseIndex {
      * Search inside the index asynchronously
      * @param listener the listener that will receive the result or error.
      */
-    public void searchASync(Query query, SearchListener listener) {
+    public Request searchASync(Query query, SearchListener listener) {
         TaskParams.Search params = new TaskParams.Search(listener, query);
-        new ASyncSearchTask().execute(params);
+        return new Request(new ASyncSearchTask().execute(params));
     }
 
     /**
@@ -126,10 +126,11 @@ public class Index extends BaseIndex {
      * @param disjunctiveFacets the array of disjunctive facets
      * @param refinements       Map representing the current refinements
      * @param listener the listener that will receive the result or error.
+     * @return A cancellable request.
      */
-    public void searchDisjunctiveFacetingAsync(Query query, List<String> disjunctiveFacets, Map<String, List<String>> refinements, SearchDisjunctiveFacetingListener listener) {
+    public Request searchDisjunctiveFacetingAsync(Query query, List<String> disjunctiveFacets, Map<String, List<String>> refinements, SearchDisjunctiveFacetingListener listener) {
     TaskParams.SearchDisjunctiveFaceting params = new TaskParams.SearchDisjunctiveFaceting(listener, query, disjunctiveFacets, refinements);
-        new AsyncSearchDisjunctiveFacetingTask().execute(params);
+        return new Request(new AsyncSearchDisjunctiveFacetingTask().execute(params));
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////
@@ -183,10 +184,11 @@ public class Index extends BaseIndex {
      * @param object the object to add.
      *  The object is represented by an associative array
      * @param listener the listener that will receive the result or error.
+     * @return A cancellable request.
      */
-    public void addObjectASync(JSONObject object, IndexingListener listener) {
+    public Request addObjectASync(JSONObject object, IndexingListener listener) {
         TaskParams.Indexing params = new TaskParams.Indexing(listener, IndexMethod.AddObject, object);
-        new AsyncIndexingTask().execute(params);
+        return new Request(new AsyncIndexingTask().execute(params));
     }
 
     /**
@@ -197,10 +199,11 @@ public class Index extends BaseIndex {
      * @param objectID an objectID you want to attribute to this object
      * (if the attribute already exist the old object will be overwrite)
      * @param listener the listener that will receive the result or error.
+     * @return A cancellable request.
      */
-    public void addObjectASync(JSONObject object, String objectID, IndexingListener listener)  {
+    public Request addObjectASync(JSONObject object, String objectID, IndexingListener listener)  {
         TaskParams.Indexing params = new TaskParams.Indexing(listener, IndexMethod.AddObjectWithObjectID, object, objectID);
-        new AsyncIndexingTask().execute(params);
+        return new Request(new AsyncIndexingTask().execute(params));
     }
 
     /**
@@ -208,10 +211,11 @@ public class Index extends BaseIndex {
      *
      * @param objects contains an array of objects to add. If the object contains an objectID
      * @param listener the listener that will receive the result or error.
+     * @return A cancellable request.
      */
-    public void addObjectsASync(JSONArray objects, IndexingListener listener) {
+    public Request addObjectsASync(JSONArray objects, IndexingListener listener) {
         TaskParams.Indexing params = new TaskParams.Indexing(listener, IndexMethod.AddObjects, objects);
-        new AsyncIndexingTask().execute(params);
+        return new Request(new AsyncIndexingTask().execute(params));
     }
 
     /**
@@ -220,10 +224,11 @@ public class Index extends BaseIndex {
      * @param object the object to save
      * @param objectID the objectID
      * @param listener the listener that will receive the result or error.
+     * @return A cancellable request.
      */
-    public void saveObjectASync(JSONObject object, String objectID, IndexingListener listener) {
+    public Request saveObjectASync(JSONObject object, String objectID, IndexingListener listener) {
         TaskParams.Indexing params = new TaskParams.Indexing(listener, IndexMethod.SaveObject, object, objectID);
-        new AsyncIndexingTask().execute(params);
+        return new Request(new AsyncIndexingTask().execute(params));
     }
 
     /**
@@ -231,10 +236,11 @@ public class Index extends BaseIndex {
      *
      * @param objects contains an array of objects to update (each object must contains an objectID attribute)
      * @param listener the listener that will receive the result or error.
+     * @return A cancellable request.
      */
-    public void saveObjectsASync(JSONArray objects, IndexingListener listener) {
+    public Request saveObjectsASync(JSONArray objects, IndexingListener listener) {
         TaskParams.Indexing params = new TaskParams.Indexing(listener, IndexMethod.SaveObjects, objects);
-        new AsyncIndexingTask().execute(params);
+        return new Request(new AsyncIndexingTask().execute(params));
     }
 
     /**
@@ -243,10 +249,11 @@ public class Index extends BaseIndex {
      * @param partialObject the object attributes to override.
      * @param objectID the objectID
      * @param listener the listener that will receive the result or error.
+     * @return A cancellable request.
      */
-    public void partialUpdateObjectASync(JSONObject partialObject, String objectID, IndexingListener listener) {
+    public Request partialUpdateObjectASync(JSONObject partialObject, String objectID, IndexingListener listener) {
         TaskParams.Indexing params = new TaskParams.Indexing(listener, IndexMethod.PartialUpdateObject, partialObject, objectID);
-        new AsyncIndexingTask().execute(params);
+        return new Request(new AsyncIndexingTask().execute(params));
     }
 
     /**
@@ -254,10 +261,11 @@ public class Index extends BaseIndex {
      *
      * @param partialObjects contains an array of objects to update (each object must contains an objectID attribute)
      * @param listener the listener that will receive the result or error.
+     * @return A cancellable request.
      */
-    public void partialUpdateObjectsASync(JSONArray partialObjects, IndexingListener listener) {
+    public Request partialUpdateObjectsASync(JSONArray partialObjects, IndexingListener listener) {
         TaskParams.Indexing params = new TaskParams.Indexing(listener, IndexMethod.PartialUpdateObjects, partialObjects);
-        new AsyncIndexingTask().execute(params);
+        return new Request(new AsyncIndexingTask().execute(params));
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////
@@ -298,10 +306,11 @@ public class Index extends BaseIndex {
      *
      * @param objectID the unique identifier of the object to retrieve
      * @param listener the listener that will receive the result or error.
+     * @return A cancellable request.
      */
-    public void getObjectASync(String objectID, GetObjectsListener listener) {
+    public Request getObjectASync(String objectID, GetObjectsListener listener) {
         TaskParams.GetObjects params = new TaskParams.GetObjects(listener, IndexMethod.GetObject, objectID);
-        new AsyncGetTask().execute(params);
+        return new Request(new AsyncGetTask().execute(params));
     }
 
     /**
@@ -310,21 +319,23 @@ public class Index extends BaseIndex {
      * @param objectID the unique identifier of the object to retrieve
      * @param attributesToRetrieve, contains the list of attributes to retrieve as a string separated by ","
      * @param listener the listener that will receive the result or error.
+     * @return A cancellable request.
      */
-    public void getObjectASync(String objectID, List<String> attributesToRetrieve, GetObjectsListener listener) {
+    public Request getObjectASync(String objectID, List<String> attributesToRetrieve, GetObjectsListener listener) {
         TaskParams.GetObjects params = new TaskParams.GetObjects(listener, IndexMethod.GetObjectWithAttributesToRetrieve, objectID, attributesToRetrieve);
-        new AsyncGetTask().execute(params);
+        return new Request(new AsyncGetTask().execute(params));
     }
 
     /**
      * Get several objects from this index asynchronously
      *
      * @param objectIDs the array of unique identifier of objects to retrieve
+     * @return A cancellable request.
      * @throws AlgoliaException
      */
-    public void getObjectsASync(List<String> objectIDs, GetObjectsListener listener) throws AlgoliaException {
+    public Request getObjectsASync(List<String> objectIDs, GetObjectsListener listener) throws AlgoliaException {
         TaskParams.GetObjects params = new TaskParams.GetObjects(listener, IndexMethod.GetObjects, objectIDs);
-        new AsyncGetTask().execute(params);
+        return new Request(new AsyncGetTask().execute(params));
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////
@@ -355,10 +366,11 @@ public class Index extends BaseIndex {
      *
      * @param taskID the id of the task returned by server
      * @param listener the listener that will receive the result or error.
+     * @return A cancellable request.
      */
-    public void waitTaskASync(String taskID, WaitTaskListener listener) {
+    public Request waitTaskASync(String taskID, WaitTaskListener listener) {
         TaskParams.WaitTask params = new TaskParams.WaitTask(listener, taskID);
-        new ASyncWaitTask().execute(params);
+        return new Request(new ASyncWaitTask().execute(params));
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////
@@ -400,10 +412,11 @@ public class Index extends BaseIndex {
      *
      * @param objectID the unique identifier of object to delete
      * @param listener the listener that will receive the result or error.
+     * @return A cancellable request.
      */
-    public void deleteObjectASync(String objectID, DeleteObjectsListener listener) {
+    public Request deleteObjectASync(String objectID, DeleteObjectsListener listener) {
         TaskParams.DeleteObjects params = new TaskParams.DeleteObjects(listener, IndexMethod.DeleteObject, objectID);
-        new AsyncDeleteTask().execute(params);
+        return new Request(new AsyncDeleteTask().execute(params));
     }
 
     /**
@@ -411,10 +424,11 @@ public class Index extends BaseIndex {
      *
      * @param objectIDs the array of objectIDs to delete
      * @param listener the listener that will receive the result or error.
+     * @return A cancellable request.
      */
-    public void deleteObjectsASync(List<String> objectIDs, DeleteObjectsListener listener) {
+    public Request deleteObjectsASync(List<String> objectIDs, DeleteObjectsListener listener) {
         TaskParams.DeleteObjects params = new TaskParams.DeleteObjects(listener, IndexMethod.DeleteObjects, objectIDs);
-        new AsyncDeleteTask().execute(params);
+        return new Request(new AsyncDeleteTask().execute(params));
     }
 
     /**
@@ -422,10 +436,11 @@ public class Index extends BaseIndex {
      *
      * @param query the query string
      * @param listener the listener that will receive the result or error.
+     * @return A cancellable request.
      */
-    public void deleteByQueryASync(Query query, DeleteObjectsListener listener) {
+    public Request deleteByQueryASync(Query query, DeleteObjectsListener listener) {
         TaskParams.DeleteObjects params = new TaskParams.DeleteObjects(listener, IndexMethod.DeleteByQuery, query);
-        new AsyncDeleteTask().execute(params);
+        return new Request(new AsyncDeleteTask().execute(params));
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////
@@ -462,10 +477,11 @@ public class Index extends BaseIndex {
      * Get settings of this index asynchronously
      *
      * @param listener the listener that will receive the result or error.
+     * @return A cancellable request.
      */
-    public void getSettingsASync(SettingsListener listener) {
+    public Request getSettingsASync(SettingsListener listener) {
         TaskParams.Settings params = new TaskParams.Settings(listener, IndexMethod.GetSettings);
-        new AsyncSettingsTask().execute(params);
+        return new Request(new AsyncSettingsTask().execute(params));
     }
 
     /**
@@ -473,9 +489,10 @@ public class Index extends BaseIndex {
      *
      * @param settings the settings
      * @param listener the listener that will receive the result or error.
+     * @return A cancellable request.
      */
-    public void setSettingsASync(JSONObject settings, SettingsListener listener) {
+    public Request setSettingsASync(JSONObject settings, SettingsListener listener) {
         TaskParams.Settings params = new TaskParams.Settings(listener, IndexMethod.SetSettings, settings);
-        new AsyncSettingsTask().execute(params);
+        return new Request(new AsyncSettingsTask().execute(params));
     }
 }

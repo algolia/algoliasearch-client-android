@@ -476,9 +476,9 @@ public class MirroredIndex extends Index
      * @param query Search query.
      * @param listener Listener to be notified of search results.
      */
-    public void searchASync(Query query, SearchListener listener)
+    public Request searchASync(Query query, SearchListener listener)
     {
-        new SearchTask().execute(new TaskParams.Search(listener, query));
+        return new Request(new SearchTask().execute(new TaskParams.Search(listener, query)));
     }
 
     private class SearchTask extends AsyncTask<TaskParams.Search, Void, TaskParams.Search>
@@ -531,13 +531,14 @@ public class MirroredIndex extends Index
      *
      * @param query Search query.
      * @param listener Listener to be notified of search results.
+     * @return A cancellable request.
      * @throws IllegalStateException if mirroring is not activated on this index.
      */
-    public void searchMirrorAsync(Query query, SearchListener listener)
+    public Request searchMirrorAsync(Query query, SearchListener listener)
     {
         if (!mirrored)
             throw new IllegalStateException("Mirroring not activated on this index");
-        new SearchMirrorTask().execute(new TaskParams.Search(listener, query));
+        return new Request(new SearchMirrorTask().execute(new TaskParams.Search(listener, query)));
     }
 
     private class SearchMirrorTask extends AsyncTask<TaskParams.Search, Void, TaskParams.Search>
@@ -596,13 +597,14 @@ public class MirroredIndex extends Index
      *
      * @param query Browse query. Same restrictions as the online API.
      * @param listener Listener to be notified of results.
+     * @return A cancellable request.
      * @throws IllegalStateException if mirroring is not activated on this index.
      */
-    public void browseMirrorAsync(Query query, SearchListener listener)
+    public Request browseMirrorAsync(Query query, SearchListener listener)
     {
         if (!mirrored)
             throw new IllegalStateException("Mirroring not activated on this index");
-        new BrowseMirrorTask().execute(new TaskParams.Search(listener, query));
+        return new Request(new BrowseMirrorTask().execute(new TaskParams.Search(listener, query)));
     }
 
     private class BrowseMirrorTask extends AsyncTask<TaskParams.Search, Void, TaskParams.Search>
