@@ -331,9 +331,8 @@ public class Index extends BaseIndex {
      *
      * @param objectIDs the array of unique identifier of objects to retrieve
      * @return A cancellable request.
-     * @throws AlgoliaException
      */
-    public Request getObjectsASync(List<String> objectIDs, GetObjectsListener listener) throws AlgoliaException {
+    public Request getObjectsASync(List<String> objectIDs, GetObjectsListener listener) {
         TaskParams.GetObjects params = new TaskParams.GetObjects(listener, IndexMethod.GetObjects, objectIDs);
         return new Request(new AsyncGetTask().execute(params));
     }
