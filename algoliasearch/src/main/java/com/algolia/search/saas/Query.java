@@ -175,11 +175,11 @@ public class Query {
      *            Set the analytics tags identifying the query
      */
     public @NonNull Query setAnalyticsTags(String... tags) {
-        return set(KEY_ANALYTICS_TAGS, buildCommaArray(tags));
+        return set(KEY_ANALYTICS_TAGS, buildJSONArray(tags));
     }
 
     public String[] getAnalyticsTags() {
-        return parseCommaArray(get(KEY_ANALYTICS_TAGS));
+        return parseArray(get(KEY_ANALYTICS_TAGS));
     }
 
     private static final String KEY_AROUND_LAT_LNG = "aroundLatLng";
