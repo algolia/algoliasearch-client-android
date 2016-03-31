@@ -33,7 +33,6 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 import org.junit.Test;
 import org.mockito.internal.util.reflection.Whitebox;
-import org.powermock.core.classloader.annotations.PrepareForTest;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -372,9 +371,9 @@ public class IndexTest extends PowerMockTestCase {
     @Test
     public void testHostSwitch() throws Exception {
         // Given first host as an unreachable domain
-        List<String> hostsArray = (List<String>) Whitebox.getInternalState(client, "readHostsArray");
+        List<String> hostsArray = (List<String>) Whitebox.getInternalState(client, "readHosts");
         hostsArray.set(0, "thissentenceshouldbeuniqueenoughtoguaranteeinexistentdomain.com");
-        Whitebox.setInternalState(client, "readHostsArray", hostsArray);
+        Whitebox.setInternalState(client, "readHosts", hostsArray);
 
         // Expect a switch to the next URL and successful search
         testSearchAsync();
@@ -385,12 +384,12 @@ public class IndexTest extends PowerMockTestCase {
     public void testSNI() throws Exception {
         // Given all hosts using SNI
         String appId = (String) Whitebox.getInternalState(client, "applicationID");
-        List<String> hostsArray = (List<String>) Whitebox.getInternalState(client, "readHostsArray");
+        List<String> hostsArray = (List<String>) Whitebox.getInternalState(client, "readHosts");
         hostsArray.set(0, appId + "-1.algolianet.com");
         hostsArray.set(1, appId + "-2.algolianet.com");
         hostsArray.set(2, appId + "-3.algolianet.com");
         hostsArray.set(3, appId + "-3.algolianet.com");
-        Whitebox.setInternalState(client, "readHostsArray", hostsArray);
+        Whitebox.setInternalState(client, "readHosts", hostsArray);
 
         // Expect correct certificate handling and successful search
         testSearchAsync();
