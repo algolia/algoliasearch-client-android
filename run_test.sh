@@ -13,5 +13,5 @@ fi
 
 echo "Running Android test..."
 ./setup_tests.sh
-./gradlew test
+./gradlew testOnlineRelease
 ./teardown_tests.sh
