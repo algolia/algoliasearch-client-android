@@ -227,7 +227,7 @@ public class Query {
         if (location == null) {
             return set(KEY_AROUND_LAT_LNG, null);
         } else {
-            return set(KEY_AROUND_LAT_LNG, String.format("%f,%f", location.lat, location.lng));
+            return set(KEY_AROUND_LAT_LNG, location.lat + "," + location.lng);
         }
     }
 
