@@ -891,10 +891,6 @@ public class Query {
         return null;
     }
 
-    // TODO: tag filters
-    // TODO: facet filters
-    // TODO: numeric filters
-
     // ----------------------------------------------------------------------
     // Parsing/serialization
     // ----------------------------------------------------------------------
