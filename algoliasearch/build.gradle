@@ -33,7 +33,7 @@ android {
     compileSdkVersion 21
     buildToolsVersion '21.1.2'
     defaultConfig {
-        minSdkVersion 14
+        minSdkVersion 7
         targetSdkVersion 21
         versionCode 1
         versionName PUBLISH_VERSION
@@ -59,4 +59,14 @@ dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
     // TODO: Switch to published version.
     offlineCompile project(path: ':algoliasearchsdk', configuration: 'debug')
+
+    testCompile "junit:junit:4.12"
+    testCompile "org.assertj:assertj-core:1.7.0"
+    testCompile "org.robolectric:robolectric:3.0"
+
+    // PowerMock brings in the mockito dependency
+    testCompile "org.powermock:powermock-module-junit4:1.6.1"
+    testCompile "org.powermock:powermock-module-junit4-rule:1.6.1"
+    testCompile "org.powermock:powermock-classloading-xstream:1.6.1"
+    testCompile "org.powermock:powermock-api-mockito:1.6.1"
 }

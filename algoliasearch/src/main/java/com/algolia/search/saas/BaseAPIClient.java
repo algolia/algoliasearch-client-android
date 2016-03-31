@@ -64,6 +64,8 @@ abstract class BaseAPIClient {
 
     /** HTTP headers that will be sent with every request. */
     private HashMap<String, String> headers;
+    private ExpiringCache<String, String> cache;
+    private boolean isCacheEnabled = false;
 
     /**
      * Algolia Search initialization
@@ -104,6 +106,48 @@ abstract class BaseAPIClient {
     public String getApplicationID()
     {
         return applicationID;
+    }
+
+    /**
+     * Enables search cache with default parameters
+     */
+    public void enableSearchCache() {
+        isCacheEnabled = true;
+        if (cache == null) {
+            cache = new ExpiringCache<>();
+        }
+    }
+
+
+    /**
+     * Enables search cache with default parameters
+     *
+     * @param timeoutInSeconds duration during wich an request is kept in cache
+     * @param maxRequests maximum amount of requests to keep before removing the least recently used
+     */
+    public void enableSearchCache(int timeoutInSeconds, int maxRequests) {
+        isCacheEnabled = true;
+        cache = new ExpiringCache<>(timeoutInSeconds, maxRequests);
+    }
+
+    /**
+     * Disable and reset cache
+     */
+    public void disableSearchCache() {
+        isCacheEnabled = false;
+        if (cache != null) {
+            cache.reset();
+            cache = null;
+        }
+    }
+
+    /**
+     * Remove all entries from cache
+     */
+    public void clearSearchCache() {
+        if (cache != null) {
+            cache.reset();
+        }
     }
 
     /**
@@ -401,6 +445,7 @@ abstract class BaseAPIClient {
 
     /**
      * Reads the InputStream into a byte array
+     *
      * @param stream the InputStream to read
      * @return the stream's content as a byte[]
      * @throws AlgoliaException if the stream can't be read or flushed
@@ -427,10 +472,6 @@ abstract class BaseAPIClient {
         return new JSONObject(new JSONTokener(input));
     }
 
-    private JSONObject _getJSONObject(byte[] array) throws JSONException, UnsupportedEncodingException {
-        return new JSONObject(new String(array, "UTF-8"));
-    }
-
     private JSONObject _getAnswerJSONObject(InputStream istream) throws IOException, JSONException {
         return _getJSONObject(_toCharArray(istream));
     }
@@ -448,8 +489,21 @@ abstract class BaseAPIClient {
      * @throws AlgoliaException if the request data is not valid json
      */
     private synchronized JSONObject _request(Method m, String url, String json, List<String> hostsArray, int connectTimeout, int readTimeout) throws AlgoliaException {
+        String cacheKey = null;
+        String jsonStr = null;
+        if (isCacheEnabled) {
+            cacheKey = String.format("%s:%s(%s)", m, url, json);
+            jsonStr = cache.get(cacheKey);
+        }
         try {
-            return _getJSONObject(_requestRaw(m, url, json, hostsArray, connectTimeout, readTimeout));
+            if (jsonStr == null) {
+                final byte[] requestRaw = _requestRaw(m, url, json, hostsArray, connectTimeout, readTimeout);
+                jsonStr = new String(requestRaw, "UTF-8");
+                if (isCacheEnabled) {
+                    cache.put(cacheKey, jsonStr);
+                }
+            }
+            return new JSONObject(jsonStr);
         } catch (JSONException e) {
             throw new AlgoliaException("JSON decode error:" + e.getMessage());
         } catch (UnsupportedEncodingException e) {
@@ -494,7 +548,7 @@ abstract class BaseAPIClient {
             // set URL
             URL hostURL;
             HttpURLConnection hostConnection;
-            try{
+            try {
                 hostURL = new URL("https://" + host + url);
                 hostConnection = (HttpURLConnection) hostURL.openConnection();
                 hostConnection.setRequestMethod(requestMethod);
@@ -578,8 +632,7 @@ abstract class BaseAPIClient {
                 String encoding = hostConnection.getContentEncoding();
                 if (encoding != null && encoding.contains("gzip")) {
                     return _toByteArray(new GZIPInputStream(stream));
-                }
-                else {
+                } else {
                     return _toByteArray(stream);
                 }
             } catch (IOException e) {
