@@ -910,17 +910,23 @@ public class Query {
                 String key = entry.getKey();
                 if (stringBuilder.length() > 0)
                     stringBuilder.append('&');
-                stringBuilder.append(URLEncoder.encode(entry.getKey(), "UTF-8"));
+                stringBuilder.append(urlEncode(entry.getKey()));
                 String value = entry.getValue();
                 if (value != null) {
                     stringBuilder.append('=');
-                    stringBuilder.append(URLEncoder.encode(value, "UTF-8"));
+                    stringBuilder.append(urlEncode(value));
                 }
             }
         } catch (UnsupportedEncodingException e) {
             throw new RuntimeException(e); // should never happen: UTF-8 is always supported
         }
         return stringBuilder.toString();
+    }
+
+    static private String urlEncode(String value) throws UnsupportedEncodingException {
+        // NOTE: We prefer to have space encoded as `%20` instead of `+`, so we patch `URLEncoder`'s behaviour.
+        // This works because `+` itself is percent-escaped (into `%2B`).
+        return URLEncoder.encode(value, "UTF-8").replace("+", "%20");
     }
 
     /**
