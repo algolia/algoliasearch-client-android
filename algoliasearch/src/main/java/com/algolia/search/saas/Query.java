@@ -601,11 +601,11 @@ public class Query {
      * Specify the minimum number of characters in a query word to accept one
      * typo in this word. Defaults to 3.
      */
-    public @NonNull Query setMinWordSizeFor1Typo(Integer nbChars) {
+    public @NonNull Query setMinWordSizefor1Typo(Integer nbChars) {
         return set(KEY_MIN_WORD_SIZE_FOR_1_TYPO, nbChars);
     }
 
-    public Integer getMinWordSizeFor1Typo() {
+    public Integer getMinWordSizefor1Typo() {
         return parseInt(get(KEY_MIN_WORD_SIZE_FOR_1_TYPO));
     }
 
@@ -615,11 +615,11 @@ public class Query {
      * Specify the minimum number of characters in a query word to accept one
      * typo in this word. Defaults to 3.
      */
-    public @NonNull Query setMinWordSizeFor2Typos(Integer nbChars) {
+    public @NonNull Query setMinWordSizefor2Typos(Integer nbChars) {
         return set(KEY_MIN_WORD_SIZE_FOR_2_TYPOS, nbChars);
     }
 
-    public Integer getMinWordSizeFor2Typos() {
+    public Integer getMinWordSizefor2Typos() {
         return parseInt(get(KEY_MIN_WORD_SIZE_FOR_2_TYPOS));
     }
 
@@ -721,12 +721,12 @@ public class Query {
         return parseBoolean(get(KEY_REMOVE_STOP_WORDS));
     }
 
-    private static final String KEY_REMOVE_WORDS_IF_NO_RESULT = "removeWordsIfNoResult";
+    private static final String KEY_REMOVE_WORDS_IF_NO_RESULT = "removeWordsIfNoResults";
 
     /**
      * Select the strategy to adopt when a query does not return any result.
      */
-    public @NonNull Query setRemoveWordsIfNoResult(RemoveWordsType type) {
+    public @NonNull Query setRemoveWordsIfNoResults(RemoveWordsType type) {
         if (type == null) {
             set(KEY_REMOVE_WORDS_IF_NO_RESULT, null);
         } else {
@@ -748,7 +748,7 @@ public class Query {
         return this;
     }
 
-    public RemoveWordsType getRemoveWordsIfNoResult()
+    public RemoveWordsType getRemoveWordsIfNoResults()
     {
         String value = get(KEY_REMOVE_WORDS_IF_NO_RESULT);
         if (value != null) {
