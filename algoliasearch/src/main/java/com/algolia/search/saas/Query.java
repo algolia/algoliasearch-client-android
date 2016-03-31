@@ -101,6 +101,20 @@ public class Query {
     }
 
     // ----------------------------------------------------------------------
+    // Equality
+    // ----------------------------------------------------------------------
+
+    @Override
+    public boolean equals(Object other) {
+        return other != null && other instanceof Query && this.parameters.equals(((Query)other).parameters);
+    }
+
+    @Override
+    public int hashCode() {
+        return parameters.hashCode();
+    }
+
+    // ----------------------------------------------------------------------
     // Misc.
     // ----------------------------------------------------------------------
 
@@ -185,8 +199,24 @@ public class Query {
     private static final String KEY_AROUND_LAT_LNG = "aroundLatLng";
 
     public static final class LatLng {
-        public double lat;
-        public double lng;
+        public final double lat;
+        public final double lng;
+
+        public LatLng(double lat, double lng) {
+            this.lat = lat;
+            this.lng = lng;
+        }
+
+        @Override
+        public boolean equals(Object other) {
+            return other != null && other instanceof LatLng
+                && this.lat == ((LatLng)other).lat && this.lng == ((LatLng)other).lng;
+        }
+
+        @Override
+        public int hashCode() {
+            return (int)Math.round(lat * lng % Integer.MAX_VALUE);
+        }
     }
 
     /**
@@ -211,10 +241,7 @@ public class Query {
             return null;
         }
         try {
-            LatLng location = new LatLng();
-            location.lat = Float.valueOf(components[0]);
-            location.lng = Float.valueOf(components[1]);
-            return location;
+            return new LatLng(Double.valueOf(components[0]), Double.valueOf(components[1]));
         } catch (NumberFormatException e) {
             return null;
         }
@@ -443,8 +470,25 @@ public class Query {
 
     public static final class GeoRect
     {
-        public LatLng p1;
-        public LatLng p2;
+        public final LatLng p1;
+        public final LatLng p2;
+
+        public GeoRect(@NonNull LatLng p1, @NonNull LatLng p2) {
+            this.p1 = p1;
+            this.p2 =p2;
+        }
+
+        @Override
+        public boolean equals(Object other) {
+            return other != null && other instanceof GeoRect
+                && this.p1.equals(((GeoRect)other).p1)
+                && this.p2.equals(((GeoRect)other).p2);
+        }
+
+        @Override
+        public int hashCode() {
+            return p1.hashCode() ^ p2.hashCode();
+        }
     }
 
     private static final String KEY_INSIDE_BOUNDING_BOX = "insideBoundingBox";
@@ -487,12 +531,15 @@ public class Query {
                 if (fields.length % 4 == 0) {
                     GeoRect[] result = new GeoRect[fields.length / 4];
                     for (int i = 0; i < result.length; ++i) {
-                        GeoRect box = new GeoRect();
-                        box.p1.lat = Double.parseDouble(fields[4 * i]);
-                        box.p1.lng = Double.parseDouble(fields[4 * i + 1]);
-                        box.p2.lat = Double.parseDouble(fields[4 * i + 2]);
-                        box.p2.lng = Double.parseDouble(fields[4 * i + 3]);
-                        result[i] = box;
+                        result[i] = new GeoRect(
+                            new LatLng(
+                                    Double.parseDouble(fields[4 * i]),
+                                    Double.parseDouble(fields[4 * i + 1])
+                            ), new LatLng(
+                                Double.parseDouble(fields[4 * i + 2]),
+                                Double.parseDouble(fields[4 * i + 3])
+                            )
+                        );
                     }
                     return result;
                 }
@@ -539,10 +586,10 @@ public class Query {
                 if (fields.length % 2 == 0 && fields.length / 2 >= 3) {
                     LatLng[] result = new LatLng[fields.length / 2];
                     for (int i = 0; i < result.length; ++i) {
-                        LatLng point = new LatLng();
-                        point.lat = Double.parseDouble(fields[2 * i]);
-                        point.lng = Double.parseDouble(fields[2 * i + 1]);
-                        result[i] = point;
+                        result[i] = new LatLng(
+                            Double.parseDouble(fields[2 * i]),
+                            Double.parseDouble(fields[2 * i + 1])
+                        );
                     }
                     return result;
                 }
