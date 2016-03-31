@@ -58,7 +58,7 @@ dependencies {
     compile 'com.android.support:appcompat-v7:21.0.3'
     compile fileTree(include: ['*.jar'], dir: 'libs')
     // TODO: Switch to published version.
-    offlineCompile project(path: ':algoliasearchsdk', configuration: 'debug')
+    // offlineCompile project(path: ':algoliasearchsdk', configuration: 'debug')
 
     testCompile "junit:junit:4.12"
     testCompile "org.assertj:assertj-core:1.7.0"
