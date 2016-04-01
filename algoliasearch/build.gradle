@@ -27,6 +27,16 @@ ext {
     PUBLISH_GROUP_ID = 'com.algolia'
     PUBLISH_ARTIFACT_ID = 'algoliasearch-android'
     PUBLISH_VERSION = '2.7.0'
+    PUBLISH_STAGING_ID = 'f6edc053ff9131'
+    /* To get the staging id, you can either:
+    - Use the 'getStagingProfile' task added by the 'io.codearte.nexus-staging' plugin
+    - Log-in on sonatype.org, go to staging profile, select com.algolia, id = last part of URL */
+}
+
+
+nexusStaging {
+    packageGroup = PUBLISH_GROUP_ID
+    stagingProfileId = PUBLISH_STAGING_ID
 }
 
 android {
