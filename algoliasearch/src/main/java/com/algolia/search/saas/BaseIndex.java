@@ -23,6 +23,8 @@
 
 package com.algolia.search.saas;
 
+import android.support.annotation.NonNull;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -573,5 +575,18 @@ abstract class BaseIndex {
 
     public JSONObject searchDisjunctiveFaceting(Query query, List<String> disjunctiveFacets) throws AlgoliaException {
         return searchDisjunctiveFaceting(query, disjunctiveFacets, null);
+    }
+
+    protected JSONObject browse(@NonNull Query query) throws AlgoliaException {
+        return client.getRequest("/1/indexes/" + encodedIndexName + "/browse?" + query.build(), true);
+    }
+
+    protected JSONObject browseFrom(@NonNull String cursor) throws AlgoliaException {
+        try {
+            return client.getRequest("/1/indexes/" + encodedIndexName + "/browse?cursor=" + URLEncoder.encode(cursor, "UTF-8"), true);
+        }
+        catch (UnsupportedEncodingException e) {
+            throw new Error(e); // Should never happen: UTF-8 is always supported.
+        }
     }
 }

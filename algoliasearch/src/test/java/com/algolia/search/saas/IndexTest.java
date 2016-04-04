@@ -23,6 +23,7 @@
 
 package com.algolia.search.saas;
 
+import com.algolia.search.saas.listeners.BrowseListener;
 import com.algolia.search.saas.listeners.GetObjectsListener;
 import com.algolia.search.saas.listeners.IndexingListener;
 import com.algolia.search.saas.listeners.SearchDisjunctiveFacetingListener;
@@ -43,6 +44,8 @@ import java.util.concurrent.TimeUnit;
 
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertFalse;
+import static junit.framework.Assert.assertNotNull;
+import static junit.framework.Assert.assertNull;
 import static junit.framework.Assert.assertTrue;
 import static junit.framework.Assert.fail;
 
@@ -393,5 +396,59 @@ public class IndexTest extends PowerMockTestCase {
 
         // Expect correct certificate handling and successful search
         testSearchAsync();
+    }
+
+    private void addDummyObjects(int objectCount) throws Exception {
+        // Construct an array of dummy objects.
+        objects = new ArrayList<JSONObject>();
+        for (int i = 0; i < objectCount; ++i) {
+            objects.add(new JSONObject(String.format("{\"dummy\": %d}", i)));
+        }
+
+        // Add objects.
+        JSONObject task = index.addObjects(new JSONArray(objects));
+        index.waitTask(task.getString("taskID"));
+    }
+
+    @Test
+    public void testBrowseAsync() throws Exception {
+        addDummyObjects(1500);
+
+        final CountDownLatch signal = new CountDownLatch(2);
+        Query query = new Query();
+        query.setHitsPerPage(1000);
+        index.browseASync(query, new BrowseListener() {
+            private int toto;
+            {
+                toto = signal.hashCode();
+            }
+            @Override
+            public void browseResult(Index index, TaskParams.Browse context, JSONObject results) {
+                signal.countDown();
+                String cursor = results.optString("cursor", null);
+                assertNotNull(cursor);
+                index.browseFromASync(cursor, new BrowseListener() {
+                    @Override
+                    public void browseResult(Index index, TaskParams.Browse context, JSONObject results) {
+                        signal.countDown();
+                        String cursor = results.optString("cursor", null);
+                        assertNull(cursor);
+                    }
+
+                    @Override
+                    public void browseError(Index index, TaskParams.Browse context, AlgoliaException e) {
+                        fail(e.getMessage());
+                        signal.countDown();
+                    }
+                });
+            }
+
+            @Override
+            public void browseError(Index index, TaskParams.Browse context, AlgoliaException e) {
+                fail(e.getMessage());
+                signal.countDown();
+            }
+        });
+        assertTrue("No callback was called", signal.await(Helpers.wait, TimeUnit.SECONDS));
     }
 }

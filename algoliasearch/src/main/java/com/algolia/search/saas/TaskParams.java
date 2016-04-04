@@ -24,6 +24,7 @@
 package com.algolia.search.saas;
 
 import com.algolia.search.saas.listeners.APIClientListener;
+import com.algolia.search.saas.listeners.BrowseListener;
 import com.algolia.search.saas.listeners.DeleteObjectsListener;
 import com.algolia.search.saas.listeners.GetObjectsListener;
 import com.algolia.search.saas.listeners.IndexingListener;
@@ -354,6 +355,37 @@ public class TaskParams {
                 listener.APIResult(client, this, content);
             } else {
                 listener.APIError(client, this, error);
+            }
+        }
+    }
+
+    public static class Browse {
+        protected BrowseListener listener;
+        public Query query;
+        public String cursor;
+
+        protected JSONObject content;
+        protected AlgoliaException error;
+
+        protected Browse(BrowseListener listener, Query query) {
+            this.listener = listener;
+            this.query = query;
+        }
+
+        protected Browse(BrowseListener listener, String cursor) {
+            this.listener = listener;
+            this.cursor = cursor;
+        }
+
+        protected void sendResult(Index index) {
+            if (listener == null) {
+                return;
+            }
+
+            if (error == null) {
+                listener.browseResult(index, this, content);
+            } else {
+                listener.browseError(index, this, error);
             }
         }
     }

@@ -25,6 +25,7 @@ package com.algolia.search.saas;
 
 import android.os.AsyncTask;
 
+import com.algolia.search.saas.listeners.BrowseListener;
 import com.algolia.search.saas.listeners.DeleteObjectsListener;
 import com.algolia.search.saas.listeners.GetObjectsListener;
 import com.algolia.search.saas.listeners.IndexingListener;
@@ -493,5 +494,55 @@ public class Index extends BaseIndex {
     public Request setSettingsASync(JSONObject settings, SettingsListener listener) {
         TaskParams.Settings params = new TaskParams.Settings(listener, IndexMethod.SetSettings, settings);
         return new Request(new AsyncSettingsTask().execute(params));
+    }
+
+    private class ASyncBrowseTask extends AsyncTask<TaskParams.Browse, Void, TaskParams.Browse> {
+        @Override
+        protected TaskParams.Browse doInBackground(TaskParams.Browse... params) {
+            TaskParams.Browse p = params[0];
+            try {
+                if (p.query != null)
+                    p.content = browse(p.query);
+                else
+                    p.content = browseFrom(p.cursor);
+            } catch (AlgoliaException e) {
+                p.error = e;
+            }
+            return p;
+        }
+
+        @Override
+        protected void onPostExecute(TaskParams.Browse p) {
+            p.sendResult(Index.this);
+        }
+    }
+
+    /**
+     * Browse all index content (initial call).
+     * This method should be called once to initiate a browse. It will return the first page of results and a cursor,
+     * unless the end of the index has been reached. To retrieve subsequent pages, call `browseFromASync` with that
+     * cursor.
+     *
+     * @param query The query parameters for the browse.
+     * @param listener The listener that will receive the result or error.
+     * @return A cancellable request.
+     */
+    public Request browseASync(Query query, BrowseListener listener) {
+        TaskParams.Browse params = new TaskParams.Browse(listener, query);
+        return new Request(new ASyncBrowseTask().execute(params));
+    }
+
+    /**
+     * Browse the index from a cursor.
+     * This method should be called after an initial call to `browseASync()`. It returns a cursor, unless the end of
+     * the index has been reached.
+     *
+     * @param cursor The cursor of the next page to retrieve.
+     * @param listener The listener that will receive the result or error.
+     * @return A cancellable request.
+     */
+    public Request browseFromASync(String cursor, BrowseListener listener) {
+        TaskParams.Browse params = new TaskParams.Browse(listener, cursor);
+        return new Request(new ASyncBrowseTask().execute(params));
     }
 }
