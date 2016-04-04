@@ -35,6 +35,9 @@ import java.util.TreeMap;
  * THE SOFTWARE.
  */
 
+/**
+ * A search query.
+ */
 public class Query {
     public enum QueryType {
         /** All query words are interpreted as prefixes. */

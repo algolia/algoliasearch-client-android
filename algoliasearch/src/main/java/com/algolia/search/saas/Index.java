@@ -41,8 +41,10 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Contains all the functions related to one index
- * You should use APIClient.initIndex(indexName) to retrieve this object
+ * An index from Algolia's API.
+ * <p>
+ * You cannot construct this class directly. Please use {@link APIClient#initIndex(String)} to obtain an instance.
+ * </p>
  */
 public class Index extends BaseIndex {
     /**

@@ -23,29 +23,34 @@
 
 package com.algolia.search.saas;
 
+import android.support.annotation.NonNull;
+
+/**
+ * A search query targeting a specific index.
+ */
 public class IndexQuery extends Query {
     private String index;
 
-    public IndexQuery(String index)  {
+    public IndexQuery(@NonNull String index)  {
         super();
         this.index = index;
     }
 
-    public IndexQuery(String index, String query)  {
+    public IndexQuery(@NonNull String index, String query)  {
         super(query);
         this.index = index;
     }
 
-    public IndexQuery(String index, Query other)  {
+    public IndexQuery(@NonNull String index, @NonNull Query other)  {
         super(other);
         this.index = index;
     }
 
-    public String getIndex() {
+    public @NonNull String getIndex() {
         return index;
     }
 
-    public void setIndex(String index) {
+    public void setIndex(@NonNull String index) {
         this.index = index;
     }
 }
