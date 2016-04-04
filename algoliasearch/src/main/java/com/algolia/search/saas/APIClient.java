@@ -29,7 +29,6 @@ import android.support.annotation.NonNull;
 import com.algolia.search.saas.listeners.APIClientListener;
 
 import org.json.JSONArray;
-import org.json.JSONObject;
 
 import java.util.List;
 
@@ -84,24 +83,6 @@ public class APIClient extends BaseAPIClient {
                         break;
                     case CopyIndex:
                         p.content = copyIndex(p.srcIndexName, p.dstIndexName);
-                        break;
-                    case GetLogs:
-                        p.content = getLogs(p.offset, p.length, p.logType);
-                        break;
-                    case GetUserKey:
-                        p.content = deleteUserKey(p.key);
-                        break;
-                    case ListUserKeys:
-                        p.content = listUserKeys();
-                        break;
-                    case DeleteUserKey:
-                        p.content = deleteUserKey(p.key);
-                        break;
-                    case AddUserKey:
-                        p.content = addUserKey(p.parameters);
-                        break;
-                    case UpdateUserKey:
-                        p.content = updateUserKey(p.key, p.parameters);
                         break;
                     case MultipleQueries:
                         p.content = multipleQueries(p.queries, p.strategy);
@@ -164,74 +145,6 @@ public class APIClient extends BaseAPIClient {
      */
     public Request copyIndexASync(String srcIndexName, String dstIndexName, APIClientListener listener) {
         TaskParams.Client params = new TaskParams.Client(listener, APIMethod.CopyIndex, srcIndexName, dstIndexName);
-        return new Request(new ASyncClientTask().execute(params));
-    }
-
-    /**
-     * Return last logs entries.
-     * @param offset Specify the first entry to retrieve (0-based, 0 is the most recent log entry).
-     * @param length Specify the maximum number of entries to retrieve starting at offset. Maximum allowed value: 1000.
-     * @param logType Specify the type of log to retrieve
-     * @return A cancellable request.
-     */
-    public Request getLogsASync(int offset, int length, LogType logType, APIClientListener listener) {
-        TaskParams.Client params = new TaskParams.Client(listener, APIMethod.GetLogs, offset, length, logType);
-        return new Request(new ASyncClientTask().execute(params));
-    }
-
-    /**
-     * List all existing user keys with their associated ACLs
-     * @return A cancellable request.
-     */
-    public Request listUserKeysASync(APIClientListener listener) {
-        TaskParams.Client params = new TaskParams.Client(listener, APIMethod.ListUserKeys);
-        return new Request(new ASyncClientTask().execute(params));
-    }
-
-    /**
-     * Get ACL of a user key
-     * @return A cancellable request.
-     */
-    public Request getUserKeyACLASync(String key, APIClientListener listener) {
-        TaskParams.Client params = new TaskParams.Client(listener, APIMethod.GetUserKey, key);
-        return new Request(new ASyncClientTask().execute(params));
-    }
-
-    /**
-     * Delete an existing user key
-     * @return A cancellable request.
-     */
-    public Request deleteUserKeyASync(String key, APIClientListener listener) {
-        TaskParams.Client params = new TaskParams.Client(listener, APIMethod.DeleteUserKey, key);
-        return new Request(new ASyncClientTask().execute(params));
-    }
-
-    /**
-     * Create a new user key
-     * @return A cancellable request.
-     */
-    public Request addUserKeyASync(JSONObject parameters, APIClientListener listener) {
-        TaskParams.Client params = new TaskParams.Client(listener, APIMethod.AddUserKey, parameters);
-        return new Request(new ASyncClientTask().execute(params));
-    }
-
-    /**
-     * Update a user key asynchronously
-     *
-     * @param parameters the list of parameters for this key. Defined by a JSONObject that
-     * can contains the following values:
-     *   - acl: array of string
-     *   - indices: array of string
-     *   - validity: int
-     *   - referrers: array of string
-     *   - description: string
-     *   - maxHitsPerQuery: integer
-     *   - queryParameters: string
-     *   - maxQueriesPerIPPerHour: integer
-     * @return A cancellable request.
-     */
-    public Request updateUserKeyASync(String key, JSONObject parameters, APIClientListener listener) {
-        TaskParams.Client params = new TaskParams.Client(listener, APIMethod.UpdateUserKey, parameters, key);
         return new Request(new ASyncClientTask().execute(params));
     }
 

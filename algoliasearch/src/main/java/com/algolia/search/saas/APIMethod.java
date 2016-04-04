@@ -29,11 +29,5 @@ public enum APIMethod {
     CopyIndex,
     MoveIndex,
     MultipleQueries,
-    Batch,
-    GetLogs,
-    ListUserKeys,
-    GetUserKey,
-    AddUserKey,
-    UpdateUserKey,
-    DeleteUserKey
+    Batch
 }
