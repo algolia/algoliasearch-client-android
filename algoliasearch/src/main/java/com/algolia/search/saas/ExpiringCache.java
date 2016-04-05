@@ -8,7 +8,7 @@ import java.util.concurrent.TimeUnit;
 /**
  * A cache that holds strong references to a limited number of values for a limited time.
  */
-public class ExpiringCache<K, V> {
+class ExpiringCache<K, V> {
     public static final TimeUnit expirationTimeUnit = TimeUnit.SECONDS;
     public static final int defaultExpirationTimeout = 2;
     public static final int defaultMaxSize = 64;

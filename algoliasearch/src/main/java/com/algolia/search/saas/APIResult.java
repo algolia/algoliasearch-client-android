@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015 Algolia
+ * Copyright (c) 2012-2016 Algolia
  * http://www.algolia.com/
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -21,25 +21,45 @@
  * THE SOFTWARE.
  */
 
-package com.algolia.search.saas.listeners;
+package com.algolia.search.saas;
 
-import com.algolia.search.saas.AlgoliaException;
-import com.algolia.search.saas.Index;
-import com.algolia.search.saas.TaskParams;
+import android.support.annotation.NonNull;
 
 import org.json.JSONObject;
 
 /**
- * Asynchronously receive result of getObject(s) methods
+ * Encapsulates the two possible outcomes of an API request: either a JSON object (success), or an error (failure).
+ * One and only one is guaranteed to be non-null.
  */
-public interface GetObjectsListener {
-    /**
-     * Asynchronously receive result of Index.getObject(s) method.
-     */
-    void getObjectsResult(Index index, TaskParams.GetObjects context, JSONObject results);
+class APIResult {
+    /** The content returned (in case of success). */
+    public final JSONObject content;
+
+    /** The error encountered (in case of failure). */
+    public final AlgoliaException error;
 
     /**
-     * Asynchronously receive error of Index.getObject(s) method.
+     * Construct a new success result.
+     *
+     * @param content The content returned.
      */
-    void getObjectsError(Index index, TaskParams.GetObjects context, AlgoliaException e);
+    public APIResult(@NonNull JSONObject content) {
+        this.content = content;
+        this.error = null;
+    }
+
+    /**
+     * Construct a new failure result.
+     *
+     * @param error The error that was encountered.
+     */
+    public APIResult(@NonNull AlgoliaException error) {
+        this.content = null;
+        this.error = error;
+    }
+
+    /** Test whether this is a success (true) or failure (false) result. */
+    public boolean isSuccess() {
+        return error == null;
+    }
 }

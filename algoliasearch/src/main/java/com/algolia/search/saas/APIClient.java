@@ -23,12 +23,10 @@
 
 package com.algolia.search.saas;
 
-import android.os.AsyncTask;
 import android.support.annotation.NonNull;
 
-import com.algolia.search.saas.listeners.APIClientListener;
-
 import org.json.JSONArray;
+import org.json.JSONObject;
 
 import java.util.List;
 
@@ -36,6 +34,10 @@ import java.util.List;
  * Entry point in the Java API.
  * You should instantiate a Client object with your ApplicationID, ApiKey and Hosts
  * to start using Algolia Search API
+ * <p>
+ * WARNING: For performance reasons, arguments to asynchronous methods are not cloned. Therefore, you should not
+ * modify mutable arguments after they have been passed (unless explicitly noted).
+ * </p>
  */
 public class APIClient extends BaseAPIClient {
     /**
@@ -66,114 +68,117 @@ public class APIClient extends BaseAPIClient {
         return new Index(this, indexName);
     }
 
-    private class ASyncClientTask extends AsyncTask<TaskParams.Client, Void, TaskParams.Client> {
-        @Override
-        protected TaskParams.Client doInBackground(TaskParams.Client... params) {
-            TaskParams.Client p = params[0];
-            try {
-                switch (p.method) {
-                    case ListIndexes:
-                        p.content = listIndexes();
-                        break;
-                    case DeleteIndex:
-                        p.content = deleteIndex(p.indexName);
-                        break;
-                    case MoveIndex:
-                        p.content = moveIndex(p.srcIndexName, p.dstIndexName);
-                        break;
-                    case CopyIndex:
-                        p.content = copyIndex(p.srcIndexName, p.dstIndexName);
-                        break;
-                    case MultipleQueries:
-                        p.content = multipleQueries(p.queries, p.strategy);
-                        break;
-                    case Batch:
-                        p.content = batch(p.actions);
-                        break;
-                }
-            } catch (AlgoliaException e) {
-                p.error = e;
-            }
-
-            return p;
-        }
-
-        @Override
-        protected void onPostExecute(TaskParams.Client p) {
-            p.sendResult(APIClient.this);
-        }
-    }
-
     /**
      * List all existing user keys with their associated ACLs
      *
-     * @param listener the listener that will receive the result or error.
+     * @param completionHandler The listener that will be notified of the request's outcome.
      * @return A cancellable request.
      */
-    public Request listIndexesASync(APIClientListener listener) {
-        TaskParams.Client params = new TaskParams.Client(listener, APIMethod.ListIndexes);
-        return new Request(new ASyncClientTask().execute(params));
+    public Request listIndexesASync(CompletionHandler completionHandler) {
+        return new Request(completionHandler) {
+            @NonNull
+            @Override
+            JSONObject run() throws AlgoliaException {
+                return listIndexes();
+            }
+        }.start();
     }
 
     /**
      * Delete an index
      *
      * @param indexName the name of index to delete
+     * @param completionHandler The listener that will be notified of the request's outcome.
      * @return A cancellable request.
      */
-    public Request deleteIndexASync(String indexName, APIClientListener listener) {
-        TaskParams.Client params = new TaskParams.Client(listener, APIMethod.DeleteIndex, indexName);
-        return new Request(new ASyncClientTask().execute(params));
+    public Request deleteIndexASync(final @NonNull String indexName, CompletionHandler completionHandler) {
+        return new Request(completionHandler) {
+            @NonNull
+            @Override
+            JSONObject run() throws AlgoliaException {
+                return deleteIndex(indexName);
+            }
+        }.start();
     }
 
     /**
      * Move an existing index.
      * @param srcIndexName the name of index to copy.
      * @param dstIndexName the new index name that will contains a copy of srcIndexName (destination will be overriten if it already exist).
+     * @param completionHandler The listener that will be notified of the request's outcome.
      * @return A cancellable request.
      */
-    public Request moveIndexASync(String srcIndexName, String dstIndexName, APIClientListener listener) {
-        TaskParams.Client params = new TaskParams.Client(listener, APIMethod.MoveIndex, srcIndexName, dstIndexName);
-        return new Request(new ASyncClientTask().execute(params));
+    public Request moveIndexASync(final @NonNull String srcIndexName, final @NonNull String dstIndexName, CompletionHandler completionHandler) {
+        return new Request(completionHandler) {
+            @NonNull
+            @Override
+            JSONObject run() throws AlgoliaException {
+                return moveIndex(srcIndexName, dstIndexName);
+            }
+        }.start();
     }
 
     /**
      * Copy an existing index.
      * @param srcIndexName the name of index to copy.
      * @param dstIndexName the new index name that will contains a copy of srcIndexName (destination will be overriten if it already exist).
+     * @param completionHandler The listener that will be notified of the request's outcome.
      * @return A cancellable request.
      */
-    public Request copyIndexASync(String srcIndexName, String dstIndexName, APIClientListener listener) {
-        TaskParams.Client params = new TaskParams.Client(listener, APIMethod.CopyIndex, srcIndexName, dstIndexName);
-        return new Request(new ASyncClientTask().execute(params));
+    public Request copyIndexASync(final @NonNull String srcIndexName, final @NonNull String dstIndexName, CompletionHandler completionHandler) {
+        return new Request(completionHandler) {
+            @NonNull
+            @Override
+            JSONObject run() throws AlgoliaException {
+                return copyIndex(srcIndexName, dstIndexName);
+            }
+        }.start();
     }
 
     /**
      * This method allows to query multiple indexes with one API call asynchronously
+     * @param completionHandler The listener that will be notified of the request's outcome.
      * @return A cancellable request.
      */
-    public Request multipleQueriesASync(List<IndexQuery> queries, APIClientListener listener) {
-        TaskParams.Client params = new TaskParams.Client(listener, APIMethod.MultipleQueries, queries, "none");
-        return new Request(new ASyncClientTask().execute(params));
+    public Request multipleQueriesASync(final @NonNull List<IndexQuery> queries, CompletionHandler completionHandler) {
+        return new Request(completionHandler) {
+            @NonNull
+            @Override
+            JSONObject run() throws AlgoliaException {
+                return multipleQueries(queries, "none");
+            }
+        }.start();
     }
 
     /**
      * This method allows to query multiple indexes with one API call asynchronously
+     * @param completionHandler The listener that will be notified of the request's outcome.
      * @return A cancellable request.
      */
-    public Request multipleQueriesASync(List<IndexQuery> queries, String strategy, APIClientListener listener) {
-        TaskParams.Client params = new TaskParams.Client(listener, APIMethod.MultipleQueries, queries, strategy);
-        return new Request(new ASyncClientTask().execute(params));
+    public Request multipleQueriesASync(final @NonNull List<IndexQuery> queries, final String strategy, CompletionHandler completionHandler) {
+        return new Request(completionHandler) {
+            @NonNull
+            @Override
+            JSONObject run() throws AlgoliaException {
+                return multipleQueries(queries, strategy);
+            }
+        }.start();
     }
 
     /**
      * Custom batch asynchronous
      *
      * @param actions the array of actions
+     * @param completionHandler The listener that will be notified of the request's outcome.
      * @return A cancellable request.
      */
-    public Request batchASync(JSONArray actions, APIClientListener listener) {
-        TaskParams.Client params = new TaskParams.Client(listener, APIMethod.Batch, actions);
-        return new Request(new ASyncClientTask().execute(params));
+    public Request batchASync(final @NonNull JSONArray actions, CompletionHandler completionHandler) {
+        return new Request(completionHandler) {
+            @NonNull
+            @Override
+            JSONObject run() throws AlgoliaException {
+                return batch(actions);
+            }
+        }.start();
     }
 }

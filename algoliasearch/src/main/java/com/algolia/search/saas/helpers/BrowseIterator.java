@@ -26,11 +26,10 @@ package com.algolia.search.saas.helpers;
 import android.support.annotation.NonNull;
 
 import com.algolia.search.saas.AlgoliaException;
+import com.algolia.search.saas.CompletionHandler;
 import com.algolia.search.saas.Index;
 import com.algolia.search.saas.Query;
 import com.algolia.search.saas.Request;
-import com.algolia.search.saas.TaskParams;
-import com.algolia.search.saas.listeners.BrowseListener;
 
 import org.json.JSONObject;
 
@@ -47,22 +46,15 @@ public class BrowseIterator {
     /**
      * Listener for {@link com.algolia.search.saas.helpers.BrowseIterator}.
      */
-    public interface BrowseIteratorListener {
+    public interface BrowseIteratorHandler {
         /**
          * Called at each batch of results.
          *
          * @param iterator The iterator where the results originate from.
-         * @param result The results.
+         * @param result The results (in case of success).
+         * @param error The error (in case of error).
          */
-        public void browseIteratorResult(@NonNull BrowseIterator iterator, @NonNull JSONObject result);
-
-        /**
-         * Called in case of error
-         *
-         * @param iterator The iterator where the results originate from.
-         * @param error The error that was encountered.
-         */
-        public void browseIteratorError(@NonNull BrowseIterator iterator, @NonNull AlgoliaException error);
+        public void handleBatch(@NonNull BrowseIterator iterator, JSONObject result, AlgoliaException error);
     }
 
     /** The index being browsed. */
@@ -72,7 +64,7 @@ public class BrowseIterator {
     private Query query;
 
     /** Listener. */
-    private BrowseIteratorListener listener;
+    private BrowseIteratorHandler handler;
 
     /** Cursor to use for the next call, if any. */
     private String cursor;
@@ -92,12 +84,12 @@ public class BrowseIterator {
      *
      * @param index The index to be browsed.
      * @param query The query used to filter the results.
-     * @param listener Listener called for each page of results.
+     * @param handler Handler called for each batch of results.
      */
-    public BrowseIterator(@NonNull Index index, Query query, @NonNull BrowseIteratorListener listener) {
+    public BrowseIterator(@NonNull Index index, @NonNull Query query, @NonNull BrowseIteratorHandler handler) {
         this.index = index;
         this.query = query;
-        this.listener = listener;
+        this.handler = handler;
     }
 
     /**
@@ -108,7 +100,7 @@ public class BrowseIterator {
             throw new IllegalStateException();
         }
         started = true;
-        request = index.browseASync(query, browseListener);
+        request = index.browseASync(query, completionHandler);
     }
 
     /**
@@ -139,25 +131,20 @@ public class BrowseIterator {
         if (!hasNext()) {
             throw new IllegalStateException();
         }
-        request = index.browseFromASync(cursor, browseListener);
+        request = index.browseFromASync(cursor, completionHandler);
     }
 
-    private BrowseListener browseListener = new BrowseListener() {
+    private CompletionHandler completionHandler = new CompletionHandler() {
         @Override
-        public void browseResult(@NonNull Index index, TaskParams.Browse context, @NonNull JSONObject result) {
+        public void requestCompleted(JSONObject content, AlgoliaException error) {
             if (!cancelled) {
-                listener.browseIteratorResult(BrowseIterator.this, result);
-                cursor = result.optString("cursor", null);
-                if (!cancelled && hasNext()) {
-                    next();
+                handler.handleBatch(BrowseIterator.this, content, error);
+                if (error == null) {
+                    cursor = content.optString("cursor", null);
+                    if (!cancelled && hasNext()) {
+                        next();
+                    }
                 }
-            }
-        }
-
-        @Override
-        public void browseError(@NonNull Index index, TaskParams.Browse context, @NonNull AlgoliaException error) {
-            if (!cancelled) {
-                listener.browseIteratorError(BrowseIterator.this, error);
             }
         }
     };

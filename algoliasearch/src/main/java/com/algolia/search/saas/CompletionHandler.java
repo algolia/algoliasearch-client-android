@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015 Algolia
+ * Copyright (c) 2012-2016 Algolia
  * http://www.algolia.com/
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -23,14 +23,21 @@
 
 package com.algolia.search.saas;
 
-public enum LogType
-{
-    /// all query logs
-    LOG_QUERY,
-    /// all build logs
-    LOG_BUILD,
-    /// all error logs
-    LOG_ERROR,
-    /// all logs
-    LOG_ALL
+import org.json.JSONObject;
+
+/**
+ * Handles completion of an API request.
+ */
+public interface CompletionHandler {
+
+    /**
+     * Called when the request has completed, either successfully or failing.
+     * <p>
+     * NOTE: One and only one of either <code>content</code> or <code>error</code> is guaranteed to be not null.
+     * </p>
+     *
+     * @param content Content that was returned by the API (in case of success).
+     * @param error Error that was encountered (in case of failure).
+     */
+    public void requestCompleted(JSONObject content, AlgoliaException error);
 }

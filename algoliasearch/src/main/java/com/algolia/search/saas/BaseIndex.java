@@ -350,7 +350,7 @@ abstract class BaseIndex {
      * @return a JSONObject containing search results
      * @throws AlgoliaException
      */
-    protected JSONObject search(Query query) throws AlgoliaException {
+    protected JSONObject search(@NonNull Query query) throws AlgoliaException {
         String paramsString = query.build();
         if (paramsString.length() > 0) {
             return client.getRequest("/1/indexes/" + encodedIndexName + "?" + paramsString, true);
@@ -364,7 +364,7 @@ abstract class BaseIndex {
      * @return a byte array containing search results
      * @throws AlgoliaException
      */
-    protected byte[] searchRaw(Query query) throws AlgoliaException {
+    protected byte[] searchRaw(@NonNull Query query) throws AlgoliaException {
         String paramsString = query.build();
         if (paramsString.length() > 0) {
             return client.getRequestRaw("/1/indexes/" + encodedIndexName + "?" + paramsString, true);
@@ -381,12 +381,12 @@ abstract class BaseIndex {
      * @param timeToWait time to sleep seed
      * @throws AlgoliaException
      */
-    protected void waitTask(String taskID, long timeToWait) throws AlgoliaException {
+    protected JSONObject waitTask(String taskID, long timeToWait) throws AlgoliaException {
         try {
             while (true) {
                 JSONObject obj = client.getRequest("/1/indexes/" + encodedIndexName + "/task/" + URLEncoder.encode(taskID, "UTF-8"), false);
                 if (obj.getString("status").equals("published")) {
-                    return;
+                    return obj;
                 }
                 try {
                     Thread.sleep(timeToWait >= MAX_TIME_MS_TO_WAIT ? MAX_TIME_MS_TO_WAIT : timeToWait);
@@ -409,8 +409,8 @@ abstract class BaseIndex {
      * @param taskID the id of the task returned by server
      * @throws AlgoliaException
      */
-    protected void waitTask(String taskID) throws AlgoliaException {
-        waitTask(taskID, MAX_TIME_MS_TO_WAIT);
+    protected JSONObject waitTask(String taskID) throws AlgoliaException {
+        return waitTask(taskID, MAX_TIME_MS_TO_WAIT);
     }
 
     /**
@@ -450,6 +450,11 @@ abstract class BaseIndex {
      * @throws AlgoliaException
      */
     public JSONObject searchDisjunctiveFaceting(Query query, List<String> disjunctiveFacets, Map<String, List<String>> refinements) throws AlgoliaException {
+        // Null query is equivalent to the empty query.
+        if (query == null) {
+            query = new Query();
+        }
+
         if (refinements == null) {
             refinements = new HashMap<String, List<String>>();
         }

@@ -78,18 +78,17 @@ public class BrowseIteratorTest extends PowerMockTestCase {
         final CountDownLatch signal = new CountDownLatch(2);
 
         Query query = new Query();
-        BrowseIterator iterator = new BrowseIterator(index, query, new BrowseIterator.BrowseIteratorListener() {
+        BrowseIterator iterator = new BrowseIterator(index, query, new BrowseIterator.BrowseIteratorHandler() {
             @Override
-            public void browseIteratorResult(@NonNull BrowseIterator iterator, @NonNull JSONObject result) {
-                signal.countDown();
-                if (signal.getCount() > 2) {
-                    fail("Should not reach this point");
+            public void handleBatch(@NonNull BrowseIterator iterator, JSONObject result, AlgoliaException error) {
+                if (error == null) {
+                    signal.countDown();
+                    if (signal.getCount() > 2) {
+                        fail("Should not reach this point");
+                    }
+                } else {
+                    fail(error.getMessage());
                 }
-            }
-
-            @Override
-            public void browseIteratorError(@NonNull BrowseIterator iterator, @NonNull AlgoliaException error) {
-                fail(error.getMessage());
             }
         });
         iterator.start();
@@ -101,21 +100,20 @@ public class BrowseIteratorTest extends PowerMockTestCase {
         final CountDownLatch signal = new CountDownLatch(1);
 
         Query query = new Query();
-        BrowseIterator iterator = new BrowseIterator(index, query, new BrowseIterator.BrowseIteratorListener() {
+        BrowseIterator iterator = new BrowseIterator(index, query, new BrowseIterator.BrowseIteratorHandler() {
             @Override
-            public void browseIteratorResult(@NonNull BrowseIterator iterator, @NonNull JSONObject result) {
-                signal.countDown();
-                if (signal.getCount() == 1) {
-                    iterator.cancel();
+            public void handleBatch(@NonNull BrowseIterator iterator, JSONObject result, AlgoliaException error) {
+                if (error == null) {
+                    signal.countDown();
+                    if (signal.getCount() == 1) {
+                        iterator.cancel();
+                    }
+                    else if (signal.getCount() > 1) {
+                        fail("Should not reach this point");
+                    }
+                } else {
+                    fail(error.getMessage());
                 }
-                else if (signal.getCount() > 1) {
-                    fail("Should not reach this point");
-                }
-            }
-
-            @Override
-            public void browseIteratorError(@NonNull BrowseIterator iterator, @NonNull AlgoliaException error) {
-                fail(error.getMessage());
             }
         });
         iterator.start();

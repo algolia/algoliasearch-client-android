@@ -23,8 +23,12 @@
 
 package com.algolia.search.saas;
 
+/**
+ * Any error that was encountered during the processing of a request.
+ * Could be server-side, network failure, or client-side.
+ */
 public class AlgoliaException extends Exception {
-
+    /** HTTP status code. Only valid when the error originates from the server. */
     private int statusCode;
 
     public AlgoliaException(String message) {
