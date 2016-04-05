@@ -81,6 +81,7 @@ public class IndexTest extends PowerMockTestCase {
 
     @Test
     public void testSearchAsync() throws Exception {
+        // Empty search.
         final CountDownLatch signal = new CountDownLatch(1);
         index.searchASync(new Query(), new CompletionHandler() {
             @Override
@@ -94,6 +95,21 @@ public class IndexTest extends PowerMockTestCase {
             }
         });
         assertTrue("No callback was called", signal.await(Helpers.wait, TimeUnit.SECONDS));
+
+        // Search with query.
+        final CountDownLatch signal2 = new CountDownLatch(1);
+        index.searchASync(new Query("Francisco"), new CompletionHandler() {
+            @Override
+            public void requestCompleted(JSONObject content, AlgoliaException error) {
+                if (error == null) {
+                    assertEquals(1, content.optInt("nbHits"));
+                } else {
+                    fail(error.getMessage());
+                }
+                signal2.countDown();
+            }
+        });
+        assertTrue("No callback was called", signal2.await(Helpers.wait, TimeUnit.SECONDS));
     }
 
     @Test

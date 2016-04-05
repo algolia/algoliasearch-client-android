@@ -354,11 +354,17 @@ abstract class BaseIndex {
      * @throws AlgoliaException
      */
     protected JSONObject search(@NonNull Query query) throws AlgoliaException {
-        String paramsString = query.build();
-        if (paramsString.length() > 0) {
-            return client.getRequest("/1/indexes/" + encodedIndexName + "?" + paramsString, true);
-        } else {
-            return client.getRequest("/1/indexes/" + encodedIndexName, true);
+        try {
+            String paramsString = query.build();
+            if (paramsString.length() > 0) {
+                JSONObject body = new JSONObject();
+                body.put("params", paramsString);
+                return client.postRequest("/1/indexes/" + encodedIndexName + "/query", body.toString(), true);
+            } else {
+                return client.getRequest("/1/indexes/" + encodedIndexName, true);
+            }
+        } catch (JSONException e) {
+            throw new RuntimeException(e); // should never happen
         }
     }
 
