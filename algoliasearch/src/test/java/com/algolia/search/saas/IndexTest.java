@@ -407,4 +407,38 @@ public class IndexTest extends PowerMockTestCase {
         assertTrue("No callback was called", signal.await(Helpers.wait, TimeUnit.SECONDS));
     }
 
+    @Test
+    public void testDeleteByQueryASync() throws Exception {
+        final CountDownLatch signal = new CountDownLatch(2);
+        addDummyObjects(3000);
+        final Query query = new Query();
+        query.set("numericFilters", "dummy < 1500");
+        index.deleteByQueryASync(query, new CompletionHandler() {
+            @Override
+            public void requestCompleted(JSONObject content, AlgoliaException error) {
+                if (error == null) {
+                    index.browseASync(query, new CompletionHandler() {
+                        @Override
+                        public void requestCompleted(JSONObject content, AlgoliaException error) {
+                            if (error == null) {
+                                // There should not remain any object matching the query.
+                                assertNotNull(content.optJSONArray("hits"));
+                                assertEquals(content.optJSONArray("hits").length(), 0);
+                                assertNull(content.optString("cursor", null));
+                            }
+                            else {
+                                fail(error.getMessage());
+                            }
+                            signal.countDown();
+                        }
+                    });
+                }
+                else {
+                    fail(error.getMessage());
+                }
+                signal.countDown();
+            }
+        });
+        assertTrue("No callback was called", signal.await(Helpers.wait, TimeUnit.SECONDS));
+    }
 }

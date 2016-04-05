@@ -324,22 +324,25 @@ abstract class BaseIndex {
      * @param query the query string
      * @throws AlgoliaException
      */
-    protected void deleteByQuery(Query query) throws AlgoliaException {
-        query.setAttributesToRetrieve("objectID");
-        query.setHitsPerPage(100);
-
-        JSONObject results = this.search(query);
+    protected void deleteByQuery(@NonNull Query query) throws AlgoliaException {
         try {
-            while (results.getInt("nbHits") != 0) {
-                List<String> objectIDs = new ArrayList<String>();
-                for (int i = 0; i < results.getJSONArray("hits").length(); ++i) {
-                    JSONObject hit = results.getJSONArray("hits").getJSONObject(i);
+            String cursor = null;
+            do {
+                // Browse index for the next batch objects.
+                List<String> objectIDs = new ArrayList<String>(1000);
+                JSONObject content = cursor == null ? browse(query) : browseFrom(cursor);
+                JSONArray hits = content.getJSONArray("hits");
+                for (int i = 0; i < hits.length(); ++i) {
+                    JSONObject hit = hits.getJSONObject(i);
                     objectIDs.add(hit.getString("objectID"));
                 }
+                cursor = content.optString("cursor", null);
+
+                // Delete objects.
                 JSONObject task = this.deleteObjects(objectIDs);
                 this.waitTask(task.getString("taskID"));
-                results = this.search(query);
             }
+            while (cursor != null);
         } catch (JSONException e) {
             throw new AlgoliaException(e.getMessage());
         }
