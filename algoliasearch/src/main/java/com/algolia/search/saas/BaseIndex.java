@@ -449,7 +449,7 @@ abstract class BaseIndex {
      * @param refinements       Map representing the current refinements
      * @throws AlgoliaException
      */
-    public JSONObject searchDisjunctiveFaceting(Query query, List<String> disjunctiveFacets, Map<String, List<String>> refinements) throws AlgoliaException {
+    protected JSONObject searchDisjunctiveFaceting(Query query, List<String> disjunctiveFacets, Map<String, List<String>> refinements) throws AlgoliaException {
         // Null query is equivalent to the empty query.
         if (query == null) {
             query = new Query();
@@ -578,7 +578,7 @@ abstract class BaseIndex {
         }
     }
 
-    public JSONObject searchDisjunctiveFaceting(Query query, List<String> disjunctiveFacets) throws AlgoliaException {
+    protected JSONObject searchDisjunctiveFaceting(Query query, List<String> disjunctiveFacets) throws AlgoliaException {
         return searchDisjunctiveFaceting(query, disjunctiveFacets, null);
     }
 
