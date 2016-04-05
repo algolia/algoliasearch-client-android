@@ -367,4 +367,44 @@ public class IndexTest extends PowerMockTestCase {
         });
         assertTrue("No callback was called", signal.await(Helpers.wait, TimeUnit.SECONDS));
     }
+
+    @Test
+    public void testClearIndexASync() throws Exception {
+        final CountDownLatch signal = new CountDownLatch(2);
+        index.clearIndexASync(new CompletionHandler() {
+            @Override
+            public void requestCompleted(JSONObject content, AlgoliaException error) {
+                if (error == null) {
+                    index.waitTaskASync(content.optString("taskID"), new CompletionHandler() {
+                        @Override
+                        public void requestCompleted(JSONObject content, AlgoliaException error) {
+                            if (error == null) {
+                                index.browseASync(new Query(), new CompletionHandler() {
+                                    @Override
+                                    public void requestCompleted(JSONObject content, AlgoliaException error) {
+                                        if (error == null) {
+                                            assertEquals(content.optInt("nbHits"), 0);
+                                        } else {
+                                            fail(error.getMessage());
+                                        }
+                                        signal.countDown();
+                                    }
+                                });
+                            }
+                            else {
+                                fail(error.getMessage());
+                            }
+                            signal.countDown();
+                        }
+                    });
+                }
+                else {
+                    fail(error.getMessage());
+                }
+                signal.countDown();
+            }
+        });
+        assertTrue("No callback was called", signal.await(Helpers.wait, TimeUnit.SECONDS));
+    }
+
 }

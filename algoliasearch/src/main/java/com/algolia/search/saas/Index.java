@@ -436,4 +436,20 @@ public class Index extends BaseIndex {
             }
         }.start();
     }
+
+    /**
+     * Clear this index.
+     *
+     * @param completionHandler The listener that will be notified of the request's outcome.
+     * @return A cancellable request.
+     */
+    public Request clearIndexASync(CompletionHandler completionHandler) {
+        return new Request(completionHandler) {
+            @NonNull
+            @Override
+            JSONObject run() throws AlgoliaException {
+                return clearIndex();
+            }
+        }.start();
+    }
 }
