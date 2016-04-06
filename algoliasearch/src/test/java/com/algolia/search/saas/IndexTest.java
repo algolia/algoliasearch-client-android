@@ -386,7 +386,7 @@ public class IndexTest extends PowerMockTestCase {
 
     @Test
     public void testClearIndexASync() throws Exception {
-        final CountDownLatch signal = new CountDownLatch(2);
+        final CountDownLatch signal = new CountDownLatch(3);
         index.clearIndexASync(new CompletionHandler() {
             @Override
             public void requestCompleted(JSONObject content, AlgoliaException error) {
