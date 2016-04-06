@@ -508,7 +508,8 @@ abstract class BaseAPIClient {
                 } catch (UnsupportedEncodingException e) {
                     throw new AlgoliaException("Invalid JSON Object: " + json);
                 } catch (IOException e) {
-                    throw new AlgoliaException("Could not open output stream: " + e.getLocalizedMessage());
+                    addError(errors, host, e);
+                    continue;
                 }
             }
 
@@ -527,7 +528,8 @@ abstract class BaseAPIClient {
                 try {
                     stream = hostConnection.getInputStream();
                 } catch (IOException e) {
-                    throw new AlgoliaException("Could not open input stream: " + e.getLocalizedMessage());
+                    addError(errors, host, e);
+                    continue;
                 }
             } else if (code / 100 == 4) {
                 String message = "Error detected in backend";
@@ -559,7 +561,8 @@ abstract class BaseAPIClient {
                     return _toByteArray(stream);
                 }
             } catch (IOException e) {
-                throw new AlgoliaException("Data decoding error:" + e.getMessage());
+                addError(errors, host, e);
+                continue;
             }
         }
         StringBuilder builder = new StringBuilder("Hosts unreachable: ");
