@@ -60,6 +60,8 @@ public class IndexTest extends PowerMockTestCase {
         indexName = Helpers.safeIndexName("àlgol?à-android");
         index = client.initIndex(indexName);
 
+        client.deleteIndex(indexName);
+
         objects = new ArrayList<JSONObject>();
         objects.add(new JSONObject("{\"city\": \"San Francisco\"}"));
         objects.add(new JSONObject("{\"city\": \"San José\"}"));
