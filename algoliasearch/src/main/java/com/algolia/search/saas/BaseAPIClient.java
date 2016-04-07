@@ -525,7 +525,7 @@ abstract class BaseAPIClient {
                     if (code / 100 == 4) {
                         String message = _getJSONObject(rawResponse).getString("message");
                         consumeQuietly(hostConnection);
-                        throw new AlgoliaException(message);
+                        throw new AlgoliaException(message, code);
                     } else {
                         final String errorMessage = _toCharArray(stream);
                         consumeQuietly(hostConnection);
