@@ -459,16 +459,9 @@ abstract class BaseIndex {
      * @param refinements       Map representing the current refinements
      * @throws AlgoliaException
      */
-    protected JSONObject searchDisjunctiveFaceting(Query query, List<String> disjunctiveFacets, Map<String, List<String>> refinements) throws AlgoliaException {
-        // Null query is equivalent to the empty query.
-        if (query == null) {
-            query = new Query();
-        }
-
-        if (refinements == null) {
-            refinements = new HashMap<String, List<String>>();
-        }
-        HashMap<String, List<String>> disjunctiveRefinements = new HashMap<String, List<String>>();
+    protected JSONObject searchDisjunctiveFaceting(@NonNull Query query, @NonNull List<String> disjunctiveFacets, @NonNull Map<String, List<String>> refinements) throws AlgoliaException {
+        // Retain only refinements corresponding to the disjunctive facets.
+        Map<String, List<String>> disjunctiveRefinements = new HashMap<>();
         for (Map.Entry<String, List<String>> elt : refinements.entrySet()) {
             if (disjunctiveFacets.contains(elt.getKey())) {
                 disjunctiveRefinements.put(elt.getKey(), elt.getValue());
@@ -476,7 +469,8 @@ abstract class BaseIndex {
         }
 
         // build queries
-        List<IndexQuery> queries = new ArrayList<IndexQuery>();
+        // TODO: Refactor using JSON array notation: safer and clearer.
+        List<IndexQuery> queries = new ArrayList<>();
         // hits + regular facets query
         StringBuilder filters = new StringBuilder();
         boolean first_global = true;
