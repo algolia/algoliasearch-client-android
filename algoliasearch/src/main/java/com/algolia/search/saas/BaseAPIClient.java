@@ -25,6 +25,7 @@ package com.algolia.search.saas;
 
 import android.support.annotation.NonNull;
 
+import org.apache.http.HttpException;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.message.BasicHeader;
 import org.apache.http.protocol.HTTP;
@@ -527,9 +528,9 @@ abstract class BaseAPIClient {
                         throw new AlgoliaException(message);
                     } else {
                         final String errorMessage = _toCharArray(stream);
-                        errors.put(host, errorMessage);
                         consumeQuietly(hostConnection);
-                        throw new IOException(errorMessage);
+                        addError(errors, host, new HttpException(errorMessage));
+                        continue;
                     }
                 }
                 return rawResponse;
@@ -555,7 +556,7 @@ abstract class BaseAPIClient {
         throw new AlgoliaException(builder.toString());
     }
 
-    private void addError(HashMap<String, String> errors, String host, IOException e) {
+    private void addError(HashMap<String, String> errors, String host, Exception e) {
         errors.put(host, String.format("%s=%s", e.getClass().getName(), e.getMessage()));
     }
 
