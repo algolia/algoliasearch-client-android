@@ -588,10 +588,6 @@ abstract class BaseIndex {
         }
     }
 
-    protected JSONObject searchDisjunctiveFaceting(Query query, List<String> disjunctiveFacets) throws AlgoliaException {
-        return searchDisjunctiveFaceting(query, disjunctiveFacets, null);
-    }
-
     protected JSONObject browse(@NonNull Query query) throws AlgoliaException {
         return client.getRequest("/1/indexes/" + encodedIndexName + "/browse?" + query.build(), true);
     }
