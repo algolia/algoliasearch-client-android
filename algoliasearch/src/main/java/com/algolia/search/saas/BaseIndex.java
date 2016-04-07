@@ -578,7 +578,7 @@ abstract class BaseIndex {
             aggregatedAnswer.put("disjunctiveFacets", disjunctiveFacetsJSON);
             return aggregatedAnswer;
         } catch (JSONException e) {
-            throw new Error(e);
+            throw new AlgoliaException("Failed to aggregate results", e);
         }
     }
 
