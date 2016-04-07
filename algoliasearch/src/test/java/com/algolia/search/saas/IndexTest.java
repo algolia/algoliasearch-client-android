@@ -183,6 +183,58 @@ public class IndexTest extends PowerMockTestCase {
     }
 
     @Test
+    public void testDisjunctiveFaceting() throws Exception {
+        // Set index settings.
+        JSONObject setSettingsResult = index.setSettings(new JSONObject("{\"attributesForFaceting\":[\"city\", \"stars\", \"facilities\"]}"));
+        index.waitTask(setSettingsResult.getString("taskID"));
+
+        // Add objects.
+        JSONObject addObjectsResult = index.addObjects(new JSONArray()
+                .put(new JSONObject("{\"name\":\"Hotel A\", \"stars\":\"*\", \"facilities\":[\"wifi\", \"bath\", \"spa\"], \"city\":\"Paris\"}"))
+                .put(new JSONObject("{\"name\":\"Hotel B\", \"stars\":\"*\", \"facilities\":[\"wifi\"], \"city\":\"Paris\"}"))
+                .put(new JSONObject("{\"name\":\"Hotel C\", \"stars\":\"**\", \"facilities\":[\"bath\"], \"city\":\"San Fancisco\"}"))
+                .put(new JSONObject("{\"name\":\"Hotel D\", \"stars\":\"****\", \"facilities\":[\"spa\"], \"city\":\"Paris\"}"))
+                .put(new JSONObject("{\"name\":\"Hotel E\", \"stars\":\"****\", \"facilities\":[\"spa\"], \"city\":\"New York\"}")));
+        index.waitTask(addObjectsResult.getString("taskID"));
+
+        // Search.
+        final Query query = new Query("h").setFacets("city");
+        final List<String> disjunctiveFacets = Arrays.asList("stars", "facilities");
+        final Map<String, List<String>> refinements = new HashMap<>();
+        JSONObject answer;
+
+        answer = index.searchDisjunctiveFaceting(query, disjunctiveFacets, refinements);
+        assertEquals(5, answer.getInt("nbHits"));
+        assertEquals(1, answer.getJSONObject("facets").length());
+        assertEquals(2, answer.getJSONObject("disjunctiveFacets").length());
+
+        refinements.put("stars", Arrays.asList("*"));
+        answer = index.searchDisjunctiveFaceting(query, disjunctiveFacets, refinements);
+        assertEquals(2, answer.getInt("nbHits"));
+        assertEquals(1, answer.getJSONObject("facets").length());
+        assertEquals(2, answer.getJSONObject("disjunctiveFacets").length());
+        assertEquals(2, answer.getJSONObject("disjunctiveFacets").getJSONObject("stars").getInt("*"));
+        assertEquals(1, answer.getJSONObject("disjunctiveFacets").getJSONObject("stars").getInt("**"));
+        assertEquals(2, answer.getJSONObject("disjunctiveFacets").getJSONObject("stars").getInt("****"));
+
+        refinements.put("city", Arrays.asList("Paris"));
+        answer = index.searchDisjunctiveFaceting(query, disjunctiveFacets, refinements);
+        assertEquals(2, answer.getInt("nbHits"));
+        assertEquals(1, answer.getJSONObject("facets").length());
+        assertEquals(2, answer.getJSONObject("disjunctiveFacets").length());
+        assertEquals(2, answer.getJSONObject("disjunctiveFacets").getJSONObject("stars").getInt("*"));
+        assertEquals(1, answer.getJSONObject("disjunctiveFacets").getJSONObject("stars").getInt("****"));
+
+        refinements.put("stars", Arrays.asList("*", "****"));
+        answer = index.searchDisjunctiveFaceting(query, disjunctiveFacets, refinements);
+        assertEquals(3, answer.getInt("nbHits"));
+        assertEquals(1, answer.getJSONObject("facets").length());
+        assertEquals(2, answer.getJSONObject("disjunctiveFacets").length());
+        assertEquals(2, answer.getJSONObject("disjunctiveFacets").getJSONObject("stars").getInt("*"));
+        assertEquals(1, answer.getJSONObject("disjunctiveFacets").getJSONObject("stars").getInt("****"));
+    }
+
+    @Test
     public void testAddObjectAsync() throws Exception {
         final CountDownLatch signal = new CountDownLatch(1);
         index.addObjectASync(new JSONObject("{\"city\": \"New York\"}"), new CompletionHandler() {
