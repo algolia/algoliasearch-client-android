@@ -144,21 +144,24 @@ public class IndexTest extends PowerMockTestCase {
         final CountDownLatch signal2 = new CountDownLatch(1);
         // Create data set.
         objects = new ArrayList<>();
-        objects.add(new JSONObject("{\"name\": \"iPhone 6\", \"brand\": \"Apple\", \"category\": \"device\"}"));
-        objects.add(new JSONObject("{\"name\": \"iPhone 6 Plus\", \"brand\": \"Apple\", \"category\": \"device\"}"));
-        objects.add(new JSONObject("{\"name\": \"iPhone cover\", \"brand\": \"Apple\", \"category\": \"accessory\"}"));
-        objects.add(new JSONObject("{\"name\": \"Galaxy S5\", \"brand\": \"Samsung\", \"category\": \"device\"}"));
-        objects.add(new JSONObject("{\"name\": \"Wonder Phone\", \"brand\": \"Samsung\", \"category\": \"device\"}"));
-        objects.add(new JSONObject("{\"name\": \"Platinum Phone Cover\", \"brand\": \"Samsung\", \"category\": \"accessory\"}"));
-        objects.add(new JSONObject("{\"name\": \"Lame Phone\", \"brand\": \"Whatever\", \"category\": \"device\"}"));
-        objects.add(new JSONObject("{\"name\": \"Lame Phone cover\", \"brand\": \"Whatever\", \"category\": \"accessory\"}"));
+        objects.add(new JSONObject("{\"name\": \"iPhone 6\", \"brand\": \"Apple\", \"category\": \"device\",\"stars\":4}"));
+        objects.add(new JSONObject("{\"name\": \"iPhone 6 Plus\", \"brand\": \"Apple\", \"category\": \"device\",\"stars\":5}"));
+        objects.add(new JSONObject("{\"name\": \"iPhone cover\", \"brand\": \"Apple\", \"category\": \"accessory\",\"stars\":3}"));
+        objects.add(new JSONObject("{\"name\": \"Galaxy S5\", \"brand\": \"Samsung\", \"category\": \"device\",\"stars\":4}"));
+        objects.add(new JSONObject("{\"name\": \"Wonder Phone\", \"brand\": \"Samsung\", \"category\": \"device\",\"stars\":5}"));
+        objects.add(new JSONObject("{\"name\": \"Platinum Phone Cover\", \"brand\": \"Samsung\", \"category\": \"accessory\",\"stars\":2}"));
+        objects.add(new JSONObject("{\"name\": \"Lame Phone\", \"brand\": \"Whatever\", \"category\": \"device\",\"stars\":1}"));
+        objects.add(new JSONObject("{\"name\": \"Lame Phone cover\", \"brand\": \"Whatever\", \"category\": \"accessory\",\"stars\":1}"));
         JSONObject task = index.addObjects(new JSONArray(objects));
         index.waitTask(task.getString("taskID"));
+
+        final Query query = new Query("phone");
+        query.setFacets("brand", "category", "stars");
         final List<String> disjunctiveFacets = Arrays.asList("brand");
         final Map<String, List<String>> refinements = new HashMap<>();
         refinements.put("brand", Arrays.asList("Apple", "Samsung")); // disjunctive facet
         refinements.put("category", Arrays.asList("device")); // conjunctive facet
-        index.searchDisjunctiveFacetingAsync(new Query("phone"), disjunctiveFacets, refinements, new CompletionHandler() {
+        index.searchDisjunctiveFacetingAsync(query, disjunctiveFacets, refinements, new CompletionHandler() {
             @Override
             public void requestCompleted(JSONObject content, AlgoliaException error) {
                 if (error != null) {
