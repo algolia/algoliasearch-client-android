@@ -29,8 +29,10 @@ import org.junit.Test;
 import org.mockito.internal.util.reflection.Whitebox;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
@@ -116,6 +118,13 @@ public class IndexTest extends PowerMockTestCase {
 
     @Test
     public void testSearchDisjunctiveFacetingAsync() throws Exception {
+        // Set index settings.
+        JSONObject setSettingsResult = index.setSettings(new JSONObject("{\"attributesForFaceting\": [\"brand\", \"category\"]}"));
+        index.waitTask(setSettingsResult.getString("taskID"));
+
+        // Empty query
+        // -----------
+        // Not very useful, but we have to check this edge case.
         final CountDownLatch signal = new CountDownLatch(1);
         index.searchDisjunctiveFacetingAsync(new Query(), new ArrayList<String>(), new HashMap<String, List<String>>(), new CompletionHandler() {
             @Override
@@ -129,6 +138,45 @@ public class IndexTest extends PowerMockTestCase {
             }
         });
         assertTrue("No callback was called", signal.await(Helpers.wait, TimeUnit.SECONDS));
+
+        // "Real" query
+        // ------------
+        final CountDownLatch signal2 = new CountDownLatch(1);
+        // Create data set.
+        objects = new ArrayList<>();
+        objects.add(new JSONObject("{\"name\": \"iPhone 6\", \"brand\": \"Apple\", \"category\": \"device\"}"));
+        objects.add(new JSONObject("{\"name\": \"iPhone 6 Plus\", \"brand\": \"Apple\", \"category\": \"device\"}"));
+        objects.add(new JSONObject("{\"name\": \"iPhone cover\", \"brand\": \"Apple\", \"category\": \"accessory\"}"));
+        objects.add(new JSONObject("{\"name\": \"Galaxy S5\", \"brand\": \"Samsung\", \"category\": \"device\"}"));
+        objects.add(new JSONObject("{\"name\": \"Wonder Phone\", \"brand\": \"Samsung\", \"category\": \"device\"}"));
+        objects.add(new JSONObject("{\"name\": \"Platinum Phone Cover\", \"brand\": \"Samsung\", \"category\": \"accessory\"}"));
+        objects.add(new JSONObject("{\"name\": \"Lame Phone\", \"brand\": \"Whatever\", \"category\": \"device\"}"));
+        objects.add(new JSONObject("{\"name\": \"Lame Phone cover\", \"brand\": \"Whatever\", \"category\": \"accessory\"}"));
+        JSONObject task = index.addObjects(new JSONArray(objects));
+        index.waitTask(task.getString("taskID"));
+        final List<String> disjunctiveFacets = Arrays.asList("brand");
+        final Map<String, List<String>> refinements = new HashMap<>();
+        refinements.put("brand", Arrays.asList("Apple", "Samsung")); // disjunctive facet
+        refinements.put("category", Arrays.asList("device")); // conjunctive facet
+        index.searchDisjunctiveFacetingAsync(new Query("phone"), disjunctiveFacets, refinements, new CompletionHandler() {
+            @Override
+            public void requestCompleted(JSONObject content, AlgoliaException error) {
+                if (error != null) {
+                    fail(error.getMessage());
+                } else {
+                    assertEquals(3, content.optInt("nbHits"));
+                    JSONObject disjunctiveFacetsResult = content.optJSONObject("disjunctiveFacets");
+                    assertNotNull(disjunctiveFacetsResult);
+                    JSONObject brandFacetCounts = disjunctiveFacetsResult.optJSONObject("brand");
+                    assertNotNull(brandFacetCounts);
+                    assertEquals(2, brandFacetCounts.optInt("Apple"));
+                    assertEquals(1, brandFacetCounts.optInt("Samsung"));
+                    assertEquals(1, brandFacetCounts.optInt("Whatever"));
+                }
+                signal2.countDown();
+            }
+        });
+        assertTrue("No callback was called", signal2.await(Helpers.wait, TimeUnit.SECONDS));
     }
 
     @Test
