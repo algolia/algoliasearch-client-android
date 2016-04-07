@@ -545,7 +545,7 @@ abstract class BaseIndex {
             }
             String[] facets = new String[]{disjunctiveFacet};
             queries.add(new IndexQuery(this.indexName, new Query(query).setHitsPerPage(0).setAnalytics(false)
-                    .setAttributesToRetrieve("").setAttributesToHighlight("").setAttributesToSnippet("")
+                    .setAttributesToRetrieve().setAttributesToHighlight().setAttributesToSnippet()
                     .setFacets(facets).set("facetFilters", filters.toString())));
         }
         JSONObject answers = this.client.multipleQueries(queries, null);
