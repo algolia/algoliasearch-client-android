@@ -25,6 +25,7 @@ package com.algolia.search.saas;
 
 import android.support.annotation.NonNull;
 
+import org.apache.http.HttpException;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.message.BasicHeader;
 import org.apache.http.protocol.HTTP;
@@ -62,7 +63,9 @@ abstract class BaseAPIClient {
     private List<String> readHosts;
     private List<String> writeHosts;
 
-    /** HTTP headers that will be sent with every request. */
+    /**
+     * HTTP headers that will be sent with every request.
+     */
     private HashMap<String, String> headers;
     private ExpiringCache<String, String> cache;
     private boolean isCacheEnabled = false;
@@ -72,7 +75,7 @@ abstract class BaseAPIClient {
      *
      * @param applicationID the application ID you have in your admin interface
      * @param apiKey        a valid API key for the service
-     * @param hosts    the list of hosts that you have received for the service
+     * @param hosts         the list of hosts that you have received for the service
      */
     protected BaseAPIClient(String applicationID, String apiKey, String[] hosts) {
         if (applicationID == null || applicationID.length() == 0) {
@@ -103,8 +106,7 @@ abstract class BaseAPIClient {
         headers = new HashMap<String, String>();
     }
 
-    public String getApplicationID()
-    {
+    public String getApplicationID() {
         return applicationID;
     }
 
@@ -123,7 +125,7 @@ abstract class BaseAPIClient {
      * Enables search cache with default parameters
      *
      * @param timeoutInSeconds duration during wich an request is kept in cache
-     * @param maxRequests maximum amount of requests to keep before removing the least recently used
+     * @param maxRequests      maximum amount of requests to keep before removing the least recently used
      */
     public void enableSearchCache(int timeoutInSeconds, int maxRequests) {
         isCacheEnabled = true;
@@ -153,7 +155,7 @@ abstract class BaseAPIClient {
     /**
      * Set an HTTP header that will be sent with every request.
      *
-     * @param name Header name.
+     * @param name  Header name.
      * @param value Value for the header. If null, the header will be removed.
      */
     public void setHeader(@NonNull String name, String value) {
@@ -395,6 +397,10 @@ abstract class BaseAPIClient {
         return new JSONObject(new JSONTokener(input));
     }
 
+    private JSONObject _getJSONObject(byte[] bytes) throws JSONException, UnsupportedEncodingException {
+        return new JSONObject(new String(bytes, "UTF-8"));
+    }
+
     private JSONObject _getAnswerJSONObject(InputStream istream) throws IOException, JSONException {
         return _getJSONObject(_toCharArray(istream));
     }
@@ -402,12 +408,12 @@ abstract class BaseAPIClient {
     /**
      * Send the query according to parameters and returns its result as a JSONObject
      *
-     * @param m HTTP Method to use
-     * @param url endpoint URL
-     * @param json optional JSON Object to send
-     * @param hostsArray array of hosts to try successively
+     * @param m              HTTP Method to use
+     * @param url            endpoint URL
+     * @param json           optional JSON Object to send
+     * @param hostsArray     array of hosts to try successively
      * @param connectTimeout maximum wait time to open connection
-     * @param readTimeout maximum time to read data on socket
+     * @param readTimeout    maximum time to read data on socket
      * @return a JSONObject containing the resulting data or error
      * @throws AlgoliaException if the request data is not valid json
      */
@@ -437,12 +443,12 @@ abstract class BaseAPIClient {
     /**
      * Send the query according to parameters and returns its result as a JSONObject
      *
-     * @param m HTTP Method to use
-     * @param url endpoint URL
-     * @param json optional JSON Object to send
-     * @param hostsArray array of hosts to try successively
+     * @param m              HTTP Method to use
+     * @param url            endpoint URL
+     * @param json           optional JSON Object to send
+     * @param hostsArray     array of hosts to try successively
      * @param connectTimeout maximum wait time to open connection
-     * @param readTimeout maximum time to read data on socket
+     * @param readTimeout    maximum time to read data on socket
      * @return a JSONObject containing the resulting data or error
      * @throws AlgoliaException in case of connection or data handling error
      */
@@ -469,102 +475,75 @@ abstract class BaseAPIClient {
             }
 
             // set URL
-            URL hostURL;
-            HttpURLConnection hostConnection;
             try {
-                hostURL = new URL("https://" + host + url);
-                hostConnection = (HttpURLConnection) hostURL.openConnection();
+                URL hostURL = new URL("https://" + host + url);
+                HttpURLConnection hostConnection = (HttpURLConnection) hostURL.openConnection();
+
+                //set timeouts
                 hostConnection.setRequestMethod(requestMethod);
-            } catch (IOException e) {
-                // on error continue on the next host
-                addError(errors, host, e);
-                continue;
-            }
+                hostConnection.setConnectTimeout(connectTimeout);
+                hostConnection.setReadTimeout(readTimeout);
 
-            hostConnection.setConnectTimeout(connectTimeout);
-            hostConnection.setReadTimeout(readTimeout);
-
-            // set auth headers
-            hostConnection.setRequestProperty("X-Algolia-Application-Id", this.applicationID);
-            hostConnection.setRequestProperty("X-Algolia-API-Key", this.apiKey);
-            for (Map.Entry<String, String> entry : headers.entrySet()) {
-                hostConnection.setRequestProperty(entry.getKey(), entry.getValue());
-            }
-
-            // set user agent
-            hostConnection.setRequestProperty("User-Agent", "Algolia for Android " + version);
-
-            // write JSON entity
-            if (json != null) {
-                if (!(requestMethod.equals("PUT") || requestMethod.equals("POST"))) {
-                    throw new IllegalArgumentException("Method " + m + " cannot enclose entity");
+                // set auth headers
+                hostConnection.setRequestProperty("X-Algolia-Application-Id", this.applicationID);
+                hostConnection.setRequestProperty("X-Algolia-API-Key", this.apiKey);
+                for (Map.Entry<String, String> entry : headers.entrySet()) {
+                    hostConnection.setRequestProperty(entry.getKey(), entry.getValue());
                 }
-                hostConnection.setRequestProperty("Content-type", "application/json");
-                hostConnection.setDoOutput(true);
-                try {
+
+                // set user agent
+                hostConnection.setRequestProperty("User-Agent", "Algolia for Android " + version);
+
+                // write JSON entity
+                if (json != null) {
+                    if (!(requestMethod.equals("PUT") || requestMethod.equals("POST"))) {
+                        throw new IllegalArgumentException("Method " + m + " cannot enclose entity");
+                    }
+                    hostConnection.setRequestProperty("Content-type", "application/json");
+                    hostConnection.setDoOutput(true);
                     StringEntity se = new StringEntity(json, "UTF-8");
                     se.setContentEncoding(new BasicHeader(HTTP.CONTENT_TYPE, "application/json"));
                     se.writeTo(hostConnection.getOutputStream());
-                } catch (UnsupportedEncodingException e) {
-                    throw new AlgoliaException("Invalid JSON Object: " + json);
-                } catch (IOException e) {
-                    addError(errors, host, e);
-                    continue;
                 }
-            }
 
-            int code;
-            try {
-                code = hostConnection.getResponseCode();
-            } catch (IOException e) {
-                // on error continue on the next host
-                addError(errors, host, e);
-                continue;
-            }
+                // read response
+                int code = hostConnection.getResponseCode();
+                final boolean codeIsError = code / 100 != 2;
+                InputStream stream = codeIsError ?
+                        hostConnection.getErrorStream() : hostConnection.getInputStream();
 
-            InputStream stream = hostConnection.getErrorStream(); // Response is in ErrorStream unless code = 200
-            if (code / 100 == 2) {
-                // OK
-                try {
-                    stream = hostConnection.getInputStream();
-                } catch (IOException e) {
-                    addError(errors, host, e);
-                    continue;
-                }
-            } else if (code / 100 == 4) {
-                String message = "Error detected in backend";
-                try {
-                    message = _getAnswerJSONObject(stream).getString("message");
-                } catch (IOException e) {
-                    addError(errors, host, e);
-                    continue;
-                } catch (JSONException e) {
-                    throw new AlgoliaException("JSON decode error:" + e.getMessage());
-                }
-                consumeQuietly(hostConnection);
-                throw new AlgoliaException(message);
-            } else {
-                try {
-                    errors.put(host, _toCharArray(stream));
-                } catch (IOException e) {
-                    errors.put(host, String.valueOf(code));
-                }
-                consumeQuietly(hostConnection);
-                // KO, continue
-                continue;
-            }
-            try {
+                final byte[] rawResponse;
                 String encoding = hostConnection.getContentEncoding();
                 if (encoding != null && encoding.contains("gzip")) {
-                    return _toByteArray(new GZIPInputStream(stream));
+                    rawResponse = _toByteArray(new GZIPInputStream(stream));
                 } else {
-                    return _toByteArray(stream);
+                    rawResponse = _toByteArray(stream);
                 }
-            } catch (IOException e) {
+
+                // handle http errors
+                if (codeIsError) {
+                    if (code / 100 == 4) {
+                        String message = _getJSONObject(rawResponse).getString("message");
+                        consumeQuietly(hostConnection);
+                        throw new AlgoliaException(message, code);
+                    } else {
+                        final String errorMessage = _toCharArray(stream);
+                        consumeQuietly(hostConnection);
+                        addError(errors, host, new HttpException(errorMessage));
+                        continue;
+                    }
+                }
+                return rawResponse;
+
+            } catch (JSONException e) { // fatal
+                throw new AlgoliaException("JSON decode error:" + e.getMessage());
+            } catch (UnsupportedEncodingException e) { // fatal
+                throw new AlgoliaException("Invalid JSON Object: " + json);
+            } catch (IOException e) { // host error, continue on the next host
                 addError(errors, host, e);
-                continue;
             }
         }
+
         StringBuilder builder = new StringBuilder("Hosts unreachable: ");
         Boolean first = true;
         for (Map.Entry<String, String> entry : errors.entrySet()) {
@@ -577,7 +556,7 @@ abstract class BaseAPIClient {
         throw new AlgoliaException(builder.toString());
     }
 
-    private void addError(HashMap<String, String> errors, String host, IOException e) {
+    private void addError(HashMap<String, String> errors, String host, Exception e) {
         errors.put(host, String.format("%s=%s", e.getClass().getName(), e.getMessage()));
     }
 
