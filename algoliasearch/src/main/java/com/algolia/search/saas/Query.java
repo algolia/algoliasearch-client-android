@@ -36,7 +36,14 @@ import java.util.TreeMap;
  */
 
 /**
- * A search query.
+ * Describes all parameters of a search query.
+ *
+ * There are two ways to access parameters:
+ *
+ * 1. Using the high-level, typed properties for individual parameters (recommended).
+ * 2. Using the low-level, untyped getter (`get()`) and setter (`set()`) or the subscript operator.
+ *    Use this approach if the parameter you wish to set is not supported by this class.
+ *
  */
 public class Query {
     public enum QueryType {
@@ -96,7 +103,7 @@ public class Query {
     }
 
     /**
-     * Clone a query.
+     * Clone an existing query.
      * @param other The query to be cloned.
      */
     public Query(@NonNull Query other) {
@@ -201,6 +208,10 @@ public class Query {
 
     private static final String KEY_AROUND_LAT_LNG = "aroundLatLng";
 
+    /**
+     * A pair of (latitude, longitude).
+     * Used in geo-search.
+     */
     public static final class LatLng {
         public final double lat;
         public final double lng;
@@ -471,6 +482,10 @@ public class Query {
         return parseBoolean(get(KEY_IGNORE_PLURALS));
     }
 
+    /**
+     * A rectangle in geo coordinates.
+     * Used in geo-search.
+     */
     public static final class GeoRect
     {
         public final LatLng p1;
@@ -1066,6 +1081,7 @@ public class Query {
      * @param name The parameter's name.
      * @param value The parameter's value, or null to remove it.
      *              It will first be converted to a String by the `toString()` method.
+     * @return This instance (used to chain calls).
      */
     public @NonNull Query set(@NonNull String name, Object value) {
         if (value == null) {

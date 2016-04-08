@@ -41,35 +41,42 @@ import java.util.List;
  */
 public class APIClient extends BaseAPIClient {
     /**
-     * Algolia Search initialization
-     * @param applicationID the application ID you have in your admin interface
-     * @param apiKey a valid API key for the service
+     * Create a new Algolia Search client targetting the default hosts.
+     *
+     * NOTE: This is the recommended way to initialize a client is most use cases.
+     *
+     * @param applicationID The application ID (available in your Algolia Dashboard).
+     * @param apiKey A valid API key for the service.
      */
     public APIClient(@NonNull String applicationID, @NonNull String apiKey) {
         this(applicationID, apiKey, null);
     }
 
     /**
-     * Algolia Search initialization
-     * @param applicationID the application ID you have in your admin interface
-     * @param apiKey a valid API key for the service
-     * @param hosts the list of hosts that you have received for the service
+     * Create a new Algolia Search client with explicit hosts to target.
+     *
+     * NOTE: In most use cases, you should the default hosts. See {@link APIClient#APIClient(String, String)}.
+     *
+     * @param applicationID The application ID (available in your Algolia Dashboard).
+     * @param apiKey A valid API key for the service.
+     * @param hosts An explicit list of hosts to target, or null to use the default hosts.
      */
     public APIClient(@NonNull String applicationID, @NonNull String apiKey, String[] hosts) {
         super(applicationID, apiKey, hosts);
     }
 
     /**
-     * Get the index object initialized (no server call needed for initialization)
+     * Create a proxy to an Algolia index (no server call required by this method).
      *
-     * @param indexName the name of index
+     * @param indexName The name of the index.
+     * @return A new proxy to the specified index.
      */
     public Index initIndex(@NonNull String indexName) {
         return new Index(this, indexName);
     }
 
     /**
-     * List all existing user keys with their associated ACLs
+     * List existing indexes.
      *
      * @param completionHandler The listener that will be notified of the request's outcome.
      * @return A cancellable request.
@@ -85,9 +92,9 @@ public class APIClient extends BaseAPIClient {
     }
 
     /**
-     * Delete an index
+     * Delete an index.
      *
-     * @param indexName the name of index to delete
+     * @param indexName Name of index to delete.
      * @param completionHandler The listener that will be notified of the request's outcome.
      * @return A cancellable request.
      */
@@ -103,8 +110,11 @@ public class APIClient extends BaseAPIClient {
 
     /**
      * Move an existing index.
-     * @param srcIndexName the name of index to copy.
-     * @param dstIndexName the new index name that will contains a copy of srcIndexName (destination will be overriten if it already exist).
+     * If the destination index already exists, its specific API keys will be preserved and the source index specific
+     * API keys will be added.
+     *
+     * @param srcIndexName Name of index to move.
+     * @param dstIndexName The new index name.
      * @param completionHandler The listener that will be notified of the request's outcome.
      * @return A cancellable request.
      */
@@ -120,8 +130,11 @@ public class APIClient extends BaseAPIClient {
 
     /**
      * Copy an existing index.
-     * @param srcIndexName the name of index to copy.
-     * @param dstIndexName the new index name that will contains a copy of srcIndexName (destination will be overriten if it already exist).
+     * If the destination index already exists, its specific API keys will be preserved and the source index specific
+     * API keys will be added.
+     *
+     * @param srcIndexName Name of index to copy.
+     * @param dstIndexName The new index name.
      * @param completionHandler The listener that will be notified of the request's outcome.
      * @return A cancellable request.
      */
@@ -174,18 +187,18 @@ public class APIClient extends BaseAPIClient {
     }
 
     /**
-     * Custom batch asynchronous
+     * Batch operations.
      *
-     * @param actions the array of actions
+     * @param operations List of operations.
      * @param completionHandler The listener that will be notified of the request's outcome.
      * @return A cancellable request.
      */
-    public Request batchASync(final @NonNull JSONArray actions, CompletionHandler completionHandler) {
+    public Request batchASync(final @NonNull JSONArray operations, CompletionHandler completionHandler) {
         return new Request(completionHandler) {
             @NonNull
             @Override
             JSONObject run() throws AlgoliaException {
-                return batch(actions);
+                return batch(operations);
             }
         }.start();
     }

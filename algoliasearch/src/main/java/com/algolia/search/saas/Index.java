@@ -34,7 +34,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * An index from Algolia's API.
+ * A proxy to an Algolia index.
  * <p>
  * You cannot construct this class directly. Please use {@link APIClient#initIndex(String)} to obtain an instance.
  * </p>
@@ -52,7 +52,7 @@ public class Index extends BaseIndex {
     }
 
     /**
-     * Search inside the index asynchronously
+     * Search inside this index (asynchronously).
      *
      * @param query Search parameters. May be null to use an empty query.
      * @param completionHandler The listener that will be notified of the request's outcome.
@@ -69,27 +69,29 @@ public class Index extends BaseIndex {
     }
 
     /**
-     * Search inside the index synchronously
-     * @return a JSONObject containing search results
+     * Search inside this index (synchronously).
+     *
+     * @return Search results.
      */
     public JSONObject searchSync(@NonNull Query query) throws AlgoliaException {
         return search(query);
     }
 
     /**
-     * Search inside the index synchronously
-     * @return a byte array containing search results
+     * Search inside this index synchronously.
+     *
+     * @return Search results.
      */
     protected byte[] searchSyncRaw(@NonNull Query query) throws AlgoliaException {
         return searchRaw(query);
     }
 
     /**
-     * Perform a search with disjunctive facets generating as many queries as number of disjunctive facets
+     * Perform a search with disjunctive facets, generating as many queries as number of disjunctive facets (helper).
      *
-     * @param query             the query
-     * @param disjunctiveFacets the array of disjunctive facets
-     * @param refinements       Map representing the current refinements
+     * @param query             The query.
+     * @param disjunctiveFacets List of disjunctive facets.
+     * @param refinements       The current refinements, mapping facet names to a list of values.
      * @param completionHandler The listener that will be notified of the request's outcome.
      * @return A cancellable request.
      */
@@ -110,7 +112,7 @@ public class Index extends BaseIndex {
     }
 
     /**
-     * Add an object in this index asynchronously
+     * Add an object to this index (asynchronously).
      * <p>
      * WARNING: For performance reasons, the arguments are not cloned. Since the method is executed in the background,
      * you should not modify the object after it has been passed.
@@ -131,16 +133,15 @@ public class Index extends BaseIndex {
     }
 
     /**
-     * Add an object in this index asynchronously
+     * Add an object to this index, assigning it the specified object ID (asynchronously).
+     * If an object already exists with the same object ID, the existing object will be overwritten.
      * <p>
      * WARNING: For performance reasons, the arguments are not cloned. Since the method is executed in the background,
      * you should not modify the object after it has been passed.
      * </p>
      *
-     * @param object the object to add.
-     *  The object is represented by an associative array
-     * @param objectID an objectID you want to attribute to this object
-     * (if the attribute already exist the old object will be overwrite)
+     * @param object The object to add.
+     * @param objectID Identifier that you want to assign this object.
      * @param completionHandler The listener that will be notified of the request's outcome.
      * @return A cancellable request.
      */
@@ -155,9 +156,9 @@ public class Index extends BaseIndex {
     }
 
     /**
-     * Add several objects asynchronously
+     * Add several objects to this index (asynchronously).
      *
-     * @param objects contains an array of objects to add. If the object contains an objectID
+     * @param objects Objects to add.
      * @param completionHandler The listener that will be notified of the request's outcome.
      * @return A cancellable request.
      */
@@ -172,10 +173,10 @@ public class Index extends BaseIndex {
     }
 
     /**
-     * Override the content of object asynchronously
+     * Update an object (asynchronously).
      *
-     * @param object the object to save
-     * @param objectID the objectID
+     * @param object New version of the object to update.
+     * @param objectID Identifier of the object to update.
      * @param completionHandler The listener that will be notified of the request's outcome.
      * @return A cancellable request.
      */
@@ -190,9 +191,9 @@ public class Index extends BaseIndex {
     }
 
     /**
-     * Override the content of several objects asynchronously
+     * Update several objects (asynchronously).
      *
-     * @param objects contains an array of objects to update (each object must contains an objectID attribute)
+     * @param objects Objects to update. Each object must contain an <code>objectID</code> attribute.
      * @param completionHandler The listener that will be notified of the request's outcome.
      * @return A cancellable request.
      */
@@ -207,10 +208,10 @@ public class Index extends BaseIndex {
     }
 
     /**
-     * Update partially an object asynchronously.
+     * Partially update an object (asynchronously).
      *
-     * @param partialObject the object attributes to override.
-     * @param objectID the objectID
+     * @param partialObject New value/operations for the object.
+     * @param objectID Identifier of object to be updated.
      * @param completionHandler The listener that will be notified of the request's outcome.
      * @return A cancellable request.
      */
@@ -225,9 +226,10 @@ public class Index extends BaseIndex {
     }
 
     /**
-     * Override the content of several objects asynchronously
+     * Partially update several objects (asynchronously).
      *
-     * @param partialObjects contains an array of objects to update (each object must contains an objectID attribute)
+     * @param partialObjects New values/operations for the objects. Each object must contain an <code>objectID</code>
+     *                       attribute.
      * @param completionHandler The listener that will be notified of the request's outcome.
      * @return A cancellable request.
      */
@@ -242,9 +244,9 @@ public class Index extends BaseIndex {
     }
 
     /**
-     * Get an object from this index asynchronously
+     * Get an object from this index (asynchronously).
      *
-     * @param objectID the unique identifier of the object to retrieve
+     * @param objectID Identifier of the object to retrieve.
      * @param completionHandler The listener that will be notified of the request's outcome.
      * @return A cancellable request.
      */
@@ -259,10 +261,10 @@ public class Index extends BaseIndex {
     }
 
     /**
-     * Get an object from this index asynchronously
+     * Get an object from this index, optionally restricting the retrieved content (asynchronously).
      *
-     * @param objectID the unique identifier of the object to retrieve
-     * @param attributesToRetrieve, contains the list of attributes to retrieve as a string separated by ","
+     * @param objectID Identifier of the object to retrieve.
+     * @param attributesToRetrieve List of attributes to retrieve.
      * @param completionHandler The listener that will be notified of the request's outcome.
      * @return A cancellable request.
      */
@@ -277,9 +279,9 @@ public class Index extends BaseIndex {
     }
 
     /**
-     * Get several objects from this index asynchronously
+     * Get several objects from this index (asynchronously).
      *
-     * @param objectIDs the array of unique identifier of objects to retrieve
+     * @param objectIDs Identifiers of objects to retrieve.
      * @param completionHandler The listener that will be notified of the request's outcome.
      * @return A cancellable request.
      */
@@ -294,10 +296,10 @@ public class Index extends BaseIndex {
     }
 
     /**
-     * Wait the publication of a task on the server asynchronously.
-     * All server task are asynchronous and you can check with this method that the task is published.
+     * Wait until the publication of a task on the server (helper).
+     * All server tasks are asynchronous. This method helps you check that a task is published.
      *
-     * @param taskID the id of the task returned by server
+     * @param taskID Identifier of the task (as returned by the server).
      * @param completionHandler The listener that will be notified of the request's outcome.
      * @return A cancellable request.
      */
@@ -312,9 +314,9 @@ public class Index extends BaseIndex {
     }
 
     /**
-     * Delete an object from the index asynchronously
+     * Delete an object from this index (asynchronously).
      *
-     * @param objectID the unique identifier of object to delete
+     * @param objectID Identifier of the object to delete.
      * @param completionHandler The listener that will be notified of the request's outcome.
      * @return A cancellable request.
      */
@@ -329,9 +331,9 @@ public class Index extends BaseIndex {
     }
 
     /**
-     * Delete several objects asynchronously
+     * Delete several objects from this index (asynchronously).
      *
-     * @param objectIDs the array of objectIDs to delete
+     * @param objectIDs Identifiers of objects to delete.
      * @param completionHandler The listener that will be notified of the request's outcome.
      * @return A cancellable request.
      */
@@ -346,9 +348,9 @@ public class Index extends BaseIndex {
     }
 
     /**
-     * Delete all objects matching a query asynchronously
+     * Delete all objects matching a query (helper).
      *
-     * @param query the query string
+     * @param query The query that objects to delete must match.
      * @param completionHandler The listener that will be notified of the request's outcome.
      * @return A cancellable request.
      */
@@ -365,7 +367,7 @@ public class Index extends BaseIndex {
     }
 
     /**
-     * Get settings of this index asynchronously
+     * Get this index's settings (asynchronously).
      *
      * @param completionHandler The listener that will be notified of the request's outcome.
      * @return A cancellable request.
@@ -381,9 +383,12 @@ public class Index extends BaseIndex {
     }
 
     /**
-     * Set settings for this index asynchronously
+     * Set this index's settings (asynchronously).
      *
-     * @param settings the settings
+     * Please refer to our <a href="https://www.algolia.com/doc/android#index-settings">API documentation</a> for the
+     * list of supported settings.
+     *
+     * @param settings New settings.
      * @param completionHandler The listener that will be notified of the request's outcome.
      * @return A cancellable request.
      */
