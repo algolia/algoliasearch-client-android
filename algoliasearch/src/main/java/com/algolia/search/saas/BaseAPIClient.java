@@ -336,7 +336,7 @@ abstract class BaseAPIClient {
      * @return the stream's content as a String
      * @throws IOException if the stream can't be read, decoded as UTF-8 or closed
      */
-    private String _toCharArray(InputStream stream) throws IOException {
+    private static String _toCharArray(InputStream stream) throws IOException {
         InputStreamReader is = new InputStreamReader(stream, "UTF-8");
         StringBuilder builder = new StringBuilder();
         char[] buf = new char[1000];
@@ -373,15 +373,15 @@ abstract class BaseAPIClient {
     }
 
 
-    private JSONObject _getJSONObject(String input) throws JSONException {
+    protected static JSONObject _getJSONObject(String input) throws JSONException {
         return new JSONObject(new JSONTokener(input));
     }
 
-    private JSONObject _getJSONObject(byte[] array) throws JSONException, UnsupportedEncodingException {
+    protected static JSONObject _getJSONObject(byte[] array) throws JSONException, UnsupportedEncodingException {
         return new JSONObject(new String(array, "UTF-8"));
     }
 
-    private JSONObject _getAnswerJSONObject(InputStream istream) throws IOException, JSONException {
+    private static JSONObject _getAnswerJSONObject(InputStream istream) throws IOException, JSONException {
         return _getJSONObject(_toCharArray(istream));
     }
 
