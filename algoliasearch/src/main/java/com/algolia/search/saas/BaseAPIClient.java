@@ -340,7 +340,7 @@ abstract class BaseAPIClient {
      * @return the stream's content as a byte[]
      * @throws AlgoliaException if the stream can't be read or flushed
      */
-    private byte[] _toByteArray(InputStream stream) throws AlgoliaException {
+    private static byte[] _toByteArray(InputStream stream) throws AlgoliaException {
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         int read;
         byte[] buffer = new byte[1024];
@@ -382,7 +382,7 @@ abstract class BaseAPIClient {
      * @return a JSONObject containing the resulting data or error
      * @throws AlgoliaException if the request data is not valid json
      */
-    private synchronized JSONObject _request(Method m, String url, String json, List<String> hostsArray, int connectTimeout, int readTimeout) throws AlgoliaException {
+    private JSONObject _request(Method m, String url, String json, List<String> hostsArray, int connectTimeout, int readTimeout) throws AlgoliaException {
         try {
             return _getJSONObject(_requestRaw(m, url, json, hostsArray, connectTimeout, readTimeout));
         } catch (JSONException e) {
@@ -404,7 +404,7 @@ abstract class BaseAPIClient {
      * @return a JSONObject containing the resulting data or error
      * @throws AlgoliaException in case of connection or data handling error
      */
-    private synchronized byte[] _requestRaw(Method m, String url, String json, List<String> hostsArray, int connectTimeout, int readTimeout) throws AlgoliaException {
+    private byte[] _requestRaw(Method m, String url, String json, List<String> hostsArray, int connectTimeout, int readTimeout) throws AlgoliaException {
         String requestMethod;
         HashMap<String, String> errors = new HashMap<String, String>();
         // for each host
@@ -439,7 +439,7 @@ abstract class BaseAPIClient {
                 // set auth headers
                 hostConnection.setRequestProperty("X-Algolia-Application-Id", this.applicationID);
                 hostConnection.setRequestProperty("X-Algolia-API-Key", this.apiKey);
-                for (Map.Entry<String, String> entry : headers.entrySet()) {
+                for (Map.Entry<String, String> entry : this.headers.entrySet()) {
                     hostConnection.setRequestProperty(entry.getKey(), entry.getValue());
                 }
 
@@ -508,7 +508,7 @@ abstract class BaseAPIClient {
         throw new AlgoliaException(builder.toString());
     }
 
-    private void addError(HashMap<String, String> errors, String host, Exception e) {
+    private static void addError(HashMap<String, String> errors, String host, Exception e) {
         errors.put(host, String.format("%s=%s", e.getClass().getName(), e.getMessage()));
     }
 
@@ -516,7 +516,7 @@ abstract class BaseAPIClient {
      * Ensures that the entity content is fully consumed and the content stream, if exists,
      * is closed.
      */
-    private void consumeQuietly(final HttpURLConnection connection) {
+    private static void consumeQuietly(final HttpURLConnection connection) {
         try {
             int read = 0;
             while (read != -1) {
