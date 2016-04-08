@@ -1,5 +1,6 @@
 package com.algolia.search.saas;
 
+import android.support.annotation.NonNull;
 import android.util.Pair;
 
 import org.json.JSONArray;
@@ -8,7 +9,9 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /*
  * Copyright (c) 2015 Algolia
@@ -81,6 +84,7 @@ public class Query {
         TYPO_NOTSET
     }
 
+    protected Map<String, String> parameters = new HashMap<>();
     protected List<String> attributes;
     protected List<String> attributesToHighlight;
     protected List<String> attributesToSnippet;
@@ -1174,6 +1178,14 @@ public class Query {
                     stringBuilder.append("queryType=prefixNone");
                     break;
             }
+            // WARNING: Any extra parameter will override any previous one with the same name.
+            for (Map.Entry<String, String> entry : parameters.entrySet()) {
+                if (stringBuilder.length() > 0)
+                    stringBuilder.append('&');
+                stringBuilder.append(URLEncoder.encode(entry.getKey(), "UTF-8"));
+                stringBuilder.append('=');
+                stringBuilder.append(URLEncoder.encode(entry.getValue(), "UTF-8"));
+            }
         } catch (UnsupportedEncodingException e) {
             throw new RuntimeException(e);
         }
@@ -1400,5 +1412,35 @@ public class Query {
      */
     public TypoTolerance getTypoTolerance() {
         return typoTolerance;
+    }
+
+    // ----------------------------------------------------------------------
+    // Low-level (untyped) accessors
+    // ----------------------------------------------------------------------
+
+    /**
+     * Set a parameter in an untyped fashion.
+     * This low-level accessor is intended to access parameters that this client does not yet support.
+     * @param name The parameter's name.
+     * @param value The parameter's value, or null to remove it.
+     *              It will first be converted to a String by the `toString()` method.
+     */
+    public @NonNull
+    Query set(@NonNull String name, Object value) {
+        if (value == null) {
+            parameters.remove(name);
+        } else {
+            parameters.put(name, value.toString());
+        }
+        return this;
+    }
+
+    /**
+     * Get a parameter in an untyped fashion.
+     * @param name The parameter's name.
+     * @return The parameter's value, or null if a parameter with the specified name does not exist.
+     */
+    public String get(@NonNull String name) {
+        return parameters.get(name);
     }
 }
