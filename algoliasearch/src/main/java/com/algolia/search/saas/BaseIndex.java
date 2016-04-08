@@ -44,7 +44,7 @@ abstract class BaseIndex {
     private APIClient client;
     private String encodedIndexName;
     private String indexName;
-    private ExpiringCache<String, String> searchCache;
+    private ExpiringCache<String, byte[]> searchCache;
     private boolean isCacheEnabled = false;
 
     private final long MAX_TIME_MS_TO_WAIT = 10000L;
@@ -79,7 +79,7 @@ abstract class BaseIndex {
     /**
      * Add an object in this index
      *
-     * @param obj the object to add.
+     * @param obj      the object to add.
      * @param objectID an objectID you want to attribute to this object
      * (if the attribute already exist the old object will be overwrite)
      * @throws AlgoliaException
@@ -338,19 +338,19 @@ abstract class BaseIndex {
      */
     protected JSONObject search(@NonNull Query query) throws AlgoliaException {
         String cacheKey = null;
-        String jsonStr = null;
+        byte[] rawResponse = null;
         if (isCacheEnabled) {
             cacheKey = String.format("%s", query.getQueryString());
-            jsonStr = searchCache.get(cacheKey);
+            rawResponse = searchCache.get(cacheKey);
         }
         try {
-            if (jsonStr == null) {
-                jsonStr = new String(searchRaw(query), "UTF-8");
+            if (rawResponse == null) {
+                rawResponse = searchRaw(query);
                 if (isCacheEnabled) {
-                    searchCache.put(cacheKey, jsonStr);
+                    searchCache.put(cacheKey, rawResponse);
                 }
             }
-            return BaseAPIClient._getJSONObject(jsonStr);
+            return BaseAPIClient._getJSONObject(rawResponse);
         } catch (UnsupportedEncodingException | JSONException e) {
             throw new AlgoliaException(e.getMessage());
         }
