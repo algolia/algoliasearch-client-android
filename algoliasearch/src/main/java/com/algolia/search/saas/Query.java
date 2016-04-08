@@ -48,18 +48,18 @@ public class Query {
         PREFIX_NONE
     }
 
-    public enum RemoveWordsType {
-        REMOVE_LAST_WORDS,
-        REMOVE_FIRST_WORDS,
-        REMOVE_NONE,
-        REMOVE_ALLOPTIONAL
+    public enum RemoveWordsIfNoResults {
+        LAST_WORDS,
+        FIRST_WORDS,
+        NONE,
+        ALL_OPTIONAL
     }
 
     public enum TypoTolerance {
-        TYPO_TRUE,
-        TYPO_FALSE,
-        TYPO_MIN,
-        TYPO_STRICT
+        TRUE,
+        FALSE,
+        MIN,
+        STRICT
     }
 
     // ----------------------------------------------------------------------
@@ -776,21 +776,21 @@ public class Query {
     /**
      * Select the strategy to adopt when a query does not return any result.
      */
-    public @NonNull Query setRemoveWordsIfNoResults(RemoveWordsType type) {
+    public @NonNull Query setRemoveWordsIfNoResults(RemoveWordsIfNoResults type) {
         if (type == null) {
             set(KEY_REMOVE_WORDS_IF_NO_RESULT, null);
         } else {
             switch (type) {
-                case REMOVE_LAST_WORDS:
+                case LAST_WORDS:
                     set(KEY_REMOVE_WORDS_IF_NO_RESULT, "lastWords");
                     break;
-                case REMOVE_FIRST_WORDS:
+                case FIRST_WORDS:
                     set(KEY_REMOVE_WORDS_IF_NO_RESULT, "firstWords");
                     break;
-                case REMOVE_ALLOPTIONAL:
+                case ALL_OPTIONAL:
                     set(KEY_REMOVE_WORDS_IF_NO_RESULT, "allOptional");
                     break;
-                case REMOVE_NONE:
+                case NONE:
                     set(KEY_REMOVE_WORDS_IF_NO_RESULT, "none");
                     break;
             }
@@ -798,19 +798,19 @@ public class Query {
         return this;
     }
 
-    public RemoveWordsType getRemoveWordsIfNoResults()
+    public RemoveWordsIfNoResults getRemoveWordsIfNoResults()
     {
         String value = get(KEY_REMOVE_WORDS_IF_NO_RESULT);
         if (value != null) {
             switch (value) {
                 case "lastWords":
-                    return RemoveWordsType.REMOVE_LAST_WORDS;
+                    return RemoveWordsIfNoResults.LAST_WORDS;
                 case "firstWords":
-                    return RemoveWordsType.REMOVE_FIRST_WORDS;
+                    return RemoveWordsIfNoResults.FIRST_WORDS;
                 case "allOptional":
-                    return RemoveWordsType.REMOVE_ALLOPTIONAL;
+                    return RemoveWordsIfNoResults.ALL_OPTIONAL;
                 case "none":
-                    return RemoveWordsType.REMOVE_NONE;
+                    return RemoveWordsIfNoResults.NONE;
             }
         }
         return null;
@@ -906,16 +906,16 @@ public class Query {
             set(KEY_TYPO_TOLERANCE, null);
         } else {
             switch (type) {
-                case TYPO_FALSE:
+                case FALSE:
                     set(KEY_TYPO_TOLERANCE, "false");
                     break;
-                case TYPO_MIN:
+                case MIN:
                     set(KEY_TYPO_TOLERANCE, "min");
                     break;
-                case TYPO_STRICT:
+                case STRICT:
                     set(KEY_TYPO_TOLERANCE, "strict");
                     break;
-                case TYPO_TRUE:
+                case TRUE:
                     set(KEY_TYPO_TOLERANCE, "true");
                     break;
             }
@@ -929,13 +929,13 @@ public class Query {
         if (value != null) {
             switch (value) {
                 case "false":
-                    return TypoTolerance.TYPO_FALSE;
+                    return TypoTolerance.FALSE;
                 case "min":
-                    return TypoTolerance.TYPO_MIN;
+                    return TypoTolerance.MIN;
                 case "strict":
-                    return TypoTolerance.TYPO_STRICT;
+                    return TypoTolerance.STRICT;
                 case "true":
-                    return TypoTolerance.TYPO_TRUE;
+                    return TypoTolerance.TRUE;
             }
         }
         return null;

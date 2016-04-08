@@ -300,26 +300,26 @@ public class QueryTest extends RobolectricTestCase  {
         Query query1 = new Query();
         assertNull(query1.getRemoveWordsIfNoResults());
 
-        query1.setRemoveWordsIfNoResults(Query.RemoveWordsType.REMOVE_ALLOPTIONAL);
-        assertEquals(query1.getRemoveWordsIfNoResults(), Query.RemoveWordsType.REMOVE_ALLOPTIONAL);
+        query1.setRemoveWordsIfNoResults(Query.RemoveWordsIfNoResults.ALL_OPTIONAL);
+        assertEquals(query1.getRemoveWordsIfNoResults(), Query.RemoveWordsIfNoResults.ALL_OPTIONAL);
         assertEquals(query1.get("removeWordsIfNoResults"), "allOptional");
         Query query2 = Query.parse(query1.build());
         assertEquals(query2.getRemoveWordsIfNoResults(), query1.getRemoveWordsIfNoResults());
 
-        query1.setRemoveWordsIfNoResults(Query.RemoveWordsType.REMOVE_FIRST_WORDS);
-        assertEquals(query1.getRemoveWordsIfNoResults(), Query.RemoveWordsType.REMOVE_FIRST_WORDS);
+        query1.setRemoveWordsIfNoResults(Query.RemoveWordsIfNoResults.FIRST_WORDS);
+        assertEquals(query1.getRemoveWordsIfNoResults(), Query.RemoveWordsIfNoResults.FIRST_WORDS);
         assertEquals(query1.get("removeWordsIfNoResults"), "firstWords");
         query2 = Query.parse(query1.build());
         assertEquals(query2.getRemoveWordsIfNoResults(), query1.getRemoveWordsIfNoResults());
 
-        query1.setRemoveWordsIfNoResults(Query.RemoveWordsType.REMOVE_LAST_WORDS);
-        assertEquals(query1.getRemoveWordsIfNoResults(), Query.RemoveWordsType.REMOVE_LAST_WORDS);
+        query1.setRemoveWordsIfNoResults(Query.RemoveWordsIfNoResults.LAST_WORDS);
+        assertEquals(query1.getRemoveWordsIfNoResults(), Query.RemoveWordsIfNoResults.LAST_WORDS);
         assertEquals(query1.get("removeWordsIfNoResults"), "lastWords");
         query2 = Query.parse(query1.build());
         assertEquals(query2.getRemoveWordsIfNoResults(), query1.getRemoveWordsIfNoResults());
 
-        query1.setRemoveWordsIfNoResults(Query.RemoveWordsType.REMOVE_NONE);
-        assertEquals(query1.getRemoveWordsIfNoResults(), Query.RemoveWordsType.REMOVE_NONE);
+        query1.setRemoveWordsIfNoResults(Query.RemoveWordsIfNoResults.NONE);
+        assertEquals(query1.getRemoveWordsIfNoResults(), Query.RemoveWordsIfNoResults.NONE);
         assertEquals(query1.get("removeWordsIfNoResults"), "none");
         query2 = Query.parse(query1.build());
         assertEquals(query2.getRemoveWordsIfNoResults(), query1.getRemoveWordsIfNoResults());
@@ -328,7 +328,7 @@ public class QueryTest extends RobolectricTestCase  {
         assertNull(query1.getRemoveWordsIfNoResults());
 
         query1.set("removeWordsIfNoResults", "allOptional");
-        assertEquals(query1.getRemoveWordsIfNoResults(), Query.RemoveWordsType.REMOVE_ALLOPTIONAL);
+        assertEquals(query1.getRemoveWordsIfNoResults(), Query.RemoveWordsIfNoResults.ALL_OPTIONAL);
     }
 
     @Test
@@ -336,26 +336,26 @@ public class QueryTest extends RobolectricTestCase  {
         Query query1 = new Query();
         assertNull(query1.getTypoTolerance());
 
-        query1.setTypoTolerance(Query.TypoTolerance.TYPO_TRUE);
-        assertEquals(query1.getTypoTolerance(), Query.TypoTolerance.TYPO_TRUE);
+        query1.setTypoTolerance(Query.TypoTolerance.TRUE);
+        assertEquals(query1.getTypoTolerance(), Query.TypoTolerance.TRUE);
         assertEquals(query1.get("typoTolerance"), "true");
         Query query2 = Query.parse(query1.build());
         assertEquals(query2.getTypoTolerance(), query1.getTypoTolerance());
 
-        query1.setTypoTolerance(Query.TypoTolerance.TYPO_FALSE);
-        assertEquals(query1.getTypoTolerance(), Query.TypoTolerance.TYPO_FALSE);
+        query1.setTypoTolerance(Query.TypoTolerance.FALSE);
+        assertEquals(query1.getTypoTolerance(), Query.TypoTolerance.FALSE);
         assertEquals(query1.get("typoTolerance"), "false");
         query2 = Query.parse(query1.build());
         assertEquals(query2.getTypoTolerance(), query1.getTypoTolerance());
 
-        query1.setTypoTolerance(Query.TypoTolerance.TYPO_MIN);
-        assertEquals(query1.getTypoTolerance(), Query.TypoTolerance.TYPO_MIN);
+        query1.setTypoTolerance(Query.TypoTolerance.MIN);
+        assertEquals(query1.getTypoTolerance(), Query.TypoTolerance.MIN);
         assertEquals(query1.get("typoTolerance"), "min");
         query2 = Query.parse(query1.build());
         assertEquals(query2.getTypoTolerance(), query1.getTypoTolerance());
 
-        query1.setTypoTolerance(Query.TypoTolerance.TYPO_STRICT);
-        assertEquals(query1.getTypoTolerance(), Query.TypoTolerance.TYPO_STRICT);
+        query1.setTypoTolerance(Query.TypoTolerance.STRICT);
+        assertEquals(query1.getTypoTolerance(), Query.TypoTolerance.STRICT);
         assertEquals(query1.get("typoTolerance"), "strict");
         query2 = Query.parse(query1.build());
         assertEquals(query2.getTypoTolerance(), query1.getTypoTolerance());
@@ -364,7 +364,7 @@ public class QueryTest extends RobolectricTestCase  {
         assertNull(query1.getTypoTolerance());
 
         query1.set("typoTolerance", "true");
-        assertEquals(query1.getTypoTolerance(), Query.TypoTolerance.TYPO_TRUE);
+        assertEquals(query1.getTypoTolerance(), Query.TypoTolerance.TRUE);
     }
 
     @Test
