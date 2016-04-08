@@ -12,12 +12,14 @@ env:
     - ANDROID_TARGET=android-16
     - ANDROID_TARGET=android-19
     - ANDROID_TARGET=android-21
-    - ANDROID_TARGET=android-22 # Travis does not yet support android-23
+    - ANDROID_TARGET=android-23
 matrix:
   fast_finish: true
 android:
   components:
-    - build-tools-23.0.1
+    - tools
+    - build-tools-23.0.3
+    - android-23
 cache:
   directories:
     - $HOME/.gradle/caches/
