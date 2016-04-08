@@ -87,6 +87,41 @@ public class ApplicationTest extends ApplicationTestCase<Application> {
     }
 
     @UiThreadTest
+    public void testQueryExtraParameters() throws Exception {
+        // Accessor methods.
+        {
+            Query query = new Query();
+            query.set("extra", "value");
+            assertEquals("value", query.get("extra"));
+            assertEquals("extra=value", query.getQueryString());
+            query.set("abc", "def");
+            String url = query.getQueryString();
+            assertTrue(url.equals("abc=def&extra=value") || url.equals("extra=value&abc=def"));
+        }
+        // Percent escaping.
+        {
+            Query query = new Query();
+            query.set("%&=", "àéïôù");
+            assertEquals("%25%26%3D=%C3%A0%C3%A9%C3%AF%C3%B4%C3%B9", query.getQueryString());
+        }
+        // Overriding a typed query parameter.
+        {
+            Query query = new Query();
+            query.hitsPerPage = 100;
+            query.set("hitsPerPage", "666");
+            assertEquals("hitsPerPage=100&hitsPerPage=666", query.getQueryString());
+        }
+        // Deleting a parameter.
+        {
+            Query query = new Query();
+            query.set("abc", "ABC");
+            query.set("def", "DEF");
+            query.set("abc", null);
+            assertEquals("def=DEF", query.getQueryString());
+        }
+    }
+
+    @UiThreadTest
     public void testSearchAsync() throws Exception {
         final CountDownLatch signal = new CountDownLatch(1);
 
