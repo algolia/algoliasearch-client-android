@@ -302,7 +302,11 @@ abstract class BaseAPIClient {
                 requests.put(new JSONObject().put("indexName", indexQuery.getIndex()).put("params", paramsString));
             }
             JSONObject body = new JSONObject().put("requests", requests);
-            return postRequest("/1/indexes/*/queries?strategy=" + strategy, body.toString(), true);
+            String path = "/1/indexes/*/queries";
+            if (strategy != null) {
+                path += "?strategy=" + strategy;
+            }
+            return postRequest(path, body.toString(), true);
         } catch (JSONException e) {
             throw new AlgoliaException(e.getMessage());
         }

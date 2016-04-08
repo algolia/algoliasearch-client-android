@@ -136,31 +136,39 @@ public class APIClient extends BaseAPIClient {
     }
 
     /**
-     * This method allows to query multiple indexes with one API call asynchronously
-     * @param completionHandler The listener that will be notified of the request's outcome.
-     * @return A cancellable request.
+     * Strategy when running multiple queries. See {@link APIClient#multipleQueriesASync}.
      */
-    public Request multipleQueriesASync(final @NonNull List<IndexQuery> queries, CompletionHandler completionHandler) {
-        return new Request(completionHandler) {
-            @NonNull
-            @Override
-            JSONObject run() throws AlgoliaException {
-                return multipleQueries(queries, "none");
-            }
-        }.start();
+    public enum MultipleQueriesStrategy {
+        /** Execute the sequence of queries until the end. */
+        NONE("none"),
+        /** Execute the sequence of queries until the number of hits is reached by the sum of hits. */
+        STOP_IF_ENOUGH_MATCHES("stopIfEnoughMatches");
+
+        private String rawValue;
+
+        MultipleQueriesStrategy(String rawValue) {
+            this.rawValue = rawValue;
+        }
+
+        public String toString() {
+            return rawValue;
+        }
     }
 
     /**
-     * This method allows to query multiple indexes with one API call asynchronously
+     * Run multiple queries, potentially targetting multiple indexes, with one API call.
+     *
+     * @param queries The queries to run.
+     * @param strategy The strategy to use.
      * @param completionHandler The listener that will be notified of the request's outcome.
      * @return A cancellable request.
      */
-    public Request multipleQueriesASync(final @NonNull List<IndexQuery> queries, final String strategy, CompletionHandler completionHandler) {
+    public Request multipleQueriesASync(final @NonNull List<IndexQuery> queries, final MultipleQueriesStrategy strategy, CompletionHandler completionHandler) {
         return new Request(completionHandler) {
             @NonNull
             @Override
             JSONObject run() throws AlgoliaException {
-                return multipleQueries(queries, strategy);
+                return multipleQueries(queries, strategy == null ? null : strategy.toString());
             }
         }.start();
     }
