@@ -562,4 +562,17 @@ public class IndexTest extends PowerMockTestCase {
         });
         assertTrue("No callback was called", signal.await(Helpers.wait, TimeUnit.SECONDS));
     }
+
+    @Test
+    public void testError404() throws Exception {
+        Index unknownIndex = client.initIndex("doesnotexist");
+        unknownIndex.searchASync(new Query(), new CompletionHandler() {
+            @Override
+            public void requestCompleted(JSONObject content, AlgoliaException error) {
+                assertNotNull(error);
+                assertEquals(404, error.getStatusCode());
+                assertNotNull(error.getMessage());
+            }
+        });
+    }
 }
