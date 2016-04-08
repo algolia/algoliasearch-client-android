@@ -298,8 +298,10 @@ abstract class BaseAPIClient {
         try {
             JSONArray requests = new JSONArray();
             for (IndexQuery indexQuery : queries) {
-                String paramsString = indexQuery.build();
-                requests.put(new JSONObject().put("indexName", indexQuery.getIndex()).put("params", paramsString));
+                requests.put(new JSONObject()
+                    .put("indexName", indexQuery.getIndexName())
+                    .put("params", indexQuery.getQuery().build())
+                );
             }
             JSONObject body = new JSONObject().put("requests", requests);
             String path = "/1/indexes/*/queries";

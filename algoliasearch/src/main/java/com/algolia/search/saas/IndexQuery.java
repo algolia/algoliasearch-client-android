@@ -28,29 +28,20 @@ import android.support.annotation.NonNull;
 /**
  * A search query targeting a specific index.
  */
-public class IndexQuery extends Query {
-    private String index;
+public class IndexQuery {
+    private final String indexName;
+    private final Query query;
 
-    public IndexQuery(@NonNull String index)  {
-        super();
-        this.index = index;
+    public IndexQuery(@NonNull String indexName, @NonNull Query query)  {
+        this.indexName = indexName;
+        this.query = query;
     }
 
-    public IndexQuery(@NonNull String index, String query)  {
-        super(query);
-        this.index = index;
+    public @NonNull String getIndexName() {
+        return indexName;
     }
 
-    public IndexQuery(@NonNull String index, @NonNull Query other)  {
-        super(other);
-        this.index = index;
-    }
-
-    public @NonNull String getIndex() {
-        return index;
-    }
-
-    public void setIndex(@NonNull String index) {
-        this.index = index;
+    public @NonNull Query getQuery() {
+        return query;
     }
 }
