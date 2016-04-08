@@ -36,12 +36,18 @@ import java.util.Map;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertFalse;
-import static junit.framework.Assert.assertNotNull;
-import static junit.framework.Assert.assertNull;
-import static junit.framework.Assert.assertTrue;
-import static junit.framework.Assert.fail;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+import static org.mockito.Matchers.anyBoolean;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 /**
  * <a href="http://d.android.com/tools/testing/testing_android.html">Testing Fundamentals</a>
@@ -574,5 +580,59 @@ public class IndexTest extends PowerMockTestCase {
                 assertNotNull(error.getMessage());
             }
         });
+    }
+
+    @Test
+    public void testCacheUseIfEnabled() throws Exception {
+        index.enableSearchCache();
+        verifySearchTwiceCalls(1);
+    }
+
+    @Test
+    public void testCacheDontUseByDefault() throws Exception {
+        verifySearchTwiceCalls(2);
+    }
+
+    @Test
+    public void testCacheDontUseIfDisabled() throws Exception {
+        index.disableSearchCache();
+        verifySearchTwiceCalls(2);
+    }
+
+    @Test
+    public void testCacheTimeout() throws Exception {
+        index.enableSearchCache(1, ExpiringCache.defaultMaxSize);
+        verifySearchTwiceCalls(2, 2);
+    }
+
+    /**
+     * Verifies the number of requests fired by two successive search queries
+     *
+     * @param nbTimes expected amount of requests
+     */
+    private void verifySearchTwiceCalls(int nbTimes) throws Exception {
+        verifySearchTwiceCalls(nbTimes, 0);
+    }
+
+    /**
+     * Verifies the number of requests fired by two search queries
+     *
+     * @param nbTimes            expected amount of requests
+     * @param waitBetweenSeconds optional time to wait between the two queries
+     */
+    private void verifySearchTwiceCalls(int nbTimes, int waitBetweenSeconds) throws Exception {
+        // Given a index, using a client that returns some json on search
+        APIClient mockClient = mock(APIClient.class);
+        Whitebox.setInternalState(index, "client", mockClient);
+        when(mockClient.postRequestRaw(anyString(), anyString(), anyBoolean())).thenReturn("{foo:42}".getBytes());
+
+        // When searching twice separated by waitBetweenSeconds, fires nbTimes requests
+        final Query query = new Query("San");
+        index.search(query);
+        if (waitBetweenSeconds > 0) {
+            Thread.sleep(waitBetweenSeconds * 1000);
+        }
+        index.search(query);
+        verify(mockClient, times(nbTimes)).postRequestRaw(anyString(), anyString(), anyBoolean());
     }
 }

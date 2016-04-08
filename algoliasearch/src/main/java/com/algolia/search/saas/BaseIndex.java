@@ -44,6 +44,9 @@ abstract class BaseIndex {
     private APIClient client;
     private String encodedIndexName;
     private String indexName;
+    private ExpiringCache<String, byte[]> searchCache;
+    private boolean isCacheEnabled = false;
+
     private final long MAX_TIME_MS_TO_WAIT = 10000L;
 
     /**
@@ -91,7 +94,7 @@ abstract class BaseIndex {
     /**
      * Add an object in this index
      *
-     * @param obj the object to add.
+     * @param obj      the object to add.
      * @param objectID an objectID you want to attribute to this object
      * (if the attribute already exist the old object will be overwrite)
      * @throws AlgoliaException
@@ -129,8 +132,7 @@ abstract class BaseIndex {
     protected JSONObject addObjects(JSONArray inputArray) throws AlgoliaException {
         try {
             JSONArray array = new JSONArray();
-            for(int n = 0; n < inputArray.length(); n++)
-            {
+            for (int n = 0; n < inputArray.length(); n++) {
                 JSONObject action = new JSONObject();
                 action.put("action", "addObject");
                 action.put("body", inputArray.getJSONObject(n));
@@ -159,11 +161,11 @@ abstract class BaseIndex {
     /**
      * Get an object from this index
      *
-     * @param objectID the unique identifier of the object to retrieve
+     * @param objectID             the unique identifier of the object to retrieve
      * @param attributesToRetrieve contains the list of attributes to retrieve.
      * @throws AlgoliaException
      */
-    protected JSONObject getObject(String objectID,  List<String> attributesToRetrieve) throws AlgoliaException {
+    protected JSONObject getObject(String objectID, List<String> attributesToRetrieve) throws AlgoliaException {
         try {
             StringBuilder params = new StringBuilder();
             params.append("?attributes=");
@@ -197,7 +199,7 @@ abstract class BaseIndex {
             JSONObject body = new JSONObject();
             body.put("requests", requests);
             return client.postRequest("/1/indexes/*/objects", body.toString(), true);
-        } catch (JSONException e){
+        } catch (JSONException e) {
             throw new AlgoliaException(e.getMessage());
         }
     }
@@ -225,8 +227,7 @@ abstract class BaseIndex {
     protected JSONObject partialUpdateObjects(JSONArray inputArray) throws AlgoliaException {
         try {
             JSONArray array = new JSONArray();
-            for(int n = 0; n < inputArray.length(); n++)
-            {
+            for (int n = 0; n < inputArray.length(); n++) {
                 JSONObject obj = inputArray.getJSONObject(n);
                 JSONObject action = new JSONObject();
                 action.put("action", "partialUpdateObject");
@@ -263,8 +264,7 @@ abstract class BaseIndex {
     protected JSONObject saveObjects(JSONArray inputArray) throws AlgoliaException {
         try {
             JSONArray array = new JSONArray();
-            for(int n = 0; n < inputArray.length(); n++)
-            {
+            for (int n = 0; n < inputArray.length(); n++) {
                 JSONObject obj = inputArray.getJSONObject(n);
                 JSONObject action = new JSONObject();
                 action.put("action", "updateObject");
@@ -309,7 +309,7 @@ abstract class BaseIndex {
                 obj.put("objectID", id);
                 JSONObject action = new JSONObject();
                 action.put("action", "deleteObject");
-                action.put("body",obj);
+                action.put("body", obj);
                 array.put(action);
             }
             return batch(array);
@@ -351,18 +351,45 @@ abstract class BaseIndex {
 
     /**
      * Search inside the index
+     *
      * @return a JSONObject containing search results
      * @throws AlgoliaException
      */
     protected JSONObject search(@NonNull Query query) throws AlgoliaException {
+        String cacheKey = null;
+        byte[] rawResponse = null;
+        if (isCacheEnabled) {
+            cacheKey = query.build();
+            rawResponse = searchCache.get(cacheKey);
+        }
+        try {
+            if (rawResponse == null) {
+                rawResponse = searchRaw(query);
+                if (isCacheEnabled) {
+                    searchCache.put(cacheKey, rawResponse);
+                }
+            }
+            return BaseAPIClient._getJSONObject(rawResponse);
+        } catch (UnsupportedEncodingException | JSONException e) {
+            throw new AlgoliaException(e.getMessage());
+        }
+    }
+
+    /**
+     * Search inside the index
+     *
+     * @return a byte array containing search results
+     * @throws AlgoliaException
+     */
+    protected byte[] searchRaw(@NonNull Query query) throws AlgoliaException {
         try {
             String paramsString = query.build();
             if (paramsString.length() > 0) {
                 JSONObject body = new JSONObject();
                 body.put("params", paramsString);
-                return client.postRequest("/1/indexes/" + encodedIndexName + "/query", body.toString(), true);
+                return client.postRequestRaw("/1/indexes/" + encodedIndexName + "/query", body.toString(), true);
             } else {
-                return client.getRequest("/1/indexes/" + encodedIndexName, true);
+                return client.getRequestRaw("/1/indexes/" + encodedIndexName, true);
             }
         } catch (JSONException e) {
             throw new RuntimeException(e); // should never happen
@@ -370,24 +397,10 @@ abstract class BaseIndex {
     }
 
     /**
-     * Search inside the index
-     * @return a byte array containing search results
-     * @throws AlgoliaException
-     */
-    protected byte[] searchRaw(@NonNull Query query) throws AlgoliaException {
-        String paramsString = query.build();
-        if (paramsString.length() > 0) {
-            return client.getRequestRaw("/1/indexes/" + encodedIndexName + "?" + paramsString, true);
-        } else {
-            return client.getRequestRaw("/1/indexes/" + encodedIndexName, true);
-        }
-    }
-
-    /**
      * Wait the publication of a task on the server.
      * All server task are asynchronous and you can check with this method that the task is published.
      *
-     * @param taskID the id of the task returned by server
+     * @param taskID     the id of the task returned by server
      * @param timeToWait time to sleep seed
      * @throws AlgoliaException
      */
@@ -594,4 +607,42 @@ abstract class BaseIndex {
             throw new Error(e); // Should never happen: UTF-8 is always supported.
         }
     }
+
+    /**
+     * Enable search cache with default parameters
+     */
+    public void enableSearchCache() {
+        enableSearchCache(ExpiringCache.defaultExpirationTimeout, ExpiringCache.defaultMaxSize);
+    }
+
+    /**
+     * Enable search cache with custom parameters
+     *
+     * @param timeoutInSeconds duration during which an request is kept in cache
+     * @param maxRequests      maximum amount of requests to keep before removing the least recently used
+     */
+    public void enableSearchCache(int timeoutInSeconds, int maxRequests) {
+        isCacheEnabled = true;
+        searchCache = new ExpiringCache<>(timeoutInSeconds, maxRequests);
+    }
+
+    /**
+     * Disable and reset cache
+     */
+    public void disableSearchCache() {
+        isCacheEnabled = false;
+        if (searchCache != null) {
+            searchCache.reset();
+        }
+    }
+
+    /**
+     * Remove all entries from cache
+     */
+    public void clearSearchCache() {
+        if (searchCache != null) {
+            searchCache.reset();
+        }
+    }
+
 }
