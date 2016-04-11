@@ -476,7 +476,8 @@ public class MirroredIndex extends Index
      * @param query Search query.
      * @param listener Listener to be notified of search results.
      */
-    public Request searchASync(Query query, SearchListener listener)
+    @Override
+    public Request searchAsync(Query query, SearchListener listener)
     {
         return new Request(new SearchTask().execute(new TaskParams.Search(listener, query)));
     }

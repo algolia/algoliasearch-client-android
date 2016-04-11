@@ -114,7 +114,7 @@ public class Index {
      * @param query Search parameters. May be null to use an empty query.
      * @param completionHandler The listener that will be notified of the request's outcome.
      */
-    public Request searchASync(@NonNull Query query, CompletionHandler completionHandler) {
+    public Request searchAsync(@NonNull Query query, CompletionHandler completionHandler) {
         final Query queryCopy = new Query(query);
         return new Request(completionHandler) {
             @NonNull
@@ -179,7 +179,7 @@ public class Index {
      * @param completionHandler The listener that will be notified of the request's outcome.
      * @return A cancellable request.
      */
-    public Request addObjectASync(final @NonNull JSONObject object, CompletionHandler completionHandler) {
+    public Request addObjectAsync(final @NonNull JSONObject object, CompletionHandler completionHandler) {
         return new Request(completionHandler) {
             @NonNull
             @Override
@@ -202,7 +202,7 @@ public class Index {
      * @param completionHandler The listener that will be notified of the request's outcome.
      * @return A cancellable request.
      */
-    public Request addObjectASync(final @NonNull JSONObject object, final @NonNull String objectID, CompletionHandler completionHandler)  {
+    public Request addObjectAsync(final @NonNull JSONObject object, final @NonNull String objectID, CompletionHandler completionHandler)  {
         return new Request(completionHandler) {
             @NonNull
             @Override
@@ -219,7 +219,7 @@ public class Index {
      * @param completionHandler The listener that will be notified of the request's outcome.
      * @return A cancellable request.
      */
-    public Request addObjectsASync(final @NonNull JSONArray objects, CompletionHandler completionHandler) {
+    public Request addObjectsAsync(final @NonNull JSONArray objects, CompletionHandler completionHandler) {
         return new Request(completionHandler) {
             @NonNull
             @Override
@@ -237,7 +237,7 @@ public class Index {
      * @param completionHandler The listener that will be notified of the request's outcome.
      * @return A cancellable request.
      */
-    public Request saveObjectASync(final @NonNull JSONObject object, final @NonNull String objectID, CompletionHandler completionHandler) {
+    public Request saveObjectAsync(final @NonNull JSONObject object, final @NonNull String objectID, CompletionHandler completionHandler) {
         return new Request(completionHandler) {
             @NonNull
             @Override
@@ -254,7 +254,7 @@ public class Index {
      * @param completionHandler The listener that will be notified of the request's outcome.
      * @return A cancellable request.
      */
-    public Request saveObjectsASync(final @NonNull JSONArray objects, @NonNull CompletionHandler completionHandler) {
+    public Request saveObjectsAsync(final @NonNull JSONArray objects, @NonNull CompletionHandler completionHandler) {
         return new Request(completionHandler) {
             @NonNull
             @Override
@@ -272,7 +272,7 @@ public class Index {
      * @param completionHandler The listener that will be notified of the request's outcome.
      * @return A cancellable request.
      */
-    public Request partialUpdateObjectASync(final @NonNull JSONObject partialObject, final @NonNull String objectID, CompletionHandler completionHandler) {
+    public Request partialUpdateObjectAsync(final @NonNull JSONObject partialObject, final @NonNull String objectID, CompletionHandler completionHandler) {
         return new Request(completionHandler) {
             @NonNull
             @Override
@@ -290,7 +290,7 @@ public class Index {
      * @param completionHandler The listener that will be notified of the request's outcome.
      * @return A cancellable request.
      */
-    public Request partialUpdateObjectsASync(final @NonNull JSONArray partialObjects, CompletionHandler completionHandler) {
+    public Request partialUpdateObjectsAsync(final @NonNull JSONArray partialObjects, CompletionHandler completionHandler) {
         return new Request(completionHandler) {
             @NonNull
             @Override
@@ -307,7 +307,7 @@ public class Index {
      * @param completionHandler The listener that will be notified of the request's outcome.
      * @return A cancellable request.
      */
-    public Request getObjectASync(final @NonNull String objectID, CompletionHandler completionHandler) {
+    public Request getObjectAsync(final @NonNull String objectID, CompletionHandler completionHandler) {
         return new Request(completionHandler) {
             @NonNull
             @Override
@@ -325,7 +325,7 @@ public class Index {
      * @param completionHandler The listener that will be notified of the request's outcome.
      * @return A cancellable request.
      */
-    public Request getObjectASync(final @NonNull String objectID, final List<String> attributesToRetrieve, CompletionHandler completionHandler) {
+    public Request getObjectAsync(final @NonNull String objectID, final List<String> attributesToRetrieve, CompletionHandler completionHandler) {
         return new Request(completionHandler) {
             @NonNull
             @Override
@@ -342,7 +342,7 @@ public class Index {
      * @param completionHandler The listener that will be notified of the request's outcome.
      * @return A cancellable request.
      */
-    public Request getObjectsASync(final @NonNull List<String> objectIDs, CompletionHandler completionHandler) {
+    public Request getObjectsAsync(final @NonNull List<String> objectIDs, CompletionHandler completionHandler) {
         return new Request(completionHandler) {
             @NonNull
             @Override
@@ -360,7 +360,7 @@ public class Index {
      * @param completionHandler The listener that will be notified of the request's outcome.
      * @return A cancellable request.
      */
-    public Request waitTaskASync(final @NonNull String taskID, CompletionHandler completionHandler) {
+    public Request waitTaskAsync(final @NonNull String taskID, CompletionHandler completionHandler) {
         return new Request(completionHandler) {
             @NonNull
             @Override
@@ -377,7 +377,7 @@ public class Index {
      * @param completionHandler The listener that will be notified of the request's outcome.
      * @return A cancellable request.
      */
-    public Request deleteObjectASync(final @NonNull String objectID, CompletionHandler completionHandler) {
+    public Request deleteObjectAsync(final @NonNull String objectID, CompletionHandler completionHandler) {
         return new Request(completionHandler) {
             @NonNull
             @Override
@@ -394,7 +394,7 @@ public class Index {
      * @param completionHandler The listener that will be notified of the request's outcome.
      * @return A cancellable request.
      */
-    public Request deleteObjectsASync(final @NonNull List<String> objectIDs, CompletionHandler completionHandler) {
+    public Request deleteObjectsAsync(final @NonNull List<String> objectIDs, CompletionHandler completionHandler) {
         return new Request(completionHandler) {
             @NonNull
             @Override
@@ -411,7 +411,7 @@ public class Index {
      * @param completionHandler The listener that will be notified of the request's outcome.
      * @return A cancellable request.
      */
-    public Request deleteByQueryASync(@NonNull Query query, CompletionHandler completionHandler) {
+    public Request deleteByQueryAsync(@NonNull Query query, CompletionHandler completionHandler) {
         final Query queryCopy = new Query(query);
         return new Request(completionHandler) {
             @NonNull
@@ -429,7 +429,7 @@ public class Index {
      * @param completionHandler The listener that will be notified of the request's outcome.
      * @return A cancellable request.
      */
-    public Request getSettingsASync(CompletionHandler completionHandler) {
+    public Request getSettingsAsync(CompletionHandler completionHandler) {
         return new Request(completionHandler) {
             @NonNull
             @Override
@@ -449,7 +449,7 @@ public class Index {
      * @param completionHandler The listener that will be notified of the request's outcome.
      * @return A cancellable request.
      */
-    public Request setSettingsASync(final @NonNull JSONObject settings, CompletionHandler completionHandler) {
+    public Request setSettingsAsync(final @NonNull JSONObject settings, CompletionHandler completionHandler) {
         return new Request(completionHandler) {
             @NonNull
             @Override
@@ -462,14 +462,14 @@ public class Index {
     /**
      * Browse all index content (initial call).
      * This method should be called once to initiate a browse. It will return the first page of results and a cursor,
-     * unless the end of the index has been reached. To retrieve subsequent pages, call `browseFromASync` with that
+     * unless the end of the index has been reached. To retrieve subsequent pages, call `browseFromAsync` with that
      * cursor.
      *
      * @param query The query parameters for the browse.
      * @param completionHandler The listener that will be notified of the request's outcome.
      * @return A cancellable request.
      */
-    public Request browseASync(@NonNull Query query, CompletionHandler completionHandler) {
+    public Request browseAsync(@NonNull Query query, CompletionHandler completionHandler) {
         final Query queryCopy = new Query(query);
         return new Request(completionHandler) {
             @NonNull
@@ -482,14 +482,14 @@ public class Index {
 
     /**
      * Browse the index from a cursor.
-     * This method should be called after an initial call to `browseASync()`. It returns a cursor, unless the end of
+     * This method should be called after an initial call to `browseAsync()`. It returns a cursor, unless the end of
      * the index has been reached.
      *
      * @param cursor The cursor of the next page to retrieve.
      * @param completionHandler The listener that will be notified of the request's outcome.
      * @return A cancellable request.
      */
-    public Request browseFromASync(final @NonNull String cursor, CompletionHandler completionHandler) {
+    public Request browseFromAsync(final @NonNull String cursor, CompletionHandler completionHandler) {
         return new Request(completionHandler) {
             @NonNull
             @Override
@@ -505,7 +505,7 @@ public class Index {
      * @param completionHandler The listener that will be notified of the request's outcome.
      * @return A cancellable request.
      */
-    public Request clearIndexASync(CompletionHandler completionHandler) {
+    public Request clearIndexAsync(CompletionHandler completionHandler) {
         return new Request(completionHandler) {
             @NonNull
             @Override

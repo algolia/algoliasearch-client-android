@@ -93,7 +93,7 @@ public class IndexTest extends PowerMockTestCase {
     public void testSearchAsync() throws Exception {
         // Empty search.
         final CountDownLatch signal = new CountDownLatch(1);
-        index.searchASync(new Query(), new CompletionHandler() {
+        index.searchAsync(new Query(), new CompletionHandler() {
             @Override
             public void requestCompleted(JSONObject content, AlgoliaException error) {
                 if (error == null) {
@@ -108,7 +108,7 @@ public class IndexTest extends PowerMockTestCase {
 
         // Search with query.
         final CountDownLatch signal2 = new CountDownLatch(1);
-        index.searchASync(new Query("Francisco"), new CompletionHandler() {
+        index.searchAsync(new Query("Francisco"), new CompletionHandler() {
             @Override
             public void requestCompleted(JSONObject content, AlgoliaException error) {
                 if (error == null) {
@@ -243,7 +243,7 @@ public class IndexTest extends PowerMockTestCase {
     @Test
     public void testAddObjectAsync() throws Exception {
         final CountDownLatch signal = new CountDownLatch(1);
-        index.addObjectASync(new JSONObject("{\"city\": \"New York\"}"), new CompletionHandler() {
+        index.addObjectAsync(new JSONObject("{\"city\": \"New York\"}"), new CompletionHandler() {
             @Override
             public void requestCompleted(JSONObject content, AlgoliaException error) {
                 if (error == null) {
@@ -261,7 +261,7 @@ public class IndexTest extends PowerMockTestCase {
     @Test
     public void testAddObjectWithObjectIDAsync() throws Exception {
         final CountDownLatch signal = new CountDownLatch(1);
-        index.addObjectASync(new JSONObject("{\"city\": \"New York\"}"), "a1b2c3", new CompletionHandler() {
+        index.addObjectAsync(new JSONObject("{\"city\": \"New York\"}"), "a1b2c3", new CompletionHandler() {
             @Override
             public void requestCompleted(JSONObject content, AlgoliaException error) {
                 if (error == null) {
@@ -279,7 +279,7 @@ public class IndexTest extends PowerMockTestCase {
     @Test
     public void testAddObjectsAsync() throws Exception {
         final CountDownLatch signal = new CountDownLatch(1);
-        index.addObjectsASync(new JSONArray("[{\"city\": \"New York\"}, {\"city\": \"Paris\"}]"), new CompletionHandler() {
+        index.addObjectsAsync(new JSONArray("[{\"city\": \"New York\"}, {\"city\": \"Paris\"}]"), new CompletionHandler() {
             @Override
             public void requestCompleted(JSONObject content, AlgoliaException error) {
                 if (error == null) {
@@ -297,7 +297,7 @@ public class IndexTest extends PowerMockTestCase {
     @Test
     public void testSaveObjectAsync() throws Exception {
         final CountDownLatch signal = new CountDownLatch(1);
-        index.saveObjectASync(new JSONObject("{\"city\": \"New York\"}"), "a1b2c3", new CompletionHandler() {
+        index.saveObjectAsync(new JSONObject("{\"city\": \"New York\"}"), "a1b2c3", new CompletionHandler() {
             @Override
             public void requestCompleted(JSONObject content, AlgoliaException error) {
                 if (error == null) {
@@ -315,7 +315,7 @@ public class IndexTest extends PowerMockTestCase {
     @Test
     public void testSaveObjectsAsync() throws Exception {
         final CountDownLatch signal = new CountDownLatch(1);
-        index.saveObjectsASync(new JSONArray("[{\"city\": \"New York\", \"objectID\": 123}, {\"city\": \"Paris\", \"objectID\": 456}]"), new CompletionHandler() {
+        index.saveObjectsAsync(new JSONArray("[{\"city\": \"New York\", \"objectID\": 123}, {\"city\": \"Paris\", \"objectID\": 456}]"), new CompletionHandler() {
             @Override
             public void requestCompleted(JSONObject content, AlgoliaException error) {
                 if (error == null) {
@@ -335,7 +335,7 @@ public class IndexTest extends PowerMockTestCase {
     @Test
     public void testGetObjectAsync() throws Exception {
         final CountDownLatch signal = new CountDownLatch(1);
-        index.getObjectASync(ids.get(0), new CompletionHandler() {
+        index.getObjectAsync(ids.get(0), new CompletionHandler() {
             @Override
             public void requestCompleted(JSONObject content, AlgoliaException error) {
                 if (error == null) {
@@ -356,7 +356,7 @@ public class IndexTest extends PowerMockTestCase {
         final CountDownLatch signal = new CountDownLatch(1);
         List<String> attributesToRetrieve = new ArrayList<String>();
         attributesToRetrieve.add("objectID");
-        index.getObjectASync(ids.get(0), attributesToRetrieve, new CompletionHandler() {
+        index.getObjectAsync(ids.get(0), attributesToRetrieve, new CompletionHandler() {
             @Override
             public void requestCompleted(JSONObject content, AlgoliaException error) {
                 if (error == null) {
@@ -375,7 +375,7 @@ public class IndexTest extends PowerMockTestCase {
     @Test
     public void testGetObjectsAsync() throws Exception {
         final CountDownLatch signal = new CountDownLatch(1);
-        index.getObjectsASync(ids, new CompletionHandler() {
+        index.getObjectsAsync(ids, new CompletionHandler() {
             @Override
             public void requestCompleted(JSONObject content, AlgoliaException error) {
                 if (error == null) {
@@ -396,11 +396,11 @@ public class IndexTest extends PowerMockTestCase {
     @Test
     public void testWaitTaskAsync() throws Exception {
         final CountDownLatch signal = new CountDownLatch(2);
-        index.addObjectASync(new JSONObject("{\"city\": \"New York\"}"), new CompletionHandler() {
+        index.addObjectAsync(new JSONObject("{\"city\": \"New York\"}"), new CompletionHandler() {
             @Override
             public void requestCompleted(JSONObject content, AlgoliaException error) {
                 if (error == null) {
-                    index.waitTaskASync(content.optString("taskID"), new CompletionHandler() {
+                    index.waitTaskAsync(content.optString("taskID"), new CompletionHandler() {
                         @Override
                         public void requestCompleted(JSONObject content, AlgoliaException error) {
                             if (error == null) {
@@ -468,13 +468,13 @@ public class IndexTest extends PowerMockTestCase {
         final CountDownLatch signal = new CountDownLatch(2);
         Query query = new Query();
         query.setHitsPerPage(1000);
-        index.browseASync(query, new CompletionHandler() {
+        index.browseAsync(query, new CompletionHandler() {
             @Override
             public void requestCompleted(JSONObject content, AlgoliaException error) {
                 if (error == null) {
                     String cursor = content.optString("cursor", null);
                     assertNotNull(cursor);
-                    index.browseFromASync(cursor, new CompletionHandler() {
+                    index.browseFromAsync(cursor, new CompletionHandler() {
                         @Override
                         public void requestCompleted(JSONObject content, AlgoliaException error) {
                             if (error == null) {
@@ -496,17 +496,17 @@ public class IndexTest extends PowerMockTestCase {
     }
 
     @Test
-    public void testClearIndexASync() throws Exception {
+    public void testClearIndexAsync() throws Exception {
         final CountDownLatch signal = new CountDownLatch(3);
-        index.clearIndexASync(new CompletionHandler() {
+        index.clearIndexAsync(new CompletionHandler() {
             @Override
             public void requestCompleted(JSONObject content, AlgoliaException error) {
                 if (error == null) {
-                    index.waitTaskASync(content.optString("taskID"), new CompletionHandler() {
+                    index.waitTaskAsync(content.optString("taskID"), new CompletionHandler() {
                         @Override
                         public void requestCompleted(JSONObject content, AlgoliaException error) {
                             if (error == null) {
-                                index.browseASync(new Query(), new CompletionHandler() {
+                                index.browseAsync(new Query(), new CompletionHandler() {
                                     @Override
                                     public void requestCompleted(JSONObject content, AlgoliaException error) {
                                         if (error == null) {
@@ -535,16 +535,16 @@ public class IndexTest extends PowerMockTestCase {
     }
 
     @Test
-    public void testDeleteByQueryASync() throws Exception {
+    public void testDeleteByQueryAsync() throws Exception {
         final CountDownLatch signal = new CountDownLatch(2);
         addDummyObjects(3000);
         final Query query = new Query();
         query.set("numericFilters", "dummy < 1500");
-        index.deleteByQueryASync(query, new CompletionHandler() {
+        index.deleteByQueryAsync(query, new CompletionHandler() {
             @Override
             public void requestCompleted(JSONObject content, AlgoliaException error) {
                 if (error == null) {
-                    index.browseASync(query, new CompletionHandler() {
+                    index.browseAsync(query, new CompletionHandler() {
                         @Override
                         public void requestCompleted(JSONObject content, AlgoliaException error) {
                             if (error == null) {
@@ -572,7 +572,7 @@ public class IndexTest extends PowerMockTestCase {
     @Test
     public void testError404() throws Exception {
         Index unknownIndex = client.initIndex("doesnotexist");
-        unknownIndex.searchASync(new Query(), new CompletionHandler() {
+        unknownIndex.searchAsync(new Query(), new CompletionHandler() {
             @Override
             public void requestCompleted(JSONObject content, AlgoliaException error) {
                 assertNotNull(error);
