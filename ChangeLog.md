@@ -1,39 +1,43 @@
-Changelog
-=========
+Change Log
+==========
 
-2.6.1 (2016-01-28)
-- Add snippetEllipsisText method
+## 2.6.1 (2016-01-28)
 
-2.6.0 (2016-01-07)
+- Add `snippetEllipsisText` query parameter
+
+## 2.6.0 (2016-01-07)
+
 - Add disjunctive faceting method
 
-2.5.1 (2016-01-07)
+## 2.5.1 (2016-01-07)
+
 - Fixed method used to generate the query parameters of multiqueries
 
-2.5.0 (2015-12-01)
+## 2.5.0 (2015-12-01)
+
 - Added support of Android SDK >= 14
 
-2.4.0 (2015-10-12)
+## 2.4.0 (2015-10-12)
 
 - Added remove stop words query parameter
 - Added support of similar queries
 
-2.3.0 (2015-10-01)
+## 2.3.0 (2015-10-01)
 
 - Added support of multiple bounding box for geo-search
 - Added support	of polygon for geo-search
 - Added	support	of automatic radius computation	for geo-search
 - Added	support	of disableTypoToleranceOnAttributes
 
-2.2.0 (2015-09-29)
+## 2.2.0 (2015-09-29)
 
 - Ensure all requests accept the GZIP encoding to reduce the JSON payloads size
 
-2.1.0 (2015-08-24)
+## 2.1.0 (2015-08-24)
 
 - Publish on MavenCentral
 
-2.0.0 (2015-08-01)
+## 2.0.0 (2015-08-01)
 
 - Rewrite the API Client as a Android package
 - Split the async listeners/interfaces
@@ -41,18 +45,18 @@ Changelog
 1.6.7 (2015-07-14)
 ------------------
 
-- Added support of grouping (distinct=3 to keep the 3 best hits for a distinct key)
+- Added support of grouping (`distinct=3` to keep the 3 best hits for a distinct key)
 
 1.6.6 (2015-06-05)
 --------------------
 
-- add new parameter on the Query: setMinProximity & setHighlightingTags
+- add new parameter on the Query: `setMinProximity` & `setHighlightingTags`
 - new cursor-based browse implementation
 
 1.6.5 (2015-05-26)
 ------------------
 
-- Fix thread concurrency for method _request
+- Fix thread concurrency for method `_request`
 
 1.6.4 (2015-05-04)
 ------------------
