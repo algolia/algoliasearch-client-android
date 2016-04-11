@@ -40,7 +40,7 @@ import static junit.framework.Assert.assertTrue;
 import static junit.framework.Assert.fail;
 
 public class BrowseIteratorTest extends PowerMockTestCase {
-    APIClient client;
+    Client client;
     Index index;
     String indexName;
 
@@ -50,7 +50,7 @@ public class BrowseIteratorTest extends PowerMockTestCase {
     @Override
     public void setUp() throws Exception {
         super.setUp();
-        client = new APIClient(Helpers.app_id, Helpers.api_key);
+        client = new Client(Helpers.app_id, Helpers.api_key);
         indexName = Helpers.safeIndexName("àlgol?à-android");
         index = client.initIndex(indexName);
 

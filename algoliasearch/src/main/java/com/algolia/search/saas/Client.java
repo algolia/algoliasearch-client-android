@@ -49,14 +49,25 @@ import java.util.Map;
 import java.util.zip.GZIPInputStream;
 
 /**
- * Abstract Entry point in the Java API.
+ * Entry point to the Android API.
+ * You must instantiate a <code>Client</code> object with your application ID and API key to start using Algolia Search
+ * API.
+ * <p>
+ * WARNING: For performance reasons, arguments to asynchronous methods are not cloned. Therefore, you should not
+ * modify mutable arguments after they have been passed (unless explicitly noted).
+ * </p>
  */
-abstract class BaseAPIClient {
-    private int httpSocketTimeoutMS = 30000;
-    private int httpConnectTimeoutMS = 2000;
-    private int httpSearchTimeoutMS = 5000;
-
+public class Client {
     private final static String version = "2.7.0";
+
+    /** Connect timeout (ms). */
+    private int connectTimeout = 2000;
+
+    /** Default read (receive) timeout (ms). */
+    private int readTimeout = 30000;
+
+    /** Read timeout for search requests (ms). */
+    private int searchTimeout = 5000;
 
     private final String applicationID;
     private final String apiKey;
@@ -66,43 +77,58 @@ abstract class BaseAPIClient {
     /**
      * HTTP headers that will be sent with every request.
      */
-    private HashMap<String, String> headers;
+    private HashMap<String, String> headers = new HashMap<String, String>();
+
+    // ----------------------------------------------------------------------
+    // Initialization
+    // ----------------------------------------------------------------------
 
     /**
-     * Algolia Search initialization
+     * Create a new Algolia Search client targetting the default hosts.
      *
-     * @param applicationID the application ID you have in your admin interface
-     * @param apiKey        a valid API key for the service
-     * @param hosts         the list of hosts that you have received for the service
+     * NOTE: This is the recommended way to initialize a client is most use cases.
+     *
+     * @param applicationID The application ID (available in your Algolia Dashboard).
+     * @param apiKey A valid API key for the service.
      */
-    protected BaseAPIClient(String applicationID, String apiKey, String[] hosts) {
-        if (applicationID == null || applicationID.length() == 0) {
-            throw new RuntimeException("AlgoliaSearch requires an applicationID.");
-        }
+    public Client(@NonNull String applicationID, @NonNull String apiKey) {
+        this(applicationID, apiKey, null);
+    }
+
+    /**
+     * Create a new Algolia Search client with explicit hosts to target.
+     *
+     * NOTE: In most use cases, you should the default hosts. See {@link Client#Client(String, String)}.
+     *
+     * @param applicationID The application ID (available in your Algolia Dashboard).
+     * @param apiKey A valid API key for the service.
+     * @param hosts An explicit list of hosts to target, or null to use the default hosts.
+     */
+    public Client(@NonNull String applicationID, @NonNull String apiKey, String[] hosts) {
         this.applicationID = applicationID;
-        if (apiKey == null || apiKey.length() == 0) {
-            throw new RuntimeException("AlgoliaSearch requires an apiKey.");
-        }
         this.apiKey = apiKey;
         if (hosts != null) {
             setReadHosts(hosts);
             setWriteHosts(hosts);
         } else {
             setReadHosts(
-                applicationID + "-dsn.algolia.net",
-                applicationID + "-1.algolianet.com",
-                applicationID + "-2.algolianet.com",
-                applicationID + "-3.algolianet.com"
+                    applicationID + "-dsn.algolia.net",
+                    applicationID + "-1.algolianet.com",
+                    applicationID + "-2.algolianet.com",
+                    applicationID + "-3.algolianet.com"
             );
             setWriteHosts(
-                applicationID + ".algolia.net",
-                applicationID + "-1.algolianet.com",
-                applicationID + "-2.algolianet.com",
-                applicationID + "-3.algolianet.com"
+                    applicationID + ".algolia.net",
+                    applicationID + "-1.algolianet.com",
+                    applicationID + "-2.algolianet.com",
+                    applicationID + "-3.algolianet.com"
             );
         }
-        headers = new HashMap<String, String>();
     }
+
+    // ----------------------------------------------------------------------
+    // Accessors
+    // ----------------------------------------------------------------------
 
     public String getApplicationID() {
         return applicationID;
@@ -164,28 +190,210 @@ abstract class BaseAPIClient {
     }
 
     /**
-     * Allow to set timeout
+     * Get the connection timeout.
      *
-     * @param connectTimeout connection timeout in MS
-     * @param readTimeout    socket timeout in MS
+     * @return The connection timeout (ms).
      */
-    public void setTimeout(int connectTimeout, int readTimeout) {
-        httpSocketTimeoutMS = readTimeout;
-        httpConnectTimeoutMS = httpSearchTimeoutMS = connectTimeout;
+    public int getConnectTimeout() {
+        return connectTimeout;
     }
 
     /**
-     * Allow to set timeout
+     * Set the connection timeout.
      *
-     * @param connectTimeout connection timeout in MS
-     * @param readTimeout    socket timeout in MS
-     * @param searchTimeout  socket timeout in MS
+     * @param connectTimeout The new connection timeout (ms).
      */
-    public void setTimeout(int connectTimeout, int readTimeout, int searchTimeout) {
-        httpSocketTimeoutMS = readTimeout;
-        httpConnectTimeoutMS = connectTimeout;
-        httpSearchTimeoutMS = searchTimeout;
+    public void setConnectTimeout(int connectTimeout) {
+        if (connectTimeout <= 0)
+            throw new IllegalArgumentException();
+        this.connectTimeout = connectTimeout;
     }
+
+    /**
+     * Get the default read timeout.
+     *
+     * @return The default read timeout (ms).
+     */
+    public int getReadTimeout() {
+        return readTimeout;
+    }
+
+    /**
+     * Set the default read timeout.
+     *
+     * @param readTimeout The default read timeout (ms).
+     */
+    public void setReadTimeout(int readTimeout) {
+        if (readTimeout <= 0)
+            throw new IllegalArgumentException();
+        this.readTimeout = readTimeout;
+    }
+
+    /**
+     * Get the read timeout for search requests.
+     *
+     * @return The read timeout for search requests (ms).
+     */
+    public int getSearchTimeout() {
+        return searchTimeout;
+    }
+
+    /**
+     * Set the read timeout for search requests.
+     *
+     * @param searchTimeout The read timeout for search requests (ms).
+     */
+    public void setSearchTimeout(int searchTimeout) {
+        if (searchTimeout <= 0)
+            throw  new IllegalArgumentException();
+        this.searchTimeout = searchTimeout;
+    }
+
+    /**
+     * Create a proxy to an Algolia index (no server call required by this method).
+     *
+     * @param indexName The name of the index.
+     * @return A new proxy to the specified index.
+     */
+    public Index initIndex(@NonNull String indexName) {
+        return new Index(this, indexName);
+    }
+
+    // ----------------------------------------------------------------------
+    // Public operations
+    // ----------------------------------------------------------------------
+
+    /**
+     * List existing indexes.
+     *
+     * @param completionHandler The listener that will be notified of the request's outcome.
+     * @return A cancellable request.
+     */
+    public Request listIndexesAsync(CompletionHandler completionHandler) {
+        return new Request(completionHandler) {
+            @NonNull
+            @Override
+            JSONObject run() throws AlgoliaException {
+                return listIndexes();
+            }
+        }.start();
+    }
+
+    /**
+     * Delete an index.
+     *
+     * @param indexName Name of index to delete.
+     * @param completionHandler The listener that will be notified of the request's outcome.
+     * @return A cancellable request.
+     */
+    public Request deleteIndexAsync(final @NonNull String indexName, CompletionHandler completionHandler) {
+        return new Request(completionHandler) {
+            @NonNull
+            @Override
+            JSONObject run() throws AlgoliaException {
+                return deleteIndex(indexName);
+            }
+        }.start();
+    }
+
+    /**
+     * Move an existing index.
+     * If the destination index already exists, its specific API keys will be preserved and the source index specific
+     * API keys will be added.
+     *
+     * @param srcIndexName Name of index to move.
+     * @param dstIndexName The new index name.
+     * @param completionHandler The listener that will be notified of the request's outcome.
+     * @return A cancellable request.
+     */
+    public Request moveIndexAsync(final @NonNull String srcIndexName, final @NonNull String dstIndexName, CompletionHandler completionHandler) {
+        return new Request(completionHandler) {
+            @NonNull
+            @Override
+            JSONObject run() throws AlgoliaException {
+                return moveIndex(srcIndexName, dstIndexName);
+            }
+        }.start();
+    }
+
+    /**
+     * Copy an existing index.
+     * If the destination index already exists, its specific API keys will be preserved and the source index specific
+     * API keys will be added.
+     *
+     * @param srcIndexName Name of index to copy.
+     * @param dstIndexName The new index name.
+     * @param completionHandler The listener that will be notified of the request's outcome.
+     * @return A cancellable request.
+     */
+    public Request copyIndexAsync(final @NonNull String srcIndexName, final @NonNull String dstIndexName, CompletionHandler completionHandler) {
+        return new Request(completionHandler) {
+            @NonNull
+            @Override
+            JSONObject run() throws AlgoliaException {
+                return copyIndex(srcIndexName, dstIndexName);
+            }
+        }.start();
+    }
+
+    /**
+     * Strategy when running multiple queries. See {@link Client#multipleQueriesAsync}.
+     */
+    public enum MultipleQueriesStrategy {
+        /** Execute the sequence of queries until the end. */
+        NONE("none"),
+        /** Execute the sequence of queries until the number of hits is reached by the sum of hits. */
+        STOP_IF_ENOUGH_MATCHES("stopIfEnoughMatches");
+
+        private String rawValue;
+
+        MultipleQueriesStrategy(String rawValue) {
+            this.rawValue = rawValue;
+        }
+
+        public String toString() {
+            return rawValue;
+        }
+    }
+
+    /**
+     * Run multiple queries, potentially targetting multiple indexes, with one API call.
+     *
+     * @param queries The queries to run.
+     * @param strategy The strategy to use.
+     * @param completionHandler The listener that will be notified of the request's outcome.
+     * @return A cancellable request.
+     */
+    public Request multipleQueriesAsync(final @NonNull List<IndexQuery> queries, final MultipleQueriesStrategy strategy, CompletionHandler completionHandler) {
+        return new Request(completionHandler) {
+            @NonNull
+            @Override
+            JSONObject run() throws AlgoliaException {
+                return multipleQueries(queries, strategy == null ? null : strategy.toString());
+            }
+        }.start();
+    }
+
+    /**
+     * Batch operations.
+     *
+     * @param operations List of operations.
+     * @param completionHandler The listener that will be notified of the request's outcome.
+     * @return A cancellable request.
+     */
+    public Request batchAsync(final @NonNull JSONArray operations, CompletionHandler completionHandler) {
+        return new Request(completionHandler) {
+            @NonNull
+            @Override
+            JSONObject run() throws AlgoliaException {
+                return batch(operations);
+            }
+        }.start();
+    }
+
+    // ----------------------------------------------------------------------
+    // Internal operations
+    // ----------------------------------------------------------------------
 
     /**
      * List all existing indexes
@@ -255,8 +463,8 @@ abstract class BaseAPIClient {
             JSONArray requests = new JSONArray();
             for (IndexQuery indexQuery : queries) {
                 requests.put(new JSONObject()
-                    .put("indexName", indexQuery.getIndexName())
-                    .put("params", indexQuery.getQuery().build())
+                        .put("indexName", indexQuery.getIndexName())
+                        .put("params", indexQuery.getQuery().build())
                 );
             }
             JSONObject body = new JSONObject().put("requests", requests);
@@ -286,32 +494,36 @@ abstract class BaseAPIClient {
         }
     }
 
+    // ----------------------------------------------------------------------
+    // Utilities
+    // ----------------------------------------------------------------------
+
     private enum Method {
         GET, POST, PUT, DELETE
     }
 
     protected byte[] getRequestRaw(String url, boolean search) throws AlgoliaException {
-        return _requestRaw(Method.GET, url, null, readHosts, httpConnectTimeoutMS, search ? httpSearchTimeoutMS : httpSocketTimeoutMS);
+        return _requestRaw(Method.GET, url, null, readHosts, connectTimeout, search ? searchTimeout : readTimeout);
     }
 
     protected JSONObject getRequest(String url, boolean search) throws AlgoliaException {
-        return _request(Method.GET, url, null, readHosts, httpConnectTimeoutMS, search ? httpSearchTimeoutMS : httpSocketTimeoutMS);
+        return _request(Method.GET, url, null, readHosts, connectTimeout, search ? searchTimeout : readTimeout);
     }
 
     protected JSONObject deleteRequest(String url) throws AlgoliaException {
-        return _request(Method.DELETE, url, null, writeHosts, httpConnectTimeoutMS, httpSocketTimeoutMS);
+        return _request(Method.DELETE, url, null, writeHosts, connectTimeout, readTimeout);
     }
 
     protected JSONObject postRequest(String url, String obj, boolean readOperation) throws AlgoliaException {
-        return _request(Method.POST, url, obj, (readOperation ? readHosts : writeHosts), httpConnectTimeoutMS, (readOperation ? httpSearchTimeoutMS : httpSocketTimeoutMS));
+        return _request(Method.POST, url, obj, (readOperation ? readHosts : writeHosts), connectTimeout, (readOperation ? searchTimeout : readTimeout));
     }
 
     protected byte[] postRequestRaw(String url, String obj, boolean readOperation) throws AlgoliaException {
-        return _requestRaw(Method.POST, url, obj, (readOperation ? readHosts : writeHosts), httpConnectTimeoutMS, (readOperation ? httpSearchTimeoutMS : httpSocketTimeoutMS));
+        return _requestRaw(Method.POST, url, obj, (readOperation ? readHosts : writeHosts), connectTimeout, (readOperation ? searchTimeout : readTimeout));
     }
 
     protected JSONObject putRequest(String url, String obj) throws AlgoliaException {
-        return _request(Method.PUT, url, obj, writeHosts, httpConnectTimeoutMS, httpSocketTimeoutMS);
+        return _request(Method.PUT, url, obj, writeHosts, connectTimeout, readTimeout);
     }
 
     /**

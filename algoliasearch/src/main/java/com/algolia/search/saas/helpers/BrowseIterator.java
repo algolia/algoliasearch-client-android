@@ -100,7 +100,7 @@ public class BrowseIterator {
             throw new IllegalStateException();
         }
         started = true;
-        request = index.browseASync(query, completionHandler);
+        request = index.browseAsync(query, completionHandler);
     }
 
     /**
@@ -131,7 +131,7 @@ public class BrowseIterator {
         if (!hasNext()) {
             throw new IllegalStateException();
         }
-        request = index.browseFromASync(cursor, completionHandler);
+        request = index.browseFromAsync(cursor, completionHandler);
     }
 
     private CompletionHandler completionHandler = new CompletionHandler() {

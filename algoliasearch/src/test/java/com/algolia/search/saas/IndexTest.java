@@ -54,7 +54,7 @@ import static org.mockito.Mockito.when;
  */
 
 public class IndexTest extends PowerMockTestCase {
-    APIClient client;
+    Client client;
     Index index;
     String indexName;
 
@@ -64,7 +64,7 @@ public class IndexTest extends PowerMockTestCase {
     @Override
     public void setUp() throws Exception {
         super.setUp();
-        client = new APIClient(Helpers.app_id, Helpers.api_key);
+        client = new Client(Helpers.app_id, Helpers.api_key);
         indexName = Helpers.safeIndexName("àlgol?à-android");
         index = client.initIndex(indexName);
 
@@ -622,7 +622,7 @@ public class IndexTest extends PowerMockTestCase {
      */
     private void verifySearchTwiceCalls(int nbTimes, int waitBetweenSeconds) throws Exception {
         // Given a index, using a client that returns some json on search
-        APIClient mockClient = mock(APIClient.class);
+        Client mockClient = mock(Client.class);
         Whitebox.setInternalState(index, "client", mockClient);
         when(mockClient.postRequestRaw(anyString(), anyString(), anyBoolean())).thenReturn("{foo:42}".getBytes());
 
