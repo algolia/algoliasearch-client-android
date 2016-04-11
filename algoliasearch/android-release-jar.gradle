@@ -98,7 +98,7 @@ uploadArchives {
                 }
             }
         }
-        
+
         pom.withXml {
             asNode().dependencies.dependency.findAll { xmlDep ->
                 // mark optional dependencies
@@ -113,12 +113,12 @@ uploadArchives {
                 }
             }
         }
-        
+
         // Add other pom properties here if you want (developer details / licenses)
         repository(url: "file://${localReleaseDest}")
 
         repository(url: "https://oss.sonatype.org/service/local/staging/deploy/maven2/") {
-            authentication(userName: project.hasProperty('ossrhUsername') ? project['ossrhUsername'] : 'FIXME', password: project.hasProperty('ossrhPassword') ? project['ossrhPassword'] : 'FIXME')
+            authentication(userName: project.hasProperty('nexusUsername') ? project['nexusUsername'] : 'FIXME', password: project.hasProperty('nexusPassword') ? project['nexusPassword'] : 'FIXME')
         }
     }
 }
