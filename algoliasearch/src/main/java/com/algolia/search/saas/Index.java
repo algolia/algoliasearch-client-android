@@ -113,6 +113,7 @@ public class Index {
      *
      * @param query Search parameters. May be null to use an empty query.
      * @param completionHandler The listener that will be notified of the request's outcome.
+     * @return A cancellable request.
      */
     public Request searchAsync(@NonNull Query query, CompletionHandler completionHandler) {
         final Query queryCopy = new Query(query);
