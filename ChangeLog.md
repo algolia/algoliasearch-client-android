@@ -1,6 +1,58 @@
 Change Log
 ==========
 
+## 3.0 (FIXME)
+
+This major version brings new features as well as bug fixes. In addition, a lot of refactoring has been performed
+to achieve better maintainability and to align the Android client with the other Algolia API clients.
+
+As a consequence, the public interface has changed in an incompatible way. Please refer to our
+[Migration guide](https://github.com/algolia/algoliasearch-client-android/wiki/Migration-guide-to-version-3.x) for
+detailed instructions.
+
+### New features
+
+- In-memory search cache: disabled by default, can be enabled per index.
+- Allow arbitrary query parameters to be specified: the `Query` class provides low-level, untyped accessors in addition
+  to the higher-level, typed accessors.
+- Allow arbitrary HTTP headers to be specified (`Client.setHeader`)
+- Asynchronous requests are cancellable: asynchronous methods return a `Request` instance with a `cancel` method.
+- Low-level browse methods (`Index.browse` and `Index.browseFrom`)
+- New browse helper (`BrowseIterator`)
+- New method to clear an index (`Index.clearIndexAsync`)
+
+### Changes
+
+- Now only one type of asynchronous listener (`CompletionHandler`) with an interface containing only one method,
+  used for both success and error cases. In addition to simplifying the code and aligning the Android client with other
+  languages, this makes it possible to use Java 8 **lambda expressions**.
+- Remove operations requiring an admin API key. (The admin key should *never* be used on the client side.)
+- Align `Query` class parameters with the [REST API](https://www.algolia.com/doc/rest)
+- Improve the type safety of many `Query` parameters, especially the geo search-related parameters and the filters
+- Remove obsolete (and unused) `enableDsn` and `dsnHost` initialization parameters
+- Remove accessors to deprecated HTTP headers
+- Space character is now URL-encoded as `%20` instead of `+`
+- Better naming convention:
+    - Rename `APIClient` class to `Client`
+    - Rename `*ASync` to `*Async`
+    - Remove prefix on enum values
+
+### Fixes
+
+- Search queries now use POST instead of GET, working around any potential hard-coded limit to the URL string.
+- Delete by query uses browse instead of search, for both better performance and to work around any index settings
+  (like `distinct`) that would silently prevent the query from selecting all objects.
+- More consistent error handling
+- Fix retry logic in case of host failure
+- Alleviate critical section on internal request methods
+
+### Misc. improvements
+
+- Use `@NonNull` annotations to document mandatory parameters and return values
+- Asynchronous methods no longer throw (declared) exceptions
+- Update documentation (a lot!)
+- Add test cases
+
 ## 2.6.1 (2016-01-28)
 
 - Add `snippetEllipsisText` query parameter
