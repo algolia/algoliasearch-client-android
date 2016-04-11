@@ -23,11 +23,9 @@
 
 package com.algolia.search.saas;
 
-import android.os.AsyncTask;
 import android.support.annotation.NonNull;
 import android.util.Log;
 
-import com.algolia.search.saas.listeners.SearchListener;
 import com.algolia.search.sdk.LocalIndex;
 import com.algolia.search.sdk.SearchResults;
 
@@ -474,56 +472,40 @@ public class MirroredIndex extends Index
      * Search the online API, falling back to the local mirror if enabled in case of error.
      *
      * @param query Search query.
-     * @param listener Listener to be notified of search results.
+     * @param completionHandler The listener that will be notified of the request's outcome.
+     * @return A cancellable request.
      */
     @Override
-    public Request searchAsync(Query query, SearchListener listener)
-    {
-        return new Request(new SearchTask().execute(new TaskParams.Search(listener, query)));
+    public Request searchAsync(@NonNull Query query, CompletionHandler completionHandler) {
+        final Query queryCopy = new Query(query);
+        return new Request(completionHandler) {
+            @NonNull
+            @Override
+            JSONObject run() throws AlgoliaException {
+                return search(queryCopy);
+            }
+        }.start();
     }
 
-    private class SearchTask extends AsyncTask<TaskParams.Search, Void, TaskParams.Search>
-    {
-        private SearchListener listener;
-        private Query query;
-
-        @Override
-        protected TaskParams.Search doInBackground(TaskParams.Search... params)
-        {
-            TaskParams.Search p = params[0];
-            listener = p.listener;
-            query = p.query;
-            // First search the online API.
-            try {
-                p.content = search(p.query);
-                // Indicate that the results come from the online API.
-                p.content.put(JSON_KEY_ORIGIN, JSON_VALUE_ORIGIN_REMOTE);
-            }
-            catch (AlgoliaException e) {
-                // Fallback to the offline mirror if available.
-                if (mirrored) {
-                    try {
-                        p.content = _searchMirror(query.build());
-                    }
-                    catch (AlgoliaException e2) {
-                        p.error = e2;
-                    }
-                }
-                else {
-                    p.error = e;
-                }
-            }
-            catch (JSONException e) {
-                // Should never happen.
-                p.error = new AlgoliaException("Failed to patch online result JSON", e);
-            }
-            return p;
+    @Override
+    protected JSONObject search(@NonNull Query query) throws AlgoliaException {
+        try {
+            JSONObject content = super.search(query);
+            // Indicate that the results come from the online API.
+            content.put(JSON_KEY_ORIGIN, JSON_VALUE_ORIGIN_REMOTE);
+            return content;
         }
-
-        @Override
-        protected void onPostExecute(TaskParams.Search p)
-        {
-            p.sendResult(MirroredIndex.this);
+        catch (AlgoliaException e) {
+            // Fallback to the offline mirror if available.
+            // TODO: We might only want to fallback if the error is a network error.
+            if (mirrored) {
+                return _searchMirror(query);
+            } else {
+                throw e;
+            }
+        }
+        catch (JSONException e) {
+            throw new RuntimeException("Failed to patch online result JSON", e); // should never happen
         }
     }
 
@@ -531,45 +513,29 @@ public class MirroredIndex extends Index
      * Search the local mirror.
      *
      * @param query Search query.
-     * @param listener Listener to be notified of search results.
+     * @param completionHandler The listener that will be notified of the request's outcome.
      * @return A cancellable request.
      * @throws IllegalStateException if mirroring is not activated on this index.
      */
-    public Request searchMirrorAsync(Query query, SearchListener listener)
-    {
-        if (!mirrored)
+    public Request searchMirrorAsync(Query query, CompletionHandler completionHandler) {
+        if (!mirrored) {
             throw new IllegalStateException("Mirroring not activated on this index");
-        return new Request(new SearchMirrorTask().execute(new TaskParams.Search(listener, query)));
+        }
+        final Query queryCopy = new Query(query);
+        return new Request(completionHandler) {
+            @NonNull
+            @Override
+            JSONObject run() throws AlgoliaException {
+                return _searchMirror(queryCopy);
+            }
+        }.start();
     }
 
-    private class SearchMirrorTask extends AsyncTask<TaskParams.Search, Void, TaskParams.Search>
-    {
-        @Override
-        protected TaskParams.Search doInBackground(TaskParams.Search... params)
-        {
-            TaskParams.Search p = params[0];
-            Query query = p.query;
-            try {
-                p.content = _searchMirror(query.build());
-            }
-            catch (AlgoliaException e) {
-                p.error = e;
-            }
-            return p;
-        }
-
-        @Override
-        protected void onPostExecute(TaskParams.Search p)
-        {
-            p.sendResult(MirroredIndex.this);
-        }
-    }
-
-    private JSONObject _searchMirror(String query) throws AlgoliaException
+    private JSONObject _searchMirror(@NonNull Query query) throws AlgoliaException
     {
         try {
             ensureLocalIndex();
-            SearchResults searchResults = localIndex.search(query);
+            SearchResults searchResults = localIndex.search(query.build());
             if (searchResults.statusCode == 200) {
                 String jsonString = new String(searchResults.data, "UTF-8");
                 JSONObject json = new JSONObject(jsonString);
@@ -597,45 +563,29 @@ public class MirroredIndex extends Index
      * Browse the local mirror.
      *
      * @param query Browse query. Same restrictions as the online API.
-     * @param listener Listener to be notified of results.
+     * @param completionHandler The listener that will be notified of the request's outcome.
      * @return A cancellable request.
      * @throws IllegalStateException if mirroring is not activated on this index.
      */
-    public Request browseMirrorAsync(Query query, SearchListener listener)
-    {
-        if (!mirrored)
+    public Request browseMirrorAsync(Query query, CompletionHandler completionHandler) {
+        if (!mirrored) {
             throw new IllegalStateException("Mirroring not activated on this index");
-        return new Request(new BrowseMirrorTask().execute(new TaskParams.Search(listener, query)));
+        }
+        final Query queryCopy = new Query(query);
+        return new Request(completionHandler) {
+            @NonNull
+            @Override
+            JSONObject run() throws AlgoliaException {
+                return _browseMirror(queryCopy);
+            }
+        }.start();
     }
 
-    private class BrowseMirrorTask extends AsyncTask<TaskParams.Search, Void, TaskParams.Search>
-    {
-        @Override
-        protected TaskParams.Search doInBackground(TaskParams.Search... params)
-        {
-            TaskParams.Search p = params[0];
-            Query query = p.query;
-            try {
-                p.content = _browseMirror(query.build());
-            }
-            catch (AlgoliaException e) {
-                p.error = e;
-            }
-            return p;
-        }
-
-        @Override
-        protected void onPostExecute(TaskParams.Search p)
-        {
-            p.sendResult(MirroredIndex.this);
-        }
-    }
-
-    private JSONObject _browseMirror(String query) throws AlgoliaException
+    private JSONObject _browseMirror(@NonNull Query query) throws AlgoliaException
     {
         try {
             ensureLocalIndex();
-            SearchResults searchResults = localIndex.browse(query);
+            SearchResults searchResults = localIndex.browse(query.build());
             if (searchResults.statusCode == 200) {
                 String jsonString = new String(searchResults.data, "UTF-8");
                 JSONObject json = new JSONObject(jsonString);

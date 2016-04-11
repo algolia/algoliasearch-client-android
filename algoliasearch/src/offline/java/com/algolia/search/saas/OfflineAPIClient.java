@@ -39,7 +39,7 @@ import java.util.concurrent.Executors;
  * <p>NOTE: Requires Algolia's SDK. The {@link #enableOfflineMode(String)} method must be called with a valid license
  * key prior to calling any offline-related method.</p>
  */
-public class OfflineAPIClient extends APIClient
+public class OfflineAPIClient extends Client
 {
     private File rootDataDir;
 
