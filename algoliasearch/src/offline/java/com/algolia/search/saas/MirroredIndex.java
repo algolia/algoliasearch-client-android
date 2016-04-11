@@ -60,7 +60,7 @@ import java.util.UUID;
  * to create more than one <code>MirroredIndex</code> instance pointing to the same index, as that would duplicate
  * native resources.</p>
  *
- * <p>NOTE: Requires Algolia's SDK. The {@link OfflineAPIClient#enableOfflineMode(String)} method must be called with
+ * <p>NOTE: Requires Algolia's SDK. The {@link OfflineClient#enableOfflineMode(String)} method must be called with
  * a valid license key prior to calling any offline-related method.</p>
  */
 public class MirroredIndex extends Index
@@ -97,7 +97,7 @@ public class MirroredIndex extends Index
     // Constructors
     // ----------------------------------------------------------------------
 
-    protected MirroredIndex(@NonNull OfflineAPIClient client, @NonNull String indexName)
+    protected MirroredIndex(@NonNull OfflineClient client, @NonNull String indexName)
     {
         super(client, indexName);
     }
@@ -106,9 +106,9 @@ public class MirroredIndex extends Index
     // Accessors
     // ----------------------------------------------------------------------
 
-    public OfflineAPIClient getClient()
+    public OfflineClient getClient()
     {
-        return (OfflineAPIClient)super.getClient();
+        return (OfflineClient)super.getClient();
     }
 
     public boolean isMirrored()

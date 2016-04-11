@@ -39,7 +39,7 @@ import java.util.concurrent.Executors;
  * <p>NOTE: Requires Algolia's SDK. The {@link #enableOfflineMode(String)} method must be called with a valid license
  * key prior to calling any offline-related method.</p>
  */
-public class OfflineAPIClient extends Client
+public class OfflineClient extends Client
 {
     private File rootDataDir;
 
@@ -56,11 +56,11 @@ public class OfflineAPIClient extends Client
     /**
      * Construct a new offline-enabled API client.
      *
-     * @param applicationID See {@link APIClient}.
-     * @param apiKey See {@link APIClient}.
+     * @param applicationID See {@link Client}.
+     * @param apiKey See {@link Client}.
      * @param dataDir Path to the directory where the local data will be stored.
      */
-    public OfflineAPIClient(@NonNull String applicationID, @NonNull String apiKey, @NonNull File dataDir)
+    public OfflineClient(@NonNull String applicationID, @NonNull String apiKey, @NonNull File dataDir)
     {
         this(applicationID, apiKey, dataDir, null);
     }
@@ -68,12 +68,12 @@ public class OfflineAPIClient extends Client
     /**
      * Construct a new offline-enabled API client.
      *
-     * @param applicationID See {@link APIClient}.
-     * @param apiKey See {@link APIClient}.
+     * @param applicationID See {@link Client}.
+     * @param apiKey See {@link Client}.
      * @param dataDir Path to the directory where the local data will be stored.
-     * @param hosts See {@link APIClient}.
+     * @param hosts See {@link Client}.
      */
-    public OfflineAPIClient(@NonNull String applicationID, @NonNull String apiKey, @NonNull File dataDir, String[] hosts)
+    public OfflineClient(@NonNull String applicationID, @NonNull String apiKey, @NonNull File dataDir, String[] hosts)
     {
         super(applicationID, apiKey, hosts);
         this.rootDataDir = dataDir;
