@@ -635,4 +635,10 @@ public class IndexTest extends PowerMockTestCase {
         index.search(query);
         verify(mockClient, times(nbTimes)).postRequestRaw(anyString(), anyString(), anyBoolean());
     }
+
+    @Test
+    public void testNullCompletionHandler() throws Exception {
+        // Check that the code does not crash when no completion handler is specified.
+        index.addObjectAsync(new JSONObject("{\"city\": \"New York\"}"), null);
+    }
 }
