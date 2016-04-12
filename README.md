@@ -7,17 +7,15 @@
 
 
 
-
 <!--NO_HTML-->
 
 [Algolia Search](https://www.algolia.com) is a hosted full-text, numerical, and faceted search engine capable of delivering realtime results from the first keystroke.
 
 <!--/NO_HTML-->
 
-Our Android client lets you easily use the [Algolia Search API](https://www.algolia.com/doc/rest) from your Android Application. It wraps the [Algolia Search REST API](https://www.algolia.com/doc/rest).
+Our Android client lets you easily use the [Algolia Search API](https://www.algolia.com/doc/rest) from your Android application. It wraps the [Algolia Search REST API](https://www.algolia.com/doc/rest).
 
 
-It is based on our [Java API client](https://github.com/algolia/algoliasearch-client-java) and  includes an easy to use asynchronous API to avoid networks calls on UI Thread.
 
 [![Build Status](https://travis-ci.org/algolia/algoliasearch-client-android.svg?branch=master)](https://travis-ci.org/algolia/algoliasearch-client-android) [![GitHub version](https://badge.fury.io/gh/algolia%2Falgoliasearch-client-android.svg)](http://badge.fury.io/gh/algolia%2Falgoliasearch-client-android)
 
@@ -32,7 +30,6 @@ Table of Contents
 
 1. [Setup](#setup)
 1. [Quick Start](#quick-start)
-
 1. [Guides & Tutorials](#guides-tutorials)
 
 
@@ -51,9 +48,8 @@ Table of Contents
 1. [Clear an index](#clear-an-index)
 1. [Wait indexing](#wait-indexing)
 1. [Batch writes](#batch-writes)
-1. [Security / User API Keys](#security--user-api-keys)
-1. [Copy or rename an index](#copy-or-rename-an-index)
-1. [Logs](#logs)
+1. [Copy / Move an index](#copy--move-an-index)
+1. [Backup / Export an index](#backup--export-an-index)
 
 
 <!--/NO_HTML-->
@@ -67,22 +63,19 @@ To setup your project, follow these steps:
 
 
 
-1. Download the latest version from **JCenter**
-2. Initialize the client with your Application ID and API Key. You can find them on [your Algolia account](http://www.algolia.com/users/edit).
-3. Make your Activity class implement the listener interface that you need to be able to use the asynchronous methods (APIClientListener, SearchListener, IndexingListener, ...).
-
-```java
-APIClient client = new APIClient("YourApplicationID", "YourAPIKey");
-```
-
-If you're using Gradle, add the following dependency to you build file:
+- Add the following dependency to your Gradle build file:
 
 ```gradle
 dependencies {
     // [...]
-
-    compile 'com.algolia:algoliasearch-android:2.+@aar'
+    compile 'com.algolia:algoliasearch-android:3.+@aar'
 }
+```
+
+- Initialize the client with your application ID and API key. You can find them on [your Algolia Dashboard](https://www.algolia.com/api-keys).
+
+```java
+Client client = new Client("YOUR_APP_ID", "YOUR_API_KEY");
 ```
 
 
@@ -98,55 +91,65 @@ Without any prior configuration, you can start indexing contacts in the ```conta
 
 ```java
 Index index = client.initIndex("contacts");
-index.addObjectASync(new JSONObject()
+index.addObjectAsync(new JSONObject()
       .put("firstname", "Jimmie")
       .put("lastname", "Barninger")
       .put("followers", 93)
-      .put("company", "California Paint"), this);
-index.addObjectASync(new JSONObject()
+      .put("company", "California Paint"), null);
+index.addObjectAsync(new JSONObject()
       .put("firstname", "Warren")
       .put("lastname", "Speach")
       .put("followers", 42)
-      .put("company", "Norwalk Crmc"), this);
+      .put("company", "Norwalk Crmc"), null);
 ```
 
 You can now search for contacts using firstname, lastname, company, etc. (even with typos):
 ```java
+CompletionHandler completionHandler = new CompletionHandler() {
+    @Override
+    public void requestCompleted(JSONObject content, AlgoliaException error) {
+        // [...]
+    }
+};
 // search by firstname
-index.searchASync(new Query("jimmie"), this);
+index.searchAsync(new Query("jimmie"), completionHandler);
 // search a firstname with typo
-index.searchASync(new Query("jimie"), this);
+index.searchAsync(new Query("jimie"), completionHandler);
 // search for a company
-index.searchASync(new Query("california paint"), this);
+index.searchAsync(new Query("california paint"), completionHandler);
 // search for a firstname & company
-index.searchASync(new Query("jimmie paint"), this);
-```
-
-You will get search results in the `searchResult` methods of `SearchListener`:
-```java
-@Override
-public void searchResult(Index index, Query query, JSONObject results) {
-    Log.d("search", results.toString());
-}
+index.searchAsync(new Query("jimmie paint"), completionHandler);
 ```
 
 Settings can be customized to tune the search behavior. For example, you can add a custom sort by number of followers to the already great built-in relevance:
 ```java
-index.setSettingsASync(new JSONObject().append("customRanking", "desc(followers)"), this);
+JSONObject settings = new JSONObject().append("customRanking", "desc(followers)");
+index.setSettingsAsync(settings, null);
 ```
 
 You can also configure the list of attributes you want to index by order of importance (first = most important):
 ```java
-index.setSettingsASync(new JSONObject()
-      .append("attributesToIndex", "lastname")
-      .append("attributesToIndex", "firstname")
-      .append("attributesToIndex", "company"), this);
+JSONObject settings = new JSONObject()
+    .append("attributesToIndex", "lastname")
+    .append("attributesToIndex", "firstname")
+    .append("attributesToIndex", "company");
+index.setSettingsAsync(settings, null);
 ```
 
 Since the engine is designed to suggest results as you type, you'll generally search by prefix. In this case the order of attributes is very important to decide which hit is the best:
 ```java
-index.searchASync(new Query("or"), this);
-index.searchASync(new Query("jim"), this);
+index.searchAsync(new Query("or"), new CompletionHandler() {
+    @Override
+    public void requestCompleted(JSONObject content, AlgoliaException error) {
+        // [...]
+    }
+});
+index.searchAsync(new Query("jim"), new CompletionHandler() {
+    @Override
+    public void requestCompleted(JSONObject content, AlgoliaException error) {
+        // [...]
+    }
+});
 ```
 
 
@@ -195,26 +198,27 @@ Objects are schema less so you don't need any configuration to start indexing. I
 Example with automatic `objectID` assignment:
 
 ```java
-index.addObjectASync(new JSONObject()
-      .put("firstname", "Jimmie")
-      .put("lastname", "Barninger"), this);
-```
-
-You will get the assigned objectID in the `indexingResult` callback of the IndexingListener interface:
-
-```java
-@Override
-public void indexingResult(Index index, TaskParams.Indexing context, JSONObject result) {
-  Log.d("debug", result.optString("objectID"));
-}
+JSONObject object = new JSONObject()
+    .put("firstname", "Jimmie")
+    .put("lastname", "Barninger");
+index.addObjectAsync(object, new CompletionHandler() {
+    @Override
+    public void requestCompleted(JSONObject content, AlgoliaException error) {
+        // Retrieve the auto-assigned object ID:
+        if (content != null) {
+            String objectID = content.optString("objectID");
+        }
+    }
+});
 ```
 
 Example with manual `objectID` assignment:
 
 ```java
-index.addObjectASync(new JSONObject()
-      .put("firstname", "Jimmie")
-      .put("lastname", "Barninger"), "myID", this);
+JSONObject object = new JSONObject()
+    .put("firstname", "Jimmie")
+    .put("lastname", "Barninger");
+index.addObjectAsync(object, "myID", null);
 ```
 
 Update an existing object in the Index
@@ -229,10 +233,11 @@ You have three options when updating an existing object:
 Example on how to replace all attributes of an existing object:
 
 ```java
-index.saveObjectASync(new JSONObject()
-      .put("firstname", "Jimmie")
-      .put("lastname", "Barninger")
-      .put("city", "New York"), "myID", this);
+JSONObject object = new JSONObject()
+    .put("firstname", "Jimmie")
+    .put("lastname", "Barninger")
+    .put("city", "New York");
+index.saveObjectAsync(object, "myID", null);
 ```
 
 You have many ways to update an object's attributes:
@@ -247,31 +252,31 @@ You have many ways to update an object's attributes:
 Example to update only the city attribute of an existing object:
 
 ```java
-index.partialUpdateObjectASync(new JSONObject("{\"city\": \"San Francisco\"}"), "myID", this);
+index.partialUpdateObjectAsync(new JSONObject("{\"city\": \"San Francisco\"}"), "myID", null);
 ```
 
 Example to add a tag:
 
 ```java
-index.partialUpdateObjectASync(new JSONObject("{\"_tags\": {\"value\": \"MyTags\", \"_operation\": \"Add\"}}"), "myID", this);
+index.partialUpdateObjectAsync(new JSONObject("{\"_tags\": {\"value\": \"MyTags\", \"_operation\": \"Add\"}}"), "myID", null);
 ```
 
 Example to remove a tag:
 
 ```java
-index.partialUpdateObjectASync(new JSONObject("{\"_tags": {\"value\": \"MyTags\", \"_operation\": \"Remove\"}}"), "myID", this);
+index.partialUpdateObjectAsync(new JSONObject("{\"_tags": {\"value\": \"MyTags\", \"_operation\": \"Remove\"}}"), "myID", null);
 ```
 
 Example to add a tag if it doesn't exist:
 
 ```java
-index.partialUpdateObjectASync(new JSONObject("{\"_tags\": {\"value\": \"MyTags\", \"_operation\": \"AddUnique\"}}", "myID", this);
+index.partialUpdateObjectAsync(new JSONObject("{\"_tags\": {\"value\": \"MyTags\", \"_operation\": \"AddUnique\"}}", "myID", null);
 ```
 
 Example to increment a numeric value:
 
 ```java
-index.partialUpdateObjectASync(new JSONObject("{\"price\": {\"value\": 42, \"_operation\": \"Increment\"}}"), "myID", this);
+index.partialUpdateObjectAsync(new JSONObject("{\"price\": {\"value\": 42, \"_operation\": \"Increment\"}}"), "myID", null);
 ```
 
 Note: Here we are incrementing the value by `42`. To increment just by one, put
@@ -280,7 +285,7 @@ Note: Here we are incrementing the value by `42`. To increment just by one, put
 Example to decrement a numeric value:
 
 ```java
-index.partialUpdateObjectASync(new JSONObject("{\"price\": {\"value\": 42, \"_operation\": \"Decrement\"}}", "myID", this);
+index.partialUpdateObjectAsync(new JSONObject("{\"price\": {\"value\": 42, \"_operation\": \"Decrement\"}}", "myID", null);
 ```
 
 Note: Here we are decrementing the value by `42`. To decrement just by one, put
@@ -297,10 +302,16 @@ The search query allows only to retrieve 1000 hits, if you need to retrieve more
 
 ```java
 Index index = client.initIndex("contacts");
-index.searchASync(new Query("query string"), this);
-index.searchASync(new Query("query string").
-                  setAttributesToRetrieve(Arrays.asList("firstname", "lastname")).
-                  setNbHitsPerPage(50), this);
+Query query = new Query("query string")
+    .setAttributesToRetrieve(Arrays.asList("firstname", "lastname"))
+    .setNbHitsPerPage(50);
+index.searchAsync(query, new CompletionHandler() {
+    @Override
+    public void requestCompleted(JSONObject content, AlgoliaException error) {
+        // [...]
+    }
+});
+
 ```
 
 The server response will look like:
@@ -1092,6 +1103,29 @@ To get a full understanding of how `Distinct` works, you can have a look at our 
 
 
 
+Search cache
+==================
+
+You can easily cache the results of the search queries by enabling the search cache.
+The results will be cached during a defined amount of time (default: 2 min).
+There is no pre-caching mechanism but you can simulate it by making a preemptive search query.
+
+By default, the cache is disabled.
+
+```java
+// Enable the search cache with default settings.
+index.enableSearchCache();
+```
+
+... or:
+
+```java
+// Enable the search cache with a TTL of 5 minutes and maximum 20 requests in the cache.
+index.enableSearchCache(300, 20);
+```
+
+
+
 
 
 Multiple queries
@@ -1104,13 +1138,18 @@ You can send multiple queries with a single API call using a batch of queries:
 //  - 1st query targets index `categories`
 //  - 2nd and 3rd queries target index `products`
 
-List<IndexQuery> queries = new ArrayList<IndexQuery>();
+List<IndexQuery> queries = new ArrayList<>();
 
 queries.add(new IndexQuery("categories", new Query(myQueryString).setHitsPerPage(3)));
 queries.add(new IndexQuery("products", new Query(myQueryString).setHitsPerPage(3).setTagFilters("promotion"));
 queries.add(new IndexQuery("products", new Query(myQueryString).setHitsPerPage(10)));
 
-client.multipleQueriesASync(queries, this);
+client.multipleQueriesAsync(queries, new CompletionHandler() {
+    @Override
+    public void requestCompleted(JSONObject content, AlgoliaException error) {
+        // [...]
+    }
+});
 ```
 
 The resulting JSON answer contains a ```results``` array storing the underlying queries answers. The answers order is the same than the requests order.
@@ -1128,15 +1167,30 @@ You can easily retrieve an object using its `objectID` and optionally specify a 
 
 ```java
 // Retrieves all attributes
-index.getObjectASync("myID", this);
+index.getObjectAsync("myID", new CompletionHandler() {
+    @Override
+    public void requestCompleted(JSONObject content, AlgoliaException error) {
+        // [...]
+    }
+});
 // Retrieves only the firstname attribute
-index.getObjectASync("myID", Arrays.asList("firstname"), this);
+index.getObjectAsync("myID", Arrays.asList("firstname"), new CompletionHandler() {
+    @Override
+    public void requestCompleted(JSONObject content, AlgoliaException error) {
+        // [...]
+    }
+});
 ```
 
 You can also retrieve a set of objects:
 
 ```java
-index.getObjectsASync(Arrays.asList("myID1", "myID2"), this);
+index.getObjectsAsync(Arrays.asList("myID1", "myID2"), new CompletionHandler() {
+    @Override
+    public void requestCompleted(JSONObject content, AlgoliaException error) {
+        // [...]
+    }
+});
 ```
 
 Delete an object
@@ -1145,7 +1199,7 @@ Delete an object
 You can delete an object using its `objectID`:
 
 ```java
-index.deleteObjectASync("myID", this);
+index.deleteObjectAsync("myID", null);
 ```
 
 
@@ -1156,7 +1210,7 @@ You can delete all objects matching a single query with the following code. Inte
 
 ```java
 Query query = /* [ ... ] */;
-index.deleteByQueryASync(query, this);
+index.deleteByQueryAsync(query, null);
 ```
 
 
@@ -1166,20 +1220,16 @@ Index Settings
 You can easily retrieve or update settings:
 
 ```java
-index.getSettingsASync(this);
-```
-
-You will get the index settings in the `settingsResult` methods of SettingsListener:
-
-```java
-@Override
-public void settingsResult(Index index, TaskParams.Settings context, JSONObject results) {
-    Log.d("debug", results.toString());
-}
+index.getSettingsAsync(new CompletionHandler() {
+    @Override
+    public void requestCompleted(JSONObject content, AlgoliaException error) {
+        // [...]
+    }
+});
 ```
 
 ```java
-index.setSettingsASync(new JSONObject().append("customRanking", "desc(followers)"), this);
+index.setSettingsAsync(new JSONObject().append("customRanking", "desc(followers)"), null);
 ```
 
 
@@ -1799,7 +1849,12 @@ List indices
 You can list all your indices along with their associated information (number of entries, disk size, etc.) with the `listIndexes` method:
 
 ```java
-client.listIndexesASync(this);
+client.listIndexesAsync(new CompletionHandler() {
+    @Override
+    public void requestCompleted(JSONObject content, AlgoliaException error) {
+        // [...]
+    }
+});
 ```
 
 
@@ -1811,7 +1866,7 @@ Delete an index
 You can delete an index using its name:
 
 ```java
-client.deleteIndexASync("contacts", this);
+client.deleteIndexAsync("contacts", null);
 ```
 
 
@@ -1822,7 +1877,9 @@ Clear an index
 ==================
 You can delete the index contents without removing settings and index specific API keys by using the clearIndex command:
 
-
+```java
+index.clearIndexAsync(null);
+```
 
 Wait indexing
 ==================
@@ -1839,7 +1896,29 @@ You can wait for a task to complete using the `waitTask` method on the `taskID` 
 
 For example, to wait for indexing of a new object:
 ```java
-index.addObjectASync(new JSONObject().put("firstname", "Jimmie").put("lastname", "Barninger"), this);
+JSONObject object = new JSONObject().put("firstname", "Jimmie").put("lastname", "Barninger");
+index.addObjectAsync(object, new CompletionHandler() {
+    @Override
+    public void requestCompleted(JSONObject content, AlgoliaException error) {
+        if (error != null) {
+            // Handle error.
+        } else {
+            String taskID = content.optString("taskID", null);
+            if (taskID == null) {
+                // Handle error.
+            } else {
+                index.waitTask(taskID, new CompletionHandler() {
+                    @Override
+                    public void requestCompleted(JSONObject content, AlgoliaException error) {
+                        if (error == null) {
+                            // Task is published.
+                        }
+                    }
+                });
+            }
+        }
+    }
+});
 ```
 
 If you want to ensure multiple objects have been indexed, you only need to check
@@ -1860,7 +1939,7 @@ Example using automatic `objectID` assignment:
 List<JSONObject> array = new ArrayList<JSONObject>();
 array.add(new JSONObject().put("firstname", "Jimmie").put("lastname", "Barninger"));
 array.add(new JSONObject().put("firstname", "Warren").put("lastname", "Speach"));
-index.addObjectsASync(new JSONArray(array), this);
+index.addObjectsAsync(new JSONArray(array), null);
 ```
 
 Example with user defined `objectID` (add or update):
@@ -1868,15 +1947,12 @@ Example with user defined `objectID` (add or update):
 List<JSONObject> array = new ArrayList<JSONObject>();
 array.add(new JSONObject().put("firstname", "Jimmie").put("lastname", "Barninger").put("objectID", "SFO"));
 array.add(new JSONObject().put("firstname", "Warren").put("lastname", "Speach").put("objectID", "LA"));
-index.saveObjectsASync(new JSONArray(array), this);
+index.saveObjectsAsync(new JSONArray(array), null);
 ```
 
 Example that deletes a set of records:
 ```java
-List<String> ids = new ArrayList<String>();
-ids.add("myID1");
-ids.add("myID2");
-index.deleteObjectsASync(ids, this);
+index.deleteObjectsAsync(Arrays.asList("myID1", "myID2"), null);
 ```
 
 Example that updates only the `firstname` attribute:
@@ -1884,7 +1960,7 @@ Example that updates only the `firstname` attribute:
 List<JSONObject> array = new ArrayList<JSONObject>();
 array.add(new JSONObject().put("firstname", "Jimmie").put("objectID", "SFO"));
 array.add(new JSONObject().put("firstname", "Warren").put("objectID", "LA"));
-index.partialUpdateObjectsASync(new JSONArray(array), this);
+index.partialUpdateObjectsAsync(new JSONArray(array), null);
 ```
 
 
@@ -1892,12 +1968,24 @@ index.partialUpdateObjectsASync(new JSONArray(array), this);
 If you have one index per user, you may want to perform a batch operations across severals indexes.
 We expose a method to perform this type of batch:
 ```java
-List<JSONObject> array = new ArrayList<JSONObject>();
-array.add(new JSONObject().put("action". "addObject").put("indexName", "index1")
-	.put("body", new JSONObject().put("firstname", "Jimmie").put("lastname", "Barninger")));
-array.add(new JSONObject().put("action". "addObject").put("indexName", "index2")
-	.put("body", new JSONObject().put("firstname", "Warren").put("lastname", "Speach")));
-client.batchASync(new JSONArray(array), this);
+List<JSONObject> array = new ArrayList<>();
+array.add(new JSONObject()
+	.put("action", "addObject")
+	.put("indexName", "index1")
+	.put("body", new JSONObject()
+		.put("firstname", "Jimmie")
+		.put("lastname", "Barninger")
+	)
+);
+array.add(new JSONObject()
+	.put("action", "addObject")
+	.put("indexName", "index2")
+	.put("body", new JSONObject()
+		.put("firstname", "Warren")
+		.put("lastname", "Speach")
+	)
+);
+client.batchAsync(new JSONArray(array), null);
 ```
 
 The attribute **action** can have these values:
@@ -1907,190 +1995,7 @@ The attribute **action** can have these values:
 - partialUpdateObjectNoCreate
 - deleteObject
 
-Security / User API Keys
-==================
-
-The ADMIN API key provides full control of all your indices.
-You can also generate user API keys to control security.
-These API keys can be restricted to a set of operations or/and restricted to a given index.
-
-To list existing keys, you can use `listUserKeys` method:
-```java
-// Lists global API Keys
-client.listUserKeysASync(this);
-```
-
-Each key is defined by a set of permissions that specify the authorized actions. The different permissions are:
- * **search**: Allowed to search.
- * **browse**: Allowed to retrieve all index contents via the browse API.
- * **addObject**: Allowed to add/update an object in the index.
- * **deleteObject**: Allowed to delete an existing object.
- * **deleteIndex**: Allowed to delete index content.
- * **settings**: allows to get index settings.
- * **editSettings**: Allowed to change index settings.
- * **analytics**: Allowed to retrieve analytics through the analytics API.
- * **listIndexes**: Allowed to list all accessible indexes.
-
-Example of API Key creation:
-```java
-// Creates a new global API key that can only perform search actions
-client.addUserKeyASync(new JSONObject("{\"acl\": [\"search\"]}"), this);
-```
-
-You can also create an API Key with advanced settings:
-
-<table><tbody>
-  
-    <tr>
-      <td valign='top'>
-        <div class='client-readme-param-container'>
-          <div class='client-readme-param-container-inner'>
-            <div class='client-readme-param-name'><code>validity</code></div>
-            
-          </div>
-        </div>
-      </td>
-      <td class='client-readme-param-content'>
-        <p>Add a validity period. The key will be valid for a specific period of time (in seconds).</p>
-
-      </td>
-    </tr>
-    
-  
-    <tr>
-      <td valign='top'>
-        <div class='client-readme-param-container'>
-          <div class='client-readme-param-container-inner'>
-            <div class='client-readme-param-name'><code>maxQueriesPerIPPerHour</code></div>
-            
-          </div>
-        </div>
-      </td>
-      <td class='client-readme-param-content'>
-        <p>Specify the maximum number of API calls allowed from an IP address per hour. Each time an API call is performed with this key, a check is performed. If the IP at the source of the call did more than this number of calls in the last hour, a 403 code is returned. Defaults to 0 (no rate limit). This parameter can be used to protect you from attempts at retrieving your entire index contents by massively querying the index.</p>
-
-      </td>
-    </tr>
-    
-  
-    <tr>
-      <td valign='top'>
-        <div class='client-readme-param-container'>
-          <div class='client-readme-param-container-inner'>
-            <div class='client-readme-param-name'><code>maxHitsPerQuery</code></div>
-            
-          </div>
-        </div>
-      </td>
-      <td class='client-readme-param-content'>
-        <p>Specify the maximum number of hits this API key can retrieve in one call. Defaults to 0 (unlimited). This parameter can be used to protect you from attempts at retrieving your entire index contents by massively querying the index.</p>
-
-      </td>
-    </tr>
-    
-  
-    <tr>
-      <td valign='top'>
-        <div class='client-readme-param-container'>
-          <div class='client-readme-param-container-inner'>
-            <div class='client-readme-param-name'><code>indexes</code></div>
-            
-          </div>
-        </div>
-      </td>
-      <td class='client-readme-param-content'>
-        <p>Specify the list of targeted indices. You can target all indices starting with a prefix or ending with a suffix using the &#39;*&#39; character. For example, &quot;dev_*&quot; matches all indices starting with &quot;dev_&quot; and &quot;*_dev&quot; matches all indices ending with &quot;_dev&quot;. Defaults to all indices if empty or blank.</p>
-
-      </td>
-    </tr>
-    
-  
-    <tr>
-      <td valign='top'>
-        <div class='client-readme-param-container'>
-          <div class='client-readme-param-container-inner'>
-            <div class='client-readme-param-name'><code>referers</code></div>
-            
-          </div>
-        </div>
-      </td>
-      <td class='client-readme-param-content'>
-        <p>Specify the list of referers. You can target all referers starting with a prefix or ending with a suffix using the &#39;*&#39; character. For example, &quot;algolia.com/*&quot; matches all referers starting with &quot;algolia.com/&quot; and &quot;*.algolia.com&quot; matches all referers ending with &quot;.algolia.com&quot;. Defaults to all referers if empty or blank.</p>
-
-      </td>
-    </tr>
-    
-  
-    <tr>
-      <td valign='top'>
-        <div class='client-readme-param-container'>
-          <div class='client-readme-param-container-inner'>
-            <div class='client-readme-param-name'><code>queryParameters</code></div>
-            
-          </div>
-        </div>
-      </td>
-      <td class='client-readme-param-content'>
-        <p>Specify the list of query parameters. You can force the query parameters for a query using the url string format (param1=X&amp;param2=Y...).</p>
-
-      </td>
-    </tr>
-    
-  
-    <tr>
-      <td valign='top'>
-        <div class='client-readme-param-container'>
-          <div class='client-readme-param-container-inner'>
-            <div class='client-readme-param-name'><code>description</code></div>
-            
-          </div>
-        </div>
-      </td>
-      <td class='client-readme-param-content'>
-        <p>Specify a description to describe where the key is used.</p>
-
-      </td>
-    </tr>
-    
-
-</tbody></table>
-
-```java
-// Creates a new global API key that is valid for 300 seconds
-
-JSONObject param = new JSONObject();
-param.put("acl", Arrays.asList("search"));
-param.put("maxHitsPerQuery", 20);
-param.put("maxQueriesPerIPPerHour", 100);
-param.put("validity", 300);
-param.put("indexes", Arrays.asList("myIndex"));
-param.put("referers", Arrays.asList("algolia.com/*"));
-param.put("queryParameters", "typoTolerance=strict&ignorePlurals=false");
-param.put("description", "Limited search only API key for algolia.com");
-
-JSONObject res = client.addUserKeyASync(param, this);
-```
-
-Update the permissions of an existing key:
-```java
-// Update the validify of a global API Key
-client.updateUserKeyASync("myAPIKey", new JSONObject("{\"validity\": 300}"), this);
-```
-Get the permissions of a given key:
-```java
-// Gets the rights of a global key
-client.getUserKeyACLASync("f420238212c54dcfad07ea0aa6d5c45f", this);
-```
-
-Delete an existing key:
-```java
-// Deletes a global key
-client.deleteUserKeyASync("f420238212c54dcfad07ea0aa6d5c45f", this);
-```
-
-
-
-Copy or rename an index
+Copy / Move an index
 ==================
 
 You can easily copy or rename an existing index using the `copy` and `move` commands.
@@ -2098,9 +2003,9 @@ You can easily copy or rename an existing index using the `copy` and `move` comm
 
 ```java
 // Rename MyIndex in MyIndexNewName
-client.moveIndexASync("MyIndex", "MyIndexNewName", this);
+client.moveIndexAsync("MyIndex", "MyIndexNewName", null);
 // Copy MyIndex in MyIndexCopy
-client.copyIndexASync("MyIndex", "MyIndexCopy", this);
+client.copyIndexAsync("MyIndex", "MyIndexCopy", null);
 ```
 
 The move command is particularly useful if you want to update a big index atomically from one version to another. For example, if you recreate your index `MyIndex` each night from a database by batch, you only need to:
@@ -2109,104 +2014,68 @@ The move command is particularly useful if you want to update a big index atomic
 
 ```java
 // Rename MyNewIndex in MyIndex (and overwrite it)
-client.moveIndexASync("MyNewIndex", "MyIndex", this);
+client.moveIndexAsync("MyNewIndex", "MyIndex", null);
 ```
 
-
-
-Logs
+Backup / Export an index
 ==================
 
-You can retrieve the latest logs via this API. Each log entry contains:
- * Timestamp in ISO-8601 format
- * Client IP
- * Request Headers (API Key is obfuscated)
- * Request URL
- * Request method
- * Request body
- * Answer HTTP code
- * Answer body
- * SHA1 ID of entry
+The `search` method cannot return more than 1,000 results. If you need to
+retrieve all the content of your index (for backup, SEO purposes or for running
+a script on it), you should use the `browse` method instead. This method lets
+you retrieve objects beyond the 1,000 limit.
 
-You can retrieve the logs of your last 1,000 API calls and browse them using the offset/length parameters:
+This method is optimized for speed. To make it fast, distinct, typo-tolerance,
+word proximity, geo distance and number of matched words are disabled. Results
+are still returned ranked by attributes and custom ranking.
 
-<table><tbody>
-  
-    <tr>
-      <td valign='top'>
-        <div class='client-readme-param-container'>
-          <div class='client-readme-param-container-inner'>
-            <div class='client-readme-param-name'><code>offset</code></div>
-            
-          </div>
-        </div>
-      </td>
-      <td class='client-readme-param-content'>
-        <p>Specify the first entry to retrieve (0-based, 0 is the most recent log entry). Defaults to 0.</p>
 
-      </td>
-    </tr>
-    
-  
-    <tr>
-      <td valign='top'>
-        <div class='client-readme-param-container'>
-          <div class='client-readme-param-container-inner'>
-            <div class='client-readme-param-name'><code>length</code></div>
-            
-          </div>
-        </div>
-      </td>
-      <td class='client-readme-param-content'>
-        <p>Specify the maximum number of entries to retrieve starting at the offset. Defaults to 10. Maximum allowed value: 1,000.</p>
+It will return a `cursor` alongside your data, that you can then use to retrieve
+the next chunk of your records.
 
-      </td>
-    </tr>
-    
-  
-    <tr>
-      <td valign='top'>
-        <div class='client-readme-param-container'>
-          <div class='client-readme-param-container-inner'>
-            <div class='client-readme-param-name'><code>onlyErrors</code></div>
-            
-          </div>
-        </div>
-      </td>
-      <td class='client-readme-param-content'>
-        <p>Retrieve only logs with an HTTP code different than 200 or 201. (deprecated)</p>
+You can specify custom parameters (like `page` or `hitsPerPage`) on your first
+`browse` call, and these parameters will then be included in the `cursor`. Note
+that it is not possible to access records beyond the 1,000th on the first call.
 
-      </td>
-    </tr>
-    
-  
-    <tr>
-      <td valign='top'>
-        <div class='client-readme-param-container'>
-          <div class='client-readme-param-container-inner'>
-            <div class='client-readme-param-name'><code>type</code></div>
-            
-          </div>
-        </div>
-      </td>
-      <td class='client-readme-param-content'>
-        <p>Specify the type of logs to retrieve:</p>
+Example:
 
-<ul>
-<li><code>query</code>: Retrieve only the queries.</li>
-<li><code>build</code>: Retrieve only the build operations.</li>
-<li><code>error</code>: Retrieve only the errors (same as <code>onlyErrors</code> parameters).</li>
-</ul>
-
-      </td>
-    </tr>
-    
-</tbody></table>
+Using the low-level methods:
 
 ```java
-// Get last 100 error log entries
-client.getLogsASync(0, 100, LogType.LOG_ERROR, this);
+index.browseAsync(query, new CompletionHandler() {
+    @Override
+    public void requestCompleted(JSONObject result, AlgoliaException error) {
+        if (error != null) return;
+        // Handle the content. [...]
+        // If there is more content, continue browse.
+        String cursor = result.optString("cursor", null);
+        if (cursor != null) {
+            index.browseFrom(cursor, new CompletionHandler() {
+                @Override
+                public void requestCompleted(JSONObject result, AlgoliaException error) {
+                    // Handle more content. [...]
+                }
+            });
+        }
+    }
+});
 ```
+
+Using the browse helper:
+
+```java
+BrowseIterator iterator = new BrowseIterator(index, query, new BrowseIterator.BrowseIteratorHandler() {
+    @Override
+    public void handleBatch(@NonNull BrowseIterator iterator, JSONObject result, AlgoliaException error) {
+        // Handle the result/error. [...]
+        // You may optionally cancel the iteration by calling:
+        iterator.cancel();
+    }
+});
+iterator.start();
+```
+
+
 
 
 
