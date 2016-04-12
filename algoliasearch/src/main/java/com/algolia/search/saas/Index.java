@@ -23,100 +23,925 @@
 
 package com.algolia.search.saas;
 
-import android.os.AsyncTask;
-
-import com.algolia.search.saas.listeners.DeleteObjectsListener;
-import com.algolia.search.saas.listeners.GetObjectsListener;
-import com.algolia.search.saas.listeners.IndexingListener;
-import com.algolia.search.saas.listeners.SearchDisjunctiveFacetingListener;
-import com.algolia.search.saas.listeners.SearchListener;
-import com.algolia.search.saas.listeners.SettingsListener;
-import com.algolia.search.saas.listeners.WaitTaskListener;
+import android.support.annotation.NonNull;
 
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
 /**
- * Contains all the functions related to one index
- * You should use APIClient.initIndex(indexName) to retrieve this object
+ * A proxy to an Algolia index.
+ * <p>
+ * You cannot construct this class directly. Please use {@link Client#initIndex(String)} to obtain an instance.
+ * </p>
+ * <p>
+ * WARNING: For performance reasons, arguments to asynchronous methods are not cloned. Therefore, you should not
+ * modify mutable arguments after they have been passed (unless explicitly noted).
+ * </p>
  */
-public class Index extends BaseIndex {
-    /**
-     * Index initialization (You should not call this initialized yourself)
-     */
-    protected Index(APIClient client, String indexName) {
-        super(client, indexName);
+public class Index {
+    /** The client to which this index belongs. */
+    private Client client;
+
+    /** This index's name. */
+    private String indexName;
+
+    /** This index's name, URL-encoded. Cached for optimization. */
+    private String encodedIndexName;
+
+    private ExpiringCache<String, byte[]> searchCache;
+    private boolean isCacheEnabled = false;
+
+    // ----------------------------------------------------------------------
+    // Constants
+    // ----------------------------------------------------------------------
+
+    private static final long MAX_TIME_MS_TO_WAIT = 10000L;
+
+    // ----------------------------------------------------------------------
+    // Initialization
+    // ----------------------------------------------------------------------
+
+    protected Index(@NonNull Client client, @NonNull String indexName) {
+        try {
+            this.client = client;
+            this.encodedIndexName = URLEncoder.encode(indexName, "UTF-8");
+            this.indexName = indexName;
+        } catch (UnsupportedEncodingException e) {
+            throw new RuntimeException(e); // should never happen, as UTF-8 is always supported
+        }
     }
 
-    ////////////////////////////////////////////////////////////////////////////////////////////////
-    /// SEARCH TASK
-    ////////////////////////////////////////////////////////////////////////////////////////////////
+    // ----------------------------------------------------------------------
+    // Accessors
+    // ----------------------------------------------------------------------
 
-    private class ASyncSearchTask extends AsyncTask<TaskParams.Search, Void, TaskParams.Search> {
-        @Override
-        protected TaskParams.Search doInBackground(TaskParams.Search... params) {
-            TaskParams.Search p = params[0];
-            try {
-                p.content = search(p.query);
-            } catch (AlgoliaException e) {
-                p.error = e;
+    @Override
+    public String toString()
+    {
+        return String.format("%s{%s}", this.getClass().getSimpleName(), getIndexName());
+    }
+
+    public String getIndexName() {
+        return indexName;
+    }
+
+    public Client getClient()
+    {
+        return client;
+    }
+
+    protected String getEncodedIndexName()
+    {
+        return encodedIndexName;
+    }
+
+    // ----------------------------------------------------------------------
+    // Public operations
+    // ----------------------------------------------------------------------
+
+    /**
+     * Search inside this index (asynchronously).
+     *
+     * @param query Search parameters. May be null to use an empty query.
+     * @param completionHandler The listener that will be notified of the request's outcome.
+     * @return A cancellable request.
+     */
+    public Request searchAsync(@NonNull Query query, @NonNull CompletionHandler completionHandler) {
+        final Query queryCopy = new Query(query);
+        return new Request(completionHandler) {
+            @NonNull
+            @Override
+            JSONObject run() throws AlgoliaException {
+                return search(queryCopy);
             }
-            return p;
-        }
-
-        @Override
-        protected void onPostExecute(TaskParams.Search p) {
-            p.sendResult(Index.this);
-        }
+        }.start();
     }
 
     /**
-     * Search inside the index asynchronously
-     * @param listener the listener that will receive the result or error.
+     * Search inside this index (synchronously).
+     *
+     * @return Search results.
      */
-    public void searchASync(Query query, SearchListener listener) {
-        TaskParams.Search params = new TaskParams.Search(listener, query);
-        new ASyncSearchTask().execute(params);
-    }
-
-    /**
-     * Search inside the index synchronously
-     * @return a JSONObject containing search results
-     */
-    public JSONObject searchSync(Query query) throws AlgoliaException {
+    public JSONObject searchSync(@NonNull Query query) throws AlgoliaException {
         return search(query);
     }
 
     /**
-     * Search inside the index synchronously
-     * @return a byte array containing search results
+     * Search inside this index synchronously.
+     *
+     * @return Search results.
      */
-    protected byte[] searchSyncRaw(Query query) throws AlgoliaException {
+    protected byte[] searchSyncRaw(@NonNull Query query) throws AlgoliaException {
         return searchRaw(query);
     }
 
-    ////////////////////////////////////////////////////////////////////////////////////////////////
-    /// SEARCH DISJUNCTIVE FACETING TASK
-    ////////////////////////////////////////////////////////////////////////////////////////////////
-    private class AsyncSearchDisjunctiveFacetingTask extends AsyncTask<TaskParams.SearchDisjunctiveFaceting, Void, TaskParams.SearchDisjunctiveFaceting> {
-        @Override
-        protected TaskParams.SearchDisjunctiveFaceting doInBackground(TaskParams.SearchDisjunctiveFaceting... params) {
-            TaskParams.SearchDisjunctiveFaceting p = params[0];
-            try {
-                p.content = searchDisjunctiveFaceting(p.query, p.disjunctiveFacets, p.refinements);
-            } catch (AlgoliaException e) {
-                p.error = e;
+    /**
+     * Perform a search with disjunctive facets, generating as many queries as number of disjunctive facets (helper).
+     *
+     * @param query             The query.
+     * @param disjunctiveFacets List of disjunctive facets.
+     * @param refinements       The current refinements, mapping facet names to a list of values.
+     * @param completionHandler The listener that will be notified of the request's outcome.
+     * @return A cancellable request.
+     */
+    public Request searchDisjunctiveFacetingAsync(@NonNull Query query, @NonNull List<String> disjunctiveFacets, @NonNull Map<String, List<String>> refinements, @NonNull CompletionHandler completionHandler) {
+        final Query queryCopy = new Query(query);
+        final List<String> disjunctiveFacetsCopy = new ArrayList<>(disjunctiveFacets);
+        final Map<String, List<String>> refinementsCopy = new HashMap<>();
+        for (Map.Entry<String, List<String>> entry : refinements.entrySet()) {
+            refinementsCopy.put(entry.getKey(), new ArrayList<String>(entry.getValue()));
+        }
+        return new Request(completionHandler) {
+            @NonNull
+            @Override
+            JSONObject run() throws AlgoliaException {
+                return searchDisjunctiveFaceting(queryCopy, disjunctiveFacetsCopy, refinementsCopy);
             }
-            return p;
-        }
+        }.start();
+    }
 
-        @Override
-        protected void onPostExecute(TaskParams.SearchDisjunctiveFaceting p) {
-            p.sendResult(Index.this);
+    /**
+     * Add an object to this index (asynchronously).
+     * <p>
+     * WARNING: For performance reasons, the arguments are not cloned. Since the method is executed in the background,
+     * you should not modify the object after it has been passed.
+     * </p>
+     *
+     * @param object The object to add.
+     * @param completionHandler The listener that will be notified of the request's outcome.
+     * @return A cancellable request.
+     */
+    public Request addObjectAsync(final @NonNull JSONObject object, CompletionHandler completionHandler) {
+        return new Request(completionHandler) {
+            @NonNull
+            @Override
+            JSONObject run() throws AlgoliaException {
+                return addObject(object);
+            }
+        }.start();
+    }
+
+    /**
+     * Add an object to this index, assigning it the specified object ID (asynchronously).
+     * If an object already exists with the same object ID, the existing object will be overwritten.
+     * <p>
+     * WARNING: For performance reasons, the arguments are not cloned. Since the method is executed in the background,
+     * you should not modify the object after it has been passed.
+     * </p>
+     *
+     * @param object The object to add.
+     * @param objectID Identifier that you want to assign this object.
+     * @param completionHandler The listener that will be notified of the request's outcome.
+     * @return A cancellable request.
+     */
+    public Request addObjectAsync(final @NonNull JSONObject object, final @NonNull String objectID, CompletionHandler completionHandler)  {
+        return new Request(completionHandler) {
+            @NonNull
+            @Override
+            JSONObject run() throws AlgoliaException {
+                return addObject(object, objectID);
+            }
+        }.start();
+    }
+
+    /**
+     * Add several objects to this index (asynchronously).
+     *
+     * @param objects Objects to add.
+     * @param completionHandler The listener that will be notified of the request's outcome.
+     * @return A cancellable request.
+     */
+    public Request addObjectsAsync(final @NonNull JSONArray objects, CompletionHandler completionHandler) {
+        return new Request(completionHandler) {
+            @NonNull
+            @Override
+            JSONObject run() throws AlgoliaException {
+                return addObjects(objects);
+            }
+        }.start();
+    }
+
+    /**
+     * Update an object (asynchronously).
+     *
+     * @param object New version of the object to update.
+     * @param objectID Identifier of the object to update.
+     * @param completionHandler The listener that will be notified of the request's outcome.
+     * @return A cancellable request.
+     */
+    public Request saveObjectAsync(final @NonNull JSONObject object, final @NonNull String objectID, CompletionHandler completionHandler) {
+        return new Request(completionHandler) {
+            @NonNull
+            @Override
+            JSONObject run() throws AlgoliaException {
+                return saveObject(object, objectID);
+            }
+        }.start();
+    }
+
+    /**
+     * Update several objects (asynchronously).
+     *
+     * @param objects Objects to update. Each object must contain an <code>objectID</code> attribute.
+     * @param completionHandler The listener that will be notified of the request's outcome.
+     * @return A cancellable request.
+     */
+    public Request saveObjectsAsync(final @NonNull JSONArray objects, @NonNull CompletionHandler completionHandler) {
+        return new Request(completionHandler) {
+            @NonNull
+            @Override
+            JSONObject run() throws AlgoliaException {
+                return saveObjects(objects);
+            }
+        }.start();
+    }
+
+    /**
+     * Partially update an object (asynchronously).
+     *
+     * @param partialObject New value/operations for the object.
+     * @param objectID Identifier of object to be updated.
+     * @param completionHandler The listener that will be notified of the request's outcome.
+     * @return A cancellable request.
+     */
+    public Request partialUpdateObjectAsync(final @NonNull JSONObject partialObject, final @NonNull String objectID, CompletionHandler completionHandler) {
+        return new Request(completionHandler) {
+            @NonNull
+            @Override
+            JSONObject run() throws AlgoliaException {
+                return partialUpdateObject(partialObject, objectID);
+            }
+        }.start();
+    }
+
+    /**
+     * Partially update several objects (asynchronously).
+     *
+     * @param partialObjects New values/operations for the objects. Each object must contain an <code>objectID</code>
+     *                       attribute.
+     * @param completionHandler The listener that will be notified of the request's outcome.
+     * @return A cancellable request.
+     */
+    public Request partialUpdateObjectsAsync(final @NonNull JSONArray partialObjects, CompletionHandler completionHandler) {
+        return new Request(completionHandler) {
+            @NonNull
+            @Override
+            JSONObject run() throws AlgoliaException {
+                return partialUpdateObjects(partialObjects);
+            }
+        }.start();
+    }
+
+    /**
+     * Get an object from this index (asynchronously).
+     *
+     * @param objectID Identifier of the object to retrieve.
+     * @param completionHandler The listener that will be notified of the request's outcome.
+     * @return A cancellable request.
+     */
+    public Request getObjectAsync(final @NonNull String objectID, @NonNull CompletionHandler completionHandler) {
+        return new Request(completionHandler) {
+            @NonNull
+            @Override
+            JSONObject run() throws AlgoliaException {
+                return getObject(objectID);
+            }
+        }.start();
+    }
+
+    /**
+     * Get an object from this index, optionally restricting the retrieved content (asynchronously).
+     *
+     * @param objectID Identifier of the object to retrieve.
+     * @param attributesToRetrieve List of attributes to retrieve.
+     * @param completionHandler The listener that will be notified of the request's outcome.
+     * @return A cancellable request.
+     */
+    public Request getObjectAsync(final @NonNull String objectID, final List<String> attributesToRetrieve, @NonNull CompletionHandler completionHandler) {
+        return new Request(completionHandler) {
+            @NonNull
+            @Override
+            JSONObject run() throws AlgoliaException {
+                return getObject(objectID, attributesToRetrieve);
+            }
+        }.start();
+    }
+
+    /**
+     * Get several objects from this index (asynchronously).
+     *
+     * @param objectIDs Identifiers of objects to retrieve.
+     * @param completionHandler The listener that will be notified of the request's outcome.
+     * @return A cancellable request.
+     */
+    public Request getObjectsAsync(final @NonNull List<String> objectIDs, @NonNull CompletionHandler completionHandler) {
+        return new Request(completionHandler) {
+            @NonNull
+            @Override
+            JSONObject run() throws AlgoliaException {
+                return getObjects(objectIDs);
+            }
+        }.start();
+    }
+
+    /**
+     * Wait until the publication of a task on the server (helper).
+     * All server tasks are asynchronous. This method helps you check that a task is published.
+     *
+     * @param taskID Identifier of the task (as returned by the server).
+     * @param completionHandler The listener that will be notified of the request's outcome.
+     * @return A cancellable request.
+     */
+    public Request waitTaskAsync(final @NonNull String taskID, @NonNull CompletionHandler completionHandler) {
+        return new Request(completionHandler) {
+            @NonNull
+            @Override
+            JSONObject run() throws AlgoliaException {
+                return waitTask(taskID);
+            }
+        }.start();
+    }
+
+    /**
+     * Delete an object from this index (asynchronously).
+     *
+     * @param objectID Identifier of the object to delete.
+     * @param completionHandler The listener that will be notified of the request's outcome.
+     * @return A cancellable request.
+     */
+    public Request deleteObjectAsync(final @NonNull String objectID, CompletionHandler completionHandler) {
+        return new Request(completionHandler) {
+            @NonNull
+            @Override
+            JSONObject run() throws AlgoliaException {
+                return deleteObject(objectID);
+            }
+        }.start();
+    }
+
+    /**
+     * Delete several objects from this index (asynchronously).
+     *
+     * @param objectIDs Identifiers of objects to delete.
+     * @param completionHandler The listener that will be notified of the request's outcome.
+     * @return A cancellable request.
+     */
+    public Request deleteObjectsAsync(final @NonNull List<String> objectIDs, CompletionHandler completionHandler) {
+        return new Request(completionHandler) {
+            @NonNull
+            @Override
+            JSONObject run() throws AlgoliaException {
+                return deleteObjects(objectIDs);
+            }
+        }.start();
+    }
+
+    /**
+     * Delete all objects matching a query (helper).
+     *
+     * @param query The query that objects to delete must match.
+     * @param completionHandler The listener that will be notified of the request's outcome.
+     * @return A cancellable request.
+     */
+    public Request deleteByQueryAsync(@NonNull Query query, CompletionHandler completionHandler) {
+        final Query queryCopy = new Query(query);
+        return new Request(completionHandler) {
+            @NonNull
+            @Override
+            JSONObject run() throws AlgoliaException {
+                deleteByQuery(queryCopy);
+                return new JSONObject();
+            }
+        }.start();
+    }
+
+    /**
+     * Get this index's settings (asynchronously).
+     *
+     * @param completionHandler The listener that will be notified of the request's outcome.
+     * @return A cancellable request.
+     */
+    public Request getSettingsAsync(@NonNull CompletionHandler completionHandler) {
+        return new Request(completionHandler) {
+            @NonNull
+            @Override
+            JSONObject run() throws AlgoliaException {
+                return getSettings();
+            }
+        }.start();
+    }
+
+    /**
+     * Set this index's settings (asynchronously).
+     *
+     * Please refer to our <a href="https://www.algolia.com/doc/android#index-settings">API documentation</a> for the
+     * list of supported settings.
+     *
+     * @param settings New settings.
+     * @param completionHandler The listener that will be notified of the request's outcome.
+     * @return A cancellable request.
+     */
+    public Request setSettingsAsync(final @NonNull JSONObject settings, CompletionHandler completionHandler) {
+        return new Request(completionHandler) {
+            @NonNull
+            @Override
+            JSONObject run() throws AlgoliaException {
+                return setSettings(settings);
+            }
+        }.start();
+    }
+
+    /**
+     * Browse all index content (initial call).
+     * This method should be called once to initiate a browse. It will return the first page of results and a cursor,
+     * unless the end of the index has been reached. To retrieve subsequent pages, call `browseFromAsync` with that
+     * cursor.
+     *
+     * @param query The query parameters for the browse.
+     * @param completionHandler The listener that will be notified of the request's outcome.
+     * @return A cancellable request.
+     */
+    public Request browseAsync(@NonNull Query query, @NonNull CompletionHandler completionHandler) {
+        final Query queryCopy = new Query(query);
+        return new Request(completionHandler) {
+            @NonNull
+            @Override
+            JSONObject run() throws AlgoliaException {
+                return browse(queryCopy);
+            }
+        }.start();
+    }
+
+    /**
+     * Browse the index from a cursor.
+     * This method should be called after an initial call to `browseAsync()`. It returns a cursor, unless the end of
+     * the index has been reached.
+     *
+     * @param cursor The cursor of the next page to retrieve.
+     * @param completionHandler The listener that will be notified of the request's outcome.
+     * @return A cancellable request.
+     */
+    public Request browseFromAsync(final @NonNull String cursor, @NonNull CompletionHandler completionHandler) {
+        return new Request(completionHandler) {
+            @NonNull
+            @Override
+            JSONObject run() throws AlgoliaException {
+                return browseFrom(cursor);
+            }
+        }.start();
+    }
+
+    /**
+     * Clear this index.
+     *
+     * @param completionHandler The listener that will be notified of the request's outcome.
+     * @return A cancellable request.
+     */
+    public Request clearIndexAsync(CompletionHandler completionHandler) {
+        return new Request(completionHandler) {
+            @NonNull
+            @Override
+            JSONObject run() throws AlgoliaException {
+                return clearIndex();
+            }
+        }.start();
+    }
+
+    // ----------------------------------------------------------------------
+    // Search cache
+    // ----------------------------------------------------------------------
+
+    /**
+     * Enable search cache with default parameters
+     */
+    public void enableSearchCache() {
+        enableSearchCache(ExpiringCache.defaultExpirationTimeout, ExpiringCache.defaultMaxSize);
+    }
+
+    /**
+     * Enable search cache with custom parameters
+     *
+     * @param timeoutInSeconds duration during which an request is kept in cache
+     * @param maxRequests      maximum amount of requests to keep before removing the least recently used
+     */
+    public void enableSearchCache(int timeoutInSeconds, int maxRequests) {
+        isCacheEnabled = true;
+        searchCache = new ExpiringCache<>(timeoutInSeconds, maxRequests);
+    }
+
+    /**
+     * Disable and reset cache
+     */
+    public void disableSearchCache() {
+        isCacheEnabled = false;
+        if (searchCache != null) {
+            searchCache.reset();
         }
+    }
+
+    /**
+     * Remove all entries from cache
+     */
+    public void clearSearchCache() {
+        if (searchCache != null) {
+            searchCache.reset();
+        }
+    }
+
+    // ----------------------------------------------------------------------
+    // Internal operations
+    // ----------------------------------------------------------------------
+
+    /**
+     * Add an object in this index
+     *
+     * @param obj the object to add.
+     * @throws AlgoliaException
+     */
+    protected JSONObject addObject(JSONObject obj) throws AlgoliaException {
+        return client.postRequest("/1/indexes/" + encodedIndexName, obj.toString(), false);
+    }
+
+    /**
+     * Add an object in this index
+     *
+     * @param obj      the object to add.
+     * @param objectID an objectID you want to attribute to this object
+     * (if the attribute already exist the old object will be overwrite)
+     * @throws AlgoliaException
+     */
+    protected JSONObject addObject(JSONObject obj, String objectID) throws AlgoliaException {
+        try {
+            return client.putRequest("/1/indexes/" + encodedIndexName + "/" + URLEncoder.encode(objectID, "UTF-8"), obj.toString());
+        } catch (UnsupportedEncodingException e) {
+            throw new AlgoliaException(e.getMessage());
+        }
+    }
+
+    /**
+     * Custom batch
+     *
+     * @param actions the array of actions
+     * @throws AlgoliaException
+     */
+    protected JSONObject batch(JSONArray actions) throws AlgoliaException {
+        try {
+            JSONObject content = new JSONObject();
+            content.put("requests", actions);
+            return client.postRequest("/1/indexes/" + encodedIndexName + "/batch", content.toString(), false);
+        } catch (JSONException e) {
+            throw new AlgoliaException(e.getMessage());
+        }
+    }
+
+    /**
+     * Add several objects
+     *
+     * @param inputArray contains an array of objects to add.
+     * @throws AlgoliaException
+     */
+    protected JSONObject addObjects(JSONArray inputArray) throws AlgoliaException {
+        try {
+            JSONArray array = new JSONArray();
+            for (int n = 0; n < inputArray.length(); n++) {
+                JSONObject action = new JSONObject();
+                action.put("action", "addObject");
+                action.put("body", inputArray.getJSONObject(n));
+                array.put(action);
+            }
+            return batch(array);
+        } catch (JSONException e) {
+            throw new AlgoliaException(e.getMessage());
+        }
+    }
+
+    /**
+     * Get an object from this index
+     *
+     * @param objectID the unique identifier of the object to retrieve
+     * @throws AlgoliaException
+     */
+    protected JSONObject getObject(String objectID) throws AlgoliaException {
+        try {
+            return client.getRequest("/1/indexes/" + encodedIndexName + "/" + URLEncoder.encode(objectID, "UTF-8"), false);
+        } catch (UnsupportedEncodingException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    /**
+     * Get an object from this index
+     *
+     * @param objectID             the unique identifier of the object to retrieve
+     * @param attributesToRetrieve contains the list of attributes to retrieve.
+     * @throws AlgoliaException
+     */
+    protected JSONObject getObject(String objectID, List<String> attributesToRetrieve) throws AlgoliaException {
+        try {
+            StringBuilder params = new StringBuilder();
+            params.append("?attributes=");
+            for (int i = 0; i < attributesToRetrieve.size(); ++i) {
+                if (i > 0) {
+                    params.append(",");
+                }
+                params.append(URLEncoder.encode(attributesToRetrieve.get(i), "UTF-8"));
+            }
+            return client.getRequest("/1/indexes/" + encodedIndexName + "/" + URLEncoder.encode(objectID, "UTF-8") + params.toString(), false);
+        } catch (UnsupportedEncodingException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    /**
+     * Get several objects from this index
+     *
+     * @param objectIDs the array of unique identifier of objects to retrieve
+     * @throws AlgoliaException
+     */
+    protected JSONObject getObjects(List<String> objectIDs) throws AlgoliaException {
+        try {
+            JSONArray requests = new JSONArray();
+            for (String id : objectIDs) {
+                JSONObject request = new JSONObject();
+                request.put("indexName", this.indexName);
+                request.put("objectID", id);
+                requests.put(request);
+            }
+            JSONObject body = new JSONObject();
+            body.put("requests", requests);
+            return client.postRequest("/1/indexes/*/objects", body.toString(), true);
+        } catch (JSONException e) {
+            throw new AlgoliaException(e.getMessage());
+        }
+    }
+
+    /**
+     * Update partially an object (only update attributes passed in argument)
+     *
+     * @param partialObject the object attributes to override
+     * @throws AlgoliaException
+     */
+    protected JSONObject partialUpdateObject(JSONObject partialObject, String objectID) throws AlgoliaException {
+        try {
+            return client.postRequest("/1/indexes/" + encodedIndexName + "/" + URLEncoder.encode(objectID, "UTF-8") + "/partial", partialObject.toString(), false);
+        } catch (UnsupportedEncodingException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    /**
+     * Partially Override the content of several objects
+     *
+     * @param inputArray the array of objects to update (each object must contains an objectID attribute)
+     * @throws AlgoliaException
+     */
+    protected JSONObject partialUpdateObjects(JSONArray inputArray) throws AlgoliaException {
+        try {
+            JSONArray array = new JSONArray();
+            for (int n = 0; n < inputArray.length(); n++) {
+                JSONObject obj = inputArray.getJSONObject(n);
+                JSONObject action = new JSONObject();
+                action.put("action", "partialUpdateObject");
+                action.put("objectID", obj.getString("objectID"));
+                action.put("body", obj);
+                array.put(action);
+            }
+            return batch(array);
+        } catch (JSONException e) {
+            throw new AlgoliaException(e.getMessage());
+        }
+    }
+
+    /**
+     * Override the content of object
+     *
+     * @param object the object to save
+     * @throws AlgoliaException
+     */
+    protected JSONObject saveObject(JSONObject object, String objectID) throws AlgoliaException {
+        try {
+            return client.putRequest("/1/indexes/" + encodedIndexName + "/" + URLEncoder.encode(objectID, "UTF-8"), object.toString());
+        } catch (UnsupportedEncodingException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    /**
+     * Override the content of several objects
+     *
+     * @param inputArray contains an array of objects to update (each object must contains an objectID attribute)
+     * @throws AlgoliaException
+     */
+    protected JSONObject saveObjects(JSONArray inputArray) throws AlgoliaException {
+        try {
+            JSONArray array = new JSONArray();
+            for (int n = 0; n < inputArray.length(); n++) {
+                JSONObject obj = inputArray.getJSONObject(n);
+                JSONObject action = new JSONObject();
+                action.put("action", "updateObject");
+                action.put("objectID", obj.getString("objectID"));
+                action.put("body", obj);
+                array.put(action);
+            }
+            return batch(array);
+        } catch (JSONException e) {
+            throw new AlgoliaException(e.getMessage());
+        }
+    }
+
+    /**
+     * Delete an object from the index
+     *
+     * @param objectID the unique identifier of object to delete
+     * @throws AlgoliaException
+     */
+    protected JSONObject deleteObject(String objectID) throws AlgoliaException {
+        if (objectID.length() == 0) {
+            throw new AlgoliaException("Invalid objectID");
+        }
+        try {
+            return client.deleteRequest("/1/indexes/" + encodedIndexName + "/" + URLEncoder.encode(objectID, "UTF-8"));
+        } catch (UnsupportedEncodingException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    /**
+     * Delete several objects
+     *
+     * @param objects the array of objectIDs to delete
+     * @throws AlgoliaException
+     */
+    protected JSONObject deleteObjects(List<String> objects) throws AlgoliaException {
+        try {
+            JSONArray array = new JSONArray();
+            for (String id : objects) {
+                JSONObject obj = new JSONObject();
+                obj.put("objectID", id);
+                JSONObject action = new JSONObject();
+                action.put("action", "deleteObject");
+                action.put("body", obj);
+                array.put(action);
+            }
+            return batch(array);
+        } catch (JSONException e) {
+            throw new AlgoliaException(e.getMessage());
+        }
+    }
+
+    /**
+     * Delete all objects matching a query
+     *
+     * @param query the query string
+     * @throws AlgoliaException
+     */
+    protected void deleteByQuery(@NonNull Query query) throws AlgoliaException {
+        try {
+            boolean hasMore;
+            do {
+                // Browse index for the next batch of objects.
+                // WARNING: Since deletion invalidates cursors, we always browse from the start.
+                List<String> objectIDs = new ArrayList<>(1000);
+                JSONObject content = browse(query);
+                JSONArray hits = content.getJSONArray("hits");
+                for (int i = 0; i < hits.length(); ++i) {
+                    JSONObject hit = hits.getJSONObject(i);
+                    objectIDs.add(hit.getString("objectID"));
+                }
+                hasMore = content.optString("cursor", null) != null;
+
+                // Delete objects.
+                JSONObject task = this.deleteObjects(objectIDs);
+                this.waitTask(task.getString("taskID"));
+            }
+            while (hasMore);
+        } catch (JSONException e) {
+            throw new AlgoliaException(e.getMessage());
+        }
+    }
+
+    /**
+     * Search inside the index
+     *
+     * @return a JSONObject containing search results
+     * @throws AlgoliaException
+     */
+    protected JSONObject search(@NonNull Query query) throws AlgoliaException {
+        String cacheKey = null;
+        byte[] rawResponse = null;
+        if (isCacheEnabled) {
+            cacheKey = query.build();
+            rawResponse = searchCache.get(cacheKey);
+        }
+        try {
+            if (rawResponse == null) {
+                rawResponse = searchRaw(query);
+                if (isCacheEnabled) {
+                    searchCache.put(cacheKey, rawResponse);
+                }
+            }
+            return Client._getJSONObject(rawResponse);
+        } catch (UnsupportedEncodingException | JSONException e) {
+            throw new AlgoliaException(e.getMessage());
+        }
+    }
+
+    /**
+     * Search inside the index
+     *
+     * @return a byte array containing search results
+     * @throws AlgoliaException
+     */
+    protected byte[] searchRaw(@NonNull Query query) throws AlgoliaException {
+        try {
+            String paramsString = query.build();
+            if (paramsString.length() > 0) {
+                JSONObject body = new JSONObject();
+                body.put("params", paramsString);
+                return client.postRequestRaw("/1/indexes/" + encodedIndexName + "/query", body.toString(), true);
+            } else {
+                return client.getRequestRaw("/1/indexes/" + encodedIndexName, true);
+            }
+        } catch (JSONException e) {
+            throw new RuntimeException(e); // should never happen
+        }
+    }
+
+    /**
+     * Wait the publication of a task on the server.
+     * All server task are asynchronous and you can check with this method that the task is published.
+     *
+     * @param taskID     the id of the task returned by server
+     * @param timeToWait time to sleep seed
+     * @throws AlgoliaException
+     */
+    protected JSONObject waitTask(String taskID, long timeToWait) throws AlgoliaException {
+        try {
+            while (true) {
+                JSONObject obj = client.getRequest("/1/indexes/" + encodedIndexName + "/task/" + URLEncoder.encode(taskID, "UTF-8"), false);
+                if (obj.getString("status").equals("published")) {
+                    return obj;
+                }
+                try {
+                    Thread.sleep(timeToWait >= MAX_TIME_MS_TO_WAIT ? MAX_TIME_MS_TO_WAIT : timeToWait);
+                } catch (InterruptedException e) {
+                    continue;
+                }
+                timeToWait *= 2;
+            }
+        } catch (JSONException e) {
+            throw new AlgoliaException(e.getMessage());
+        } catch (UnsupportedEncodingException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    /**
+     * Wait the publication of a task on the server.
+     * All server task are asynchronous and you can check with this method that the task is published.
+     *
+     * @param taskID the id of the task returned by server
+     * @throws AlgoliaException
+     */
+    protected JSONObject waitTask(String taskID) throws AlgoliaException {
+        return waitTask(taskID, MAX_TIME_MS_TO_WAIT);
+    }
+
+    /**
+     * Get settings of this index
+     *
+     * @throws AlgoliaException
+     */
+    protected JSONObject getSettings() throws AlgoliaException {
+        return client.getRequest("/1/indexes/" + encodedIndexName + "/settings", false);
+    }
+
+    /**
+     * Set settings for this index
+     *
+     * @param settings the settings object
+     * @throws AlgoliaException
+     */
+    protected JSONObject setSettings(JSONObject settings) throws AlgoliaException {
+        return client.putRequest("/1/indexes/" + encodedIndexName + "/settings", settings.toString());
+    }
+
+    /**
+     * Delete the index content without removing settings and index specific API keys.
+     *
+     * @throws AlgoliaException
+     */
+    protected JSONObject clearIndex() throws AlgoliaException {
+        return client.postRequest("/1/indexes/" + encodedIndexName + "/clear", "", false);
     }
 
     /**
@@ -125,357 +950,141 @@ public class Index extends BaseIndex {
      * @param query             the query
      * @param disjunctiveFacets the array of disjunctive facets
      * @param refinements       Map representing the current refinements
-     * @param listener the listener that will receive the result or error.
-     */
-    public void searchDisjunctiveFacetingAsync(Query query, List<String> disjunctiveFacets, Map<String, List<String>> refinements, SearchDisjunctiveFacetingListener listener) {
-    TaskParams.SearchDisjunctiveFaceting params = new TaskParams.SearchDisjunctiveFaceting(listener, query, disjunctiveFacets, refinements);
-        new AsyncSearchDisjunctiveFacetingTask().execute(params);
-    }
-
-    ////////////////////////////////////////////////////////////////////////////////////////////////
-    /// INDEXING TASK
-    ////////////////////////////////////////////////////////////////////////////////////////////////
-
-    private class AsyncIndexingTask extends AsyncTask<TaskParams.Indexing, Void, TaskParams.Indexing> {
-        @Override
-        protected TaskParams.Indexing doInBackground(TaskParams.Indexing... params) {
-            TaskParams.Indexing p = params[0];
-            try {
-                switch (p.method) {
-                    case AddObject:
-                        p.content = addObject(p.object);
-                        break;
-                    case AddObjectWithObjectID:
-                        p.content = addObject(p.object, p.objectID);
-                        break;
-                    case AddObjects:
-                        p.content = addObjects(p.objects);
-                        break;
-                    case SaveObject:
-                        p.content = saveObject(p.object, p.objectID);
-                        break;
-                    case SaveObjects:
-                        p.content = saveObjects(p.objects);
-                        break;
-                    case PartialUpdateObject:
-                        p.content = partialUpdateObject(p.object, p.objectID);
-                        break;
-                    case PartialUpdateObjects:
-                        p.content = partialUpdateObjects(p.objects);
-                        break;
-                }
-            } catch (AlgoliaException e) {
-                p.error = e;
-            }
-
-            return p;
-        }
-
-        @Override
-        protected void onPostExecute(TaskParams.Indexing p) {
-            p.sendResult(Index.this);
-        }
-    }
-
-    /**
-     * Add an object in this index asynchronously
-     *
-     * @param object the object to add.
-     *  The object is represented by an associative array
-     * @param listener the listener that will receive the result or error.
-     */
-    public void addObjectASync(JSONObject object, IndexingListener listener) {
-        TaskParams.Indexing params = new TaskParams.Indexing(listener, IndexMethod.AddObject, object);
-        new AsyncIndexingTask().execute(params);
-    }
-
-    /**
-     * Add an object in this index asynchronously
-     *
-     * @param object the object to add.
-     *  The object is represented by an associative array
-     * @param objectID an objectID you want to attribute to this object
-     * (if the attribute already exist the old object will be overwrite)
-     * @param listener the listener that will receive the result or error.
-     */
-    public void addObjectASync(JSONObject object, String objectID, IndexingListener listener)  {
-        TaskParams.Indexing params = new TaskParams.Indexing(listener, IndexMethod.AddObjectWithObjectID, object, objectID);
-        new AsyncIndexingTask().execute(params);
-    }
-
-    /**
-     * Add several objects asynchronously
-     *
-     * @param objects contains an array of objects to add. If the object contains an objectID
-     * @param listener the listener that will receive the result or error.
-     */
-    public void addObjectsASync(JSONArray objects, IndexingListener listener) {
-        TaskParams.Indexing params = new TaskParams.Indexing(listener, IndexMethod.AddObjects, objects);
-        new AsyncIndexingTask().execute(params);
-    }
-
-    /**
-     * Override the content of object asynchronously
-     *
-     * @param object the object to save
-     * @param objectID the objectID
-     * @param listener the listener that will receive the result or error.
-     */
-    public void saveObjectASync(JSONObject object, String objectID, IndexingListener listener) {
-        TaskParams.Indexing params = new TaskParams.Indexing(listener, IndexMethod.SaveObject, object, objectID);
-        new AsyncIndexingTask().execute(params);
-    }
-
-    /**
-     * Override the content of several objects asynchronously
-     *
-     * @param objects contains an array of objects to update (each object must contains an objectID attribute)
-     * @param listener the listener that will receive the result or error.
-     */
-    public void saveObjectsASync(JSONArray objects, IndexingListener listener) {
-        TaskParams.Indexing params = new TaskParams.Indexing(listener, IndexMethod.SaveObjects, objects);
-        new AsyncIndexingTask().execute(params);
-    }
-
-    /**
-     * Update partially an object asynchronously.
-     *
-     * @param partialObject the object attributes to override.
-     * @param objectID the objectID
-     * @param listener the listener that will receive the result or error.
-     */
-    public void partialUpdateObjectASync(JSONObject partialObject, String objectID, IndexingListener listener) {
-        TaskParams.Indexing params = new TaskParams.Indexing(listener, IndexMethod.PartialUpdateObject, partialObject, objectID);
-        new AsyncIndexingTask().execute(params);
-    }
-
-    /**
-     * Override the content of several objects asynchronously
-     *
-     * @param partialObjects contains an array of objects to update (each object must contains an objectID attribute)
-     * @param listener the listener that will receive the result or error.
-     */
-    public void partialUpdateObjectsASync(JSONArray partialObjects, IndexingListener listener) {
-        TaskParams.Indexing params = new TaskParams.Indexing(listener, IndexMethod.PartialUpdateObjects, partialObjects);
-        new AsyncIndexingTask().execute(params);
-    }
-
-    ////////////////////////////////////////////////////////////////////////////////////////////////
-    /// GET TASK
-    ////////////////////////////////////////////////////////////////////////////////////////////////
-
-    private class AsyncGetTask extends AsyncTask<TaskParams.GetObjects, Void, TaskParams.GetObjects> {
-        @Override
-        protected TaskParams.GetObjects doInBackground(TaskParams.GetObjects... params) {
-            TaskParams.GetObjects p = params[0];
-            try {
-                switch (p.method) {
-                    case GetObject:
-                        p.content = getObject(p.objectID);
-                        break;
-                    case GetObjectWithAttributesToRetrieve:
-                        p.content = getObject(p.objectID, p.attributesToRetrieve);
-                        break;
-                    case GetObjects:
-                        p.content = getObjects(p.objectIDs);
-                        break;
-                }
-            } catch (AlgoliaException e) {
-                p.error = e;
-            }
-
-            return p;
-        }
-
-        @Override
-        protected void onPostExecute(TaskParams.GetObjects p) {
-            p.sendResult(Index.this);
-        }
-    }
-
-    /**
-     * Get an object from this index asynchronously
-     *
-     * @param objectID the unique identifier of the object to retrieve
-     * @param listener the listener that will receive the result or error.
-     */
-    public void getObjectASync(String objectID, GetObjectsListener listener) {
-        TaskParams.GetObjects params = new TaskParams.GetObjects(listener, IndexMethod.GetObject, objectID);
-        new AsyncGetTask().execute(params);
-    }
-
-    /**
-     * Get an object from this index asynchronously
-     *
-     * @param objectID the unique identifier of the object to retrieve
-     * @param attributesToRetrieve, contains the list of attributes to retrieve as a string separated by ","
-     * @param listener the listener that will receive the result or error.
-     */
-    public void getObjectASync(String objectID, List<String> attributesToRetrieve, GetObjectsListener listener) {
-        TaskParams.GetObjects params = new TaskParams.GetObjects(listener, IndexMethod.GetObjectWithAttributesToRetrieve, objectID, attributesToRetrieve);
-        new AsyncGetTask().execute(params);
-    }
-
-    /**
-     * Get several objects from this index asynchronously
-     *
-     * @param objectIDs the array of unique identifier of objects to retrieve
      * @throws AlgoliaException
      */
-    public void getObjectsASync(List<String> objectIDs, GetObjectsListener listener) throws AlgoliaException {
-        TaskParams.GetObjects params = new TaskParams.GetObjects(listener, IndexMethod.GetObjects, objectIDs);
-        new AsyncGetTask().execute(params);
-    }
-
-    ////////////////////////////////////////////////////////////////////////////////////////////////
-    /// WAIT TASK
-    ////////////////////////////////////////////////////////////////////////////////////////////////
-
-    private class ASyncWaitTask extends AsyncTask<TaskParams.WaitTask, Void, TaskParams.WaitTask> {
-        @Override
-        protected TaskParams.WaitTask doInBackground(TaskParams.WaitTask... params) {
-            TaskParams.WaitTask p = params[0];
-            try {
-                waitTask(p.taskID);
-            } catch (AlgoliaException e) {
-                p.error = e;
+    protected JSONObject searchDisjunctiveFaceting(@NonNull Query query, @NonNull List<String> disjunctiveFacets, @NonNull Map<String, List<String>> refinements) throws AlgoliaException {
+        // Retain only refinements corresponding to the disjunctive facets.
+        Map<String, List<String>> disjunctiveRefinements = new HashMap<>();
+        for (Map.Entry<String, List<String>> elt : refinements.entrySet()) {
+            if (disjunctiveFacets.contains(elt.getKey())) {
+                disjunctiveRefinements.put(elt.getKey(), elt.getValue());
             }
-            return p;
         }
 
-        @Override
-        protected void onPostExecute(TaskParams.WaitTask p) {
-            p.sendResult(Index.this);
-        }
-    }
-
-    /**
-     * Wait the publication of a task on the server asynchronously.
-     * All server task are asynchronous and you can check with this method that the task is published.
-     *
-     * @param taskID the id of the task returned by server
-     * @param listener the listener that will receive the result or error.
-     */
-    public void waitTaskASync(String taskID, WaitTaskListener listener) {
-        TaskParams.WaitTask params = new TaskParams.WaitTask(listener, taskID);
-        new ASyncWaitTask().execute(params);
-    }
-
-    ////////////////////////////////////////////////////////////////////////////////////////////////
-    /// DELETE TASK
-    ////////////////////////////////////////////////////////////////////////////////////////////////
-
-    private class AsyncDeleteTask extends AsyncTask<TaskParams.DeleteObjects, Void, TaskParams.DeleteObjects> {
-        @Override
-        protected TaskParams.DeleteObjects doInBackground(TaskParams.DeleteObjects... params) {
-            TaskParams.DeleteObjects p = params[0];
-            try {
-                switch (p.method) {
-                    case DeleteObject:
-                        p.content = deleteObject(p.objectID);
-                        break;
-                    case DeleteObjects:
-                        p.content = deleteObjects(p.objectIDs);
-                        break;
-                    case DeleteByQuery:
-                        deleteByQuery(p.query);
-                        p.content = new JSONObject();
-                        break;
+        // build queries
+        // TODO: Refactor using JSON array notation: safer and clearer.
+        List<IndexQuery> queries = new ArrayList<>();
+        // hits + regular facets query
+        StringBuilder filters = new StringBuilder();
+        boolean first_global = true;
+        for (Map.Entry<String, List<String>> elt : refinements.entrySet()) {
+            StringBuilder or = new StringBuilder();
+            or.append("(");
+            boolean first = true;
+            for (String val : elt.getValue()) {
+                if (disjunctiveRefinements.containsKey(elt.getKey())) {
+                    // disjunctive refinements are ORed
+                    if (!first) {
+                        or.append(',');
+                    }
+                    first = false;
+                    or.append(String.format("%s:%s", elt.getKey(), val));
+                } else {
+                    if (!first_global) {
+                        filters.append(',');
+                    }
+                    first_global = false;
+                    filters.append(String.format("%s:%s", elt.getKey(), val));
                 }
-            } catch (AlgoliaException e) {
-                p.error = e;
             }
-
-            return p;
-        }
-
-        @Override
-        protected void onPostExecute(TaskParams.DeleteObjects p) {
-            p.sendResult(Index.this);
-        }
-    }
-
-    /**
-     * Delete an object from the index asynchronously
-     *
-     * @param objectID the unique identifier of object to delete
-     * @param listener the listener that will receive the result or error.
-     */
-    public void deleteObjectASync(String objectID, DeleteObjectsListener listener) {
-        TaskParams.DeleteObjects params = new TaskParams.DeleteObjects(listener, IndexMethod.DeleteObject, objectID);
-        new AsyncDeleteTask().execute(params);
-    }
-
-    /**
-     * Delete several objects asynchronously
-     *
-     * @param objectIDs the array of objectIDs to delete
-     * @param listener the listener that will receive the result or error.
-     */
-    public void deleteObjectsASync(List<String> objectIDs, DeleteObjectsListener listener) {
-        TaskParams.DeleteObjects params = new TaskParams.DeleteObjects(listener, IndexMethod.DeleteObjects, objectIDs);
-        new AsyncDeleteTask().execute(params);
-    }
-
-    /**
-     * Delete all objects matching a query asynchronously
-     *
-     * @param query the query string
-     * @param listener the listener that will receive the result or error.
-     */
-    public void deleteByQueryASync(Query query, DeleteObjectsListener listener) {
-        TaskParams.DeleteObjects params = new TaskParams.DeleteObjects(listener, IndexMethod.DeleteByQuery, query);
-        new AsyncDeleteTask().execute(params);
-    }
-
-    ////////////////////////////////////////////////////////////////////////////////////////////////
-    /// SETTINGS TASK
-    ////////////////////////////////////////////////////////////////////////////////////////////////
-
-    private class AsyncSettingsTask extends AsyncTask<TaskParams.Settings, Void, TaskParams.Settings> {
-        @Override
-        protected TaskParams.Settings doInBackground(TaskParams.Settings... params) {
-            TaskParams.Settings p = params[0];
-            try {
-                switch (p.method) {
-                    case GetSettings:
-                        p.content = getSettings();
-                        break;
-                    case SetSettings:
-                        p.content = setSettings(p.settings);
-                        break;
+            // Add or
+            if (disjunctiveRefinements.containsKey(elt.getKey())) {
+                or.append(')');
+                if (!first_global) {
+                    filters.append(',');
                 }
-            } catch (AlgoliaException e) {
-                p.error = e;
+                first_global = false;
+                filters.append(or.toString());
             }
-
-            return p;
         }
 
-        @Override
-        protected void onPostExecute(TaskParams.Settings p) {
-            p.sendResult(Index.this);
+        queries.add(new IndexQuery(this.indexName, new Query(query).set("facetFilters", filters.toString())));
+        // one query per disjunctive facet (use all refinements but the current one + hitsPerPage=1 + single facet
+        for (String disjunctiveFacet : disjunctiveFacets) {
+            filters = new StringBuilder();
+            first_global = true;
+            for (Map.Entry<String, List<String>> elt : refinements.entrySet()) {
+                if (disjunctiveFacet.equals(elt.getKey())) {
+                    continue;
+                }
+                StringBuilder or = new StringBuilder();
+                or.append("(");
+                boolean first = true;
+                for (String val : elt.getValue()) {
+                    if (disjunctiveRefinements.containsKey(elt.getKey())) {
+                        // disjunctive refinements are ORed
+                        if (!first) {
+                            or.append(',');
+                        }
+                        first = false;
+                        or.append(String.format("%s:%s", elt.getKey(), val));
+                    } else {
+                        if (!first_global) {
+                            filters.append(',');
+                        }
+                        first_global = false;
+                        filters.append(String.format("%s:%s", elt.getKey(), val));
+                    }
+                }
+                // Add or
+                if (disjunctiveRefinements.containsKey(elt.getKey())) {
+                    or.append(')');
+                    if (!first_global) {
+                        filters.append(',');
+                    }
+                    first_global = false;
+                    filters.append(or.toString());
+                }
+            }
+            String[] facets = new String[]{disjunctiveFacet};
+            queries.add(new IndexQuery(this.indexName, new Query(query).setHitsPerPage(0).setAnalytics(false)
+                    .setAttributesToRetrieve().setAttributesToHighlight().setAttributesToSnippet()
+                    .setFacets(facets).set("facetFilters", filters.toString())));
+        }
+        JSONObject answers = this.client.multipleQueries(queries, null);
+
+        // aggregate answers
+        // first answer stores the hits + regular facets
+        try {
+            JSONArray results = answers.getJSONArray("results");
+            JSONObject aggregatedAnswer = results.getJSONObject(0);
+            JSONObject disjunctiveFacetsJSON = new JSONObject();
+            for (int i = 1; i < results.length(); ++i) {
+                JSONObject facets = results.getJSONObject(i).getJSONObject("facets");
+                @SuppressWarnings("unchecked")
+                Iterator<String> keys = facets.keys();
+                while (keys.hasNext()) {
+                    String key = keys.next();
+                    // Add the facet to the disjunctive facet hash
+                    disjunctiveFacetsJSON.put(key, facets.getJSONObject(key));
+                    // concatenate missing refinements
+                    if (!disjunctiveRefinements.containsKey(key)) {
+                        continue;
+                    }
+                    for (String refine : disjunctiveRefinements.get(key)) {
+                        if (!disjunctiveFacetsJSON.getJSONObject(key).has(refine)) {
+                            disjunctiveFacetsJSON.getJSONObject(key).put(refine, 0);
+                        }
+                    }
+                }
+            }
+            aggregatedAnswer.put("disjunctiveFacets", disjunctiveFacetsJSON);
+            return aggregatedAnswer;
+        } catch (JSONException e) {
+            throw new AlgoliaException("Failed to aggregate results", e);
         }
     }
 
-    /**
-     * Get settings of this index asynchronously
-     *
-     * @param listener the listener that will receive the result or error.
-     */
-    public void getSettingsASync(SettingsListener listener) {
-        TaskParams.Settings params = new TaskParams.Settings(listener, IndexMethod.GetSettings);
-        new AsyncSettingsTask().execute(params);
+    protected JSONObject browse(@NonNull Query query) throws AlgoliaException {
+        return client.getRequest("/1/indexes/" + encodedIndexName + "/browse?" + query.build(), true);
     }
 
-    /**
-     * Set settings for this index asynchronously
-     *
-     * @param settings the settings
-     * @param listener the listener that will receive the result or error.
-     */
-    public void setSettingsASync(JSONObject settings, SettingsListener listener) {
-        TaskParams.Settings params = new TaskParams.Settings(listener, IndexMethod.SetSettings, settings);
-        new AsyncSettingsTask().execute(params);
+    protected JSONObject browseFrom(@NonNull String cursor) throws AlgoliaException {
+        try {
+            return client.getRequest("/1/indexes/" + encodedIndexName + "/browse?cursor=" + URLEncoder.encode(cursor, "UTF-8"), true);
+        }
+        catch (UnsupportedEncodingException e) {
+            throw new Error(e); // Should never happen: UTF-8 is always supported.
+        }
     }
 }

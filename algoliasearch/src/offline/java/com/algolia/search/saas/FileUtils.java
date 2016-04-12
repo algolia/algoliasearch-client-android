@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015 Algolia
+ * Copyright (c) 2012-2016 Algolia
  * http://www.algolia.com/
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -23,28 +23,30 @@
 
 package com.algolia.search.saas;
 
-public enum IndexMethod {
-    Search,
-    searchDisjunctiveFaceting,
+import android.support.annotation.NonNull;
 
-    AddObject,
-    AddObjectWithObjectID,
-    AddObjects,
-    SaveObject,
-    SaveObjects,
-    PartialUpdateObject,
-    PartialUpdateObjects,
+import java.io.File;
 
-    GetObject,
-    GetObjectWithAttributesToRetrieve,
-    GetObjects,
-
-    WaitTask,
-
-    DeleteObject,
-    DeleteObjects,
-    DeleteByQuery,
-
-    GetSettings,
-    SetSettings
+/**
+ * Various filesystem-related utilities.
+ */
+class FileUtils
+{
+    /**
+     * Delete a file or directory, recursively deleting any descendant files/directories if it's a directory.
+     *
+     * @param item The item to delete.
+     * @return true if success, false if error.
+     */
+    public static boolean deleteRecursive(@NonNull File item)
+    {
+        boolean ok = true;
+        if (item.isDirectory()) {
+            for (File child : item.listFiles()) {
+                ok = ok && deleteRecursive(child);
+            }
+        }
+        ok = ok && item.delete();
+        return ok;
+    }
 }

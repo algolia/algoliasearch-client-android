@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015 Algolia
+ * Copyright (c) 2012-2016 Algolia
  * http://www.algolia.com/
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -21,25 +21,23 @@
  * THE SOFTWARE.
  */
 
-package com.algolia.search.saas.listeners;
-
-import com.algolia.search.saas.AlgoliaException;
-import com.algolia.search.saas.Index;
-import com.algolia.search.saas.Query;
+package com.algolia.search.saas;
 
 import org.json.JSONObject;
 
 /**
- * Asynchronously receive result of search method
+ * Handles completion of an API request.
  */
-public interface SearchListener {
-    /**
-     * Asynchronously receive result of Index.searchASync method.
-     */
-    void searchResult(Index index, Query query, JSONObject results);
+public interface CompletionHandler {
 
     /**
-     * Asynchronously receive error of Index.searchASync method.
+     * Called when the request has completed, either successfully or failing.
+     * <p>
+     * NOTE: One and only one of either <code>content</code> or <code>error</code> is guaranteed to be not null.
+     * </p>
+     *
+     * @param content Content that was returned by the API (in case of success).
+     * @param error Error that was encountered (in case of failure).
      */
-    void searchError(Index index, Query query, AlgoliaException e);
+    public void requestCompleted(JSONObject content, AlgoliaException error);
 }

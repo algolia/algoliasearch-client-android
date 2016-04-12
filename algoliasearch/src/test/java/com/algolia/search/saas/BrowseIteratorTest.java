@@ -1,0 +1,122 @@
+/*
+ * Copyright (c) 2015 Algolia
+ * http://www.algolia.com/
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ * THE SOFTWARE.
+ */
+
+package com.algolia.search.saas;
+
+import android.support.annotation.NonNull;
+
+import com.algolia.search.saas.helpers.BrowseIterator;
+
+import org.json.JSONArray;
+import org.json.JSONObject;
+import org.junit.Test;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
+
+import static junit.framework.Assert.assertTrue;
+import static junit.framework.Assert.fail;
+
+public class BrowseIteratorTest extends PowerMockTestCase {
+    Client client;
+    Index index;
+    String indexName;
+
+    List<JSONObject> objects;
+    List<String> ids;
+
+    @Override
+    public void setUp() throws Exception {
+        super.setUp();
+        client = new Client(Helpers.app_id, Helpers.api_key);
+        indexName = Helpers.safeIndexName("àlgol?à-android");
+        index = client.initIndex(indexName);
+
+        objects = new ArrayList<JSONObject>();
+        for (int i = 0; i < 1500; ++i) {
+            objects.add(new JSONObject(String.format("{\"dummy\": %d}", i)));
+        }
+        JSONObject task = index.addObjects(new JSONArray(objects));
+        index.waitTask(task.getString("taskID"));
+
+        JSONArray objectIDs = task.getJSONArray("objectIDs");
+        ids = new ArrayList<String>();
+        for (int i = 0; i < objectIDs.length(); ++i) {
+            ids.add(objectIDs.getString(i));
+        }
+    }
+
+    @Override
+    public void tearDown() throws Exception {
+        client.deleteIndex(indexName);
+    }
+
+    @Test
+    public void testNominal() throws Exception {
+        final CountDownLatch signal = new CountDownLatch(2);
+
+        Query query = new Query();
+        BrowseIterator iterator = new BrowseIterator(index, query, new BrowseIterator.BrowseIteratorHandler() {
+            @Override
+            public void handleBatch(@NonNull BrowseIterator iterator, JSONObject result, AlgoliaException error) {
+                if (error == null) {
+                    signal.countDown();
+                    if (signal.getCount() > 2) {
+                        fail("Should not reach this point");
+                    }
+                } else {
+                    fail(error.getMessage());
+                }
+            }
+        });
+        iterator.start();
+        assertTrue("No callback was called", signal.await(Helpers.wait, TimeUnit.SECONDS));
+    }
+
+    @Test
+    public void testCancel() throws Exception {
+        final CountDownLatch signal = new CountDownLatch(1);
+
+        Query query = new Query();
+        BrowseIterator iterator = new BrowseIterator(index, query, new BrowseIterator.BrowseIteratorHandler() {
+            @Override
+            public void handleBatch(@NonNull BrowseIterator iterator, JSONObject result, AlgoliaException error) {
+                if (error == null) {
+                    signal.countDown();
+                    if (signal.getCount() == 1) {
+                        iterator.cancel();
+                    }
+                    else if (signal.getCount() > 1) {
+                        fail("Should not reach this point");
+                    }
+                } else {
+                    fail(error.getMessage());
+                }
+            }
+        });
+        iterator.start();
+        assertTrue("No callback was called", signal.await(Helpers.wait, TimeUnit.SECONDS));
+    }
+}

@@ -1,39 +1,95 @@
-Changelog
-=========
+Change Log
+==========
 
-2.6.1 (2016-01-28)
-- Add snippetEllipsisText method
+## 3.0 (FIXME)
 
-2.6.0 (2016-01-07)
+This major version brings new features as well as bug fixes. In addition, a lot of refactoring has been performed
+to achieve better maintainability and to align the Android client with the other Algolia API clients.
+
+As a consequence, the public interface has changed in an incompatible way. Please refer to our
+[Migration guide](https://github.com/algolia/algoliasearch-client-android/wiki/Migration-guide-to-version-3.x) for
+detailed instructions.
+
+### New features
+
+- In-memory search cache: disabled by default, can be enabled per index.
+- Allow arbitrary query parameters to be specified: the `Query` class provides low-level, untyped accessors in addition
+  to the higher-level, typed accessors.
+- Allow arbitrary HTTP headers to be specified (`Client.setHeader`)
+- Asynchronous requests are cancellable: asynchronous methods return a `Request` instance with a `cancel` method.
+- Low-level browse methods (`Index.browse` and `Index.browseFrom`)
+- New browse helper (`BrowseIterator`)
+- New method to clear an index (`Index.clearIndexAsync`)
+
+### Changes
+
+- Now only one type of asynchronous listener (`CompletionHandler`) with an interface containing only one method,
+  used for both success and error cases. In addition to simplifying the code and aligning the Android client with other
+  languages, this makes it possible to use Java 8 **lambda expressions**.
+- Remove operations requiring an admin API key. (The admin key should *never* be used on the client side.)
+- Align `Query` class parameters with the [REST API](https://www.algolia.com/doc/rest)
+- Improve the type safety of many `Query` parameters, especially the geo search-related parameters and the filters
+- Remove obsolete (and unused) `enableDsn` and `dsnHost` initialization parameters
+- Remove accessors to deprecated HTTP headers
+- Space character is now URL-encoded as `%20` instead of `+`
+- Better naming convention:
+    - Rename `APIClient` class to `Client`
+    - Rename `*ASync` to `*Async`
+    - Remove prefix on enum values
+
+### Fixes
+
+- Search queries now use POST instead of GET, working around any potential hard-coded limit to the URL string.
+- Delete by query uses browse instead of search, for both better performance and to work around any index settings
+  (like `distinct`) that would silently prevent the query from selecting all objects.
+- More consistent error handling
+- Fix retry logic in case of host failure
+- Alleviate critical section on internal request methods
+
+### Misc. improvements
+
+- Use `@NonNull` annotations to document mandatory parameters and return values
+- Asynchronous methods no longer throw (declared) exceptions
+- Update documentation (a lot!)
+- Add test cases
+
+## 2.6.1 (2016-01-28)
+
+- Add `snippetEllipsisText` query parameter
+
+## 2.6.0 (2016-01-07)
+
 - Add disjunctive faceting method
 
-2.5.1 (2016-01-07)
+## 2.5.1 (2016-01-07)
+
 - Fixed method used to generate the query parameters of multiqueries
 
-2.5.0 (2015-12-01)
+## 2.5.0 (2015-12-01)
+
 - Added support of Android SDK >= 14
 
-2.4.0 (2015-10-12)
+## 2.4.0 (2015-10-12)
 
 - Added remove stop words query parameter
 - Added support of similar queries
 
-2.3.0 (2015-10-01)
+## 2.3.0 (2015-10-01)
 
 - Added support of multiple bounding box for geo-search
 - Added support	of polygon for geo-search
 - Added	support	of automatic radius computation	for geo-search
 - Added	support	of disableTypoToleranceOnAttributes
 
-2.2.0 (2015-09-29)
+## 2.2.0 (2015-09-29)
 
 - Ensure all requests accept the GZIP encoding to reduce the JSON payloads size
 
-2.1.0 (2015-08-24)
+## 2.1.0 (2015-08-24)
 
 - Publish on MavenCentral
 
-2.0.0 (2015-08-01)
+## 2.0.0 (2015-08-01)
 
 - Rewrite the API Client as a Android package
 - Split the async listeners/interfaces
@@ -41,18 +97,18 @@ Changelog
 1.6.7 (2015-07-14)
 ------------------
 
-- Added support of grouping (distinct=3 to keep the 3 best hits for a distinct key)
+- Added support of grouping (`distinct=3` to keep the 3 best hits for a distinct key)
 
 1.6.6 (2015-06-05)
 --------------------
 
-- add new parameter on the Query: setMinProximity & setHighlightingTags
+- add new parameter on the Query: `setMinProximity` & `setHighlightingTags`
 - new cursor-based browse implementation
 
 1.6.5 (2015-05-26)
 ------------------
 
-- Fix thread concurrency for method _request
+- Fix thread concurrency for method `_request`
 
 1.6.4 (2015-05-04)
 ------------------

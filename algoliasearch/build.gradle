@@ -24,7 +24,7 @@
 apply plugin: 'com.android.library'
 
 ext {
-    PUBLISH_GROUP_ID = 'com.algolia'
+    PUBLISH_GROUP_ID = rootProject.properties["PUBLISH_GROUP_ID"] ?: ""
     PUBLISH_ARTIFACT_ID = 'algoliasearch-android'
     PUBLISH_VERSION = '2.8.0'
 }
@@ -44,15 +44,22 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
+    defaultPublishConfig "onlineRelease"
+    publishNonDefault true
     productFlavors {
+        // The regular online API client.
+        online
+        // The offline-enabled API client, adding offline features on top of the online client.
+        // NOTE: Requires Algolia's SDK.
+        offline
     }
 }
-
-apply from: 'android-release-jar.gradle'
 
 dependencies {
     compile 'com.android.support:appcompat-v7:21.0.3'
     compile fileTree(include: ['*.jar'], dir: 'libs')
+    // TODO: Switch to published version.
+    // offlineCompile project(path: ':algoliasearchsdk', configuration: 'debug')
 
     testCompile "junit:junit:4.12"
     testCompile "org.assertj:assertj-core:1.7.0"

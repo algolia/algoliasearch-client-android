@@ -27,6 +27,7 @@ proguard/
 *.log
 
 # Android Studio
+*.iml
 .navigation/
 .idea/
 *.iml

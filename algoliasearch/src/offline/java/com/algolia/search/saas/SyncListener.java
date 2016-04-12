@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015 Algolia
+ * Copyright (c) 2012-2016 Algolia
  * http://www.algolia.com/
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -23,14 +23,25 @@
 
 package com.algolia.search.saas;
 
-public enum LogType
+/**
+ * Listener for sync-related events.
+ *
+ * Notifications are sent on a per-index basis, but you may register the same listener for all indices.
+ * Notifications are sent on the main thread.
+ */
+public interface SyncListener
 {
-    /// all query logs
-    LOG_QUERY,
-    /// all build logs
-    LOG_BUILD,
-    /// all error logs
-    LOG_ERROR,
-    /// all logs
-    LOG_ALL
+    /**
+     * Synchronization has just started.
+     * @param index The synchronizing index.
+     */
+    public void syncDidStart(MirroredIndex index);
+
+    /**
+     * Synchronization has just finished.
+     * @param index The synchronizing index.
+     * @param error Null if success, otherwise indicates the error.
+     * @param stats Statistics about the sync.
+     */
+    public void syncDidFinish(MirroredIndex index, Throwable error, MirroredIndex.SyncStats stats);
 }

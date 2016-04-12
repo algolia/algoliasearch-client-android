@@ -23,36 +23,38 @@
 
 package com.algolia.search.saas;
 
-import com.algolia.search.saas.listeners.GetObjectsListener;
-import com.algolia.search.saas.listeners.IndexingListener;
-import com.algolia.search.saas.listeners.SearchDisjunctiveFacetingListener;
-import com.algolia.search.saas.listeners.SearchListener;
-import com.algolia.search.saas.listeners.WaitTaskListener;
-
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.junit.Test;
 import org.mockito.internal.util.reflection.Whitebox;
-import org.powermock.core.classloader.annotations.PrepareForTest;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertFalse;
-import static junit.framework.Assert.assertTrue;
-import static junit.framework.Assert.fail;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+import static org.mockito.Matchers.anyBoolean;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 /**
  * <a href="http://d.android.com/tools/testing/testing_android.html">Testing Fundamentals</a>
  */
 
 public class IndexTest extends PowerMockTestCase {
-    APIClient client;
+    Client client;
     Index index;
     String indexName;
 
@@ -62,9 +64,11 @@ public class IndexTest extends PowerMockTestCase {
     @Override
     public void setUp() throws Exception {
         super.setUp();
-        client = new APIClient(Helpers.app_id, Helpers.api_key);
+        client = new Client(Helpers.app_id, Helpers.api_key);
         indexName = Helpers.safeIndexName("àlgol?à-android");
         index = client.initIndex(indexName);
+
+        client.deleteIndex(indexName);
 
         objects = new ArrayList<JSONObject>();
         objects.add(new JSONObject("{\"city\": \"San Francisco\"}"));
@@ -87,294 +91,343 @@ public class IndexTest extends PowerMockTestCase {
 
     @Test
     public void testSearchAsync() throws Exception {
+        // Empty search.
         final CountDownLatch signal = new CountDownLatch(1);
-
-        class Listener implements SearchListener {
+        index.searchAsync(new Query(), new CompletionHandler() {
             @Override
-            public void searchResult(Index index, Query query, JSONObject results) {
-                assertEquals("Result length does not match nbHits", objects.size(), results.optInt("nbHits"));
+            public void requestCompleted(JSONObject content, AlgoliaException error) {
+                if (error == null) {
+                    assertEquals("Result length does not match nbHits", objects.size(), content.optInt("nbHits"));
+                } else {
+                    fail(error.getMessage());
+                }
                 signal.countDown();
             }
-
-            @Override
-            public void searchError(Index index, Query query, AlgoliaException e) {
-                fail(String.format("Error during search: %s", e.getMessage()));
-                signal.countDown();
-            }
-        }
-
-        final Listener searchListener = new Listener();
-
-        index.searchASync(new Query(), searchListener);
+        });
         assertTrue("No callback was called", signal.await(Helpers.wait, TimeUnit.SECONDS));
+
+        // Search with query.
+        final CountDownLatch signal2 = new CountDownLatch(1);
+        index.searchAsync(new Query("Francisco"), new CompletionHandler() {
+            @Override
+            public void requestCompleted(JSONObject content, AlgoliaException error) {
+                if (error == null) {
+                    assertEquals(1, content.optInt("nbHits"));
+                } else {
+                    fail(error.getMessage());
+                }
+                signal2.countDown();
+            }
+        });
+        assertTrue("No callback was called", signal2.await(Helpers.wait, TimeUnit.SECONDS));
     }
 
     @Test
     public void testSearchDisjunctiveFacetingAsync() throws Exception {
+        // Set index settings.
+        JSONObject setSettingsResult = index.setSettings(new JSONObject("{\"attributesForFaceting\": [\"brand\", \"category\"]}"));
+        index.waitTask(setSettingsResult.getString("taskID"));
+
+        // Empty query
+        // -----------
+        // Not very useful, but we have to check this edge case.
         final CountDownLatch signal = new CountDownLatch(1);
-
-        class Listener implements SearchDisjunctiveFacetingListener {
+        index.searchDisjunctiveFacetingAsync(new Query(), new ArrayList<String>(), new HashMap<String, List<String>>(), new CompletionHandler() {
             @Override
-            public void searchDisjunctiveFacetingResult(Index index, Query query, List<String> disjunctiveFacets, Map<String, List<String>> refinements, JSONObject results) {
-                assertEquals("Result length does not match nbHits", objects.size(), results.optInt("nbHits"));
+            public void requestCompleted(JSONObject content, AlgoliaException error) {
+                if (error == null) {
+                    assertEquals("Result length does not match nbHits", objects.size(), content.optInt("nbHits"));
+                } else {
+                    fail(error.getMessage());
+                }
                 signal.countDown();
             }
-
-            @Override
-            public void searchDisjunctiveFacetingError(Index index, Query query, List<String> disjunctiveFacets, Map<String, List<String>> refinements, AlgoliaException e) {
-                fail(String.format("Error during search: %s", e.getMessage()));
-                signal.countDown();
-            }
-        }
-
-        final Listener searchListener = new Listener();
-
-        index.searchDisjunctiveFacetingAsync(new Query(), new ArrayList<String>(), new HashMap<String, List<String>>(), searchListener);
+        });
         assertTrue("No callback was called", signal.await(Helpers.wait, TimeUnit.SECONDS));
+
+        // "Real" query
+        // ------------
+        final CountDownLatch signal2 = new CountDownLatch(1);
+        // Create data set.
+        objects = new ArrayList<>();
+        objects.add(new JSONObject("{\"name\": \"iPhone 6\", \"brand\": \"Apple\", \"category\": \"device\",\"stars\":4}"));
+        objects.add(new JSONObject("{\"name\": \"iPhone 6 Plus\", \"brand\": \"Apple\", \"category\": \"device\",\"stars\":5}"));
+        objects.add(new JSONObject("{\"name\": \"iPhone cover\", \"brand\": \"Apple\", \"category\": \"accessory\",\"stars\":3}"));
+        objects.add(new JSONObject("{\"name\": \"Galaxy S5\", \"brand\": \"Samsung\", \"category\": \"device\",\"stars\":4}"));
+        objects.add(new JSONObject("{\"name\": \"Wonder Phone\", \"brand\": \"Samsung\", \"category\": \"device\",\"stars\":5}"));
+        objects.add(new JSONObject("{\"name\": \"Platinum Phone Cover\", \"brand\": \"Samsung\", \"category\": \"accessory\",\"stars\":2}"));
+        objects.add(new JSONObject("{\"name\": \"Lame Phone\", \"brand\": \"Whatever\", \"category\": \"device\",\"stars\":1}"));
+        objects.add(new JSONObject("{\"name\": \"Lame Phone cover\", \"brand\": \"Whatever\", \"category\": \"accessory\",\"stars\":1}"));
+        JSONObject task = index.addObjects(new JSONArray(objects));
+        index.waitTask(task.getString("taskID"));
+
+        final Query query = new Query("phone");
+        query.setFacets("brand", "category", "stars");
+        final List<String> disjunctiveFacets = Arrays.asList("brand");
+        final Map<String, List<String>> refinements = new HashMap<>();
+        refinements.put("brand", Arrays.asList("Apple", "Samsung")); // disjunctive facet
+        refinements.put("category", Arrays.asList("device")); // conjunctive facet
+        index.searchDisjunctiveFacetingAsync(query, disjunctiveFacets, refinements, new CompletionHandler() {
+            @Override
+            public void requestCompleted(JSONObject content, AlgoliaException error) {
+                if (error != null) {
+                    fail(error.getMessage());
+                } else {
+                    assertEquals(3, content.optInt("nbHits"));
+                    JSONObject disjunctiveFacetsResult = content.optJSONObject("disjunctiveFacets");
+                    assertNotNull(disjunctiveFacetsResult);
+                    JSONObject brandFacetCounts = disjunctiveFacetsResult.optJSONObject("brand");
+                    assertNotNull(brandFacetCounts);
+                    assertEquals(2, brandFacetCounts.optInt("Apple"));
+                    assertEquals(1, brandFacetCounts.optInt("Samsung"));
+                    assertEquals(1, brandFacetCounts.optInt("Whatever"));
+                }
+                signal2.countDown();
+            }
+        });
+        assertTrue("No callback was called", signal2.await(Helpers.wait, TimeUnit.SECONDS));
+    }
+
+    @Test
+    public void testDisjunctiveFaceting() throws Exception {
+        // Set index settings.
+        JSONObject setSettingsResult = index.setSettings(new JSONObject("{\"attributesForFaceting\":[\"city\", \"stars\", \"facilities\"]}"));
+        index.waitTask(setSettingsResult.getString("taskID"));
+
+        // Add objects.
+        JSONObject addObjectsResult = index.addObjects(new JSONArray()
+                .put(new JSONObject("{\"name\":\"Hotel A\", \"stars\":\"*\", \"facilities\":[\"wifi\", \"bath\", \"spa\"], \"city\":\"Paris\"}"))
+                .put(new JSONObject("{\"name\":\"Hotel B\", \"stars\":\"*\", \"facilities\":[\"wifi\"], \"city\":\"Paris\"}"))
+                .put(new JSONObject("{\"name\":\"Hotel C\", \"stars\":\"**\", \"facilities\":[\"bath\"], \"city\":\"San Fancisco\"}"))
+                .put(new JSONObject("{\"name\":\"Hotel D\", \"stars\":\"****\", \"facilities\":[\"spa\"], \"city\":\"Paris\"}"))
+                .put(new JSONObject("{\"name\":\"Hotel E\", \"stars\":\"****\", \"facilities\":[\"spa\"], \"city\":\"New York\"}")));
+        index.waitTask(addObjectsResult.getString("taskID"));
+
+        // Search.
+        final Query query = new Query("h").setFacets("city");
+        final List<String> disjunctiveFacets = Arrays.asList("stars", "facilities");
+        final Map<String, List<String>> refinements = new HashMap<>();
+        JSONObject answer;
+
+        answer = index.searchDisjunctiveFaceting(query, disjunctiveFacets, refinements);
+        assertEquals(5, answer.getInt("nbHits"));
+        assertEquals(1, answer.getJSONObject("facets").length());
+        assertEquals(2, answer.getJSONObject("disjunctiveFacets").length());
+
+        refinements.put("stars", Arrays.asList("*"));
+        answer = index.searchDisjunctiveFaceting(query, disjunctiveFacets, refinements);
+        assertEquals(2, answer.getInt("nbHits"));
+        assertEquals(1, answer.getJSONObject("facets").length());
+        assertEquals(2, answer.getJSONObject("disjunctiveFacets").length());
+        assertEquals(2, answer.getJSONObject("disjunctiveFacets").getJSONObject("stars").getInt("*"));
+        assertEquals(1, answer.getJSONObject("disjunctiveFacets").getJSONObject("stars").getInt("**"));
+        assertEquals(2, answer.getJSONObject("disjunctiveFacets").getJSONObject("stars").getInt("****"));
+
+        refinements.put("city", Arrays.asList("Paris"));
+        answer = index.searchDisjunctiveFaceting(query, disjunctiveFacets, refinements);
+        assertEquals(2, answer.getInt("nbHits"));
+        assertEquals(1, answer.getJSONObject("facets").length());
+        assertEquals(2, answer.getJSONObject("disjunctiveFacets").length());
+        assertEquals(2, answer.getJSONObject("disjunctiveFacets").getJSONObject("stars").getInt("*"));
+        assertEquals(1, answer.getJSONObject("disjunctiveFacets").getJSONObject("stars").getInt("****"));
+
+        refinements.put("stars", Arrays.asList("*", "****"));
+        answer = index.searchDisjunctiveFaceting(query, disjunctiveFacets, refinements);
+        assertEquals(3, answer.getInt("nbHits"));
+        assertEquals(1, answer.getJSONObject("facets").length());
+        assertEquals(2, answer.getJSONObject("disjunctiveFacets").length());
+        assertEquals(2, answer.getJSONObject("disjunctiveFacets").getJSONObject("stars").getInt("*"));
+        assertEquals(1, answer.getJSONObject("disjunctiveFacets").getJSONObject("stars").getInt("****"));
     }
 
     @Test
     public void testAddObjectAsync() throws Exception {
         final CountDownLatch signal = new CountDownLatch(1);
-
-        class Listener implements IndexingListener {
+        index.addObjectAsync(new JSONObject("{\"city\": \"New York\"}"), new CompletionHandler() {
             @Override
-            public void indexingResult(Index index, TaskParams.Indexing context, JSONObject results) {
-                assertFalse("Result has no objectId", results.optString("objectID").equals(""));
+            public void requestCompleted(JSONObject content, AlgoliaException error) {
+                if (error == null) {
+                    assertNotNull("Result has no objectId", content.optString("objectID", null));
+                }
+                else {
+                    fail(error.getMessage());
+                }
                 signal.countDown();
             }
-
-            @Override
-            public void indexingError(Index index, TaskParams.Indexing context, AlgoliaException e) {
-                fail(String.format("Error during addObject: %s", e.getMessage()));
-                signal.countDown();
-            }
-        }
-
-        final Listener indexingListener = new Listener();
-
-        index.addObjectASync(new JSONObject("{\"city\": \"New York\"}"), indexingListener);
+        });
         assertTrue("No callback was called", signal.await(Helpers.wait, TimeUnit.SECONDS));
     }
 
     @Test
     public void testAddObjectWithObjectIDAsync() throws Exception {
         final CountDownLatch signal = new CountDownLatch(1);
-
-        class Listener implements IndexingListener {
+        index.addObjectAsync(new JSONObject("{\"city\": \"New York\"}"), "a1b2c3", new CompletionHandler() {
             @Override
-            public void indexingResult(Index index, TaskParams.Indexing context, JSONObject results) {
-                assertTrue("Object has unexpected objectId", results.optString("objectID").equals("a1b2c3"));
+            public void requestCompleted(JSONObject content, AlgoliaException error) {
+                if (error == null) {
+                    assertTrue("Object has unexpected objectId", content.optString("objectID").equals("a1b2c3"));
+                }
+                else {
+                    fail(error.getMessage());
+                }
                 signal.countDown();
             }
-
-            @Override
-            public void indexingError(Index index, TaskParams.Indexing context, AlgoliaException e) {
-                fail(String.format("Error during addObjectWithObjectID: %s", e.getMessage()));
-                signal.countDown();
-            }
-        }
-
-        final Listener indexingListener = new Listener();
-
-        index.addObjectASync(new JSONObject("{\"city\": \"New York\"}"), "a1b2c3", indexingListener);
+        });
         assertTrue("No callback was called", signal.await(Helpers.wait, TimeUnit.SECONDS));
     }
 
     @Test
     public void testAddObjectsAsync() throws Exception {
         final CountDownLatch signal = new CountDownLatch(1);
-
-        class Listener implements IndexingListener {
+        index.addObjectsAsync(new JSONArray("[{\"city\": \"New York\"}, {\"city\": \"Paris\"}]"), new CompletionHandler() {
             @Override
-            public void indexingResult(Index index, TaskParams.Indexing context, JSONObject results) {
-                assertEquals("Objects have unexpected objectId count", 2, results.optJSONArray("objectIDs").length());
+            public void requestCompleted(JSONObject content, AlgoliaException error) {
+                if (error == null) {
+                    assertEquals("Objects have unexpected objectId count", 2, content.optJSONArray("objectIDs").length());
+                }
+                else {
+                    fail(error.getMessage());
+                }
                 signal.countDown();
             }
-
-            @Override
-            public void indexingError(Index index, TaskParams.Indexing context, AlgoliaException e) {
-                fail(String.format("Error during addObjects: %s", e.getMessage()));
-                signal.countDown();
-            }
-        }
-
-        final Listener indexingListener = new Listener();
-
-        index.addObjectsASync(new JSONArray("[{\"city\": \"New York\"}, {\"city\": \"Paris\"}]"), indexingListener);
+        });
         assertTrue("No callback was called", signal.await(Helpers.wait, TimeUnit.SECONDS));
     }
 
     @Test
     public void testSaveObjectAsync() throws Exception {
         final CountDownLatch signal = new CountDownLatch(1);
-
-        class Listener implements IndexingListener {
+        index.saveObjectAsync(new JSONObject("{\"city\": \"New York\"}"), "a1b2c3", new CompletionHandler() {
             @Override
-            public void indexingResult(Index index, TaskParams.Indexing context, JSONObject results) {
-                assertTrue("Object has unexpected objectId", results.optString("objectID").equals("a1b2c3"));
+            public void requestCompleted(JSONObject content, AlgoliaException error) {
+                if (error == null) {
+                    assertTrue("Object has unexpected objectId", content.optString("objectID").equals("a1b2c3"));
+                }
+                else {
+                    fail(error.getMessage());
+                }
                 signal.countDown();
             }
-
-            @Override
-            public void indexingError(Index index, TaskParams.Indexing context, AlgoliaException e) {
-                fail(String.format("Error during saveObject: %s", e.getMessage()));
-                signal.countDown();
-            }
-        }
-
-        final Listener indexingListener = new Listener();
-
-        index.saveObjectASync(new JSONObject("{\"city\": \"New York\"}"), "a1b2c3", indexingListener);
+        });
         assertTrue("No callback was called", signal.await(Helpers.wait, TimeUnit.SECONDS));
     }
 
     @Test
     public void testSaveObjectsAsync() throws Exception {
         final CountDownLatch signal = new CountDownLatch(1);
-
-        class Listener implements IndexingListener {
+        index.saveObjectsAsync(new JSONArray("[{\"city\": \"New York\", \"objectID\": 123}, {\"city\": \"Paris\", \"objectID\": 456}]"), new CompletionHandler() {
             @Override
-            public void indexingResult(Index index, TaskParams.Indexing context, JSONObject results) {
-                assertEquals("Objects have unexpected objectId count", 2, results.optJSONArray("objectIDs").length());
-                assertEquals("Object has unexpected objectId", 123, results.optJSONArray("objectIDs").optInt(0));
-                assertEquals("Object has unexpected objectId", 456, results.optJSONArray("objectIDs").optInt(1));
+            public void requestCompleted(JSONObject content, AlgoliaException error) {
+                if (error == null) {
+                    assertEquals("Objects have unexpected objectId count", 2, content.optJSONArray("objectIDs").length());
+                    assertEquals("Object has unexpected objectId", 123, content.optJSONArray("objectIDs").optInt(0));
+                    assertEquals("Object has unexpected objectId", 456, content.optJSONArray("objectIDs").optInt(1));
+                }
+                else {
+                    fail(error.getMessage());
+                }
                 signal.countDown();
             }
-
-            @Override
-            public void indexingError(Index index, TaskParams.Indexing context, AlgoliaException e) {
-                fail(String.format("Error during saveObjects: %s", e.getMessage()));
-                signal.countDown();
-            }
-        }
-
-        final Listener indexingListener = new Listener();
-
-        index.saveObjectsASync(new JSONArray("[{\"city\": \"New York\", \"objectID\": 123}, {\"city\": \"Paris\", \"objectID\": 456}]"), indexingListener);
+        });
         assertTrue("No callback was called", signal.await(Helpers.wait, TimeUnit.SECONDS));
     }
 
     @Test
     public void testGetObjectAsync() throws Exception {
         final CountDownLatch signal = new CountDownLatch(1);
-
-        class Listener implements GetObjectsListener {
+        index.getObjectAsync(ids.get(0), new CompletionHandler() {
             @Override
-            public void getObjectsResult(Index index, TaskParams.GetObjects context, JSONObject results) {
-                assertTrue("Object has unexpected objectId", results.optString("objectID").equals(ids.get(0)));
-                assertTrue("Object has unexpected 'city' attribute", results.optString("city").equals("San Francisco"));
+            public void requestCompleted(JSONObject content, AlgoliaException error) {
+                if (error == null) {
+                    assertTrue("Object has unexpected objectId", content.optString("objectID").equals(ids.get(0)));
+                    assertTrue("Object has unexpected 'city' attribute", content.optString("city").equals("San Francisco"));
+                }
+                else {
+                    fail(error.getMessage());
+                }
                 signal.countDown();
             }
-
-            @Override
-            public void getObjectsError(Index index, TaskParams.GetObjects context, AlgoliaException e) {
-                fail(String.format("Error during getObject: %s", e.getMessage()));
-                signal.countDown();
-            }
-        }
-
-        final Listener getObjectsListener = new Listener();
-
-        index.getObjectASync(ids.get(0), getObjectsListener);
+        });
         assertTrue("No callback was called", signal.await(Helpers.wait, TimeUnit.SECONDS));
     }
 
     @Test
     public void testGetObjectWithAttributesToRetrieveAsync() throws Exception {
         final CountDownLatch signal = new CountDownLatch(1);
-
-        class Listener implements GetObjectsListener {
-            @Override
-            public void getObjectsResult(Index index, TaskParams.GetObjects context, JSONObject results) {
-                assertTrue("Object has unexpected objectId", results.optString("objectID").equals(ids.get(0)));
-                assertFalse("Object has unexpected 'city' attribute", results.has("city"));
-                signal.countDown();
-            }
-
-            @Override
-            public void getObjectsError(Index index, TaskParams.GetObjects context, AlgoliaException e) {
-                fail(String.format("Error during getObjectWithAttributesToRetrieve: %s", e.getMessage()));
-                signal.countDown();
-            }
-        }
-
-        final Listener getObjectsListener = new Listener();
-
         List<String> attributesToRetrieve = new ArrayList<String>();
         attributesToRetrieve.add("objectID");
-        index.getObjectASync(ids.get(0), attributesToRetrieve, getObjectsListener);
+        index.getObjectAsync(ids.get(0), attributesToRetrieve, new CompletionHandler() {
+            @Override
+            public void requestCompleted(JSONObject content, AlgoliaException error) {
+                if (error == null) {
+                    assertTrue("Object has unexpected objectId", content.optString("objectID").equals(ids.get(0)));
+                    assertFalse("Object has unexpected 'city' attribute", content.has("city"));
+                }
+                else {
+                    fail(error.getMessage());
+                }
+                signal.countDown();
+            }
+        });
         assertTrue("No callback was called", signal.await(Helpers.wait, TimeUnit.SECONDS));
     }
 
     @Test
     public void testGetObjectsAsync() throws Exception {
         final CountDownLatch signal = new CountDownLatch(1);
-
-        class Listener implements GetObjectsListener {
+        index.getObjectsAsync(ids, new CompletionHandler() {
             @Override
-            public void getObjectsResult(Index index, TaskParams.GetObjects context, JSONObject results) {
-                JSONArray res = results.optJSONArray("results");
-                assertTrue("Object has unexpected objectId", res.optJSONObject(0).optString("objectID").equals(ids.get(0)));
-                assertTrue("Object has unexpected objectId", res.optJSONObject(1).optString("objectID").equals(ids.get(1)));
+            public void requestCompleted(JSONObject content, AlgoliaException error) {
+                if (error == null) {
+                    JSONArray res = content.optJSONArray("results");
+                    assertNotNull(res);
+                    assertTrue("Object has unexpected objectId", res.optJSONObject(0).optString("objectID").equals(ids.get(0)));
+                    assertTrue("Object has unexpected objectId", res.optJSONObject(1).optString("objectID").equals(ids.get(1)));
+                }
+                else {
+                    fail(error.getMessage());
+                }
                 signal.countDown();
             }
-
-            @Override
-            public void getObjectsError(Index index, TaskParams.GetObjects context, AlgoliaException e) {
-                fail(String.format("Error during getObjects: %s", e.getMessage()));
-                signal.countDown();
-            }
-        }
-
-        final Listener getObjectsListener = new Listener();
-
-        index.getObjectsASync(ids, getObjectsListener);
+        });
         assertTrue("No callback was called", signal.await(Helpers.wait, TimeUnit.SECONDS));
     }
 
     @Test
     public void testWaitTaskAsync() throws Exception {
         final CountDownLatch signal = new CountDownLatch(2);
-
-        class Listener implements IndexingListener, WaitTaskListener {
+        index.addObjectAsync(new JSONObject("{\"city\": \"New York\"}"), new CompletionHandler() {
             @Override
-            public void indexingResult(Index index, TaskParams.Indexing context, JSONObject results) {
-                signal.countDown();
-                index.waitTaskASync(results.optString("taskID"), this);
-            }
-
-            @Override
-            public void indexingError(Index index, TaskParams.Indexing context, AlgoliaException e) {
-                fail(String.format("Error during addObject: %s", e.getMessage()));
-                signal.countDown();
-            }
-
-            @Override
-            public void waitTaskResult(Index index, String taskID) {
-                assertFalse("Task ID not found", taskID.equals(""));
-                signal.countDown();
-            }
-
-            @Override
-            public void waitTaskError(Index index, String taskID, AlgoliaException e) {
-                fail(String.format("Error during waitTask: %s", e.getMessage()));
+            public void requestCompleted(JSONObject content, AlgoliaException error) {
+                if (error == null) {
+                    index.waitTaskAsync(content.optString("taskID"), new CompletionHandler() {
+                        @Override
+                        public void requestCompleted(JSONObject content, AlgoliaException error) {
+                            if (error == null) {
+                                assertEquals(content.optString("status"), "published");
+                            }
+                            else {
+                                fail(error.getMessage());
+                            }
+                            signal.countDown();
+                        }
+                    });
+                }
+                else {
+                    fail(error.getMessage());
+                }
                 signal.countDown();
             }
-        }
-
-        final Listener listener = new Listener();
-
-        index.addObjectASync(new JSONObject("{\"city\": \"New York\"}"), listener);
+        });
         assertTrue("No callback was called", signal.await(Helpers.wait, TimeUnit.SECONDS));
     }
 
     @Test
     public void testHostSwitch() throws Exception {
         // Given first host as an unreachable domain
-        List<String> hostsArray = (List<String>) Whitebox.getInternalState(client, "readHostsArray");
+        List<String> hostsArray = (List<String>) Whitebox.getInternalState(client, "readHosts");
         hostsArray.set(0, "thissentenceshouldbeuniqueenoughtoguaranteeinexistentdomain.com");
-        Whitebox.setInternalState(client, "readHostsArray", hostsArray);
+        Whitebox.setInternalState(client, "readHosts", hostsArray);
 
         // Expect a switch to the next URL and successful search
         testSearchAsync();
@@ -385,14 +438,207 @@ public class IndexTest extends PowerMockTestCase {
     public void testSNI() throws Exception {
         // Given all hosts using SNI
         String appId = (String) Whitebox.getInternalState(client, "applicationID");
-        List<String> hostsArray = (List<String>) Whitebox.getInternalState(client, "readHostsArray");
+        List<String> hostsArray = (List<String>) Whitebox.getInternalState(client, "readHosts");
         hostsArray.set(0, appId + "-1.algolianet.com");
         hostsArray.set(1, appId + "-2.algolianet.com");
         hostsArray.set(2, appId + "-3.algolianet.com");
         hostsArray.set(3, appId + "-3.algolianet.com");
-        Whitebox.setInternalState(client, "readHostsArray", hostsArray);
+        Whitebox.setInternalState(client, "readHosts", hostsArray);
 
         // Expect correct certificate handling and successful search
         testSearchAsync();
+    }
+
+    private void addDummyObjects(int objectCount) throws Exception {
+        // Construct an array of dummy objects.
+        objects = new ArrayList<JSONObject>();
+        for (int i = 0; i < objectCount; ++i) {
+            objects.add(new JSONObject(String.format("{\"dummy\": %d}", i)));
+        }
+
+        // Add objects.
+        JSONObject task = index.addObjects(new JSONArray(objects));
+        index.waitTask(task.getString("taskID"));
+    }
+
+    @Test
+    public void testBrowseAsync() throws Exception {
+        addDummyObjects(1500);
+
+        final CountDownLatch signal = new CountDownLatch(2);
+        Query query = new Query();
+        query.setHitsPerPage(1000);
+        index.browseAsync(query, new CompletionHandler() {
+            @Override
+            public void requestCompleted(JSONObject content, AlgoliaException error) {
+                if (error == null) {
+                    String cursor = content.optString("cursor", null);
+                    assertNotNull(cursor);
+                    index.browseFromAsync(cursor, new CompletionHandler() {
+                        @Override
+                        public void requestCompleted(JSONObject content, AlgoliaException error) {
+                            if (error == null) {
+                                String cursor = content.optString("cursor", null);
+                                assertNull(cursor);
+                            } else {
+                                fail(error.getMessage());
+                            }
+                            signal.countDown();
+                        }
+                    });
+                } else {
+                    fail(error.getMessage());
+                }
+                signal.countDown();
+            }
+        });
+        assertTrue("No callback was called", signal.await(Helpers.wait, TimeUnit.SECONDS));
+    }
+
+    @Test
+    public void testClearIndexAsync() throws Exception {
+        final CountDownLatch signal = new CountDownLatch(3);
+        index.clearIndexAsync(new CompletionHandler() {
+            @Override
+            public void requestCompleted(JSONObject content, AlgoliaException error) {
+                if (error == null) {
+                    index.waitTaskAsync(content.optString("taskID"), new CompletionHandler() {
+                        @Override
+                        public void requestCompleted(JSONObject content, AlgoliaException error) {
+                            if (error == null) {
+                                index.browseAsync(new Query(), new CompletionHandler() {
+                                    @Override
+                                    public void requestCompleted(JSONObject content, AlgoliaException error) {
+                                        if (error == null) {
+                                            assertEquals(content.optInt("nbHits"), 0);
+                                        } else {
+                                            fail(error.getMessage());
+                                        }
+                                        signal.countDown();
+                                    }
+                                });
+                            }
+                            else {
+                                fail(error.getMessage());
+                            }
+                            signal.countDown();
+                        }
+                    });
+                }
+                else {
+                    fail(error.getMessage());
+                }
+                signal.countDown();
+            }
+        });
+        assertTrue("No callback was called", signal.await(Helpers.wait, TimeUnit.SECONDS));
+    }
+
+    @Test
+    public void testDeleteByQueryAsync() throws Exception {
+        final CountDownLatch signal = new CountDownLatch(2);
+        addDummyObjects(3000);
+        final Query query = new Query();
+        query.set("numericFilters", "dummy < 1500");
+        index.deleteByQueryAsync(query, new CompletionHandler() {
+            @Override
+            public void requestCompleted(JSONObject content, AlgoliaException error) {
+                if (error == null) {
+                    index.browseAsync(query, new CompletionHandler() {
+                        @Override
+                        public void requestCompleted(JSONObject content, AlgoliaException error) {
+                            if (error == null) {
+                                // There should not remain any object matching the query.
+                                assertNotNull(content.optJSONArray("hits"));
+                                assertEquals(content.optJSONArray("hits").length(), 0);
+                                assertNull(content.optString("cursor", null));
+                            }
+                            else {
+                                fail(error.getMessage());
+                            }
+                            signal.countDown();
+                        }
+                    });
+                }
+                else {
+                    fail(error.getMessage());
+                }
+                signal.countDown();
+            }
+        });
+        assertTrue("No callback was called", signal.await(Helpers.wait, TimeUnit.SECONDS));
+    }
+
+    @Test
+    public void testError404() throws Exception {
+        Index unknownIndex = client.initIndex("doesnotexist");
+        unknownIndex.searchAsync(new Query(), new CompletionHandler() {
+            @Override
+            public void requestCompleted(JSONObject content, AlgoliaException error) {
+                assertNotNull(error);
+                assertEquals(404, error.getStatusCode());
+                assertNotNull(error.getMessage());
+            }
+        });
+    }
+
+    @Test
+    public void testCacheUseIfEnabled() throws Exception {
+        index.enableSearchCache();
+        verifySearchTwiceCalls(1);
+    }
+
+    @Test
+    public void testCacheDontUseByDefault() throws Exception {
+        verifySearchTwiceCalls(2);
+    }
+
+    @Test
+    public void testCacheDontUseIfDisabled() throws Exception {
+        index.disableSearchCache();
+        verifySearchTwiceCalls(2);
+    }
+
+    @Test
+    public void testCacheTimeout() throws Exception {
+        index.enableSearchCache(1, ExpiringCache.defaultMaxSize);
+        verifySearchTwiceCalls(2, 2);
+    }
+
+    /**
+     * Verifies the number of requests fired by two successive search queries
+     *
+     * @param nbTimes expected amount of requests
+     */
+    private void verifySearchTwiceCalls(int nbTimes) throws Exception {
+        verifySearchTwiceCalls(nbTimes, 0);
+    }
+
+    /**
+     * Verifies the number of requests fired by two search queries
+     *
+     * @param nbTimes            expected amount of requests
+     * @param waitBetweenSeconds optional time to wait between the two queries
+     */
+    private void verifySearchTwiceCalls(int nbTimes, int waitBetweenSeconds) throws Exception {
+        // Given a index, using a client that returns some json on search
+        Client mockClient = mock(Client.class);
+        Whitebox.setInternalState(index, "client", mockClient);
+        when(mockClient.postRequestRaw(anyString(), anyString(), anyBoolean())).thenReturn("{foo:42}".getBytes());
+
+        // When searching twice separated by waitBetweenSeconds, fires nbTimes requests
+        final Query query = new Query("San");
+        index.search(query);
+        if (waitBetweenSeconds > 0) {
+            Thread.sleep(waitBetweenSeconds * 1000);
+        }
+        index.search(query);
+        verify(mockClient, times(nbTimes)).postRequestRaw(anyString(), anyString(), anyBoolean());
+    }
+
+    @Test
+    public void testNullCompletionHandler() throws Exception {
+        // Check that the code does not crash when no completion handler is specified.
+        index.addObjectAsync(new JSONObject("{\"city\": \"New York\"}"), null);
     }
 }
