@@ -115,7 +115,7 @@ public class Index {
      * @param completionHandler The listener that will be notified of the request's outcome.
      * @return A cancellable request.
      */
-    public Request searchAsync(@NonNull Query query, CompletionHandler completionHandler) {
+    public Request searchAsync(@NonNull Query query, @NonNull CompletionHandler completionHandler) {
         final Query queryCopy = new Query(query);
         return new Request(completionHandler) {
             @NonNull
@@ -153,7 +153,7 @@ public class Index {
      * @param completionHandler The listener that will be notified of the request's outcome.
      * @return A cancellable request.
      */
-    public Request searchDisjunctiveFacetingAsync(@NonNull Query query, @NonNull List<String> disjunctiveFacets, @NonNull Map<String, List<String>> refinements, CompletionHandler completionHandler) {
+    public Request searchDisjunctiveFacetingAsync(@NonNull Query query, @NonNull List<String> disjunctiveFacets, @NonNull Map<String, List<String>> refinements, @NonNull CompletionHandler completionHandler) {
         final Query queryCopy = new Query(query);
         final List<String> disjunctiveFacetsCopy = new ArrayList<>(disjunctiveFacets);
         final Map<String, List<String>> refinementsCopy = new HashMap<>();
@@ -308,7 +308,7 @@ public class Index {
      * @param completionHandler The listener that will be notified of the request's outcome.
      * @return A cancellable request.
      */
-    public Request getObjectAsync(final @NonNull String objectID, CompletionHandler completionHandler) {
+    public Request getObjectAsync(final @NonNull String objectID, @NonNull CompletionHandler completionHandler) {
         return new Request(completionHandler) {
             @NonNull
             @Override
@@ -326,7 +326,7 @@ public class Index {
      * @param completionHandler The listener that will be notified of the request's outcome.
      * @return A cancellable request.
      */
-    public Request getObjectAsync(final @NonNull String objectID, final List<String> attributesToRetrieve, CompletionHandler completionHandler) {
+    public Request getObjectAsync(final @NonNull String objectID, final List<String> attributesToRetrieve, @NonNull CompletionHandler completionHandler) {
         return new Request(completionHandler) {
             @NonNull
             @Override
@@ -343,7 +343,7 @@ public class Index {
      * @param completionHandler The listener that will be notified of the request's outcome.
      * @return A cancellable request.
      */
-    public Request getObjectsAsync(final @NonNull List<String> objectIDs, CompletionHandler completionHandler) {
+    public Request getObjectsAsync(final @NonNull List<String> objectIDs, @NonNull CompletionHandler completionHandler) {
         return new Request(completionHandler) {
             @NonNull
             @Override
@@ -361,7 +361,7 @@ public class Index {
      * @param completionHandler The listener that will be notified of the request's outcome.
      * @return A cancellable request.
      */
-    public Request waitTaskAsync(final @NonNull String taskID, CompletionHandler completionHandler) {
+    public Request waitTaskAsync(final @NonNull String taskID, @NonNull CompletionHandler completionHandler) {
         return new Request(completionHandler) {
             @NonNull
             @Override
@@ -430,7 +430,7 @@ public class Index {
      * @param completionHandler The listener that will be notified of the request's outcome.
      * @return A cancellable request.
      */
-    public Request getSettingsAsync(CompletionHandler completionHandler) {
+    public Request getSettingsAsync(@NonNull CompletionHandler completionHandler) {
         return new Request(completionHandler) {
             @NonNull
             @Override
@@ -470,7 +470,7 @@ public class Index {
      * @param completionHandler The listener that will be notified of the request's outcome.
      * @return A cancellable request.
      */
-    public Request browseAsync(@NonNull Query query, CompletionHandler completionHandler) {
+    public Request browseAsync(@NonNull Query query, @NonNull CompletionHandler completionHandler) {
         final Query queryCopy = new Query(query);
         return new Request(completionHandler) {
             @NonNull
@@ -490,7 +490,7 @@ public class Index {
      * @param completionHandler The listener that will be notified of the request's outcome.
      * @return A cancellable request.
      */
-    public Request browseFromAsync(final @NonNull String cursor, CompletionHandler completionHandler) {
+    public Request browseFromAsync(final @NonNull String cursor, @NonNull CompletionHandler completionHandler) {
         return new Request(completionHandler) {
             @NonNull
             @Override

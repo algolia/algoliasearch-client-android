@@ -269,7 +269,7 @@ public class Client {
      * @param completionHandler The listener that will be notified of the request's outcome.
      * @return A cancellable request.
      */
-    public Request listIndexesAsync(CompletionHandler completionHandler) {
+    public Request listIndexesAsync(@NonNull CompletionHandler completionHandler) {
         return new Request(completionHandler) {
             @NonNull
             @Override
@@ -364,7 +364,7 @@ public class Client {
      * @param completionHandler The listener that will be notified of the request's outcome.
      * @return A cancellable request.
      */
-    public Request multipleQueriesAsync(final @NonNull List<IndexQuery> queries, final MultipleQueriesStrategy strategy, CompletionHandler completionHandler) {
+    public Request multipleQueriesAsync(final @NonNull List<IndexQuery> queries, final MultipleQueriesStrategy strategy, @NonNull CompletionHandler completionHandler) {
         return new Request(completionHandler) {
             @NonNull
             @Override
