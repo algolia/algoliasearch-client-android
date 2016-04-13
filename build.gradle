@@ -51,7 +51,7 @@ apply plugin: 'io.codearte.nexus-staging'
 
 nexusStaging {
     packageGroup = PUBLISH_GROUP_ID
-    stagingProfileId = 'f6edc053ff9131'
+    stagingProfileId = 'f6edc053ff913'
     /* To get the staging id, you can either:
     - Use the 'getStagingProfile' task added by the 'io.codearte.nexus-staging' plugin
     - Log-in on sonatype.org, go to staging profile, select com.algolia, id = last part of URL */
