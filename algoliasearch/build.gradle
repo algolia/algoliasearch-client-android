@@ -51,7 +51,8 @@ android {
         online
         // The offline-enabled API client, adding offline features on top of the online client.
         // NOTE: Requires Algolia's SDK.
-        offline
+        // NOTE: Disabled so far.
+        // offline
     }
 }
 
