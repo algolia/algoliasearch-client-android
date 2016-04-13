@@ -15,7 +15,7 @@ fi
 }
 
 FILE_BUILD_GRADLE="algoliasearch/build.gradle"
-FILE_API_CLIENT="algoliasearch/src/main/java/com/algolia/search/saas/BaseAPIClient.java"
+FILE_API_CLIENT="algoliasearch/src/main/java/com/algolia/search/saas/Client.java"
 
 if [ $# -ne 1 ]; then
     echo "$0 | A script to release new versions automatically"
