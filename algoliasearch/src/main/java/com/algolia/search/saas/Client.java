@@ -678,7 +678,7 @@ public class Client {
 
                 final byte[] rawResponse;
                 String encoding = hostConnection.getContentEncoding();
-                if (encoding != null && encoding.contains("gzip")) {
+                if (encoding != null && encoding.equals("gzip")) {
                     rawResponse = _toByteArray(new GZIPInputStream(stream));
                 } else {
                     rawResponse = _toByteArray(stream);
