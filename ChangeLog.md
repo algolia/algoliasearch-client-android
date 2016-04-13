@@ -1,7 +1,7 @@
 Change Log
 ==========
 
-## 3.0 (FIXME)
+## 3.0 (2016-04-13)
 
 This major version brings new features as well as bug fixes. In addition, a lot of refactoring has been performed
 to achieve better maintainability and to align the Android client with the other Algolia API clients.
