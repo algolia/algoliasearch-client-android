@@ -44,16 +44,6 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
-    defaultPublishConfig "onlineRelease"
-    publishNonDefault true
-    productFlavors {
-        // The regular online API client.
-        online
-        // The offline-enabled API client, adding offline features on top of the online client.
-        // NOTE: Requires Algolia's SDK.
-        // NOTE: Disabled so far.
-        // offline
-    }
 }
 
 apply from: 'android-release-jar.gradle'
@@ -61,8 +51,6 @@ apply from: 'android-release-jar.gradle'
 dependencies {
     compile 'com.android.support:appcompat-v7:21.0.3'
     compile fileTree(include: ['*.jar'], dir: 'libs')
-    // TODO: Switch to published version.
-    // offlineCompile project(path: ':algoliasearchsdk', configuration: 'debug')
 
     testCompile "junit:junit:4.12"
     testCompile "org.assertj:assertj-core:1.7.0"
