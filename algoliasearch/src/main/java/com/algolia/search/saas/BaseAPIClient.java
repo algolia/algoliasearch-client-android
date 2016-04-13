@@ -514,7 +514,11 @@ abstract class BaseAPIClient {
             } else if (code / 100 == 4) {
                 String message = "Error detected in backend";
                 try {
-                    message = _getAnswerJSONObject(stream).getString("message");
+                    if (stream == null) {
+                        message = "InputStream is null: No connection/error while connecting/no error data";
+                    } else {
+                        message = _getAnswerJSONObject(stream).getString("message");
+                    }
                 } catch (IOException e) {
                     addError(errors, host, e);
                     continue;
@@ -525,7 +529,13 @@ abstract class BaseAPIClient {
                 throw new AlgoliaException(message);
             } else {
                 try {
-                    errors.put(host, _toCharArray(stream));
+                    final String errorMessage;
+                    if (stream == null) {
+                        errorMessage = "InputStream is null: No connection/error while connecting/no error data";
+                    } else {
+                        errorMessage = _toCharArray(stream);
+                    }
+                    errors.put(host, errorMessage);
                 } catch (IOException e) {
                     errors.put(host, String.valueOf(code));
                 }
