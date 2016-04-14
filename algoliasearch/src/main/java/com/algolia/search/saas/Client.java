@@ -675,6 +675,14 @@ public class Client {
                 final boolean codeIsError = code / 100 != 2;
                 InputStream stream = codeIsError ?
                         hostConnection.getErrorStream() : hostConnection.getInputStream();
+                // As per the official Java docs (not the Android docs):
+                // - `getErrorStream()` may return null => we have to handle this case.
+                //   See <https://docs.oracle.com/javase/7/docs/api/java/net/HttpURLConnection.html#getErrorStream()>.
+                // - `getInputStream()` should never return null... but let's err on the side of caution.
+                //   See <https://docs.oracle.com/javase/7/docs/api/java/net/URLConnection.html#getInputStream()>.
+                if (stream == null) {
+                    throw new IOException(String.format("Null stream when reading connection (status %d)", code));
+                }
 
                 final byte[] rawResponse;
                 String encoding = hostConnection.getContentEncoding();
