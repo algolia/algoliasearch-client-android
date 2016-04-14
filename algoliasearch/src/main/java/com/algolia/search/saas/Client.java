@@ -58,7 +58,7 @@ import java.util.zip.GZIPInputStream;
  * </p>
  */
 public class Client {
-    private final static String version = "3.0a1";
+    private final static String version = "3.0a3";
 
     /** Connect timeout (ms). */
     private int connectTimeout = 2000;
