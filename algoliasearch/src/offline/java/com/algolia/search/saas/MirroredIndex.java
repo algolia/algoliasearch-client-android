@@ -536,15 +536,15 @@ public class MirroredIndex extends Index
         try {
             ensureLocalIndex();
             SearchResults searchResults = localIndex.search(query.build());
-            if (searchResults.statusCode == 200) {
-                String jsonString = new String(searchResults.data, "UTF-8");
+            if (searchResults.getStatusCode() == 200) {
+                String jsonString = new String(searchResults.getData(), "UTF-8");
                 JSONObject json = new JSONObject(jsonString);
                 // Indicate that the results come from the local mirror.
                 json.put(JSON_KEY_ORIGIN, JSON_VALUE_ORIGIN_LOCAL);
                 return json;
             }
             else {
-                throw new AlgoliaException(searchResults.errorMessage, searchResults.statusCode);
+                throw new AlgoliaException(searchResults.getErrorMessage(), searchResults.getStatusCode());
             }
         }
         catch (Exception e) {
@@ -586,15 +586,15 @@ public class MirroredIndex extends Index
         try {
             ensureLocalIndex();
             SearchResults searchResults = localIndex.browse(query.build());
-            if (searchResults.statusCode == 200) {
-                String jsonString = new String(searchResults.data, "UTF-8");
+            if (searchResults.getStatusCode() == 200) {
+                String jsonString = new String(searchResults.getData(), "UTF-8");
                 JSONObject json = new JSONObject(jsonString);
                 // Indicate that the results come from the local mirror.
                 json.put(JSON_KEY_ORIGIN, JSON_VALUE_ORIGIN_LOCAL);
                 return json;
             }
             else {
-                throw new AlgoliaException(searchResults.errorMessage, searchResults.statusCode);
+                throw new AlgoliaException(searchResults.getErrorMessage(), searchResults.getStatusCode());
             }
         }
         catch (Exception e) {
