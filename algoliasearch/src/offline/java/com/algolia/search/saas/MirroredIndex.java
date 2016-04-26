@@ -39,6 +39,7 @@ import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.net.URLEncoder;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
@@ -141,11 +142,14 @@ public class MirroredIndex extends Index
      * Replace all data selection queries associated to this index.
      * @param queries The new data selection queries. (May be empty, although this will actually empty your mirror!)
      */
-    public void setDataSelectionQueries(@NonNull DataSelectionQuery[] queries)
+    public void setDataSelectionQueries(@NonNull DataSelectionQuery... queries)
     {
-        mirrorSettings.setQueries(queries);
-        mirrorSettings.setQueriesModificationDate(new Date());
-        saveMirrorSettings();
+        DataSelectionQuery[] oldQueries = mirrorSettings.getQueries();
+        if (!Arrays.equals(oldQueries, queries)) {
+            mirrorSettings.setQueries(queries);
+            mirrorSettings.setQueriesModificationDate(new Date());
+            saveMirrorSettings();
+        }
     }
 
     public @NonNull DataSelectionQuery[] getDataSelectionQueries()
@@ -283,10 +287,27 @@ public class MirroredIndex extends Index
         /** Maximum number of objects to retrieve. */
         public int maxObjects;
 
-        public DataSelectionQuery(Query query, int maxObjects)
+        public DataSelectionQuery(@NonNull Query query, int maxObjects)
         {
+            if (maxObjects < 0) {
+                throw new IllegalArgumentException();
+            }
             this.query = query;
             this.maxObjects = maxObjects;
+        }
+
+        // ----------------------------------------------------------------------
+        // Equality
+        // ----------------------------------------------------------------------
+
+        @Override
+        public boolean equals(Object other) {
+            return other != null && other instanceof DataSelectionQuery && this.query.equals(((DataSelectionQuery)other).query) && this.maxObjects == ((DataSelectionQuery)other).maxObjects;
+        }
+
+        @Override
+        public int hashCode() {
+            return query.hashCode() ^ maxObjects;
         }
     }
 
