@@ -44,5 +44,5 @@ fi
 
 echo "Running Android test..."
 ./setup_tests.sh
-$RETRY ./gradlew testRelease
+$RETRY ./gradlew testOnlineRelease
 ./teardown_tests.sh
