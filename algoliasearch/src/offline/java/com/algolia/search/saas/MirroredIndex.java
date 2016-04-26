@@ -203,6 +203,10 @@ public class MirroredIndex extends Index
 
     private void saveMirrorSettings()
     {
+        File dataDir = getDataDir();
+        if (!dataDir.exists()) {
+            dataDir.mkdirs();
+        }
         mirrorSettings.save(getSettingsFile());
     }
 
