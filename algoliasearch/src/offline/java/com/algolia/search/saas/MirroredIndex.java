@@ -126,9 +126,8 @@ public class MirroredIndex extends Index
 
     /**
      * Add a data selection query to this index.
-     * @note All queries are implicitly browse queries (and not search queries). The maximum number of items is
-     * specified using the `hitsPerPage` property.
-     * FIXME: We need a better mechanism.
+     * NOTE: All queries are implicitly browse queries (and not search queries).
+     *
      * @param query The data selection query to add.
      */
     public void addDataSelectionQuery(@NonNull DataSelectionQuery query)
