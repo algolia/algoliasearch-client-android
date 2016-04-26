@@ -37,7 +37,6 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
-import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -393,19 +392,12 @@ public class MirroredIndex extends Index
             // Perform data selection queries.
             objectFiles = new ArrayList<>();
             final DataSelectionQuery[] queries = mirrorSettings.getQueries();
-            for (int i = 0; i < queries.length; ++i) {
-                DataSelectionQuery query = queries[i];
-                String queryString = query.query.build();
+            for (DataSelectionQuery query : queries) {
                 String cursor = null;
                 int retrievedObjects = 0;
                 do {
                     // Make next request.
-                    // TODO: JSON DOM is not strictly necessary. We could use SAX parsing and just extract the cursor.
-                    String url = "/1/indexes/" + getEncodedIndexName() + "/browse?" + queryString;
-                    if (cursor != null) {
-                        url += "&cursor=" + URLEncoder.encode(cursor, "UTF-8");
-                    }
-                    JSONObject objectsJSON = getClient().getRequest(url, true);
+                    JSONObject objectsJSON = cursor == null ? this.browse(query.query) : this.browseFrom(cursor);
 
                     // Write result to file.
                     int objectFileNo = objectFiles.size();
@@ -421,7 +413,7 @@ public class MirroredIndex extends Index
                     if (hits == null) {
                         // Something went wrong:
                         // Report the error, and just abort this batch and proceed with the next query.
-                        Log.e(this.getClass().getName(), "No hits in result for query: " + queryString);
+                        Log.e(this.getClass().getName(), "No hits in result for query: " + query.query);
                         break;
                     }
                     retrievedObjects += hits.length();
