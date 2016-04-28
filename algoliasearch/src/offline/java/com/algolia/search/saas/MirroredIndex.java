@@ -492,7 +492,7 @@ public class MirroredIndex extends Index
      * @return A cancellable request.
      */
     @Override
-    public Request searchAsync(@NonNull Query query, CompletionHandler completionHandler) {
+    public Request searchAsync(@NonNull Query query, @NonNull CompletionHandler completionHandler) {
         final Query queryCopy = new Query(query);
         return new Request(completionHandler) {
             @NonNull
@@ -533,7 +533,7 @@ public class MirroredIndex extends Index
      * @return A cancellable request.
      * @throws IllegalStateException if mirroring is not activated on this index.
      */
-    public Request searchMirrorAsync(Query query, CompletionHandler completionHandler) {
+    public Request searchMirrorAsync(@NonNull Query query, @NonNull CompletionHandler completionHandler) {
         if (!mirrored) {
             throw new IllegalStateException("Mirroring not activated on this index");
         }
@@ -583,7 +583,7 @@ public class MirroredIndex extends Index
      * @return A cancellable request.
      * @throws IllegalStateException if mirroring is not activated on this index.
      */
-    public Request browseMirrorAsync(Query query, CompletionHandler completionHandler) {
+    public Request browseMirrorAsync(@NonNull Query query, @NonNull CompletionHandler completionHandler) {
         if (!mirrored) {
             throw new IllegalStateException("Mirroring not activated on this index");
         }
