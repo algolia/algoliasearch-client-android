@@ -576,7 +576,8 @@ public class MirroredIndex extends Index
     // fall back could only work for the first query.
 
     /**
-     * Browse the local mirror.
+     * Browse the local mirror (initial call).
+     * Same semantics as {@link Index#browseAsync}.
      *
      * @param query Browse query. Same restrictions as the online API.
      * @param completionHandler The listener that will be notified of the request's outcome.
@@ -593,6 +594,29 @@ public class MirroredIndex extends Index
             @Override
             JSONObject run() throws AlgoliaException {
                 return _browseMirror(queryCopy);
+            }
+        }.start();
+    }
+
+    /**
+     * Browse the local mirror (subsequent calls).
+     * Same semantics as {@link Index#browseFromAsync}.
+     *
+     * @param cursor Cursor to browse from.
+     * @param completionHandler The listener that will be notified of the request's outcome.
+     * @return A cancellable request.
+     * @throws IllegalStateException if mirroring is not activated on this index.
+     */
+    public Request browseMirrorFromAsync(@NonNull String cursor, @NonNull CompletionHandler completionHandler) {
+        if (!mirrored) {
+            throw new IllegalStateException("Mirroring not activated on this index");
+        }
+        final Query query = new Query().set("cursor", cursor);
+        return new Request(completionHandler) {
+            @NonNull
+            @Override
+            JSONObject run() throws AlgoliaException {
+                return _browseMirror(query);
             }
         }.start();
     }
