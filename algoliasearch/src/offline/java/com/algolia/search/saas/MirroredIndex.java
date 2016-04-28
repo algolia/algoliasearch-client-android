@@ -352,7 +352,7 @@ public class MirroredIndex extends Index
 
     /**
      * Refresh the local mirror.
-     * @warning Should be called from a background thread.
+     * WARNING: Should be called from a background thread.
      */
     private void _sync()
     {
