@@ -539,7 +539,7 @@ public class IndexTest extends PowerMockTestCase {
         final CountDownLatch signal = new CountDownLatch(2);
         addDummyObjects(3000);
         final Query query = new Query();
-        query.set("numericFilters", "dummy < 1500");
+        query.setNumericFilters(new JSONArray().put("dummy < 1500"));
         index.deleteByQueryAsync(query, new CompletionHandler() {
             @Override
             public void requestCompleted(JSONObject content, AlgoliaException error) {

@@ -419,7 +419,15 @@ public class Query {
         return null;
     }
 
-    // NOTE: `filters` left out because type too complex.
+    private static final String KEY_FILTERS = "filters";
+
+    public @NonNull Query setFilters(String filters) {
+        return set(KEY_FILTERS, filters);
+    }
+
+    public String getFilters() {
+        return get(KEY_FILTERS);
+    }
 
     private static final String KEY_GET_RANKING_INFO = "getRankingInfo";
 
@@ -688,7 +696,24 @@ public class Query {
         return parseInt(get(KEY_MIN_WORD_SIZE_FOR_2_TYPOS));
     }
 
-    // NOTE: `numericFilters` left out because type too complex.
+    private static final String KEY_NUMERIC_FILTERS = "numericFilters";
+
+    public @NonNull Query setNumericFilters(JSONArray filters) {
+        return set(KEY_NUMERIC_FILTERS, filters);
+    }
+
+    public JSONArray getNumericFilters() {
+        try {
+            String value = get(KEY_NUMERIC_FILTERS);
+            if (value != null) {
+                return new JSONArray(value);
+            }
+        }
+        catch (JSONException e) {
+            // Will return null
+        }
+        return null;
+    }
 
     private static final String KEY_OPTIONAL_WORDS = "optionalWords";
 
