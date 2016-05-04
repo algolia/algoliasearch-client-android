@@ -411,7 +411,9 @@ public class MirroredIndex extends Index
             tmpDir = new File(getTempDir(), UUID.randomUUID().toString());
             tmpDir.mkdirs();
 
-            // TODO: We are doing everything sequentially so far.
+            // NOTE: We are doing everything sequentially, because this is a background job: we care more about
+            // resource consumption than about how long it will take.
+
             // Fetch settings.
             {
                 JSONObject settingsJSON = this.getSettings();
