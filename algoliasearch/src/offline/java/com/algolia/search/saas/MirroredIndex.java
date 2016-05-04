@@ -170,6 +170,9 @@ public class MirroredIndex extends Index
      */
     public void setDelayBetweenSyncs(long delayBetweenSyncs)
     {
+        if (delayBetweenSyncs <= 0) {
+            throw new IllegalArgumentException();
+        }
         this.delayBetweenSyncs = delayBetweenSyncs;
     }
 
