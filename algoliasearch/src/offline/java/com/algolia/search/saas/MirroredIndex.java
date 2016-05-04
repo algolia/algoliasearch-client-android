@@ -69,7 +69,7 @@ public class MirroredIndex extends Index
 
     private boolean mirrored;
     private MirrorSettings mirrorSettings = new MirrorSettings();
-    private long delayBetweenSyncs = 1000 * 60 * 60; // 1 hour
+    private long delayBetweenSyncs = DEFAULT_DELAY_BETWEEN_SYNCS;
 
     private boolean syncing;
     private File tmpDir;
@@ -92,6 +92,9 @@ public class MirroredIndex extends Index
 
     /** Value for `JSON_KEY_ORIGIN` indicating that the results come from the online API. */
     public static final String JSON_VALUE_ORIGIN_REMOTE = "remote";
+
+    /** Default minimum delay between two syncs (in milliseconds). */
+    public static final long DEFAULT_DELAY_BETWEEN_SYNCS = 1000 * 60 * 60 * 24; // 1 day
 
     // ----------------------------------------------------------------------
     // Constructors
@@ -162,8 +165,8 @@ public class MirroredIndex extends Index
     }
 
     /**
-     * Set the delay after which data is considered to be obsolete. Default: 1 hour.
-     * @param delayBetweenSyncs The dealy between syncs, in milliseconds.
+     * Set the delay after which data is considered to be obsolete.
+     * @param delayBetweenSyncs The delay between syncs, in milliseconds.
      */
     public void setDelayBetweenSyncs(long delayBetweenSyncs)
     {
