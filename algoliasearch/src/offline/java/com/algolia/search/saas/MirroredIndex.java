@@ -345,9 +345,14 @@ public class MirroredIndex extends Index
      * If a sync is already running, this call is ignored. Otherwise, the sync is enqueued and runs in the background.
      *
      * NOTE: All index syncs are sequential: no two syncs can run at the same time.
+     *
+     * @throws IllegalStateException If no data selection queries were set.
      */
     public void sync()
     {
+        if (getDataSelectionQueries().length == 0) {
+            throw new IllegalStateException("Cannot sync with empty data selection queries");
+        }
         synchronized (this) {
             if (syncing)
                 return;
@@ -367,6 +372,8 @@ public class MirroredIndex extends Index
      * Launch a sync only if the data is obsolete.
      * The data is obsolete if the last successful sync is older than the delay between syncs, or if the data selection
      * queries have been changed in the meantime.
+     *
+     * @throws IllegalStateException If no data selection queries were set.
      */
     public void syncIfNeeded()
     {
