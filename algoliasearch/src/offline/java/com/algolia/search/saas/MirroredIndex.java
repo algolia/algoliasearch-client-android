@@ -590,8 +590,7 @@ public class MirroredIndex extends Index
             if (searchResults.getStatusCode() == 200) {
                 String jsonString = new String(searchResults.getData(), "UTF-8");
                 JSONObject json = new JSONObject(jsonString);
-                // Indicate that the results come from the local mirror.
-                json.put(JSON_KEY_ORIGIN, JSON_VALUE_ORIGIN_LOCAL);
+                // NOTE: Origin tagging performed by the SDK.
                 return json;
             }
             else {
@@ -664,8 +663,7 @@ public class MirroredIndex extends Index
             if (searchResults.getStatusCode() == 200) {
                 String jsonString = new String(searchResults.getData(), "UTF-8");
                 JSONObject json = new JSONObject(jsonString);
-                // Indicate that the results come from the local mirror.
-                json.put(JSON_KEY_ORIGIN, JSON_VALUE_ORIGIN_LOCAL);
+                // NOTE: Origin tagging performed by the SDK.
                 return json;
             }
             else {
