@@ -94,7 +94,7 @@ public class OfflineClient extends Client
     /**
      * Get the path to directory where the local data is stored.
      */
-    public File getRootDataDir()
+    public @NonNull File getRootDataDir()
     {
         return rootDataDir;
     }
