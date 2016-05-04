@@ -44,6 +44,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 
 /**
  * An online index that can also be mirrored locally.
@@ -174,6 +175,25 @@ public class MirroredIndex extends Index
             throw new IllegalArgumentException();
         }
         this.delayBetweenSyncs = delayBetweenSyncs;
+    }
+
+    /**
+     * Get the delay between two syncs.
+     *
+     * @param unit The unit in which the result will be expressed.
+     * @return The delay, expressed in <code>unit</code>.
+     */
+    public long getDelayBetweenSyncs(@NonNull TimeUnit unit) {
+        return unit.convert(this.getDelayBetweenSyncs(), TimeUnit.MILLISECONDS);
+    }
+
+    /**
+     * Set the delay after which data is considered to be obsolete.
+     * @param duration The delay between syncs, expressed in <code>unit</code>.
+     * @param unit The unit in which <code>duration</code> is expressed.
+     */
+    public void setDelayBetweenSyncs(long duration, @NonNull TimeUnit unit) {
+        this.setDelayBetweenSyncs(TimeUnit.MILLISECONDS.convert(duration, unit));
     }
 
     /**
