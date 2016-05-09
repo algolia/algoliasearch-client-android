@@ -42,7 +42,9 @@ import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -111,18 +113,26 @@ public class Client {
             setReadHosts(hosts);
             setWriteHosts(hosts);
         } else {
-            setReadHosts(
-                    applicationID + "-dsn.algolia.net",
+            // Initialize hosts to their default values.
+            //
+            // NOTE: The host list comes in two parts:
+            //
+            // 1. The fault-tolerant, load-balanced DNS host.
+            // 2. The non-fault-tolerant hosts. Those hosts must be randomized to ensure proper load balancing in case
+            //    of the first host's failure.
+            //
+            List<String> fallbackHosts = Arrays.asList(
                     applicationID + "-1.algolianet.com",
                     applicationID + "-2.algolianet.com",
                     applicationID + "-3.algolianet.com"
             );
-            setWriteHosts(
-                    applicationID + ".algolia.net",
-                    applicationID + "-1.algolianet.com",
-                    applicationID + "-2.algolianet.com",
-                    applicationID + "-3.algolianet.com"
-            );
+            Collections.shuffle(fallbackHosts);
+            readHosts = new ArrayList<>(fallbackHosts.size() + 1);
+            readHosts.add(applicationID + "-dsn.algolia.net");
+            readHosts.addAll(fallbackHosts);
+            writeHosts = new ArrayList<>(fallbackHosts.size() + 1);
+            writeHosts.add(applicationID + ".algolia.net");
+            writeHosts.addAll(fallbackHosts);
         }
     }
 
