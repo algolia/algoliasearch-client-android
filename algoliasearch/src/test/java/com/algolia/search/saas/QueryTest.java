@@ -598,4 +598,28 @@ public class QueryTest extends RobolectricTestCase  {
         Query query2 = Query.parse(query1.build());
         assertEquals(query2.getMinimumAroundRadius(), query1.getMinimumAroundRadius());
     }
+
+    @Test
+    public void test_numericFilters() throws JSONException {
+        final JSONArray VALUE = new JSONArray("[\"code=1\", [\"price:0 to 10\", \"price:1000 to 2000\"]]");
+        Query query1 = new Query();
+        assertNull(query1.getNumericFilters());
+        query1.setNumericFilters(VALUE);
+        assertEquals(query1.getNumericFilters(), VALUE);
+        assertEquals(query1.get("numericFilters"), "[\"code=1\",[\"price:0 to 10\",\"price:1000 to 2000\"]]");
+        Query query2 = Query.parse(query1.build());
+        assertEquals(query2.getNumericFilters(), query1.getNumericFilters());
+    }
+
+    @Test
+    public void test_filters() {
+        final String VALUE = "available=1 AND (category:Book OR NOT category:Ebook) AND publication_date: 1441745506 TO 1441755506 AND inStock > 0 AND author:\"John Doe\"";
+        Query query1 = new Query();
+        assertNull(query1.getFilters());
+        query1.setFilters(VALUE);
+        assertEquals(query1.getFilters(), VALUE);
+        assertEquals(query1.get("filters"), VALUE);
+        Query query2 = Query.parse(query1.build());
+        assertEquals(query2.getFilters(), query1.getFilters());
+    }
 }
