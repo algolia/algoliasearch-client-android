@@ -71,7 +71,7 @@ dependencies {
     testCompile "org.assertj:assertj-core:1.7.0"
     testCompile "org.robolectric:robolectric:3.0"
 
-    offlineCompile "com.algolia:algoliasearchsdk-android:0.1-SNAPSHOT"
+    offlineCompile "com.algolia:algoliasearch-offline-core-android:0.1-SNAPSHOT"
 
     // PowerMock brings in the mockito dependency
     testCompile "org.powermock:powermock-module-junit4:1.6.1"

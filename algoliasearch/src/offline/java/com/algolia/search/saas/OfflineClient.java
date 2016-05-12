@@ -27,7 +27,7 @@ import android.os.Handler;
 import android.os.Looper;
 import android.support.annotation.NonNull;
 
-import com.algolia.search.sdk.Sdk;
+import com.algolia.search.offline.core.Sdk;
 
 import java.io.File;
 import java.util.concurrent.ExecutorService;

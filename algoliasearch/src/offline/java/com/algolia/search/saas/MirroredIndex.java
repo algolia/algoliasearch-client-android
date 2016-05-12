@@ -26,8 +26,8 @@ package com.algolia.search.saas;
 import android.support.annotation.NonNull;
 import android.util.Log;
 
-import com.algolia.search.sdk.LocalIndex;
-import com.algolia.search.sdk.SearchResults;
+import com.algolia.search.offline.core.LocalIndex;
+import com.algolia.search.offline.core.SearchResults;
 
 import org.json.JSONArray;
 import org.json.JSONException;
