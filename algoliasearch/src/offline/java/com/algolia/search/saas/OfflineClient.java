@@ -77,6 +77,7 @@ public class OfflineClient extends Client
     {
         super(applicationID, apiKey, hosts);
         this.rootDataDir = dataDir;
+        userAgent += ";algoliasearch-offline-core-android " + Sdk.getInstance().getVersionString();
     }
 
     /**

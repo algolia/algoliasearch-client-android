@@ -60,6 +60,8 @@ import java.util.zip.GZIPInputStream;
 public class Client {
     private final static String version = "3.0";
 
+    protected String userAgent = "Algolia for Android " + version;
+
     /** Connect timeout (ms). */
     private int connectTimeout = 2000;
 
@@ -656,7 +658,7 @@ public class Client {
                 }
 
                 // set user agent
-                hostConnection.setRequestProperty("User-Agent", "Algolia for Android " + version);
+                hostConnection.setRequestProperty("User-Agent", userAgent);
 
                 // write JSON entity
                 if (json != null) {
