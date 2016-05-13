@@ -117,7 +117,7 @@ public class Index {
      */
     public Request searchAsync(@NonNull Query query, @NonNull CompletionHandler completionHandler) {
         final Query queryCopy = new Query(query);
-        return new Request(completionHandler) {
+        return getClient().new AsyncTaskRequest(completionHandler) {
             @NonNull
             @Override
             JSONObject run() throws AlgoliaException {
@@ -160,7 +160,7 @@ public class Index {
         for (Map.Entry<String, List<String>> entry : refinements.entrySet()) {
             refinementsCopy.put(entry.getKey(), new ArrayList<String>(entry.getValue()));
         }
-        return new Request(completionHandler) {
+        return getClient().new AsyncTaskRequest(completionHandler) {
             @NonNull
             @Override
             JSONObject run() throws AlgoliaException {
@@ -181,7 +181,7 @@ public class Index {
      * @return A cancellable request.
      */
     public Request addObjectAsync(final @NonNull JSONObject object, CompletionHandler completionHandler) {
-        return new Request(completionHandler) {
+        return getClient().new AsyncTaskRequest(completionHandler) {
             @NonNull
             @Override
             JSONObject run() throws AlgoliaException {
@@ -204,7 +204,7 @@ public class Index {
      * @return A cancellable request.
      */
     public Request addObjectAsync(final @NonNull JSONObject object, final @NonNull String objectID, CompletionHandler completionHandler)  {
-        return new Request(completionHandler) {
+        return getClient().new AsyncTaskRequest(completionHandler) {
             @NonNull
             @Override
             JSONObject run() throws AlgoliaException {
@@ -221,7 +221,7 @@ public class Index {
      * @return A cancellable request.
      */
     public Request addObjectsAsync(final @NonNull JSONArray objects, CompletionHandler completionHandler) {
-        return new Request(completionHandler) {
+        return getClient().new AsyncTaskRequest(completionHandler) {
             @NonNull
             @Override
             JSONObject run() throws AlgoliaException {
@@ -239,7 +239,7 @@ public class Index {
      * @return A cancellable request.
      */
     public Request saveObjectAsync(final @NonNull JSONObject object, final @NonNull String objectID, CompletionHandler completionHandler) {
-        return new Request(completionHandler) {
+        return getClient().new AsyncTaskRequest(completionHandler) {
             @NonNull
             @Override
             JSONObject run() throws AlgoliaException {
@@ -256,7 +256,7 @@ public class Index {
      * @return A cancellable request.
      */
     public Request saveObjectsAsync(final @NonNull JSONArray objects, @NonNull CompletionHandler completionHandler) {
-        return new Request(completionHandler) {
+        return getClient().new AsyncTaskRequest(completionHandler) {
             @NonNull
             @Override
             JSONObject run() throws AlgoliaException {
@@ -274,7 +274,7 @@ public class Index {
      * @return A cancellable request.
      */
     public Request partialUpdateObjectAsync(final @NonNull JSONObject partialObject, final @NonNull String objectID, CompletionHandler completionHandler) {
-        return new Request(completionHandler) {
+        return getClient().new AsyncTaskRequest(completionHandler) {
             @NonNull
             @Override
             JSONObject run() throws AlgoliaException {
@@ -292,7 +292,7 @@ public class Index {
      * @return A cancellable request.
      */
     public Request partialUpdateObjectsAsync(final @NonNull JSONArray partialObjects, CompletionHandler completionHandler) {
-        return new Request(completionHandler) {
+        return getClient().new AsyncTaskRequest(completionHandler) {
             @NonNull
             @Override
             JSONObject run() throws AlgoliaException {
@@ -309,7 +309,7 @@ public class Index {
      * @return A cancellable request.
      */
     public Request getObjectAsync(final @NonNull String objectID, @NonNull CompletionHandler completionHandler) {
-        return new Request(completionHandler) {
+        return getClient().new AsyncTaskRequest(completionHandler) {
             @NonNull
             @Override
             JSONObject run() throws AlgoliaException {
@@ -327,7 +327,7 @@ public class Index {
      * @return A cancellable request.
      */
     public Request getObjectAsync(final @NonNull String objectID, final List<String> attributesToRetrieve, @NonNull CompletionHandler completionHandler) {
-        return new Request(completionHandler) {
+        return getClient().new AsyncTaskRequest(completionHandler) {
             @NonNull
             @Override
             JSONObject run() throws AlgoliaException {
@@ -344,7 +344,7 @@ public class Index {
      * @return A cancellable request.
      */
     public Request getObjectsAsync(final @NonNull List<String> objectIDs, @NonNull CompletionHandler completionHandler) {
-        return new Request(completionHandler) {
+        return getClient().new AsyncTaskRequest(completionHandler) {
             @NonNull
             @Override
             JSONObject run() throws AlgoliaException {
@@ -362,7 +362,7 @@ public class Index {
      * @return A cancellable request.
      */
     public Request waitTaskAsync(final @NonNull String taskID, @NonNull CompletionHandler completionHandler) {
-        return new Request(completionHandler) {
+        return getClient().new AsyncTaskRequest(completionHandler) {
             @NonNull
             @Override
             JSONObject run() throws AlgoliaException {
@@ -379,7 +379,7 @@ public class Index {
      * @return A cancellable request.
      */
     public Request deleteObjectAsync(final @NonNull String objectID, CompletionHandler completionHandler) {
-        return new Request(completionHandler) {
+        return getClient().new AsyncTaskRequest(completionHandler) {
             @NonNull
             @Override
             JSONObject run() throws AlgoliaException {
@@ -396,7 +396,7 @@ public class Index {
      * @return A cancellable request.
      */
     public Request deleteObjectsAsync(final @NonNull List<String> objectIDs, CompletionHandler completionHandler) {
-        return new Request(completionHandler) {
+        return getClient().new AsyncTaskRequest(completionHandler) {
             @NonNull
             @Override
             JSONObject run() throws AlgoliaException {
@@ -414,7 +414,7 @@ public class Index {
      */
     public Request deleteByQueryAsync(@NonNull Query query, CompletionHandler completionHandler) {
         final Query queryCopy = new Query(query);
-        return new Request(completionHandler) {
+        return getClient().new AsyncTaskRequest(completionHandler) {
             @NonNull
             @Override
             JSONObject run() throws AlgoliaException {
@@ -431,7 +431,7 @@ public class Index {
      * @return A cancellable request.
      */
     public Request getSettingsAsync(@NonNull CompletionHandler completionHandler) {
-        return new Request(completionHandler) {
+        return getClient().new AsyncTaskRequest(completionHandler) {
             @NonNull
             @Override
             JSONObject run() throws AlgoliaException {
@@ -451,7 +451,7 @@ public class Index {
      * @return A cancellable request.
      */
     public Request setSettingsAsync(final @NonNull JSONObject settings, CompletionHandler completionHandler) {
-        return new Request(completionHandler) {
+        return getClient().new AsyncTaskRequest(completionHandler) {
             @NonNull
             @Override
             JSONObject run() throws AlgoliaException {
@@ -472,7 +472,7 @@ public class Index {
      */
     public Request browseAsync(@NonNull Query query, @NonNull CompletionHandler completionHandler) {
         final Query queryCopy = new Query(query);
-        return new Request(completionHandler) {
+        return getClient().new AsyncTaskRequest(completionHandler) {
             @NonNull
             @Override
             JSONObject run() throws AlgoliaException {
@@ -491,7 +491,7 @@ public class Index {
      * @return A cancellable request.
      */
     public Request browseFromAsync(final @NonNull String cursor, @NonNull CompletionHandler completionHandler) {
-        return new Request(completionHandler) {
+        return getClient().new AsyncTaskRequest(completionHandler) {
             @NonNull
             @Override
             JSONObject run() throws AlgoliaException {
@@ -507,7 +507,7 @@ public class Index {
      * @return A cancellable request.
      */
     public Request clearIndexAsync(CompletionHandler completionHandler) {
-        return new Request(completionHandler) {
+        return getClient().new AsyncTaskRequest(completionHandler) {
             @NonNull
             @Override
             JSONObject run() throws AlgoliaException {

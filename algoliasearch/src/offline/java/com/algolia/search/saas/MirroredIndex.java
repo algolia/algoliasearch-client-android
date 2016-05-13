@@ -529,7 +529,7 @@ public class MirroredIndex extends Index
     @Override
     public Request searchAsync(@NonNull Query query, @NonNull CompletionHandler completionHandler) {
         final Query queryCopy = new Query(query);
-        return new Request(completionHandler) {
+        return getClient().new AsyncTaskRequest(completionHandler) {
             @NonNull
             @Override
             JSONObject run() throws AlgoliaException {
@@ -573,7 +573,7 @@ public class MirroredIndex extends Index
             throw new IllegalStateException("Mirroring not activated on this index");
         }
         final Query queryCopy = new Query(query);
-        return new Request(completionHandler) {
+        return getClient().new AsyncTaskRequest(completionHandler) {
             @NonNull
             @Override
             JSONObject run() throws AlgoliaException {
@@ -623,7 +623,7 @@ public class MirroredIndex extends Index
             throw new IllegalStateException("Mirroring not activated on this index");
         }
         final Query queryCopy = new Query(query);
-        return new Request(completionHandler) {
+        return getClient().new AsyncTaskRequest(completionHandler) {
             @NonNull
             @Override
             JSONObject run() throws AlgoliaException {
@@ -646,7 +646,7 @@ public class MirroredIndex extends Index
             throw new IllegalStateException("Mirroring not activated on this index");
         }
         final Query query = new Query().set("cursor", cursor);
-        return new Request(completionHandler) {
+        return getClient().new AsyncTaskRequest(completionHandler) {
             @NonNull
             @Override
             JSONObject run() throws AlgoliaException {

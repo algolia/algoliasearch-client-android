@@ -23,6 +23,8 @@
 
 package com.algolia.search.saas;
 
+import android.os.AsyncTask;
+import android.os.Build;
 import android.support.annotation.NonNull;
 
 import org.apache.http.entity.StringEntity;
@@ -46,6 +48,8 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.zip.GZIPInputStream;
 
 /**
@@ -80,6 +84,9 @@ public class Client {
      * HTTP headers that will be sent with every request.
      */
     private HashMap<String, String> headers = new HashMap<String, String>();
+
+    /** Thread pool used to run asynchronous requests. */
+    protected ExecutorService searchExecutorService = Executors.newFixedThreadPool(4);
 
     // ----------------------------------------------------------------------
     // Initialization
@@ -272,7 +279,7 @@ public class Client {
      * @return A cancellable request.
      */
     public Request listIndexesAsync(@NonNull CompletionHandler completionHandler) {
-        return new Request(completionHandler) {
+        return new AsyncTaskRequest(completionHandler) {
             @NonNull
             @Override
             JSONObject run() throws AlgoliaException {
@@ -289,7 +296,7 @@ public class Client {
      * @return A cancellable request.
      */
     public Request deleteIndexAsync(final @NonNull String indexName, CompletionHandler completionHandler) {
-        return new Request(completionHandler) {
+        return new AsyncTaskRequest(completionHandler) {
             @NonNull
             @Override
             JSONObject run() throws AlgoliaException {
@@ -309,7 +316,7 @@ public class Client {
      * @return A cancellable request.
      */
     public Request moveIndexAsync(final @NonNull String srcIndexName, final @NonNull String dstIndexName, CompletionHandler completionHandler) {
-        return new Request(completionHandler) {
+        return new AsyncTaskRequest(completionHandler) {
             @NonNull
             @Override
             JSONObject run() throws AlgoliaException {
@@ -329,7 +336,7 @@ public class Client {
      * @return A cancellable request.
      */
     public Request copyIndexAsync(final @NonNull String srcIndexName, final @NonNull String dstIndexName, CompletionHandler completionHandler) {
-        return new Request(completionHandler) {
+        return new AsyncTaskRequest(completionHandler) {
             @NonNull
             @Override
             JSONObject run() throws AlgoliaException {
@@ -367,7 +374,7 @@ public class Client {
      * @return A cancellable request.
      */
     public Request multipleQueriesAsync(final @NonNull List<IndexQuery> queries, final MultipleQueriesStrategy strategy, @NonNull CompletionHandler completionHandler) {
-        return new Request(completionHandler) {
+        return new AsyncTaskRequest(completionHandler) {
             @NonNull
             @Override
             JSONObject run() throws AlgoliaException {
@@ -384,7 +391,7 @@ public class Client {
      * @return A cancellable request.
      */
     public Request batchAsync(final @NonNull JSONArray operations, CompletionHandler completionHandler) {
-        return new Request(completionHandler) {
+        return new AsyncTaskRequest(completionHandler) {
             @NonNull
             @Override
             JSONObject run() throws AlgoliaException {
@@ -748,4 +755,120 @@ public class Client {
             // no inputStream to close
         }
     }
+
+    // ----------------------------------------------------------------------
+    // Utils
+    // ----------------------------------------------------------------------
+
+    /**
+     * Abstract {@link Request} implementation using an `AsyncTask`.
+     * Derived classes just have to implement the {@link #run()} method.
+     */
+    abstract class AsyncTaskRequest implements Request {
+        /** The completion handler notified of the result. May be null if the caller omitted it. */
+        private CompletionHandler completionHandler;
+
+        private boolean finished = false;
+
+        /**
+         * The underlying asynchronous task.
+         */
+        private AsyncTask<Void, Void, APIResult> task = new AsyncTask<Void, Void, APIResult>() {
+            @Override
+            protected APIResult doInBackground(Void... params) {
+                try {
+                    return new APIResult(run());
+                } catch (AlgoliaException e) {
+                    return new APIResult(e);
+                }
+            }
+
+            @Override
+            protected void onPostExecute(APIResult result) {
+                finished = true;
+                if (completionHandler != null) {
+                    completionHandler.requestCompleted(result.content, result.error);
+                }
+            }
+
+            @Override
+            protected void onCancelled(APIResult apiResult) {
+                finished = true;
+            }
+        };
+
+        /**
+         * Construct a new request with the specified completion handler.
+         *
+         * @param completionHandler The completion handler to be notified of results. May be null if the caller omitted it.
+         */
+        AsyncTaskRequest(CompletionHandler completionHandler) {
+            this.completionHandler = completionHandler;
+        }
+
+        /**
+         * Run this request synchronously. To be implemented by derived classes.
+         * <p>
+         * <strong>Do not call this method directly.</strong> Will be run in a background thread when calling
+         * {@link #start()}.
+         * </p>
+         *
+         * @return The request's result.
+         * @throws AlgoliaException If an error was encountered.
+         */
+        @NonNull
+        abstract JSONObject run() throws AlgoliaException;
+
+        /**
+         * Run this request asynchronously.
+         *
+         * @return This instance.
+         */
+        AsyncTaskRequest start() {
+            // WARNING: Starting with Honeycomb (3.0), `AsyncTask` execution is serial, so we must force parallel
+            // execution. See <http://developer.android.com/reference/android/os/AsyncTask.html>.
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+                task.executeOnExecutor(searchExecutorService);
+            } else {
+                task.execute();
+            }
+            return this;
+        }
+
+        /**
+         * Cancel this request.
+         * The listener will not be called after a request has been cancelled.
+         * <p>
+         * WARNING: Cancelling a request may or may not cancel the underlying network call, depending how late the
+         * cancellation happens. In other words, a cancelled request may have already been executed by the server. In any
+         * case, cancelling never carries "undo" semantics.
+         * </p>
+         */
+        @Override
+        public void cancel() {
+            // NOTE: We interrupt the task's thread to better cope with timeouts.
+            task.cancel(true /* mayInterruptIfRunning */);
+        }
+
+        /**
+         * Test if this request is still running.
+         *
+         * @return true if completed or cancelled, false if still running.
+         */
+        @Override
+        public boolean isFinished() {
+            return finished;
+        }
+
+        /**
+         * Test if this request has been cancelled.
+         *
+         * @return true if cancelled, false otherwise.
+         */
+        @Override
+        public boolean isCancelled() {
+            return task.isCancelled();
+        }
+    }
+
 }
