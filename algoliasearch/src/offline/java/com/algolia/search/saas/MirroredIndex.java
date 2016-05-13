@@ -63,6 +63,19 @@ import java.util.concurrent.TimeUnit;
  *
  * <p>NOTE: Requires Algolia's SDK. The {@link OfflineClient#enableOfflineMode(String)} method must be called with
  * a valid license key prior to calling any offline-related method.</p>
+ *
+ * <h3>Preventive offline searches</h3>
+ *
+ * <p>When the index is mirrored, it may launch a "preventive" request to the offline mirror for every online search
+ * request. <strong>This may result in the completion handler being called twice:</strong> a first time with the
+ * offline results, and a second time with the online results. This behavior may be turned off by calling
+ * {@link #setPreventiveOfflineSearch(boolean)}.</p>
+ *
+ * <p> To avoid wasting CPU when the network connection is good, the offline request is only launched after a certain
+ * delay. This delay can be adjusted by calling {@link #setDelayBeforeOfflineSearch(long)}. The default is
+ * {@link #DEFAULT_DELAY_BEFORE_OFFLINE_SEARCH}. If the online request finishes with a definitive result (i.e. success
+ * or application error) before the offline request has finished (or even been launched), the offline request will be
+ * cancelled (or not be launched at all).</p>
  */
 public class MirroredIndex extends Index
 {
@@ -81,6 +94,15 @@ public class MirroredIndex extends Index
 
     private Set<SyncListener> syncListeners = new HashSet<>();
 
+    /**
+     * Whether to launch a preventive offline search for every online search.
+     * Only valid when the index is mirrored.
+     */
+    private boolean preventiveOfflineSearch = true;
+
+    /** The delay before a preventive offline search is launched. */
+    private long delayBeforeOfflineSearch = DEFAULT_DELAY_BEFORE_OFFLINE_SEARCH;
+
     // ----------------------------------------------------------------------
     // Constants
     // ----------------------------------------------------------------------
@@ -96,6 +118,9 @@ public class MirroredIndex extends Index
 
     /** Default minimum delay between two syncs (in milliseconds). */
     public static final long DEFAULT_DELAY_BETWEEN_SYNCS = 1000 * 60 * 60 * 24; // 1 day
+
+    /** Default delay before preventive offline search (in milliseconds). */
+    public static final long DEFAULT_DELAY_BEFORE_OFFLINE_SEARCH = 200; // 200 ms
 
     // ----------------------------------------------------------------------
     // Constructors
@@ -220,6 +245,44 @@ public class MirroredIndex extends Index
     private File getSettingsFile()
     {
         return new File(getDataDir(), "mirror.json");
+    }
+
+    /**
+     * Get the delay before a preventive offline search in launched.
+     * Only used when the index is mirrored.
+     *
+     * @return The delay (in milliseconds).
+     */
+    public long getDelayBeforeOfflineSearch() {
+        return delayBeforeOfflineSearch;
+    }
+
+    /**
+     * Set the delay before a preventive offline search in launched.
+     * Only used when the index is mirrored.
+     *
+     * @param delayBeforeOfflineSearch The delay (in milliseconds).
+     */
+    public void setDelayBeforeOfflineSearch(long delayBeforeOfflineSearch) {
+        this.delayBeforeOfflineSearch = delayBeforeOfflineSearch;
+    }
+
+    /**
+     * Whether the index may launch a preventive offline request for every online search request.
+     * Only used when the index is mirrored.
+     *
+     * @return true if preventive offline requests are allowed, false if they are forbidden.
+     */
+    public boolean isPreventiveOfflineSearch() {
+        return preventiveOfflineSearch;
+    }
+
+    /**
+     * Set whether
+     * @param preventiveOfflineSearch
+     */
+    public void setPreventiveOfflineSearch(boolean preventiveOfflineSearch) {
+        this.preventiveOfflineSearch = preventiveOfflineSearch;
     }
 
     // ----------------------------------------------------------------------
@@ -528,35 +591,141 @@ public class MirroredIndex extends Index
      */
     @Override
     public Request searchAsync(@NonNull Query query, @NonNull CompletionHandler completionHandler) {
-        final Query queryCopy = new Query(query);
-        return getClient().new AsyncTaskRequest(completionHandler) {
-            @NonNull
-            @Override
-            JSONObject run() throws AlgoliaException {
-                return search(queryCopy);
-            }
-        }.start();
+        // A non-mirrored index behaves exactly as an online index.
+        if (!mirrored || !preventiveOfflineSearch) {
+            return super.searchAsync(query, completionHandler);
+        }
+        // A mirrored index launches a mixed offline/online request.
+        else {
+            final Query queryCopy = new Query(query);
+            return new OnlineOfflineSearchRequest(queryCopy, completionHandler).start();
+        }
     }
 
-    @Override
-    protected JSONObject search(@NonNull Query query) throws AlgoliaException {
-        try {
-            JSONObject content = super.search(query);
-            // Indicate that the results come from the online API.
-            content.put(JSON_KEY_ORIGIN, JSON_VALUE_ORIGIN_REMOTE);
-            return content;
+    /**
+     * A mixed online/offline request.
+     * This request encapsulates two concurrent online and offline requests, to optimize response time.
+     * <p>
+     * WARNING: Can only be used when the index is mirrored.
+     * </p>
+     */
+    private class OnlineOfflineSearchRequest implements Request {
+        private final Query query;
+        private CompletionHandler completionHandler;
+        private boolean cancelled = false;
+        private Request onlineRequest;
+        private Request offlineRequest;
+        private transient boolean mayRunOfflineRequest = true;
+
+        /**
+         * Construct a new mixed online/offline request.
+         *
+         * @throws IllegalStateException if the index is not mirrored.
+         */
+        public OnlineOfflineSearchRequest(@NonNull Query query, @NonNull CompletionHandler completionHandler) {
+            if (!mirrored) {
+                throw new IllegalStateException();
+            }
+            this.query = query;
+            this.completionHandler = completionHandler;
         }
-        catch (AlgoliaException e) {
-            // Fallback to the offline mirror if available.
-            // TODO: We might only want to fallback if the error is a network error.
-            if (mirrored) {
-                return _searchMirror(query);
-            } else {
-                throw e;
+
+        @Override
+        public void cancel() {
+            if (!cancelled) {
+                if (onlineRequest != null) {
+                    onlineRequest.cancel();
+                }
+                if (offlineRequest != null) {
+                    offlineRequest.cancel();
+                }
+                cancelled = true;
             }
         }
-        catch (JSONException e) {
-            throw new RuntimeException("Failed to patch online result JSON", e); // should never happen
+
+        @Override
+        public boolean isFinished() {
+            return onlineRequest.isFinished() && (offlineRequest == null || offlineRequest.isFinished());
+        }
+
+        @Override
+        public boolean isCancelled() {
+            return cancelled;
+        }
+
+        public OnlineOfflineSearchRequest start() {
+            // WARNING: All callbacks must run sequentially; we cannot afford race conditions between them.
+            // Since most methods use the main thread for callbacks, we have to use it as well.
+
+            // Launch an online request immediately.
+            onlineRequest = MirroredIndex.super.searchAsync(query, new CompletionHandler() {
+                @Override
+                public void requestCompleted(JSONObject content, AlgoliaException error) {
+                    if (error != null && error.isTransient()) {
+                        startOffline();
+                    } else {
+                        cancelOffline();
+                        if (content != null) {
+                            addOriginRemote(content);
+                        }
+                        completionHandler.requestCompleted(content, error);
+                    }
+                }
+            });
+
+            // Schedule an offline request to start after a certain delay.
+            getClient().mainHandler.postDelayed(startOfflineRunnable, delayBeforeOfflineSearch);
+
+            return this;
+        }
+
+        private Runnable startOfflineRunnable = new Runnable() {
+            @Override
+            public void run() {
+                // If the online request has not returned yet, or has returned an error, use the offline mirror.
+                // Let's also make sure that we don't start the offline request twice.
+                if (mayRunOfflineRequest && offlineRequest == null) {
+                    startOffline();
+                }
+            }
+        };
+
+        private void startOffline() {
+            offlineRequest = searchMirrorAsync(query, new CompletionHandler() {
+                @Override
+                public void requestCompleted(JSONObject content, AlgoliaException error) {
+                    // NOTE: If we reach this handler, it means the offline request has not been cancelled.
+                    completionHandler.requestCompleted(content, error);
+                }
+            });
+        }
+
+        /**
+         * Cancel any pending offline request and prevent a future one from being launched.
+         */
+        private void cancelOffline() {
+            // Flag the offline request as obsolete.
+            mayRunOfflineRequest = false;
+            // Prevent the start offline request runnable from even running if it is still time.
+            getClient().mainHandler.removeCallbacks(startOfflineRunnable);
+            // Cancel the offline request if already running.
+            if (offlineRequest != null) {
+                offlineRequest.cancel();
+            }
+        }
+
+        /**
+         * Add to the content an indication that the results came from the online API.
+         *
+         * @param content The JSON content to be patched.
+         */
+        private void addOriginRemote(@NonNull JSONObject content) {
+            try {
+                content.put(JSON_KEY_ORIGIN, JSON_VALUE_ORIGIN_REMOTE);
+            }
+            catch (JSONException e) {
+                throw new RuntimeException("Failed to patch online result JSON", e); // should never happen
+            }
         }
     }
 

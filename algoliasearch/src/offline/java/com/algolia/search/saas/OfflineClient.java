@@ -23,8 +23,6 @@
 
 package com.algolia.search.saas;
 
-import android.os.Handler;
-import android.os.Looper;
 import android.support.annotation.NonNull;
 
 import com.algolia.search.offline.core.Sdk;
@@ -49,9 +47,6 @@ public class OfflineClient extends Client
 
     /** Background queue used to build indices. */
     protected ExecutorService buildExecutorService = Executors.newSingleThreadExecutor();
-
-    /** Handler used to execute operations on the main thread. */
-    protected Handler mainHandler = new Handler(Looper.getMainLooper());
 
     /**
      * Construct a new offline-enabled API client.

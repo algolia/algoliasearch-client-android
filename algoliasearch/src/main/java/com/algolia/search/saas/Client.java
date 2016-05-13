@@ -25,6 +25,8 @@ package com.algolia.search.saas;
 
 import android.os.AsyncTask;
 import android.os.Build;
+import android.os.Handler;
+import android.os.Looper;
 import android.support.annotation.NonNull;
 
 import org.apache.http.entity.StringEntity;
@@ -84,6 +86,9 @@ public class Client {
      * HTTP headers that will be sent with every request.
      */
     private HashMap<String, String> headers = new HashMap<String, String>();
+
+    /** Handler used to execute operations on the main thread. */
+    protected Handler mainHandler = new Handler(Looper.getMainLooper());
 
     /** Thread pool used to run asynchronous requests. */
     protected ExecutorService searchExecutorService = Executors.newFixedThreadPool(4);
