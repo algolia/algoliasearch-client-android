@@ -25,7 +25,6 @@ package com.algolia.search.saas;
 
 import android.support.annotation.NonNull;
 
-import org.apache.http.HttpException;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.message.BasicHeader;
 import org.apache.http.protocol.HTTP;
@@ -42,6 +41,7 @@ import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -620,7 +620,7 @@ public class Client {
      */
     private byte[] _requestRaw(Method m, String url, String json, List<String> hostsArray, int connectTimeout, int readTimeout) throws AlgoliaException {
         String requestMethod;
-        HashMap<String, String> errors = new HashMap<String, String>();
+        List<Exception> errors = new ArrayList<>(hostsArray.size());
         // for each host
         for (String host : hostsArray) {
             switch (m) {
@@ -703,35 +703,28 @@ public class Client {
                     } else {
                         final String errorMessage = _toCharArray(stream);
                         consumeQuietly(hostConnection);
-                        addError(errors, host, new HttpException(errorMessage));
+                        errors.add(new AlgoliaException(errorMessage, code));
                         continue;
                     }
                 }
                 return rawResponse;
 
-            } catch (JSONException e) { // fatal
-                throw new AlgoliaException("JSON decode error:" + e.getMessage());
-            } catch (UnsupportedEncodingException e) { // fatal
-                throw new AlgoliaException("Invalid JSON Object: " + json);
-            } catch (IOException e) { // host error, continue on the next host
-                addError(errors, host, e);
+            }
+            catch (JSONException e) { // fatal
+                throw new AlgoliaException("Invalid JSON returned by server", e);
+            }
+            catch (UnsupportedEncodingException e) { // fatal
+                throw new AlgoliaException("Invalid encoding returned by server", e);
+            }
+            catch (IOException e) { // host error, continue on the next host
+                errors.add(e);
             }
         }
 
-        StringBuilder builder = new StringBuilder("Hosts unreachable: ");
-        Boolean first = true;
-        for (Map.Entry<String, String> entry : errors.entrySet()) {
-            if (!first) {
-                builder.append(", ");
-            }
-            builder.append(entry.toString());
-            first = false;
-        }
-        throw new AlgoliaException(builder.toString());
-    }
-
-    private static void addError(HashMap<String, String> errors, String host, Exception e) {
-        errors.put(host, String.format("%s=%s", e.getClass().getName(), e.getMessage()));
+        String errorMessage = "All hosts failed: " + Arrays.toString(errors.toArray());
+        // When several errors occurred, use the last one as the cause for the returned exception.
+        Throwable lastError = errors.get(errors.size() - 1);
+        throw new AlgoliaException(errorMessage, lastError);
     }
 
     /**
