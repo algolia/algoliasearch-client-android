@@ -36,6 +36,7 @@ import org.json.JSONObject;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.OutputStreamWriter;
+import java.io.UnsupportedEncodingException;
 import java.io.Writer;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -770,7 +771,7 @@ public class MirroredIndex extends Index
                 throw new AlgoliaException(searchResults.getErrorMessage(), searchResults.getStatusCode());
             }
         }
-        catch (Exception e) {
+        catch (JSONException | UnsupportedEncodingException e) {
             throw new AlgoliaException("Search failed", e);
         }
     }
@@ -843,7 +844,7 @@ public class MirroredIndex extends Index
                 throw new AlgoliaException(searchResults.getErrorMessage(), searchResults.getStatusCode());
             }
         }
-        catch (Exception e) {
+        catch (JSONException | UnsupportedEncodingException e) {
             throw new AlgoliaException("Search failed", e);
         }
     }
