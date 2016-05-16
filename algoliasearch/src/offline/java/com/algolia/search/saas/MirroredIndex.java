@@ -698,6 +698,11 @@ public class MirroredIndex extends Index
                 @Override
                 public void requestCompleted(JSONObject content, AlgoliaException error) {
                     // NOTE: If we reach this handler, it means the offline request has not been cancelled.
+                    // WARNING: A 404 error likely indicates that the local mirror has not been synced yet,
+                    // so we absorb it (gulp).
+                    if (error != null && error.getStatusCode() == 404) {
+                        return;
+                    }
                     completionHandler.requestCompleted(content, error);
                 }
             });
