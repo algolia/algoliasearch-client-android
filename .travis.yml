@@ -1,6 +1,6 @@
 branches:
   only:
-    master
+    - master
 sudo: false # Explicitely choose container-based infrastructure, see https://docs.travis-ci.com/user/ci-environment/
 language: android
 jdk:
