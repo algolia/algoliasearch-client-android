@@ -30,6 +30,7 @@ package com.algolia.search.saas;
 public class AlgoliaException extends Exception {
     /** HTTP status code. Only valid when the error originates from the server. */
     private int statusCode;
+    public static final String FOO = "bar";
 
     public AlgoliaException(String message) {
         super(message);
