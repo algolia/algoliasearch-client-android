@@ -72,8 +72,8 @@ import java.util.concurrent.TimeUnit;
  * {@link #setPreventiveOfflineSearch(boolean)}.</p>
  *
  * <p> To avoid wasting CPU when the network connection is good, the offline request is only launched after a certain
- * delay. This delay can be adjusted by calling {@link #setDelayBeforeOfflineSearch(long)}. The default is
- * {@link #DEFAULT_DELAY_BEFORE_OFFLINE_SEARCH}. If the online request finishes with a definitive result (i.e. success
+ * delay. This delay can be adjusted by calling {@link #setPreventiveOfflineSearchDelay(long)}. The default is
+ * {@link #DEFAULT_PREVENTIVE_OFFLINE_SEARCH_DELAY}. If the online request finishes with a definitive result (i.e. success
  * or application error) before the offline request has finished (or even been launched), the offline request will be
  * cancelled (or not be launched at all).</p>
  */
@@ -101,7 +101,7 @@ public class MirroredIndex extends Index
     private boolean preventiveOfflineSearch = true;
 
     /** The delay before a preventive offline search is launched. */
-    private long delayBeforeOfflineSearch = DEFAULT_DELAY_BEFORE_OFFLINE_SEARCH;
+    private long preventiveOfflineSearchDelay = DEFAULT_PREVENTIVE_OFFLINE_SEARCH_DELAY;
 
     // ----------------------------------------------------------------------
     // Constants
@@ -120,7 +120,7 @@ public class MirroredIndex extends Index
     public static final long DEFAULT_DELAY_BETWEEN_SYNCS = 1000 * 60 * 60 * 24; // 1 day
 
     /** Default delay before preventive offline search (in milliseconds). */
-    public static final long DEFAULT_DELAY_BEFORE_OFFLINE_SEARCH = 200; // 200 ms
+    public static final long DEFAULT_PREVENTIVE_OFFLINE_SEARCH_DELAY = 200; // 200 ms
 
     // ----------------------------------------------------------------------
     // Constructors
@@ -253,18 +253,18 @@ public class MirroredIndex extends Index
      *
      * @return The delay (in milliseconds).
      */
-    public long getDelayBeforeOfflineSearch() {
-        return delayBeforeOfflineSearch;
+    public long getPreventiveOfflineSearchDelay() {
+        return preventiveOfflineSearchDelay;
     }
 
     /**
      * Set the delay before a preventive offline search in launched.
      * Only used when the index is mirrored.
      *
-     * @param delayBeforeOfflineSearch The delay (in milliseconds).
+     * @param preventiveOfflineSearchDelay The delay (in milliseconds).
      */
-    public void setDelayBeforeOfflineSearch(long delayBeforeOfflineSearch) {
-        this.delayBeforeOfflineSearch = delayBeforeOfflineSearch;
+    public void setPreventiveOfflineSearchDelay(long preventiveOfflineSearchDelay) {
+        this.preventiveOfflineSearchDelay = preventiveOfflineSearchDelay;
     }
 
     /**
@@ -686,7 +686,7 @@ public class MirroredIndex extends Index
                         }
                     }
                 };
-                getClient().mainHandler.postDelayed(startOfflineRunnable, delayBeforeOfflineSearch);
+                getClient().mainHandler.postDelayed(startOfflineRunnable, preventiveOfflineSearchDelay);
             }
 
             return this;
