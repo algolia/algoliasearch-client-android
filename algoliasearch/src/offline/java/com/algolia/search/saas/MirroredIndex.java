@@ -592,7 +592,7 @@ public class MirroredIndex extends Index
     @Override
     public Request searchAsync(@NonNull Query query, @NonNull CompletionHandler completionHandler) {
         // A non-mirrored index behaves exactly as an online index.
-        if (!mirrored || !preventiveOfflineSearch) {
+        if (!mirrored) {
             return super.searchAsync(query, completionHandler);
         }
         // A mirrored index launches a mixed offline/online request.
@@ -616,6 +616,7 @@ public class MirroredIndex extends Index
         private Request onlineRequest;
         private Request offlineRequest;
         private transient boolean mayRunOfflineRequest = true;
+        private Runnable startOfflineRunnable;
 
         /**
          * Construct a new mixed online/offline request.
@@ -673,22 +674,23 @@ public class MirroredIndex extends Index
                 }
             });
 
-            // Schedule an offline request to start after a certain delay.
-            getClient().mainHandler.postDelayed(startOfflineRunnable, delayBeforeOfflineSearch);
+            // Preventive offline mode: schedule an offline request to start after a certain delay.
+            if (preventiveOfflineSearch) {
+                startOfflineRunnable = new Runnable() {
+                    @Override
+                    public void run() {
+                        // If the online request has not returned yet, or has returned an error, use the offline mirror.
+                        // Let's also make sure that we don't start the offline request twice.
+                        if (mayRunOfflineRequest && offlineRequest == null) {
+                            startOffline();
+                        }
+                    }
+                };
+                getClient().mainHandler.postDelayed(startOfflineRunnable, delayBeforeOfflineSearch);
+            }
 
             return this;
         }
-
-        private Runnable startOfflineRunnable = new Runnable() {
-            @Override
-            public void run() {
-                // If the online request has not returned yet, or has returned an error, use the offline mirror.
-                // Let's also make sure that we don't start the offline request twice.
-                if (mayRunOfflineRequest && offlineRequest == null) {
-                    startOffline();
-                }
-            }
-        };
 
         private void startOffline() {
             offlineRequest = searchMirrorAsync(query, new CompletionHandler() {
@@ -707,7 +709,9 @@ public class MirroredIndex extends Index
             // Flag the offline request as obsolete.
             mayRunOfflineRequest = false;
             // Prevent the start offline request runnable from even running if it is still time.
-            getClient().mainHandler.removeCallbacks(startOfflineRunnable);
+            if (startOfflineRunnable != null) {
+                getClient().mainHandler.removeCallbacks(startOfflineRunnable);
+            }
             // Cancel the offline request if already running.
             if (offlineRequest != null) {
                 offlineRequest.cancel();
