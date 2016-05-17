@@ -27,6 +27,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 import org.junit.Test;
 import org.mockito.internal.util.reflection.Whitebox;
+import org.robolectric.util.concurrent.RoboExecutorService;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -65,6 +66,10 @@ public class IndexTest extends PowerMockTestCase {
     public void setUp() throws Exception {
         super.setUp();
         client = new Client(Helpers.app_id, Helpers.api_key);
+        // WARNING: Robolectric cannot work with custom executors in `AsyncTask`, so we substitute the client's
+        // executor with a Robolectric-compliant one.
+        Whitebox.setInternalState(client, "searchExecutorService", new RoboExecutorService());
+
         indexName = Helpers.safeIndexName("àlgol?à-android");
         index = client.initIndex(indexName);
 
