@@ -160,6 +160,7 @@ Due mainly to binary size constraints, the following features are not supported 
 
 - plurals dictionary (simple plurals with a final S are still handled)
 - CJK segmentation
+- IP geolocation (`aroundLatLngViaIP` query parameter)
 
 
 
