@@ -67,10 +67,12 @@ import java.util.concurrent.TimeUnit;
  *
  * <h3>Preventive offline searches</h3>
  *
+ * <p>This behavior is optional and disabled by default. It may be enabled by calling
+ * {@link #setPreventiveOfflineSearch(boolean)}.</p>
+
  * <p>When the index is mirrored, it may launch a "preventive" request to the offline mirror for every online search
  * request. <strong>This may result in the completion handler being called twice:</strong> a first time with the
- * offline results, and a second time with the online results. This behavior may be turned off by calling
- * {@link #setPreventiveOfflineSearch(boolean)}.</p>
+ * offline results, and a second time with the online results.</p>
  *
  * <p> To avoid wasting CPU when the network connection is good, the offline request is only launched after a certain
  * delay. This delay can be adjusted by calling {@link #setPreventiveOfflineSearchDelay(long)}. The default is
@@ -99,7 +101,7 @@ public class MirroredIndex extends Index
      * Whether to launch a preventive offline search for every online search.
      * Only valid when the index is mirrored.
      */
-    private boolean preventiveOfflineSearch = true;
+    private boolean preventiveOfflineSearch = false;
 
     /** The delay before a preventive offline search is launched. */
     private long preventiveOfflineSearchDelay = DEFAULT_PREVENTIVE_OFFLINE_SEARCH_DELAY;
