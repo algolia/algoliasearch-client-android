@@ -10,6 +10,7 @@
 
 
 
+
 <!--NO_HTML-->
 
 [Algolia Search](https://www.algolia.com) is a hosted full-text, numerical, and faceted search engine capable of delivering realtime results from the first keystroke.
@@ -21,6 +22,7 @@ Our Android client lets you easily use the [Algolia Search API](https://www.algo
 
 
 [![Build Status](https://travis-ci.org/algolia/algoliasearch-client-android.svg?branch=master)](https://travis-ci.org/algolia/algoliasearch-client-android) [![GitHub version](https://badge.fury.io/gh/algolia%2Falgoliasearch-client-android.svg)](http://badge.fury.io/gh/algolia%2Falgoliasearch-client-android)
+
 
 
 
@@ -1144,7 +1146,7 @@ You can send multiple queries with a single API call using a batch of queries:
 List<IndexQuery> queries = new ArrayList<>();
 
 queries.add(new IndexQuery("categories", new Query(myQueryString).setHitsPerPage(3)));
-queries.add(new IndexQuery("products", new Query(myQueryString).setHitsPerPage(3).setTagFilters("promotion"));
+queries.add(new IndexQuery("products", new Query(myQueryString).setHitsPerPage(3).set("filters", "promotion"));
 queries.add(new IndexQuery("products", new Query(myQueryString).setHitsPerPage(10)));
 
 client.multipleQueriesAsync(queries, new CompletionHandler() {
