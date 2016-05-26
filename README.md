@@ -5,6 +5,10 @@
 <!--/NO_HTML-->
 
 
+*Note: If you were using **version 2.x** of our Android client, read the [migration guide to version 3.x](https://github.com/algolia/algoliasearch-client-android/wiki/Migration-guide-to-version-3.x).*
+
+
+
 
 
 <!--NO_HTML-->
@@ -18,6 +22,7 @@ Our Android client lets you easily use the [Algolia Search API](https://www.algo
 
 
 [![Build Status](https://travis-ci.org/algolia/algoliasearch-client-android.svg?branch=master)](https://travis-ci.org/algolia/algoliasearch-client-android) [![GitHub version](https://badge.fury.io/gh/algolia%2Falgoliasearch-client-android.svg)](http://badge.fury.io/gh/algolia%2Falgoliasearch-client-android)
+
 
 
 
@@ -1054,6 +1059,8 @@ You can also use a string array encoding (for example `numericFilters: ["price>1
 <code>available=1 AND (category:Book OR NOT category:Ebook) AND public</code>
 <code>date: 1441745506 TO 1441755506 AND inStock &gt; 0 AND author:&quot;John Doe&quot;</code></p>
 
+<p>If no attribute name is specified, the filter applies to <code>_tags</code>. For example: <code>public OR user_42</code> will translate to <code>_tags:public OR _tags:user_42</code>.</p>
+
 <p>The list of keywords is:</p>
 
 <ul>
@@ -1141,7 +1148,7 @@ You can send multiple queries with a single API call using a batch of queries:
 List<IndexQuery> queries = new ArrayList<>();
 
 queries.add(new IndexQuery("categories", new Query(myQueryString).setHitsPerPage(3)));
-queries.add(new IndexQuery("products", new Query(myQueryString).setHitsPerPage(3).setTagFilters("promotion"));
+queries.add(new IndexQuery("products", new Query(myQueryString).setHitsPerPage(3).set("filters", "promotion"));
 queries.add(new IndexQuery("products", new Query(myQueryString).setHitsPerPage(10)));
 
 client.multipleQueriesAsync(queries, new CompletionHandler() {

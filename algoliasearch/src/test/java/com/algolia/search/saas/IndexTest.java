@@ -96,6 +96,10 @@ public class IndexTest extends PowerMockTestCase {
 
     @Test
     public void testSearchAsync() throws Exception {
+        testSearchAsync(Helpers.wait);
+    }
+
+    public void testSearchAsync(int waitTimeout) throws Exception {
         // Empty search.
         final CountDownLatch signal = new CountDownLatch(1);
         index.searchAsync(new Query(), new CompletionHandler() {
@@ -109,7 +113,7 @@ public class IndexTest extends PowerMockTestCase {
                 signal.countDown();
             }
         });
-        assertTrue("No callback was called", signal.await(Helpers.wait, TimeUnit.SECONDS));
+        assertTrue("No callback was called", signal.await(waitTimeout, TimeUnit.SECONDS));
 
         // Search with query.
         final CountDownLatch signal2 = new CountDownLatch(1);
@@ -124,7 +128,7 @@ public class IndexTest extends PowerMockTestCase {
                 signal2.countDown();
             }
         });
-        assertTrue("No callback was called", signal2.await(Helpers.wait, TimeUnit.SECONDS));
+        assertTrue("No callback was called", signal2.await(waitTimeout, TimeUnit.SECONDS));
     }
 
     @Test
@@ -438,6 +442,26 @@ public class IndexTest extends PowerMockTestCase {
         testSearchAsync();
     }
 
+    @Test
+    public void testDNSTimeout() throws Exception {
+        // Given first host resulting in a DNS Timeout
+        String appId = (String) Whitebox.getInternalState(client, "applicationID");
+        List<String> hostsArray = (List<String>) Whitebox.getInternalState(client, "readHosts");
+        hostsArray.set(0, appId + "-dsn.algolia.biz");
+        Whitebox.setInternalState(client, "readHosts", hostsArray);
+
+        //And an index that does not cache search queries
+        index.disableSearchCache();
+
+
+        // Expect successful search within 5 seconds
+        long startTime = System.nanoTime();
+        testSearchAsync(5);
+        final long duration = (System.nanoTime() - startTime) / 1000000;
+
+        // Which should take at least 2 seconds, as per Client.connectTimeout
+        assertTrue("We should first timeout before successfully searching, but test took only " + duration + " ms.", duration > 2000);
+    }
 
     @Test
     public void testSNI() throws Exception {
@@ -544,7 +568,7 @@ public class IndexTest extends PowerMockTestCase {
         final CountDownLatch signal = new CountDownLatch(2);
         addDummyObjects(3000);
         final Query query = new Query();
-        query.set("numericFilters", "dummy < 1500");
+        query.setNumericFilters(new JSONArray().put("dummy < 1500"));
         index.deleteByQueryAsync(query, new CompletionHandler() {
             @Override
             public void requestCompleted(JSONObject content, AlgoliaException error) {

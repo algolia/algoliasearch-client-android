@@ -50,6 +50,13 @@ public class AlgoliaException extends Exception {
 
     private static final long serialVersionUID = 1L;
 
+    /**
+     * Get the error's HTTP status code (if any).
+     * Only valid when the exception is an application-level error. Values are documented in the
+     * <a href="https://www.algolia.com/doc/rest">REST API</a>.
+     *
+     * @return The HTTP status code, or 0 if not available.
+     */
     public int getStatusCode()
     {
         return statusCode;

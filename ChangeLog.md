@@ -1,6 +1,14 @@
 Change Log
 ==========
 
+## 3.1 (2016-05-09)
+
+- Add typed accessors for missing query parameters `filters` and `numericFilters`
+- Shuffle host array at init time, for better load balancing
+- Perform stricter check on GZip `Content-Encoding` HTTP header
+- Update documentation
+
+
 ## 3.0 (2016-04-14)
 
 This major version brings new features as well as bug fixes. In addition, a lot of refactoring has been performed
