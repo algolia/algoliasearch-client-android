@@ -1,0 +1,167 @@
+/*
+ * Copyright (c) 2015 Algolia
+ * http://www.algolia.com/
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ * THE SOFTWARE.
+ */
+
+apply plugin: 'com.android.library'
+
+ext {
+    PUBLISH_GROUP_ID = rootProject.properties["PUBLISH_GROUP_ID"] ?: "com.algolia"
+    // NOTE: This is the official version number used during publication.
+    PUBLISH_VERSION = '3.1-SNAPSHOT'
+}
+
+android {
+    compileSdkVersion 21
+    buildToolsVersion '21.1.2'
+    defaultConfig {
+        minSdkVersion 7
+        targetSdkVersion 21
+        versionCode 1
+        versionName PUBLISH_VERSION
+    }
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+    defaultPublishConfig "release"
+    // WARNING: Uncomment this line if you want to use the Debug configuration when developing against this module.
+    // Otherwise, **leave it commented out** as we do **not** want to publish the Debug configuration.
+    // publishNonDefault true
+}
+configurations {
+    // Configuration solely created to make the Android classpath available when compiling Javadocs.
+    // Taken from: <http://stackoverflow.com/questions/29663918/android-gradle-javadoc-annotation-does-not-exists>.
+    javadoc
+}
+
+repositories {
+    // Only used during development, when targeting a snapshot version of some dependency.
+    maven {
+        url "https://oss.sonatype.org/content/repositories/snapshots/"
+    }
+}
+
+dependencies {
+    compile 'com.android.support:appcompat-v7:21.0.3'
+    compile fileTree(include: ['*.jar'], dir: 'libs')
+
+    testCompile "junit:junit:4.12"
+    testCompile "org.assertj:assertj-core:1.7.0"
+    testCompile "org.robolectric:robolectric:3.0"
+
+    // PowerMock brings in the mockito dependency
+    testCompile "org.powermock:powermock-module-junit4:1.6.1"
+    testCompile "org.powermock:powermock-module-junit4-rule:1.6.1"
+    testCompile "org.powermock:powermock-classloading-xstream:1.6.1"
+    testCompile "org.powermock:powermock-api-mockito:1.6.1"
+
+    javadoc 'com.android.support:support-annotations:22.2.0'
+}
+
+// Javadoc
+// -------
+
+// Compile docs.
+task javadoc(type: Javadoc) {
+    source = android.sourceSets.main.java.srcDirs
+    options.memberLevel = JavadocMemberLevel.PUBLIC
+    classpath += project.files(android.getBootClasspath().join(File.pathSeparator))
+    classpath += configurations.javadoc
+    // NOTE: We always recompile from scratch because this task is shared between the online and offline flavors,
+    // and we don't want offline classes to be included in the online doc.
+    delete destinationDir
+}
+
+// Package docs into a jar.
+task javadocJar(type: Jar, dependsOn: javadoc) {
+    classifier = "javadoc" // for Maven publication
+    from javadoc.destinationDir
+}
+
+// Maven publishing
+// ----------------
+
+apply plugin: 'maven'
+apply plugin: 'signing'
+
+// Add the Javadoc JAR to the list of artifacts.
+artifacts {
+    archives javadocJar
+}
+
+// Sign all the archives artifacts.
+signing {
+    sign configurations.archives
+}
+
+uploadArchives {
+    repositories.mavenDeployer {
+        // Don't forget to sign the POM (which is automatically generated).
+        beforeDeployment {
+            MavenDeployment deployment -> signing.signPom(deployment)
+        }
+
+        // POM metadata.
+        pom.groupId = PUBLISH_GROUP_ID
+        pom.artifactId = PUBLISH_ARTIFACT_ID
+        pom.version = PUBLISH_VERSION
+        pom.project {
+            name PUBLISH_NAME
+            packaging 'aar'
+            description PUBLISH_DESCRIPTION
+            url 'https://github.com/algolia/algoliasearch-client-android'
+
+            scm {
+                url 'https://github.com/algolia/algoliasearch-client-android'
+                connection 'scm:git:https://github.com/algolia/algoliasearch-client-android.git'
+            }
+
+            licenses {
+                license {
+                    name 'MIT'
+                    url 'http://opensource.org/licenses/MIT'
+                }
+            }
+
+            developers {
+                developer {
+                    id 'algolia'
+                    name 'The Algolia Team'
+                    email 'support@algolia.com'
+                }
+            }
+        }
+
+        // Local repository, to test publication contents.
+        repository(url: "file://$buildDir/mvnrep")
+
+        // Maven Central repository.
+        // repository(url: PUBLISH_VERSION.endsWith("-SNAPSHOT") ? "https://oss.sonatype.org/content/repositories/snapshots/" : "https://oss.sonatype.org/service/local/staging/deploy/maven2/") {
+        //     authentication(
+        //         userName: project.hasProperty('nexusUsername') ? project['nexusUsername'] : 'FIXME',
+        //         password: project.hasProperty('nexusPassword') ? project['nexusPassword'] : 'FIXME'
+        //     )
+        // }
+    }
+}

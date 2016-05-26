@@ -14,7 +14,7 @@ else
 fi
 }
 
-FILE_BUILD_GRADLE="algoliasearch/build.gradle"
+FILE_BUILD_GRADLE="algoliasearch/common.gradle"
 FILE_API_CLIENT="algoliasearch/src/main/java/com/algolia/search/saas/Client.java"
 
 if [ $# -ne 1 ]; then
