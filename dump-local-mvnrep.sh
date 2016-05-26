@@ -44,7 +44,7 @@ dumpModule()
 TMP_DIR=`mktemp -d`
 
 # Retrieve version number from root Gradle script.
-VERSION=`cat "$SELF_ROOT/build.gradle" | grep -E "PUBLISH_VERSION\s*=\s*'[0-9.]+(-SNAPSHOT)?'" | cut -d "'" -f 2`
+VERSION=`cat "$SELF_ROOT/algoliasearch/common.gradle" | grep -E "PUBLISH_VERSION\s*=\s*'[0-9.]+(-SNAPSHOT)?'" | cut -d "'" -f 2`
 echo "Version: $VERSION"
 
 # Dump online and offline flavors.

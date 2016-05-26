@@ -157,11 +157,11 @@ uploadArchives {
         repository(url: "file://$buildDir/mvnrep")
 
         // Maven Central repository.
-        // repository(url: PUBLISH_VERSION.endsWith("-SNAPSHOT") ? "https://oss.sonatype.org/content/repositories/snapshots/" : "https://oss.sonatype.org/service/local/staging/deploy/maven2/") {
-        //     authentication(
-        //         userName: project.hasProperty('nexusUsername') ? project['nexusUsername'] : 'FIXME',
-        //         password: project.hasProperty('nexusPassword') ? project['nexusPassword'] : 'FIXME'
-        //     )
-        // }
+        repository(url: PUBLISH_VERSION.endsWith("-SNAPSHOT") ? "https://oss.sonatype.org/content/repositories/snapshots/" : "https://oss.sonatype.org/service/local/staging/deploy/maven2/") {
+            authentication(
+                userName: project.hasProperty('nexusUsername') ? project['nexusUsername'] : 'FIXME',
+                password: project.hasProperty('nexusPassword') ? project['nexusPassword'] : 'FIXME'
+            )
+        }
     }
 }
