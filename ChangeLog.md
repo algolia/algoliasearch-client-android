@@ -1,6 +1,23 @@
 Change Log
 ==========
 
+## 3.2 (2016-05-26)
+
+- Network requests are now run in parallel, whereas they were sequential before. This is required for better performance. **Warning: Client code must make sure to protect against out-of-order requests.**
+- Better error reporting:
+    - Always propagate cause exception when available
+    - Always report HTTP status code when available
+    - Add ability to distinguish transient errors from fatal errors after they are reported
+- Update documentation
+    - README updated
+    - Clarify documentation of `AlgoliaException`’s status code
+- [Test] Add test case for DNS time-out
+
+### Experimental features
+
+- Offline mode. *Note: requires the Algolia Search Offline Core library.* **Warning: beta version.**
+
+
 ## 3.1 (2016-05-09)
 
 - Add typed accessors for missing query parameters `filters` and `numericFilters`
