@@ -14,7 +14,7 @@ else
 fi
 }
 
-FILE_BUILD_GRADLE="algoliasearch/build.gradle"
+FILE_BUILD_GRADLE="algoliasearch/common.gradle"
 FILE_API_CLIENT="algoliasearch/src/main/java/com/algolia/search/saas/Client.java"
 
 if [ $# -ne 1 ]; then
@@ -33,7 +33,7 @@ git add $FILE_BUILD_GRADLE $FILE_API_CLIENT && git commit -m "Release $VERSION_C
 git --no-pager show --name-status --format="short"
 
 echo "Updating artifacts..."
-./gradlew uploadArchives 1>/dev/null
+./gradlew publish 1>/dev/null
 
 echo "Success! Closing and releasing new version..."
 ./gradlew closeAndPromoteRepository 1>/dev/null

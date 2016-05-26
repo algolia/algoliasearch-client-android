@@ -23,11 +23,9 @@
 
 package com.algolia.search.saas;
 
-import android.os.Handler;
-import android.os.Looper;
 import android.support.annotation.NonNull;
 
-import com.algolia.search.sdk.Sdk;
+import com.algolia.search.offline.core.Sdk;
 
 import java.io.File;
 import java.util.concurrent.ExecutorService;
@@ -49,9 +47,6 @@ public class OfflineClient extends Client
 
     /** Background queue used to build indices. */
     protected ExecutorService buildExecutorService = Executors.newSingleThreadExecutor();
-
-    /** Handler used to execute operations on the main thread. */
-    protected Handler mainHandler = new Handler(Looper.getMainLooper());
 
     /**
      * Construct a new offline-enabled API client.
@@ -77,6 +72,7 @@ public class OfflineClient extends Client
     {
         super(applicationID, apiKey, hosts);
         this.rootDataDir = dataDir;
+        userAgent += ";algoliasearch-offline-core-android " + Sdk.getInstance().getVersionString();
     }
 
     /**
@@ -94,7 +90,7 @@ public class OfflineClient extends Client
     /**
      * Get the path to directory where the local data is stored.
      */
-    public File getRootDataDir()
+    public @NonNull File getRootDataDir()
     {
         return rootDataDir;
     }

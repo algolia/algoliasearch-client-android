@@ -108,7 +108,7 @@ class MirrorSettings
         return result;
     }
 
-    public void setQueries(@NonNull MirroredIndex.DataSelectionQuery[] queries)
+    public void setQueries(@NonNull MirroredIndex.DataSelectionQuery... queries)
     {
         try {
             JSONArray queriesJson = new JSONArray();

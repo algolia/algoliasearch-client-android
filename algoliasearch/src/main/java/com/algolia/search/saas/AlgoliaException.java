@@ -23,6 +23,8 @@
 
 package com.algolia.search.saas;
 
+import java.io.IOException;
+
 /**
  * Any error that was encountered during the processing of a request.
  * Could be server-side, network failure, or client-side.
@@ -58,5 +60,27 @@ public class AlgoliaException extends Exception {
     public int getStatusCode()
     {
         return statusCode;
+    }
+
+    /**
+     * Test whether this error is transient.
+     *
+     * @return true if transient, false if fatal.
+     */
+    public boolean isTransient() {
+        Throwable cause = getCause();
+        if (cause == null) {
+            return isServerError(statusCode);
+        } else if (cause instanceof AlgoliaException) {
+            return ((AlgoliaException)cause).isTransient();
+        } else if (cause instanceof IOException) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    private static boolean isServerError(int statusCode) {
+        return statusCode / 100 == 5;
     }
 }
