@@ -1,6 +1,6 @@
 #!/usr/bin/env ksh
 # ============================================================================ #
-# CHECK LOCAL MVNREP                                                           #
+# DUMP LOCAL MVNREP                                                            #
 # ============================================================================ #
 # SUMMARY
 # -------
@@ -10,9 +10,15 @@
 
 # Reflection.
 SELF_ROOT=$(cd $(dirname "$0") && pwd)
+PROJECT_ROOT=`cd "$SELF_ROOT/.." && pwd`
 
-MVNREP_DIR="$SELF_ROOT/algoliasearch/build/mvnrep"
+MVNREP_DIR="$PROJECT_ROOT/algoliasearch/build/mvnrep"
 COM_ALGOLIA_DIR="$MVNREP_DIR/com/algolia"
+
+if [ $# -lt 1 ]; then
+    echo "Please specify module name" 1>&2
+    exit
+fi
 
 # Dump the module with the specified name.
 dumpModule()
@@ -44,12 +50,10 @@ dumpModule()
 TMP_DIR=`mktemp -d`
 
 # Retrieve version number from root Gradle script.
-VERSION=`cat "$SELF_ROOT/algoliasearch/common.gradle" | grep -E "PUBLISH_VERSION\s*=\s*'[0-9.]+(-SNAPSHOT)?'" | cut -d "'" -f 2`
+VERSION=`cat "$PROJECT_ROOT/algoliasearch/common.gradle" | grep -E "PUBLISH_VERSION\s*=\s*'[0-9.]+(-SNAPSHOT)?'" | cut -d "'" -f 2`
 echo "Version: $VERSION"
 
-# Dump online and offline flavors.
-dumpModule "algoliasearch-android"
-dumpModule "algoliasearch-offline-android"
+dumpModule "$1"
 
 # Clean-up.
 rm -rf "$TMP_DIR"

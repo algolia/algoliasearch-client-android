@@ -27,24 +27,40 @@ fi
 
 VERSION_CODE=$1
 
-echo "Updating version code to $VERSION_CODE..."
-call_sed "s/(PUBLISH_VERSION =) '.*'/\1 '$VERSION_CODE'/" $FILE_BUILD_GRADLE
-call_sed "s/(private final static String version =) \".*\"/\1 \"$VERSION_CODE\"/" $FILE_API_CLIENT
+# Check that the working repository is clean (without any changes, neither staged nor unstaged).
+if [[ ! -z `git status --porcelain` ]]; then
+    echo "ERROR: Working copy not clean! Aborting." 1>&2
+    echo "Please revert or commit any pending changes before releasing." 1>&2
+    exit 1
+fi 
 
-git diff $FILE_BUILD_GRADLE $FILE_API_CLIENT
+$SELF_ROOT/tools/update-version.sh $VERSION_CODE
 
-echo "Uploading flavor 'online'..."
-$SELF_ROOT/select-flavor.sh online
-$SELF_ROOT/gradlew uploadArchives 1>/dev/null
+for flavor in online offline
+do
+    echo "========== Processing flavor '$flavor' =========="
+    $SELF_ROOT/select-flavor.sh $flavor
+    $SELF_ROOT/gradlew clean
+    $SELF_ROOT/gradlew uploadArchives
+    if [[ $flavor = "online" ]]; then
+        module_name="algoliasearch-android"
+    elif [[ $flavor = "offline" ]]; then
+        module_name="algoliasearch-offline-android"
+    fi
+    # Dump the contents that has been published, just for the sake of manual checking.
+    $SELF_ROOT/tools/dump-local-mvnrep.sh $module_name
+    echo "---------- Testing publication ----------"
+    $SELF_ROOT/tools/test-publication.sh $module_name $VERSION_CODE
+done
 
-echo "Uploading flavor 'offline'"
-$SELF_ROOT/select-flavor.sh online
-$SELF_ROOT/gradlew uploadArchives 1>/dev/null
-
-echo "Success! Closing and releasing new version..."
+echo "SUCCESS: closing and releasing new version..."
 $SELF_ROOT/gradlew closeAndPromoteRepository 1>/dev/null
 
 # Revert flavor to original.
 git checkout $SELF_ROOT/algoliasearch/build.gradle
 
-echo "IMPORANT: Remember to git commit & tag & push"
+# Commit to Git.
+git add .
+git commit -m "Version $VERSION_CODE"
+git tag $VERSION_CODE
+git push --tags origin master
