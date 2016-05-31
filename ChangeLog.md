@@ -1,6 +1,13 @@
 Change Log
 ==========
 
+## 3.2.1 (2016-05-31)
+
+- Fix erroneous archive: remove extraneous `android.support.v7.appcompat.R` class (fixes #88)
+- Improve release script
+- Update documentation
+
+
 ## 3.2 (2016-05-26)
 
 - Network requests are now run in parallel, whereas they were sequential before. This is required for better performance. **Warning: Client code must make sure to protect against out-of-order requests.**
