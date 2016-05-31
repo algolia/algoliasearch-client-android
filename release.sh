@@ -38,10 +38,13 @@ $SELF_ROOT/tools/update-version.sh $VERSION_CODE
 
 for flavor in online offline
 do
-    echo "========== Processing flavor '$flavor' =========="
+    echo "==================== Processing flavor '$flavor' ===================="
     $SELF_ROOT/select-flavor.sh $flavor
     $SELF_ROOT/gradlew clean
-    $SELF_ROOT/gradlew uploadArchives
+
+    # Test publication locally.
+    echo "-------------------- Publishing locally --------------------"
+    $SELF_ROOT/gradlew testUploadArchives
     if [[ $flavor = "online" ]]; then
         module_name="algoliasearch-android"
     elif [[ $flavor = "offline" ]]; then
@@ -49,18 +52,34 @@ do
     fi
     # Dump the contents that has been published, just for the sake of manual checking.
     $SELF_ROOT/tools/dump-local-mvnrep.sh $module_name
-    echo "---------- Testing publication ----------"
+    echo "-------------------- Testing publication --------------------"
     $SELF_ROOT/tools/test-publication.sh $module_name $VERSION_CODE
-done
 
-echo "SUCCESS: closing and releasing new version..."
-$SELF_ROOT/gradlew closeAndPromoteRepository 1>/dev/null
+    # Perform the actual publication.
+    echo "-------------------- Publishing remotely --------------------"
+    $SELF_ROOT/gradlew uploadArchives
+done
 
 # Revert flavor to original.
 git checkout $SELF_ROOT/algoliasearch/build.gradle
 
-# Commit to Git.
+# Commit to Git... but do *not* push (see below).
 git add .
 git commit -m "Version $VERSION_CODE"
 git tag $VERSION_CODE
-git push --tags origin master
+
+echo "SUCCESS!"
+
+# NOTE: We don't automatically publish nor Git push. Why?
+# - We cannot be sure what the state of the staging repository was at the beginning of the script. So publishing
+#   without controlling it manually is risky.
+# - We don't want to push to Git before the release is actually available on Maven Central, which can take a few hours
+#   after the staging repository has been promoted.
+#
+cat <<EOF
+Next steps:
+- Check the staging repository on Sonatype.
+- If everything is OK: close, release and drop the staging repository.
+- Git commit and tag.
+- When the release is available on Maven Central: Git push.
+EOF

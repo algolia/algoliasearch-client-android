@@ -121,47 +121,72 @@ uploadArchives {
         beforeDeployment {
             MavenDeployment deployment -> signing.signPom(deployment)
         }
-
-        // POM metadata.
-        pom.groupId = PUBLISH_GROUP_ID
-        pom.artifactId = PUBLISH_ARTIFACT_ID
-        pom.version = PUBLISH_VERSION
-        pom.project {
-            name PUBLISH_NAME
-            packaging 'aar'
-            description PUBLISH_DESCRIPTION
-            url 'https://github.com/algolia/algoliasearch-client-android'
-
-            scm {
-                url 'https://github.com/algolia/algoliasearch-client-android'
-                connection 'scm:git:https://github.com/algolia/algoliasearch-client-android.git'
-            }
-
-            licenses {
-                license {
-                    name 'MIT'
-                    url 'http://opensource.org/licenses/MIT'
-                }
-            }
-
-            developers {
-                developer {
-                    id 'algolia'
-                    name 'The Algolia Team'
-                    email 'support@algolia.com'
-                }
-            }
-        }
-
-        // Local repository, to test publication contents.
-        repository(url: "file://$buildDir/mvnrep")
+        editPom(pom)
 
         // Maven Central repository.
-        repository(url: PUBLISH_VERSION.endsWith("-SNAPSHOT") ? "https://oss.sonatype.org/content/repositories/snapshots/" : "https://oss.sonatype.org/service/local/staging/deploy/maven2/") {
+        repository(url: "https://oss.sonatype.org/service/local/staging/deploy/maven2/") {
             authentication(
                 userName: project.hasProperty('nexusUsername') ? project['nexusUsername'] : 'FIXME',
                 password: project.hasProperty('nexusPassword') ? project['nexusPassword'] : 'FIXME'
             )
+        }
+        // Maven Central snapshot repository.
+        snapshotRepository(url: "https://oss.sonatype.org/content/repositories/snapshots/") {
+            authentication(
+                userName: project.hasProperty('nexusUsername') ? project['nexusUsername'] : 'FIXME',
+                password: project.hasProperty('nexusPassword') ? project['nexusPassword'] : 'FIXME'
+            )
+        }
+    }
+}
+
+// Test uploading of the archives to a local directory.
+task testUploadArchives(type: Upload) {
+    configuration = configurations.archives
+    uploadDescriptor = true
+    repositories.mavenDeployer {
+        beforeDeployment {
+            MavenDeployment deployment -> signing.signPom(deployment)
+        }
+        editPom(pom)
+        repository(url: "file://$buildDir/mvnrep")
+    }
+}
+
+// Edit the Maven POM.
+//
+// NOTE: This function is meant to factorize POM generation between the built-in `uploadArchives` and the custom
+// `testUploadArchives` tasks.
+//
+def editPom(pom) {
+    // POM metadata.
+    pom.groupId = PUBLISH_GROUP_ID
+    pom.artifactId = PUBLISH_ARTIFACT_ID
+    pom.version = PUBLISH_VERSION
+    pom.project {
+        name PUBLISH_NAME
+        packaging 'aar'
+        description PUBLISH_DESCRIPTION
+        url 'https://github.com/algolia/algoliasearch-client-android'
+
+        scm {
+            url 'https://github.com/algolia/algoliasearch-client-android'
+            connection 'scm:git:https://github.com/algolia/algoliasearch-client-android.git'
+        }
+
+        licenses {
+            license {
+                name 'MIT'
+                url 'http://opensource.org/licenses/MIT'
+            }
+        }
+
+        developers {
+            developer {
+                id 'algolia'
+                name 'The Algolia Team'
+                email 'support@algolia.com'
+            }
         }
     }
 }
