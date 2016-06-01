@@ -23,6 +23,7 @@
 
 package com.algolia.search.saas;
 
+import android.content.Context;
 import android.support.annotation.NonNull;
 
 import com.algolia.search.offline.core.Sdk;
@@ -39,6 +40,7 @@ import java.util.concurrent.Executors;
  */
 public class OfflineClient extends Client
 {
+    private Context context;
     private File rootDataDir;
 
     // Threading facilities
@@ -51,27 +53,48 @@ public class OfflineClient extends Client
     /**
      * Construct a new offline-enabled API client.
      *
+     * @param context An Android context.
      * @param applicationID See {@link Client}.
      * @param apiKey See {@link Client}.
-     * @param dataDir Path to the directory where the local data will be stored.
      */
-    public OfflineClient(@NonNull String applicationID, @NonNull String apiKey, @NonNull File dataDir)
+    public OfflineClient(@NonNull Context context, @NonNull String applicationID, @NonNull String apiKey)
     {
-        this(applicationID, apiKey, dataDir, null);
+        this(context, applicationID, apiKey, null, null);
     }
 
     /**
      * Construct a new offline-enabled API client.
      *
+     * @param context An Android context.
      * @param applicationID See {@link Client}.
      * @param apiKey See {@link Client}.
-     * @param dataDir Path to the directory where the local data will be stored.
+     * @param dataDir Path to the directory where the local data will be stored. If null, the default directory will
+     *                be used. See {@link #getDefaultDataDir()}.
+     */
+    public OfflineClient(@NonNull Context context, @NonNull String applicationID, @NonNull String apiKey, File dataDir)
+    {
+        this(context, applicationID, apiKey, dataDir, null);
+    }
+
+    /**
+     * Construct a new offline-enabled API client.
+     *
+     * @param context An Android context.
+     * @param applicationID See {@link Client}.
+     * @param apiKey See {@link Client}.
+     * @param dataDir Path to the directory where the local data will be stored. If null, the default directory will
+     *                be used. See {@link #getDefaultDataDir()}.
      * @param hosts See {@link Client}.
      */
-    public OfflineClient(@NonNull String applicationID, @NonNull String apiKey, @NonNull File dataDir, String[] hosts)
+    public OfflineClient(@NonNull Context context, @NonNull String applicationID, @NonNull String apiKey, File dataDir, String[] hosts)
     {
         super(applicationID, apiKey, hosts);
-        this.rootDataDir = dataDir;
+        this.context = context;
+        if (dataDir != null) {
+            this.rootDataDir = dataDir;
+        } else {
+            this.rootDataDir = getDefaultDataDir();
+        }
         userAgent += ";algoliasearch-offline-core-android " + Sdk.getInstance().getVersionString();
     }
 
@@ -101,7 +124,17 @@ public class OfflineClient extends Client
      */
     public void enableOfflineMode(@NonNull String licenseData) {
         // Init the SDK.
-        Sdk.getInstance().init(licenseData);
+        Sdk.getInstance().init(context, licenseData);
         // TODO: Report any error.
+    }
+
+    /**
+     * Get the default data directory.
+     * This is an "algolia" subdirectory inside the application's files directory.
+     *
+     * @return The default data directory.
+     */
+    public File getDefaultDataDir() {
+        return new File(context.getFilesDir(), "algolia");
     }
 }
