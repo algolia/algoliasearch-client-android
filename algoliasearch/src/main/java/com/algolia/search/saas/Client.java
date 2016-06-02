@@ -29,9 +29,6 @@ import android.os.Handler;
 import android.os.Looper;
 import android.support.annotation.NonNull;
 
-import org.apache.http.entity.StringEntity;
-import org.apache.http.message.BasicHeader;
-import org.apache.http.protocol.HTTP;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -41,6 +38,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
 import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.URL;
@@ -686,11 +684,11 @@ public class Client {
                     if (!(requestMethod.equals("PUT") || requestMethod.equals("POST"))) {
                         throw new IllegalArgumentException("Method " + m + " cannot enclose entity");
                     }
-                    hostConnection.setRequestProperty("Content-type", "application/json");
+                    hostConnection.setRequestProperty("Content-type", "application/json; charset=UTF-8");
                     hostConnection.setDoOutput(true);
-                    StringEntity se = new StringEntity(json, "UTF-8");
-                    se.setContentEncoding(new BasicHeader(HTTP.CONTENT_TYPE, "application/json"));
-                    se.writeTo(hostConnection.getOutputStream());
+                    OutputStreamWriter writer = new OutputStreamWriter(hostConnection.getOutputStream(), "UTF-8");
+                    writer.write(json);
+                    writer.close();
                 }
 
                 // read response
