@@ -478,6 +478,70 @@ public class IndexTest extends PowerMockTestCase {
         testSearchAsync();
     }
 
+    @Test
+    public void testKeepAlive() throws Exception {
+        final int nbTimes = 10;
+
+        // Given all hosts being the same one
+        String appId = (String) Whitebox.getInternalState(client, "applicationID");
+        List<String> hostsArray = (List<String>) Whitebox.getInternalState(client, "readHosts");
+        hostsArray.set(0, appId + "-1.algolianet.com");
+        hostsArray.set(1, appId + "-1.algolianet.com");
+        hostsArray.set(2, appId + "-1.algolianet.com");
+        hostsArray.set(3, appId + "-1.algolianet.com");
+        Whitebox.setInternalState(client, "readHosts", hostsArray);
+
+        //And an index that does not cache search queries
+        index.disableSearchCache();
+
+
+        // Expect first successful search
+        final long[] startEndTimeArray = new long[2];
+        startEndTimeArray[0] = System.nanoTime();
+        final CountDownLatch signal = new CountDownLatch(1);
+        index.searchAsync(new Query("Francisco"), new CompletionHandler() {
+            @Override
+            public void requestCompleted(JSONObject content, AlgoliaException error) {
+                if (error == null) {
+                    assertEquals(1, content.optInt("nbHits"));
+                    startEndTimeArray[1] = System.nanoTime();
+                } else {
+                    fail(error.getMessage());
+                }
+                signal.countDown();
+            }
+        });
+        assertTrue("No callback was called", signal.await(Helpers.wait, TimeUnit.SECONDS));
+
+        final long firstDurationNanos = startEndTimeArray[1] - startEndTimeArray[0];
+        System.out.println("First query duration: " + firstDurationNanos);
+
+        final CountDownLatch signal2 = new CountDownLatch(nbTimes);
+        for (int i = 0; i < nbTimes; i++) {
+            startEndTimeArray[0] = System.nanoTime();
+            final int finalIter = i;
+            index.searchAsync(new Query("Francisco"), new CompletionHandler() {
+                @Override
+                public void requestCompleted(JSONObject content, AlgoliaException error) {
+                    if (error == null) {
+                        startEndTimeArray[1] = System.nanoTime();
+                        final long iterDiff = startEndTimeArray[1] - startEndTimeArray[0];
+                        final String iterString = String.format("iteration %d: %d < %d", finalIter, iterDiff, firstDurationNanos);
+
+                        // And successful fastest subsequent calls
+                        assertEquals(1, content.optInt("nbHits"));
+                        assertTrue("Subsequent calls should be fastest than first (" + iterString + ")", startEndTimeArray[1] - startEndTimeArray[0] < firstDurationNanos);
+                    } else {
+                        fail(error.getMessage());
+                    }
+                    signal2.countDown();
+                }
+            });
+        }
+        assertTrue("No callback was called", signal2.await(Helpers.wait, TimeUnit.SECONDS));
+    }
+
+
     private void addDummyObjects(int objectCount) throws Exception {
         // Construct an array of dummy objects.
         objects = new ArrayList<JSONObject>();
