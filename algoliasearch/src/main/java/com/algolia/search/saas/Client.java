@@ -659,10 +659,12 @@ public class Client {
                     throw new IllegalArgumentException("Method " + m + " is not supported");
             }
 
+            InputStream stream = null;
+            HttpURLConnection hostConnection = null;
             // set URL
             try {
                 URL hostURL = new URL("https://" + host + url);
-                HttpURLConnection hostConnection = (HttpURLConnection) hostURL.openConnection();
+                hostConnection = (HttpURLConnection) hostURL.openConnection();
 
                 //set timeouts
                 hostConnection.setRequestMethod(requestMethod);
@@ -694,8 +696,7 @@ public class Client {
                 // read response
                 int code = hostConnection.getResponseCode();
                 final boolean codeIsError = code / 100 != 2;
-                InputStream stream = codeIsError ?
-                        hostConnection.getErrorStream() : hostConnection.getInputStream();
+                stream = codeIsError ? hostConnection.getErrorStream() : hostConnection.getInputStream();
                 // As per the official Java docs (not the Android docs):
                 // - `getErrorStream()` may return null => we have to handle this case.
                 //   See <https://docs.oracle.com/javase/7/docs/api/java/net/HttpURLConnection.html#getErrorStream()>.
@@ -716,13 +717,11 @@ public class Client {
                 // handle http errors
                 if (codeIsError) {
                     if (code / 100 == 4) {
-                        String message = _getJSONObject(rawResponse).getString("message");
                         consumeQuietly(hostConnection);
-                        throw new AlgoliaException(message, code);
+                        throw new AlgoliaException(_getJSONObject(rawResponse).getString("message"), code);
                     } else {
-                        final String errorMessage = _toCharArray(stream);
                         consumeQuietly(hostConnection);
-                        errors.add(new AlgoliaException(errorMessage, code));
+                        errors.add(new AlgoliaException(_toCharArray(stream), code));
                         continue;
                     }
                 }
@@ -730,13 +729,24 @@ public class Client {
 
             }
             catch (JSONException e) { // fatal
+                consumeQuietly(hostConnection);
                 throw new AlgoliaException("Invalid JSON returned by server", e);
             }
             catch (UnsupportedEncodingException e) { // fatal
+                consumeQuietly(hostConnection);
                 throw new AlgoliaException("Invalid encoding returned by server", e);
             }
             catch (IOException e) { // host error, continue on the next host
+                consumeQuietly(hostConnection);
                 errors.add(e);
+            } finally {
+                if (stream != null) {
+                    try {
+                        stream.close();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
             }
         }
 
