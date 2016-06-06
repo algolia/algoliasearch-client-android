@@ -1,6 +1,12 @@
 Change Log
 ==========
 
+## 3.2.2 (2016-06-06)
+
+- Better resource handling: close client streams and connection when appropriate
+- Remove any dependency to Apache HTTP cliuent
+- Update documentation: detailed needed ACLs for offline mode
+
 ## 3.2.1 (2016-05-31)
 
 - Fix erroneous archive: remove extraneous `android.support.v7.appcompat.R` class (fixes #88)
