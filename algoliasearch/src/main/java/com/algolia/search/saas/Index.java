@@ -926,13 +926,25 @@ public class Index {
     }
 
     /**
-     * Set settings for this index
+     * Set settings for this index, not forwarding to slave indices.
      *
-     * @param settings the settings object
+     * @param settings the settings object.
      * @throws AlgoliaException
      */
     protected JSONObject setSettings(JSONObject settings) throws AlgoliaException {
-        return client.putRequest("/1/indexes/" + encodedIndexName + "/settings", settings.toString());
+        return setSettings(settings, false);
+    }
+
+    /**
+     * Set settings for this index.
+     *
+     * @param settings the settings object.
+     * @param forwardToSlaves if true, the new settings will be forwarded to slave indices.
+     * @throws AlgoliaException
+     */
+    protected JSONObject setSettings(JSONObject settings, boolean forwardToSlaves) throws AlgoliaException {
+        final String url = "/1/indexes/" + encodedIndexName + "/settings" + "?forwardToSlaves=" + forwardToSlaves;
+        return client.putRequest(url, settings.toString());
     }
 
     /**
