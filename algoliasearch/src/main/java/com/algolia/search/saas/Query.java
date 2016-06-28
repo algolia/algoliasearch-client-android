@@ -297,6 +297,9 @@ public class Query {
      * @param radius the radius to set, or Query.RADIUS_ALL to disable stopping at a specific radius.
      */
     public @NonNull Query setAroundRadius(Integer radius) {
+        if (radius == Query.RADIUS_ALL) {
+            return set(KEY_AROUND_RADIUS, "all");
+        }
         return set(KEY_AROUND_RADIUS, radius);
     }
 
@@ -305,7 +308,11 @@ public class Query {
      * @return Query.RADIUS_ALL if set to 'all'.
      */
     public Integer getAroundRadius() {
-        return parseInt(get(KEY_AROUND_RADIUS));
+        final String value = get(KEY_AROUND_RADIUS);
+        if (value != null && value.equals("all")) {
+            return Query.RADIUS_ALL;
+        }
+        return parseInt(value);
     }
 
     private static final String KEY_ATTRIBUTES_TO_HIGHLIGHT = "attributesToHighlight";
@@ -1006,13 +1013,7 @@ public class Query {
                 String value = entry.getValue();
                 if (value != null) {
                     stringBuilder.append('=');
-                    final String encodedValue;
-                    if (key.equals("aroundRadius") && Integer.parseInt(value) == Query.RADIUS_ALL) {
-                        encodedValue = "all";
-                    } else {
-                        encodedValue = urlEncode(value);
-                    }
-                    stringBuilder.append(encodedValue);
+                    stringBuilder.append(urlEncode(value));
                 }
             }
         } catch (UnsupportedEncodingException e) {
