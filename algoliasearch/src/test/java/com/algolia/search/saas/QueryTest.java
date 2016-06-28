@@ -27,9 +27,10 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.junit.Test;
 
+import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertTrue;
 
 /**
  * Unit tests for the `Query` class.
@@ -621,5 +622,26 @@ public class QueryTest extends RobolectricTestCase  {
         assertEquals(query1.get("filters"), VALUE);
         Query query2 = Query.parse(query1.build());
         assertEquals(query2.getFilters(), query1.getFilters());
+    }
+
+    @Test
+    public void test_aroundRadius_all() {
+        final Integer VALUE = 3;
+        Query query = new Query();
+        assertNull("A new query should have a null aroundRadius.", query.getAroundRadius());
+
+        query.setAroundRadius(VALUE);
+        assertEquals("After setting its aroundRadius to a given integer, we should return it from getAroundRadius.", VALUE, query.getAroundRadius());
+
+        String queryStr = query.build();
+        assertTrue("The built query should contain 'aroundRadius=" + VALUE + "'.", queryStr.matches("aroundRadius=" + VALUE));
+
+        query.setAroundRadius(Query.RADIUS_ALL);
+        assertEquals("After setting it to RADIUS_ALL, a query should have this aroundRadius value.", Integer.valueOf(Query.RADIUS_ALL), query.getAroundRadius());
+
+        queryStr = query.build();
+        assertTrue("The built query should contain 'aroundRadius=all', not _" + queryStr + "_.", queryStr.matches("aroundRadius=all"));
+        Query query2 = Query.parse(query.build());
+        assertEquals(query2.getAroundRadius(), query.getAroundRadius());
     }
 }
