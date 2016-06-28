@@ -69,6 +69,12 @@ public class Query {
         STRICT
     }
 
+    public enum ExactOnSingleWordQuery {
+        NONE,
+        ATTRIBUTE(), /* default*/
+        WORD
+    }
+
     // ----------------------------------------------------------------------
     // IMPLEMENTATION NOTES
     // ----------------------------------------------------------------------
@@ -976,6 +982,44 @@ public class Query {
                     return TypoTolerance.STRICT;
                 case "true":
                     return TypoTolerance.TRUE;
+            }
+        }
+        return null;
+    }
+
+
+    private static final String KEY_EXACT_ON_SINGLE_WORD_QUERY = "exactOnSingleWordQuery";
+
+    public @NonNull Query setExactOnSingleWordQuery(ExactOnSingleWordQuery type) {
+        if (type == null) {
+            set(KEY_EXACT_ON_SINGLE_WORD_QUERY, null);
+        } else {
+            switch (type) {
+                case NONE:
+                    set(KEY_EXACT_ON_SINGLE_WORD_QUERY, "none");
+                    break;
+                case WORD:
+                    set(KEY_EXACT_ON_SINGLE_WORD_QUERY, "word");
+                    break;
+                case ATTRIBUTE:
+                    set(KEY_EXACT_ON_SINGLE_WORD_QUERY, "attribute");
+                    break;
+            }
+        }
+        return this;
+    }
+
+    public ExactOnSingleWordQuery getExactOnSingleWordQuery()
+    {
+        String value = get(KEY_EXACT_ON_SINGLE_WORD_QUERY);
+        if (value != null) {
+            switch (value) {
+                case "none":
+                    return ExactOnSingleWordQuery.NONE;
+                case "word":
+                    return ExactOnSingleWordQuery.WORD;
+                case "attribute":
+                    return ExactOnSingleWordQuery.ATTRIBUTE;
             }
         }
         return null;

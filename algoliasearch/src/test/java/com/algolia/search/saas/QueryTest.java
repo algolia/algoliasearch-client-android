@@ -27,9 +27,9 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.junit.Test;
 
+import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertArrayEquals;
 
 /**
  * Unit tests for the `Query` class.
@@ -621,5 +621,19 @@ public class QueryTest extends RobolectricTestCase  {
         assertEquals(query1.get("filters"), VALUE);
         Query query2 = Query.parse(query1.build());
         assertEquals(query2.getFilters(), query1.getFilters());
+    }
+
+
+    @Test
+    public void test_exactOnSingleWordQuery() {
+        Query.ExactOnSingleWordQuery VALUE = Query.ExactOnSingleWordQuery.ATTRIBUTE;
+        Query query = new Query();
+        assertNull(query.getExactOnSingleWordQuery());
+
+        query.setExactOnSingleWordQuery(VALUE);
+        assertEquals(query.getExactOnSingleWordQuery(), VALUE);
+        assertEquals(query.get("exactOnSingleWordQuery"), "attribute");
+        Query query2 = Query.parse(query.build());
+        assertEquals(query2.getExactOnSingleWordQuery(), query.getExactOnSingleWordQuery());
     }
 }
