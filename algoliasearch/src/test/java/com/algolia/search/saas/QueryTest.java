@@ -626,7 +626,7 @@ public class QueryTest extends RobolectricTestCase  {
 
     @Test
     public void test_aroundRadius_all() {
-        final int VALUE = 3;
+        final Integer VALUE = 3;
         Query query = new Query();
         assertNull("A new query should have a null aroundRadius.", query.getAroundRadius());
 
@@ -637,7 +637,7 @@ public class QueryTest extends RobolectricTestCase  {
         assertTrue("The built query should contain 'aroundRadius=" + VALUE + "'.", queryStr.matches("aroundRadius=" + VALUE));
 
         query.setAroundRadius(Query.RADIUS_ALL);
-        assertEquals("After setting it to RADIUS_ALL, a query should have this aroundRadius value.", Query.RADIUS_ALL, query.getAroundRadius());
+        assertEquals("After setting it to RADIUS_ALL, a query should have this aroundRadius value.", Integer.valueOf(Query.RADIUS_ALL), query.getAroundRadius());
 
         queryStr = query.build();
         assertTrue("The built query should contain 'aroundRadius=all', not _" + queryStr + "_.", queryStr.matches("aroundRadius=all"));

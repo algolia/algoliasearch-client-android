@@ -296,7 +296,7 @@ public class Query {
      * Change the radius for around latitude/longitude queries.
      * @param radius the radius to set, or Query.RADIUS_ALL to disable stopping at a specific radius.
      */
-    public @NonNull Query setAroundRadius(int radius) {
+    public @NonNull Query setAroundRadius(Integer radius) {
         if (radius == Query.RADIUS_ALL) {
             return set(KEY_AROUND_RADIUS, "all");
         }
@@ -307,7 +307,7 @@ public class Query {
      * Get the current radius for around latitude/longitude queries.
      * @return Query.RADIUS_ALL if set to 'all'.
      */
-    public int getAroundRadius() {
+    public Integer getAroundRadius() {
         final String value = get(KEY_AROUND_RADIUS);
         if (value != null && value.equals("all")) {
             return Query.RADIUS_ALL;
