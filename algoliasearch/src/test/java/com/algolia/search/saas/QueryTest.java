@@ -646,7 +646,8 @@ public class QueryTest extends RobolectricTestCase  {
         assertNull(query.getAlternativesAsExact());
 
         query.setAlternativesAsExact(VALUES);
-        assertEquals(VALUES, query.getAlternativesAsExact());
+        assertArrayEquals(VALUES, query.getAlternativesAsExact());
+
         assertEquals("ignorePlurals,multiWordsSynonym", query.get("alternativesAsExact"));
         Query query2 = Query.parse(query.build());
         assertEquals(query.getExactOnSingleWordQuery(), query2.getExactOnSingleWordQuery());
