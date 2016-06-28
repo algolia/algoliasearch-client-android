@@ -626,7 +626,7 @@ public class QueryTest extends RobolectricTestCase  {
 
     @Test
     public void test_aroundRadius_all() {
-        final Integer VALUE = 3;
+        final int VALUE = 3;
         Query query = new Query();
         assertNull("A new query should have a null aroundRadius.", query.getAroundRadius());
 
