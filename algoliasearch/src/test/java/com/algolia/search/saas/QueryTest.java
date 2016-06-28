@@ -27,9 +27,6 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.junit.Test;
 
-import java.util.Arrays;
-import java.util.List;
-
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
@@ -643,7 +640,7 @@ public class QueryTest extends RobolectricTestCase  {
     public void test_alternativesAsExact() {
         Query.AlternativesAsExact VALUE1 = Query.AlternativesAsExact.IGNORE_PLURALS;
         Query.AlternativesAsExact VALUE2 = Query.AlternativesAsExact.MULTI_WORDS_SYNONYM;
-        final List<Query.AlternativesAsExact> VALUES = Arrays.asList(VALUE1, VALUE2);
+        final Query.AlternativesAsExact[] VALUES = new Query.AlternativesAsExact[]{VALUE1, VALUE2};
 
         Query query = new Query();
         assertNull(query.getAlternativesAsExact());

@@ -1034,11 +1034,11 @@ public class Query {
 
     private static final String KEY_ALTERNATIVES_AS_EXACT = "alternativesAsExact";
 
-    public @NonNull Query setAlternativesAsExact(List<AlternativesAsExact> types) {
-        if (types == null || types.size() == 0) {
+    public @NonNull Query setAlternativesAsExact(AlternativesAsExact[] types) {
+        if (types == null || types.length == 0) {
             set(KEY_ALTERNATIVES_AS_EXACT, null);
         } else {
-            List<String> stringList = new ArrayList<>(types.size());
+            List<String> stringList = new ArrayList<>(types.length);
             for (AlternativesAsExact type : types) {
                 switch (type) {
                     case IGNORE_PLURALS:
@@ -1058,7 +1058,7 @@ public class Query {
         return this;
     }
 
-    public List<AlternativesAsExact> getAlternativesAsExact()
+    public AlternativesAsExact[] getAlternativesAsExact()
     {
         String alternativesStr = get(KEY_ALTERNATIVES_AS_EXACT);
         if (alternativesStr == null) {
@@ -1066,18 +1066,19 @@ public class Query {
         }
 
         String[] stringList = TextUtils.split(alternativesStr, ",");
-        List<AlternativesAsExact> alternatives = new ArrayList<>(stringList.length);
+        AlternativesAsExact[] alternatives = new AlternativesAsExact[stringList.length];
 
-        for (String alternative : stringList) {
+        for (int i = 0, stringListLength = stringList.length; i < stringListLength; i++) {
+            String alternative = stringList[i];
             switch (alternative) {
                 case "ignorePlurals":
-                    alternatives.add(AlternativesAsExact.IGNORE_PLURALS);
+                    alternatives[i] = AlternativesAsExact.IGNORE_PLURALS;
                     break;
                 case "multiWordsSynonym":
-                    alternatives.add(AlternativesAsExact.MULTI_WORDS_SYNONYM);
+                    alternatives[i] = AlternativesAsExact.MULTI_WORDS_SYNONYM;
                     break;
                 case "singleWordSynonym":
-                    alternatives.add(AlternativesAsExact.SINGLE_WORD_SYNONYM);
+                    alternatives[i] = AlternativesAsExact.SINGLE_WORD_SYNONYM;
                     break;
             }
         }
