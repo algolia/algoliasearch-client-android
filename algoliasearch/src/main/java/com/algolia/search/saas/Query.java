@@ -1035,7 +1035,7 @@ public class Query {
     private static final String KEY_ALTERNATIVES_AS_EXACT = "alternativesAsExact";
 
     public @NonNull Query setAlternativesAsExact(AlternativesAsExact[] types) {
-        if (types == null || types.length == 0) {
+        if (types == null) {
             set(KEY_ALTERNATIVES_AS_EXACT, null);
         } else {
             List<String> stringList = new ArrayList<>(types.length);
