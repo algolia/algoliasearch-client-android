@@ -26,10 +26,12 @@ package com.algolia.search.saas;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.junit.Test;
+import org.mockito.internal.matchers.Matches;
 
+import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertThat;
 
 /**
  * Unit tests for the `Query` class.
@@ -621,5 +623,24 @@ public class QueryTest extends RobolectricTestCase  {
         assertEquals(query1.get("filters"), VALUE);
         Query query2 = Query.parse(query1.build());
         assertEquals(query2.getFilters(), query1.getFilters());
+    }
+
+    @Test
+    public void test_aroundRadius_all() {
+        final Integer VALUE = 3;
+        Query query = new Query();
+        assertNull("A new query should have a null aroundRadius.", query.getAroundRadius());
+
+        query.setAroundRadius(VALUE);
+        assertEquals("After setting its aroundRadius to a given integer, we should return it from getAroundRadius.", VALUE, query.getAroundRadius());
+
+        String queryStr = query.build();
+        assertThat("The built query should contain 'aroundRadius=" + VALUE + "'.", queryStr, new Matches("aroundRadius=" + VALUE));
+
+        query.setAroundRadius(Query.RADIUS_ALL);
+        assertEquals("After setting it to RADIUS_ALL, a query should have this aroundRadius value.", Query.RADIUS_ALL, query.getAroundRadius());
+
+        queryStr = query.build();
+        assertThat("The built query should contain 'aroundRadius=all'.", queryStr, new Matches("aroundRadius=all"));
     }
 }

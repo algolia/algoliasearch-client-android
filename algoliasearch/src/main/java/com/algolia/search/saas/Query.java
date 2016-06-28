@@ -290,14 +290,20 @@ public class Query {
     }
 
     private static final String KEY_AROUND_RADIUS = "aroundRadius";
+    public static final Integer RADIUS_ALL = Integer.MAX_VALUE;
 
     /**
-     * Change the radius or around latitude/longitude query
+     * Change the radius for around latitude/longitude queries.
+     * @param radius the radius to set, or Query.RADIUS_ALL to disable stopping at a specific radius.
      */
     public @NonNull Query setAroundRadius(Integer radius) {
         return set(KEY_AROUND_RADIUS, radius);
     }
 
+    /**
+     * Get the current radius for around latitude/longitude queries.
+     * @return Query.RADIUS_ALL if set to 'all'.
+     */
     public Integer getAroundRadius() {
         return parseInt(get(KEY_AROUND_RADIUS));
     }
@@ -1000,7 +1006,13 @@ public class Query {
                 String value = entry.getValue();
                 if (value != null) {
                     stringBuilder.append('=');
-                    stringBuilder.append(urlEncode(value));
+                    final String encodedValue;
+                    if (key.equals("aroundRadius") && Integer.parseInt(value) == Query.RADIUS_ALL) {
+                        encodedValue = "all";
+                    } else {
+                        encodedValue = urlEncode(value);
+                    }
+                    stringBuilder.append(encodedValue);
                 }
             }
         } catch (UnsupportedEncodingException e) {
