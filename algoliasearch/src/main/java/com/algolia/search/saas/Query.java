@@ -1002,7 +1002,7 @@ public class Query {
                 String key = entry.getKey();
                 if (stringBuilder.length() > 0)
                     stringBuilder.append('&');
-                stringBuilder.append(urlEncode(entry.getKey()));
+                stringBuilder.append(urlEncode(key));
                 String value = entry.getValue();
                 if (value != null) {
                     stringBuilder.append('=');
