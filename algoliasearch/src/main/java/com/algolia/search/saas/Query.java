@@ -9,6 +9,8 @@ import org.json.JSONException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -71,8 +73,14 @@ public class Query {
 
     public enum ExactOnSingleWordQuery {
         NONE,
-        ATTRIBUTE(), /* default*/
+        ATTRIBUTE,
         WORD
+    }
+
+    public enum AlternativesAsExact {
+        IGNORE_PLURALS,
+        SINGLE_WORD_SYNONYM,
+        MULTI_WORDS_SYNONYM
     }
 
     // ----------------------------------------------------------------------
@@ -987,7 +995,6 @@ public class Query {
         return null;
     }
 
-
     private static final String KEY_EXACT_ON_SINGLE_WORD_QUERY = "exactOnSingleWordQuery";
 
     public @NonNull Query setExactOnSingleWordQuery(ExactOnSingleWordQuery type) {
@@ -1024,6 +1031,59 @@ public class Query {
         }
         return null;
     }
+
+    private static final String KEY_ALTERNATIVES_AS_EXACT = "alternativesAsExact";
+
+    public @NonNull Query setAlternativesAsExact(List<AlternativesAsExact> types) {
+        if (types == null || types.size() == 0) {
+            set(KEY_ALTERNATIVES_AS_EXACT, null);
+        } else {
+            List<String> stringList = new ArrayList<>(types.size());
+            for (AlternativesAsExact type : types) {
+                switch (type) {
+                    case IGNORE_PLURALS:
+                        stringList.add("ignorePlurals");
+                        break;
+                    case MULTI_WORDS_SYNONYM:
+                        stringList.add("multiWordsSynonym");
+                        break;
+                    case SINGLE_WORD_SYNONYM:
+                        stringList.add("singleWordSynonym");
+                        break;
+                }
+            }
+            String alternatives = TextUtils.join(",", stringList);
+            set(KEY_ALTERNATIVES_AS_EXACT, alternatives);
+        }
+        return this;
+    }
+
+    public List<AlternativesAsExact> getAlternativesAsExact()
+    {
+        String alternativesStr = get(KEY_ALTERNATIVES_AS_EXACT);
+        if (alternativesStr == null) {
+            return null;
+        }
+
+        String[] stringList = TextUtils.split(alternativesStr, ",");
+        List<AlternativesAsExact> alternatives = new ArrayList<>(stringList.length);
+
+        for (String alternative : stringList) {
+            switch (alternative) {
+                case "ignorePlurals":
+                    alternatives.add(AlternativesAsExact.IGNORE_PLURALS);
+                    break;
+                case "multiWordsSynonym":
+                    alternatives.add(AlternativesAsExact.MULTI_WORDS_SYNONYM);
+                    break;
+                case "singleWordSynonym":
+                    alternatives.add(AlternativesAsExact.SINGLE_WORD_SYNONYM);
+                    break;
+            }
+        }
+        return alternatives;
+    }
+
 
     // ----------------------------------------------------------------------
     // Parsing/serialization

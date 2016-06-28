@@ -27,6 +27,9 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.junit.Test;
 
+import java.util.Arrays;
+import java.util.List;
+
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
@@ -623,7 +626,6 @@ public class QueryTest extends RobolectricTestCase  {
         assertEquals(query2.getFilters(), query1.getFilters());
     }
 
-
     @Test
     public void test_exactOnSingleWordQuery() {
         Query.ExactOnSingleWordQuery VALUE = Query.ExactOnSingleWordQuery.ATTRIBUTE;
@@ -635,5 +637,21 @@ public class QueryTest extends RobolectricTestCase  {
         assertEquals(query.get("exactOnSingleWordQuery"), "attribute");
         Query query2 = Query.parse(query.build());
         assertEquals(query2.getExactOnSingleWordQuery(), query.getExactOnSingleWordQuery());
+    }
+
+    @Test
+    public void test_alternativesAsExact() {
+        Query.AlternativesAsExact VALUE1 = Query.AlternativesAsExact.IGNORE_PLURALS;
+        Query.AlternativesAsExact VALUE2 = Query.AlternativesAsExact.MULTI_WORDS_SYNONYM;
+        final List<Query.AlternativesAsExact> VALUES = Arrays.asList(VALUE1, VALUE2);
+
+        Query query = new Query();
+        assertNull(query.getAlternativesAsExact());
+
+        query.setAlternativesAsExact(VALUES);
+        assertEquals(VALUES, query.getAlternativesAsExact());
+        assertEquals("ignorePlurals,multiWordsSynonym", query.get("alternativesAsExact"));
+        Query query2 = Query.parse(query.build());
+        assertEquals(query.getExactOnSingleWordQuery(), query2.getExactOnSingleWordQuery());
     }
 }
