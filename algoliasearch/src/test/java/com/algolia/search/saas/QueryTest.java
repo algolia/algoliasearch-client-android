@@ -30,6 +30,7 @@ import org.junit.Test;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.fail;
 
 /**
  * Unit tests for the `Query` class.
@@ -567,14 +568,39 @@ public class QueryTest extends RobolectricTestCase  {
     }
 
     @Test
-    public void test_removeStopWords() {
+    public void test_removeStopWordsBoolean() throws Exception {
         Query query1 = new Query();
         assertNull(query1.getRemoveStopWords());
         query1.setRemoveStopWords(true);
-        assertEquals(query1.getRemoveStopWords(), Boolean.TRUE);
-        assertEquals(query1.get("removeStopWords"), "true");
+        assertEquals(Boolean.TRUE, query1.getRemoveStopWords());
+        assertEquals("true", query1.get("removeStopWords"));
         Query query2 = Query.parse(query1.build());
-        assertEquals(query2.getRemoveStopWords(), query1.getRemoveStopWords());
+        assertEquals(query1.getRemoveStopWords(), query2.getRemoveStopWords());
+    }
+
+    @Test
+    public void test_removeStopWordsString() throws Exception {
+        Query query1 = new Query();
+        assertNull(query1.getRemoveStopWords());
+
+        query1.setRemoveStopWords("fr,en");
+        final Object[] removeStopWords = (Object[]) query1.getRemoveStopWords();
+        assertArrayEquals(new String[]{"fr", "en"}, removeStopWords);
+        assertEquals("fr,en", query1.get("removeStopWords"));
+
+        Query query2 = Query.parse(query1.build());
+        assertArrayEquals((Object[]) query1.getRemoveStopWords(), (Object[]) query2.getRemoveStopWords());
+    }
+
+    @Test
+    public void test_removeStopWordsInvalidClass() throws Exception {
+        Query query1 = new Query();
+        try {
+            query1.setRemoveStopWords(42);
+        } catch (AlgoliaException ignored) {
+            return; //pass
+        }
+        fail("setRemoveStopWords should throw when its parameter is neither Boolean nor String.");
     }
 
     @Test

@@ -94,7 +94,7 @@ public class Query {
     // them back from it.
     // ----------------------------------------------------------------------
 
-    /** Query parameters, as un untyped key-value array. */
+    /** Query parameters, as an untyped key-value array. */
     // NOTE: Using a tree map to have parameters sorted by key on output.
     private Map<String, String> parameters = new TreeMap<>();
 
@@ -815,14 +815,29 @@ public class Query {
     private static final String KEY_REMOVE_STOP_WORDS = "removeStopWords";
 
     /**
-     * Enable the removal of stop words. Defaults to false.
+     * Enable the removal of stop words, disabled by default.
+     * In most use-cases, we don’t recommend enabling this option.
+     *
+     * @param removeStopWords Boolean: enable or disable all 41 supported languages,
+     *                        String: comma separated list of languages you have in your record (using language iso code).
      */
-    public @NonNull Query setRemoveStopWords(Boolean removeStopWords) {
-        return set(KEY_REMOVE_STOP_WORDS, removeStopWords);
+    public @NonNull Query setRemoveStopWords(Object removeStopWords) throws AlgoliaException {
+        if (removeStopWords instanceof Boolean || removeStopWords instanceof String) {
+            return set(KEY_REMOVE_STOP_WORDS, removeStopWords);
+        }
+        throw new AlgoliaException("removeStopWords should be a Boolean or a String.");
     }
 
-    public Boolean getRemoveStopWords() {
-        return parseBoolean(get(KEY_REMOVE_STOP_WORDS));
+    public Object getRemoveStopWords() {
+        final String value = get(KEY_REMOVE_STOP_WORDS);
+        if (value == null) {
+            return null;
+        }
+        final String[] commaArray = parseCommaArray(value);
+        if (commaArray.length == 1 && (commaArray[0].equals("false") || commaArray[0].equals("true"))) {
+            return parseBoolean(value);
+        }
+        return commaArray;
     }
 
     private static final String KEY_REMOVE_WORDS_IF_NO_RESULT = "removeWordsIfNoResults";
