@@ -1296,6 +1296,15 @@ index.getSettingsAsync(new CompletionHandler() {
 index.setSettingsAsync(new JSONObject().append("customRanking", "desc(followers)"), null);
 ```
 
+## Slave settings
+
+You can forward all settings updates to the slaves of an index by using the `forwardToSlaves` option:
+
+```android
+JSONObject settings = new JSONObject("{\"attributesToRetrieve\": [\"name\", \"birthdate\"]}");
+JSONObject setSettingsResult = index.setSettings(settings, true);
+index.waitTask(setSettingsResult.getString("taskID"));
+```
 
 ## Indexing parameters
 
