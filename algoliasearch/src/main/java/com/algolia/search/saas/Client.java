@@ -491,7 +491,7 @@ public class Client {
             JSONObject body = new JSONObject().put("requests", requests);
             String path = "/1/indexes/*/queries";
             if (strategy != null) {
-                path += "?strategy=" + strategy;
+                body.put("strategy", strategy);
             }
             return postRequest(path, body.toString(), true);
         } catch (JSONException e) {
