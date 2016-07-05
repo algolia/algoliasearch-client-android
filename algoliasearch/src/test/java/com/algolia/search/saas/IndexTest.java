@@ -29,6 +29,9 @@ import org.junit.Test;
 import org.mockito.internal.util.reflection.Whitebox;
 import org.robolectric.util.concurrent.RoboExecutorService;
 
+import java.io.IOException;
+import java.net.ServerSocket;
+import java.net.Socket;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -462,6 +465,67 @@ public class IndexTest extends PowerMockTestCase {
 
         // Which should take at least 2 seconds, as per Client.connectTimeout
         assertTrue("We should first timeout before successfully searching, but test took only " + duration + " ms.", duration > 2000);
+    }
+
+    @Test
+    public void testConnectTimeout() throws AlgoliaException {
+        List<String> hostsArray = (List<String>) Whitebox.getInternalState(client, "readHosts");
+        hostsArray.set(0, "notcp-xx-1.algolianet.com");
+        Whitebox.setInternalState(client, "readHosts", hostsArray);
+
+        client.setConnectTimeout(1000);
+        client.setReadTimeout(1000);
+
+        Long start = System.currentTimeMillis();
+        assertNotNull(client.listIndexes());
+        assertTrue((System.currentTimeMillis() - start) < 2 * 1000);
+    }
+
+    @Test
+    public void testMultipleConnectTimeout() throws AlgoliaException {
+        List<String> hostsArray = (List<String>) Whitebox.getInternalState(client, "readHosts");
+        hostsArray.set(0, "notcp-xx-1.algolianet.com");
+        hostsArray.set(1, "notcp-xx-1.algolianet.com");
+        Whitebox.setInternalState(client, "readHosts", hostsArray);
+
+        client.setConnectTimeout(1000);
+        client.setReadTimeout(1000);
+
+        Long start = System.currentTimeMillis();
+        assertNotNull(client.listIndexes());
+        assertTrue((System.currentTimeMillis() - start) < 3 * 1000);
+    }
+
+
+    @Test
+    public void testConnectionResetException() throws IOException, AlgoliaException {
+        Thread runnable = new Thread() {
+            @Override
+            public void run() {
+                try {
+                    ServerSocket serverSocket = new ServerSocket(8080);
+                    Socket socket = serverSocket.accept();
+                    socket.setSoLinger(true, 0);
+                    socket.close();
+                } catch (IOException ignored) {
+                    ignored.printStackTrace();
+                }
+            }
+        };
+
+        runnable.start();
+
+        List<String> hostsArray = (List<String>) Whitebox.getInternalState(client, "readHosts");
+        hostsArray.set(0, "localhost:8080");
+        hostsArray.set(1, "notcp-xx-1.algolianet.com");
+
+        client.setConnectTimeout(1000);
+        client.setReadTimeout(1000);
+
+        Long start = System.currentTimeMillis();
+        assertNotNull(client.listIndexes());
+        long end = System.currentTimeMillis() - start;
+        assertTrue(end < 2 * 1000);
     }
 
     @Test
