@@ -449,6 +449,7 @@ public class IndexTest extends PowerMockTestCase {
         List<String> hostsArray = (List<String>) Whitebox.getInternalState(client, "readHosts");
         hostsArray.set(0, appId + "-dsn.algolia.biz");
         Whitebox.setInternalState(client, "readHosts", hostsArray);
+        client.setConnectTimeout(2000);
 
         //And an index that does not cache search queries
         index.disableSearchCache();
