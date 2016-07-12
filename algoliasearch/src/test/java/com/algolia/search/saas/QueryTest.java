@@ -27,9 +27,11 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.junit.Test;
 
+import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 /**
  * Unit tests for the `Query` class.
@@ -567,14 +569,39 @@ public class QueryTest extends RobolectricTestCase  {
     }
 
     @Test
-    public void test_removeStopWords() {
+    public void test_removeStopWordsBoolean() throws Exception {
         Query query1 = new Query();
         assertNull(query1.getRemoveStopWords());
         query1.setRemoveStopWords(true);
-        assertEquals(query1.getRemoveStopWords(), Boolean.TRUE);
-        assertEquals(query1.get("removeStopWords"), "true");
+        assertEquals(Boolean.TRUE, query1.getRemoveStopWords());
+        assertEquals("true", query1.get("removeStopWords"));
         Query query2 = Query.parse(query1.build());
-        assertEquals(query2.getRemoveStopWords(), query1.getRemoveStopWords());
+        assertEquals(query1.getRemoveStopWords(), query2.getRemoveStopWords());
+    }
+
+    @Test
+    public void test_removeStopWordsString() throws Exception {
+        Query query1 = new Query();
+        assertNull(query1.getRemoveStopWords());
+
+        query1.setRemoveStopWords("fr,en");
+        final Object[] removeStopWords = (Object[]) query1.getRemoveStopWords();
+        assertArrayEquals(new String[]{"fr", "en"}, removeStopWords);
+        assertEquals("fr,en", query1.get("removeStopWords"));
+
+        Query query2 = Query.parse(query1.build());
+        assertArrayEquals((Object[]) query1.getRemoveStopWords(), (Object[]) query2.getRemoveStopWords());
+    }
+
+    @Test
+    public void test_removeStopWordsInvalidClass() throws Exception {
+        Query query1 = new Query();
+        try {
+            query1.setRemoveStopWords(42);
+        } catch (AlgoliaException ignored) {
+            return; //pass
+        }
+        fail("setRemoveStopWords should throw when its parameter is neither Boolean nor String.");
     }
 
     @Test
@@ -621,5 +648,61 @@ public class QueryTest extends RobolectricTestCase  {
         assertEquals(query1.get("filters"), VALUE);
         Query query2 = Query.parse(query1.build());
         assertEquals(query2.getFilters(), query1.getFilters());
+    }
+
+    @Test
+    public void test_exactOnSingleWordQuery() {
+        Query.ExactOnSingleWordQuery VALUE = Query.ExactOnSingleWordQuery.ATTRIBUTE;
+        Query query = new Query();
+        assertNull(query.getExactOnSingleWordQuery());
+
+        query.setExactOnSingleWordQuery(VALUE);
+        assertEquals(query.getExactOnSingleWordQuery(), VALUE);
+        assertEquals(query.get("exactOnSingleWordQuery"), "attribute");
+        Query query2 = Query.parse(query.build());
+        assertEquals(query2.getExactOnSingleWordQuery(), query.getExactOnSingleWordQuery());
+    }
+
+    @Test
+    public void test_alternativesAsExact() {
+        Query.AlternativesAsExact VALUE1 = Query.AlternativesAsExact.IGNORE_PLURALS;
+        Query.AlternativesAsExact VALUE2 = Query.AlternativesAsExact.MULTI_WORDS_SYNONYM;
+        final Query.AlternativesAsExact[] VALUES = new Query.AlternativesAsExact[]{VALUE1, VALUE2};
+
+        Query query = new Query();
+        assertNull(query.getAlternativesAsExact());
+
+        final Query.AlternativesAsExact[] array = {};
+        query.setAlternativesAsExact(array);
+        assertArrayEquals(query.getAlternativesAsExact(), array);
+
+        query.setAlternativesAsExact(VALUES);
+        assertArrayEquals(VALUES, query.getAlternativesAsExact());
+
+        assertEquals("ignorePlurals,multiWordsSynonym", query.get("alternativesAsExact"));
+
+        Query query2 = Query.parse(query.build());
+        assertEquals(query.getExactOnSingleWordQuery(), query2.getExactOnSingleWordQuery());
+    }
+
+    @Test
+    public void test_aroundRadius_all() {
+        final Integer VALUE = 3;
+        Query query = new Query();
+        assertNull("A new query should have a null aroundRadius.", query.getAroundRadius());
+
+        query.setAroundRadius(VALUE);
+        assertEquals("After setting its aroundRadius to a given integer, we should return it from getAroundRadius.", VALUE, query.getAroundRadius());
+
+        String queryStr = query.build();
+        assertTrue("The built query should contain 'aroundRadius=" + VALUE + "'.", queryStr.matches("aroundRadius=" + VALUE));
+
+        query.setAroundRadius(Query.RADIUS_ALL);
+        assertEquals("After setting it to RADIUS_ALL, a query should have this aroundRadius value.", Integer.valueOf(Query.RADIUS_ALL), query.getAroundRadius());
+
+        queryStr = query.build();
+        assertTrue("The built query should contain 'aroundRadius=all', not _" + queryStr + "_.", queryStr.matches("aroundRadius=all"));
+        Query query2 = Query.parse(query.build());
+        assertEquals(query2.getAroundRadius(), query.getAroundRadius());
     }
 }

@@ -91,6 +91,6 @@ cat <<EOF
 Next steps:
 - Check the staging repository on Sonatype.
 - If everything is OK: close, release and drop the staging repository.
-- Git commit and tag.
+- Git commit.
 - When the release is available on Maven Central: Git push.
 EOF

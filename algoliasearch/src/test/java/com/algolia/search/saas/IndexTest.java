@@ -29,6 +29,9 @@ import org.junit.Test;
 import org.mockito.internal.util.reflection.Whitebox;
 import org.robolectric.util.concurrent.RoboExecutorService;
 
+import java.io.IOException;
+import java.net.ServerSocket;
+import java.net.Socket;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -449,6 +452,7 @@ public class IndexTest extends PowerMockTestCase {
         List<String> hostsArray = (List<String>) Whitebox.getInternalState(client, "readHosts");
         hostsArray.set(0, appId + "-dsn.algolia.biz");
         Whitebox.setInternalState(client, "readHosts", hostsArray);
+        client.setConnectTimeout(2000);
 
         //And an index that does not cache search queries
         index.disableSearchCache();
@@ -461,6 +465,67 @@ public class IndexTest extends PowerMockTestCase {
 
         // Which should take at least 2 seconds, as per Client.connectTimeout
         assertTrue("We should first timeout before successfully searching, but test took only " + duration + " ms.", duration > 2000);
+    }
+
+    @Test
+    public void testConnectTimeout() throws AlgoliaException {
+        List<String> hostsArray = (List<String>) Whitebox.getInternalState(client, "readHosts");
+        hostsArray.set(0, "notcp-xx-1.algolianet.com");
+        Whitebox.setInternalState(client, "readHosts", hostsArray);
+
+        client.setConnectTimeout(1000);
+        client.setReadTimeout(1000);
+
+        Long start = System.currentTimeMillis();
+        assertNotNull(client.listIndexes());
+        assertTrue((System.currentTimeMillis() - start) < 2 * 1000);
+    }
+
+    @Test
+    public void testMultipleConnectTimeout() throws AlgoliaException {
+        List<String> hostsArray = (List<String>) Whitebox.getInternalState(client, "readHosts");
+        hostsArray.set(0, "notcp-xx-1.algolianet.com");
+        hostsArray.set(1, "notcp-xx-1.algolianet.com");
+        Whitebox.setInternalState(client, "readHosts", hostsArray);
+
+        client.setConnectTimeout(1000);
+        client.setReadTimeout(1000);
+
+        Long start = System.currentTimeMillis();
+        assertNotNull(client.listIndexes());
+        assertTrue((System.currentTimeMillis() - start) < 3 * 1000);
+    }
+
+
+    @Test
+    public void testConnectionResetException() throws IOException, AlgoliaException {
+        Thread runnable = new Thread() {
+            @Override
+            public void run() {
+                try {
+                    ServerSocket serverSocket = new ServerSocket(8080);
+                    Socket socket = serverSocket.accept();
+                    socket.setSoLinger(true, 0);
+                    socket.close();
+                } catch (IOException ignored) {
+                    ignored.printStackTrace();
+                }
+            }
+        };
+
+        runnable.start();
+
+        List<String> hostsArray = (List<String>) Whitebox.getInternalState(client, "readHosts");
+        hostsArray.set(0, "localhost:8080");
+        hostsArray.set(1, "notcp-xx-1.algolianet.com");
+
+        client.setConnectTimeout(1000);
+        client.setReadTimeout(1000);
+
+        Long start = System.currentTimeMillis();
+        assertNotNull(client.listIndexes());
+        long end = System.currentTimeMillis() - start;
+        assertTrue(end < 2 * 1000);
     }
 
     @Test
@@ -477,6 +542,70 @@ public class IndexTest extends PowerMockTestCase {
         // Expect correct certificate handling and successful search
         testSearchAsync();
     }
+
+    @Test
+    public void testKeepAlive() throws Exception {
+        final int nbTimes = 10;
+
+        // Given all hosts being the same one
+        String appId = (String) Whitebox.getInternalState(client, "applicationID");
+        List<String> hostsArray = (List<String>) Whitebox.getInternalState(client, "readHosts");
+        hostsArray.set(0, appId + "-1.algolianet.com");
+        hostsArray.set(1, appId + "-1.algolianet.com");
+        hostsArray.set(2, appId + "-1.algolianet.com");
+        hostsArray.set(3, appId + "-1.algolianet.com");
+        Whitebox.setInternalState(client, "readHosts", hostsArray);
+
+        //And an index that does not cache search queries
+        index.disableSearchCache();
+
+
+        // Expect first successful search
+        final long[] startEndTimeArray = new long[2];
+        startEndTimeArray[0] = System.nanoTime();
+        final CountDownLatch signal = new CountDownLatch(1);
+        index.searchAsync(new Query("Francisco"), new CompletionHandler() {
+            @Override
+            public void requestCompleted(JSONObject content, AlgoliaException error) {
+                if (error == null) {
+                    assertEquals(1, content.optInt("nbHits"));
+                    startEndTimeArray[1] = System.nanoTime();
+                } else {
+                    fail(error.getMessage());
+                }
+                signal.countDown();
+            }
+        });
+        assertTrue("No callback was called", signal.await(Helpers.wait, TimeUnit.SECONDS));
+
+        final long firstDurationNanos = startEndTimeArray[1] - startEndTimeArray[0];
+        System.out.println("First query duration: " + firstDurationNanos);
+
+        final CountDownLatch signal2 = new CountDownLatch(nbTimes);
+        for (int i = 0; i < nbTimes; i++) {
+            startEndTimeArray[0] = System.nanoTime();
+            final int finalIter = i;
+            index.searchAsync(new Query("Francisco"), new CompletionHandler() {
+                @Override
+                public void requestCompleted(JSONObject content, AlgoliaException error) {
+                    if (error == null) {
+                        startEndTimeArray[1] = System.nanoTime();
+                        final long iterDiff = startEndTimeArray[1] - startEndTimeArray[0];
+                        final String iterString = String.format("iteration %d: %d < %d", finalIter, iterDiff, firstDurationNanos);
+
+                        // And successful fastest subsequent calls
+                        assertEquals(1, content.optInt("nbHits"));
+                        assertTrue("Subsequent calls should be fastest than first (" + iterString + ")", startEndTimeArray[1] - startEndTimeArray[0] < firstDurationNanos);
+                    } else {
+                        fail(error.getMessage());
+                    }
+                    signal2.countDown();
+                }
+            });
+        }
+        assertTrue("No callback was called", signal2.await(Helpers.wait, TimeUnit.SECONDS));
+    }
+
 
     private void addDummyObjects(int objectCount) throws Exception {
         // Construct an array of dummy objects.

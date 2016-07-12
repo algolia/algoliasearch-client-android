@@ -29,9 +29,6 @@ import android.os.Handler;
 import android.os.Looper;
 import android.support.annotation.NonNull;
 
-import org.apache.http.entity.StringEntity;
-import org.apache.http.message.BasicHeader;
-import org.apache.http.protocol.HTTP;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -41,6 +38,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
 import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.URL;
@@ -65,7 +63,7 @@ import java.util.zip.GZIPInputStream;
  * </p>
  */
 public class Client {
-    private final static String version = "3.2.1";
+    private final static String version = "3.2.2";
 
     protected String userAgent = "Algolia for Android " + version;
 
@@ -493,7 +491,7 @@ public class Client {
             JSONObject body = new JSONObject().put("requests", requests);
             String path = "/1/indexes/*/queries";
             if (strategy != null) {
-                path += "?strategy=" + strategy;
+                body.put("strategy", strategy);
             }
             return postRequest(path, body.toString(), true);
         } catch (JSONException e) {
@@ -661,10 +659,12 @@ public class Client {
                     throw new IllegalArgumentException("Method " + m + " is not supported");
             }
 
+            InputStream stream = null;
+            HttpURLConnection hostConnection = null;
             // set URL
             try {
                 URL hostURL = new URL("https://" + host + url);
-                HttpURLConnection hostConnection = (HttpURLConnection) hostURL.openConnection();
+                hostConnection = (HttpURLConnection) hostURL.openConnection();
 
                 //set timeouts
                 hostConnection.setRequestMethod(requestMethod);
@@ -686,18 +686,17 @@ public class Client {
                     if (!(requestMethod.equals("PUT") || requestMethod.equals("POST"))) {
                         throw new IllegalArgumentException("Method " + m + " cannot enclose entity");
                     }
-                    hostConnection.setRequestProperty("Content-type", "application/json");
+                    hostConnection.setRequestProperty("Content-type", "application/json; charset=UTF-8");
                     hostConnection.setDoOutput(true);
-                    StringEntity se = new StringEntity(json, "UTF-8");
-                    se.setContentEncoding(new BasicHeader(HTTP.CONTENT_TYPE, "application/json"));
-                    se.writeTo(hostConnection.getOutputStream());
+                    OutputStreamWriter writer = new OutputStreamWriter(hostConnection.getOutputStream(), "UTF-8");
+                    writer.write(json);
+                    writer.close();
                 }
 
                 // read response
                 int code = hostConnection.getResponseCode();
                 final boolean codeIsError = code / 100 != 2;
-                InputStream stream = codeIsError ?
-                        hostConnection.getErrorStream() : hostConnection.getInputStream();
+                stream = codeIsError ? hostConnection.getErrorStream() : hostConnection.getInputStream();
                 // As per the official Java docs (not the Android docs):
                 // - `getErrorStream()` may return null => we have to handle this case.
                 //   See <https://docs.oracle.com/javase/7/docs/api/java/net/HttpURLConnection.html#getErrorStream()>.
@@ -718,13 +717,11 @@ public class Client {
                 // handle http errors
                 if (codeIsError) {
                     if (code / 100 == 4) {
-                        String message = _getJSONObject(rawResponse).getString("message");
                         consumeQuietly(hostConnection);
-                        throw new AlgoliaException(message, code);
+                        throw new AlgoliaException(_getJSONObject(rawResponse).getString("message"), code);
                     } else {
-                        final String errorMessage = _toCharArray(stream);
                         consumeQuietly(hostConnection);
-                        errors.add(new AlgoliaException(errorMessage, code));
+                        errors.add(new AlgoliaException(_toCharArray(stream), code));
                         continue;
                     }
                 }
@@ -732,13 +729,24 @@ public class Client {
 
             }
             catch (JSONException e) { // fatal
+                consumeQuietly(hostConnection);
                 throw new AlgoliaException("Invalid JSON returned by server", e);
             }
             catch (UnsupportedEncodingException e) { // fatal
+                consumeQuietly(hostConnection);
                 throw new AlgoliaException("Invalid encoding returned by server", e);
             }
             catch (IOException e) { // host error, continue on the next host
+                consumeQuietly(hostConnection);
                 errors.add(e);
+            } finally {
+                if (stream != null) {
+                    try {
+                        stream.close();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
             }
         }
 

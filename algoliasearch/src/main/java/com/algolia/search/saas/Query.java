@@ -9,6 +9,8 @@ import org.json.JSONException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -69,6 +71,18 @@ public class Query {
         STRICT
     }
 
+    public enum ExactOnSingleWordQuery {
+        NONE,
+        ATTRIBUTE,
+        WORD
+    }
+
+    public enum AlternativesAsExact {
+        IGNORE_PLURALS,
+        SINGLE_WORD_SYNONYM,
+        MULTI_WORDS_SYNONYM
+    }
+
     // ----------------------------------------------------------------------
     // IMPLEMENTATION NOTES
     // ----------------------------------------------------------------------
@@ -80,7 +94,7 @@ public class Query {
     // them back from it.
     // ----------------------------------------------------------------------
 
-    /** Query parameters, as un untyped key-value array. */
+    /** Query parameters, as an untyped key-value array. */
     // NOTE: Using a tree map to have parameters sorted by key on output.
     private Map<String, String> parameters = new TreeMap<>();
 
@@ -290,16 +304,29 @@ public class Query {
     }
 
     private static final String KEY_AROUND_RADIUS = "aroundRadius";
+    public static final int RADIUS_ALL = Integer.MAX_VALUE;
 
     /**
-     * Change the radius or around latitude/longitude query
+     * Change the radius for around latitude/longitude queries.
+     * @param radius the radius to set, or Query.RADIUS_ALL to disable stopping at a specific radius.
      */
     public @NonNull Query setAroundRadius(Integer radius) {
+        if (radius == Query.RADIUS_ALL) {
+            return set(KEY_AROUND_RADIUS, "all");
+        }
         return set(KEY_AROUND_RADIUS, radius);
     }
 
+    /**
+     * Get the current radius for around latitude/longitude queries.
+     * @return Query.RADIUS_ALL if set to 'all'.
+     */
     public Integer getAroundRadius() {
-        return parseInt(get(KEY_AROUND_RADIUS));
+        final String value = get(KEY_AROUND_RADIUS);
+        if (value != null && value.equals("all")) {
+            return Query.RADIUS_ALL;
+        }
+        return parseInt(value);
     }
 
     private static final String KEY_ATTRIBUTES_TO_HIGHLIGHT = "attributesToHighlight";
@@ -801,14 +828,29 @@ public class Query {
     private static final String KEY_REMOVE_STOP_WORDS = "removeStopWords";
 
     /**
-     * Enable the removal of stop words. Defaults to false.
+     * Enable the removal of stop words, disabled by default.
+     * In most use-cases, we don’t recommend enabling this option.
+     *
+     * @param removeStopWords Boolean: enable or disable all 41 supported languages,
+     *                        String: comma separated list of languages you have in your record (using language iso code).
      */
-    public @NonNull Query setRemoveStopWords(Boolean removeStopWords) {
-        return set(KEY_REMOVE_STOP_WORDS, removeStopWords);
+    public @NonNull Query setRemoveStopWords(Object removeStopWords) throws AlgoliaException {
+        if (removeStopWords instanceof Boolean || removeStopWords instanceof String) {
+            return set(KEY_REMOVE_STOP_WORDS, removeStopWords);
+        }
+        throw new AlgoliaException("removeStopWords should be a Boolean or a String.");
     }
 
-    public Boolean getRemoveStopWords() {
-        return parseBoolean(get(KEY_REMOVE_STOP_WORDS));
+    public Object getRemoveStopWords() {
+        final String value = get(KEY_REMOVE_STOP_WORDS);
+        if (value == null) {
+            return null;
+        }
+        final String[] commaArray = parseCommaArray(value);
+        if (commaArray.length == 1 && (commaArray[0].equals("false") || commaArray[0].equals("true"))) {
+            return parseBoolean(value);
+        }
+        return commaArray;
     }
 
     private static final String KEY_REMOVE_WORDS_IF_NO_RESULT = "removeWordsIfNoResults";
@@ -981,6 +1023,97 @@ public class Query {
         return null;
     }
 
+    private static final String KEY_EXACT_ON_SINGLE_WORD_QUERY = "exactOnSingleWordQuery";
+
+    public @NonNull Query setExactOnSingleWordQuery(ExactOnSingleWordQuery type) {
+        if (type == null) {
+            set(KEY_EXACT_ON_SINGLE_WORD_QUERY, null);
+        } else {
+            switch (type) {
+                case NONE:
+                    set(KEY_EXACT_ON_SINGLE_WORD_QUERY, "none");
+                    break;
+                case WORD:
+                    set(KEY_EXACT_ON_SINGLE_WORD_QUERY, "word");
+                    break;
+                case ATTRIBUTE:
+                    set(KEY_EXACT_ON_SINGLE_WORD_QUERY, "attribute");
+                    break;
+            }
+        }
+        return this;
+    }
+
+    public ExactOnSingleWordQuery getExactOnSingleWordQuery()
+    {
+        String value = get(KEY_EXACT_ON_SINGLE_WORD_QUERY);
+        if (value != null) {
+            switch (value) {
+                case "none":
+                    return ExactOnSingleWordQuery.NONE;
+                case "word":
+                    return ExactOnSingleWordQuery.WORD;
+                case "attribute":
+                    return ExactOnSingleWordQuery.ATTRIBUTE;
+            }
+        }
+        return null;
+    }
+
+    private static final String KEY_ALTERNATIVES_AS_EXACT = "alternativesAsExact";
+
+    public @NonNull Query setAlternativesAsExact(AlternativesAsExact[] types) {
+        if (types == null) {
+            set(KEY_ALTERNATIVES_AS_EXACT, null);
+        } else {
+            List<String> stringList = new ArrayList<>(types.length);
+            for (AlternativesAsExact type : types) {
+                switch (type) {
+                    case IGNORE_PLURALS:
+                        stringList.add("ignorePlurals");
+                        break;
+                    case MULTI_WORDS_SYNONYM:
+                        stringList.add("multiWordsSynonym");
+                        break;
+                    case SINGLE_WORD_SYNONYM:
+                        stringList.add("singleWordSynonym");
+                        break;
+                }
+            }
+            String alternatives = TextUtils.join(",", stringList);
+            set(KEY_ALTERNATIVES_AS_EXACT, alternatives);
+        }
+        return this;
+    }
+
+    public AlternativesAsExact[] getAlternativesAsExact()
+    {
+        String alternativesStr = get(KEY_ALTERNATIVES_AS_EXACT);
+        if (alternativesStr == null) {
+            return null;
+        }
+
+        String[] stringList = TextUtils.split(alternativesStr, ",");
+        AlternativesAsExact[] alternatives = new AlternativesAsExact[stringList.length];
+
+        for (int i = 0, stringListLength = stringList.length; i < stringListLength; i++) {
+            String alternative = stringList[i];
+            switch (alternative) {
+                case "ignorePlurals":
+                    alternatives[i] = AlternativesAsExact.IGNORE_PLURALS;
+                    break;
+                case "multiWordsSynonym":
+                    alternatives[i] = AlternativesAsExact.MULTI_WORDS_SYNONYM;
+                    break;
+                case "singleWordSynonym":
+                    alternatives[i] = AlternativesAsExact.SINGLE_WORD_SYNONYM;
+                    break;
+            }
+        }
+        return alternatives;
+    }
+
+
     // ----------------------------------------------------------------------
     // Parsing/serialization
     // ----------------------------------------------------------------------
@@ -996,7 +1129,7 @@ public class Query {
                 String key = entry.getKey();
                 if (stringBuilder.length() > 0)
                     stringBuilder.append('&');
-                stringBuilder.append(urlEncode(entry.getKey()));
+                stringBuilder.append(urlEncode(key));
                 String value = entry.getValue();
                 if (value != null) {
                     stringBuilder.append('=');
