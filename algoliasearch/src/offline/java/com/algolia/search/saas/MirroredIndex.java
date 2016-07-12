@@ -784,6 +784,83 @@ public class MirroredIndex extends Index
     }
 
     // ----------------------------------------------------------------------
+    // Multiple queries
+    // ----------------------------------------------------------------------
+
+    @Override
+    public Request multipleQueriesAsync(final @NonNull List<Query> queries, final Client.MultipleQueriesStrategy strategy, @NonNull CompletionHandler completionHandler) {
+        // TODO: Implement same fallback strategy as `search()`.
+        return super.multipleQueriesAsync(queries, strategy, completionHandler);
+    }
+
+    /**
+     * Run multiple queries on this index, explicitly targeting the online API.
+     */
+    private JSONObject multipleQueriesOnline(@NonNull List<Query> queries, String strategy) throws AlgoliaException
+    {
+        try {
+            JSONObject content = super.multipleQueries(queries, strategy);
+            content.put(JSON_KEY_ORIGIN, JSON_VALUE_ORIGIN_REMOTE);
+            return content;
+        }
+        catch (JSONException e) {
+            throw new AlgoliaException("Failed to patch JSON result");
+        }
+    }
+
+    /**
+     * Run multiple queries on this index, explicitly targeting the offline mirror.
+     */
+    private JSONObject multipleQueriesOffline(@NonNull List<Query> queries, String strategy) throws AlgoliaException
+    {
+        if (!mirrored) {
+            throw new IllegalStateException("Cannot run offline search on a non-mirrored index");
+        }
+        // TODO: Move to `LocalIndex` to factorize implementation between platforms?
+        try {
+            JSONArray results = new JSONArray();
+            ensureLocalIndex();
+            boolean shouldProcess = true;
+            for (Query query: queries) {
+                // Implement the "stop if enough matches" strategy.
+                if (!shouldProcess) {
+                    JSONObject returnedContent = new JSONObject()
+                        .put("hits", new JSONArray())
+                        .put("page", 0)
+                        .put("nbHits", 0)
+                        .put("nbPages", 0)
+                        .put("hitsPerPage", 0)
+                        .put("processingTimeMS", 1)
+                        .put("params", query.build())
+                        .put("index", this.getIndexName())
+                        .put("processed", false);
+                    results.put(returnedContent);
+                    continue;
+                }
+
+                JSONObject returnedContent = this._searchMirror(query);
+                returnedContent.put("index", this.getIndexName());
+                results.put(returnedContent);
+
+                // Implement the "stop if enough matches strategy".
+                if (strategy != null && strategy.equals(Client.MultipleQueriesStrategy.STOP_IF_ENOUGH_MATCHES.toString())) {
+                    int nbHits = returnedContent.optInt("nbHits");
+                    int hitsPerPage = returnedContent.optInt("hitsPerPage");
+                    if (nbHits >= hitsPerPage) {
+                        shouldProcess = false;
+                    }
+                }
+            }
+            return new JSONObject()
+                .put("results", results)
+                .put(JSON_KEY_ORIGIN, JSON_VALUE_ORIGIN_LOCAL);
+        }
+        catch (JSONException e) {
+            throw new RuntimeException(e); // should never happen
+        }
+    }
+
+    // ----------------------------------------------------------------------
     // Browse
     // ----------------------------------------------------------------------
     // NOTE: Contrary to search, there is no point in transparently switching from online to offline when browsing,
