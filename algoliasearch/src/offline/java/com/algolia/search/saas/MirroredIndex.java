@@ -375,7 +375,7 @@ public class MirroredIndex extends Index
                 return;
             syncing = true;
         }
-        getClient().buildExecutorService.submit(new Runnable()
+        getClient().localBuildExecutorService.submit(new Runnable()
         {
             @Override
             public void run()

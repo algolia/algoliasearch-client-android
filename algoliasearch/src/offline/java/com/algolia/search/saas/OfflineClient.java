@@ -53,8 +53,8 @@ public class OfflineClient extends Client
     // NOTE: Although serialization is only strictly needed at the index level, we use global queues as a way to limit
     // resource consumption by the SDK.
 
-    /** Background queue used to build indices. */
-    protected ExecutorService buildExecutorService = Executors.newSingleThreadExecutor();
+    /** Background queue used to build local indices. */
+    protected ExecutorService localBuildExecutorService = Executors.newSingleThreadExecutor();
 
     /** Background queue used to search local indices. */
     protected ExecutorService localSearchExecutorService = Executors.newSingleThreadExecutor();
