@@ -41,9 +41,11 @@ Table of Contents
 **Commands Reference**
 
 Getting started
+
 1. [Init Index](#install-and-init---initindex)
 
 Search
+
 1. [Search](#search)
 1. [Find by id](#find-by-ids---getobjects)
 
@@ -735,7 +737,7 @@ They are three scopes:
 
 **Geo-Search**
 
-- [aroundLatitudeLongitude(float, float)](#aroundlatitudelongitude) `search`
+- [aroundLatitudeLongitude(float, float)](#aroundlatitudelongitudefloat-float) `search`
 - [aroundLatitudeLongitude(float, float, int, int)](#aroundlatitudelongitude) `search`
 - [aroundLatitudeLongitudeViaIP()](#aroundlatitudelongitudeviaip) `search`
 - [aroundLatitudeLongitudeViaIP(int, int)](#aroundlatitudelongitudeviaip) `search`
