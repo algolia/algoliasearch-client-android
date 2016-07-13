@@ -996,8 +996,8 @@ public class MirroredIndex extends Index
 
                 // Implement the "stop if enough matches strategy".
                 if (strategy != null && strategy.equals(Client.MultipleQueriesStrategy.STOP_IF_ENOUGH_MATCHES.toString())) {
-                    int nbHits = returnedContent.optInt("nbHits");
-                    int hitsPerPage = returnedContent.optInt("hitsPerPage");
+                    int nbHits = returnedContent.getInt("nbHits");
+                    int hitsPerPage = returnedContent.getInt("hitsPerPage");
                     if (nbHits >= hitsPerPage) {
                         shouldProcess = false;
                     }
@@ -1008,7 +1008,9 @@ public class MirroredIndex extends Index
                 .put(JSON_KEY_ORIGIN, JSON_VALUE_ORIGIN_LOCAL);
         }
         catch (JSONException e) {
-            throw new RuntimeException(e); // should never happen
+            // The `put()` calls should never throw, but the `getInt()` calls may if individual queries return
+            // unexpected results.
+            throw new AlgoliaException("When running multiple queries", e);
         }
     }
 
