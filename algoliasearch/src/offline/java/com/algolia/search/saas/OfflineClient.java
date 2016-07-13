@@ -46,9 +46,18 @@ public class OfflineClient extends Client
     // Threading facilities
     // --------------------
     // Used by the indices to coordinate their execution.
+    //
+    // NOTE: The build and search queues must be serial to prevent concurrent searches or builds on a given index, but
+    // may be distinct because building can be done in parallel with search.
+    //
+    // NOTE: Although serialization is only strictly needed at the index level, we use global queues as a way to limit
+    // resource consumption by the SDK.
 
     /** Background queue used to build indices. */
     protected ExecutorService buildExecutorService = Executors.newSingleThreadExecutor();
+
+    /** Background queue used to search local indices. */
+    protected ExecutorService localSearchExecutorService = Executors.newSingleThreadExecutor();
 
     /**
      * Construct a new offline-enabled API client.

@@ -828,7 +828,7 @@ public class MirroredIndex extends Index
             throw new IllegalStateException("Mirroring not activated on this index");
         }
         final Query queryCopy = new Query(query);
-        return getClient().new AsyncTaskRequest(completionHandler) {
+        return getClient().new AsyncTaskRequest(completionHandler, getClient().localSearchExecutorService) {
             @NonNull
             @Override
             JSONObject run() throws AlgoliaException {
@@ -916,7 +916,7 @@ public class MirroredIndex extends Index
         for (Query query: queries) {
             queriesCopy.add(new Query(query));
         }
-        return getClient().new AsyncTaskRequest(completionHandler) {
+        return getClient().new AsyncTaskRequest(completionHandler, getClient().localSearchExecutorService) {
             @NonNull
             @Override
             JSONObject run() throws AlgoliaException {
@@ -1035,7 +1035,7 @@ public class MirroredIndex extends Index
             throw new IllegalStateException("Mirroring not activated on this index");
         }
         final Query queryCopy = new Query(query);
-        return getClient().new AsyncTaskRequest(completionHandler) {
+        return getClient().new AsyncTaskRequest(completionHandler, getClient().localSearchExecutorService) {
             @NonNull
             @Override
             JSONObject run() throws AlgoliaException {
@@ -1058,7 +1058,7 @@ public class MirroredIndex extends Index
             throw new IllegalStateException("Mirroring not activated on this index");
         }
         final Query query = new Query().set("cursor", cursor);
-        return getClient().new AsyncTaskRequest(completionHandler) {
+        return getClient().new AsyncTaskRequest(completionHandler, getClient().localSearchExecutorService) {
             @NonNull
             @Override
             JSONObject run() throws AlgoliaException {
