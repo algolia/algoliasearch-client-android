@@ -920,7 +920,7 @@ public class MirroredIndex extends Index
             @NonNull
             @Override
             JSONObject run() throws AlgoliaException {
-                return multipleQueriesOffline(queriesCopy, strategy == null ? null : strategy.toString());
+                return _multipleQueriesOffline(queriesCopy, strategy == null ? null : strategy.toString());
             }
         }.start();
     }
@@ -963,7 +963,7 @@ public class MirroredIndex extends Index
     /**
      * Run multiple queries on this index, explicitly targeting the offline mirror.
      */
-    private JSONObject multipleQueriesOffline(@NonNull List<Query> queries, String strategy) throws AlgoliaException
+    private JSONObject _multipleQueriesOffline(@NonNull List<Query> queries, String strategy) throws AlgoliaException
     {
         if (!mirrored) {
             throw new IllegalStateException("Cannot run offline search on a non-mirrored index");
