@@ -54,9 +54,12 @@ Offline features are brought by Algolia's **Offline SDK**, which is actually com
 3. When initializing your client, instantiate an `OfflineClient` instead of a `Client`. This requires you to specify an additional argument: the directory in which local indices will be stored:
 
     ```java
-    client = new OfflineClient("YOUR_APP_ID", "YOUR_API_KEY", new File(context.getFilesDir(), "algolia"));
+    client = new OfflineClient(context, "YOUR_APP_ID", "YOUR_API_KEY");
     ```
 
+    ... where `context` is a valid Android `Context`.
+
+    By default, the client will store data for local indices in an `algolia` subdirectory of the application's files directory. Alternatively, you may specify it during the instantiation of the client.
     *Warning: although using the cache directory may be tempting, we advise you against doing so. There is no guarantee that all files will be deleted together, and a partial delete could leave an index in an inconsistent state.*
 
 4. **Enable offline mode**:
