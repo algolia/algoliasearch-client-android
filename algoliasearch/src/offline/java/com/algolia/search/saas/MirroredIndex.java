@@ -647,6 +647,9 @@ public class MirroredIndex extends Index
          * Construct a new mixed online/offline request.
          */
         public OnlineOfflineRequest(@NonNull CompletionHandler completionHandler) {
+            if (!mirrored) {
+                throw new IllegalStateException("This index is not mirrored");
+            }
             this.completionHandler = completionHandler;
         }
 
@@ -678,7 +681,7 @@ public class MirroredIndex extends Index
             // Since most methods use the main thread for callbacks, we have to use it as well.
 
             // If the strategy is "offline only", well, go offline straight away.
-            if (requestStrategy == Strategy.OFFLINE_ONLY && mirrored) {
+            if (requestStrategy == Strategy.OFFLINE_ONLY) {
                 startOffline();
             }
             // Otherwise, always launch an online request.
