@@ -686,12 +686,12 @@ public class MirroredIndex extends Index
             }
             // Otherwise, always launch an online request.
             else {
-                if (requestStrategy == Strategy.ONLINE_ONLY) {
+                if (requestStrategy == Strategy.ONLINE_ONLY || !getLocalIndex().exists()) {
                     mayRunOfflineRequest = false;
                 }
                 startOnline();
             }
-            if (requestStrategy == Strategy.FALLBACK_ON_TIMEOUT) {
+            if (requestStrategy == Strategy.FALLBACK_ON_TIMEOUT && mayRunOfflineRequest) {
                 // Schedule an offline request to start after a certain delay.
                 startOfflineRunnable = new Runnable() {
                     @Override
@@ -738,12 +738,6 @@ public class MirroredIndex extends Index
             offlineRequest = startOfflineRequest(new CompletionHandler() {
                 @Override
                 public void requestCompleted(JSONObject content, AlgoliaException error) {
-                    // NOTE: If we reach this handler, it means the offline request has not been cancelled.
-                    // WARNING: A 404 error likely indicates that the local mirror has not been synced yet, so absorb it...
-                    // ... unless the online request has already finished, meaning the offline has to return a result.
-                    if (error != null && error.getStatusCode() == 404 && onlineRequest != null && onlineRequest.isFinished()) {
-                        return;
-                    }
                     if (onlineRequest != null) {
                         onlineRequest.cancel();
                     }
