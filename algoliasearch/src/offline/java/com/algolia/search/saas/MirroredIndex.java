@@ -216,11 +216,21 @@ public class MirroredIndex extends Index
     /**
      * Lazy instantiate the local index.
      */
-    protected void ensureLocalIndex()
+    private synchronized void ensureLocalIndex()
     {
         if (localIndex == null) {
             localIndex = new LocalIndex(getClient().getRootDataDir().getAbsolutePath(), getClient().getApplicationID(), getIndexName());
         }
+    }
+
+    /**
+     * Get the local index, lazy instantiating it if needed.
+     *
+     * @return The local index.
+     */
+    protected LocalIndex getLocalIndex() {
+        ensureLocalIndex();
+        return localIndex;
     }
 
     private File getTempDir()
@@ -481,11 +491,10 @@ public class MirroredIndex extends Index
             stats.fileCount = objectFiles.size();
 
             // Build the index.
-            ensureLocalIndex();
             String[] objectFilePaths = new String[objectFiles.size()];
             for (int i = 0; i < objectFiles.size(); ++i)
                 objectFilePaths[i] = objectFiles.get(i).getAbsolutePath();
-            int status = localIndex.build(settingsFile.getAbsolutePath(), objectFilePaths, true /* clearIndex */);
+            int status = getLocalIndex().build(settingsFile.getAbsolutePath(), objectFilePaths, true /* clearIndex */);
             if (status != 200) {
                 throw new AlgoliaException("Build index failed", status);
             }
@@ -840,8 +849,7 @@ public class MirroredIndex extends Index
     private JSONObject _searchOffline(@NonNull Query query) throws AlgoliaException
     {
         try {
-            ensureLocalIndex();
-            SearchResults searchResults = localIndex.search(query.build());
+            SearchResults searchResults = getLocalIndex().search(query.build());
             if (searchResults.getStatusCode() == 200) {
                 String jsonString = new String(searchResults.getData(), "UTF-8");
                 JSONObject json = new JSONObject(jsonString);
@@ -971,7 +979,6 @@ public class MirroredIndex extends Index
         // TODO: Move to `LocalIndex` to factorize implementation between platforms?
         try {
             JSONArray results = new JSONArray();
-            ensureLocalIndex();
             boolean shouldProcess = true;
             for (Query query: queries) {
                 // Implement the "stop if enough matches" strategy.
@@ -1070,8 +1077,7 @@ public class MirroredIndex extends Index
     private JSONObject _browseMirror(@NonNull Query query) throws AlgoliaException
     {
         try {
-            ensureLocalIndex();
-            SearchResults searchResults = localIndex.browse(query.build());
+            SearchResults searchResults = getLocalIndex().browse(query.build());
             if (searchResults.getStatusCode() == 200) {
                 String jsonString = new String(searchResults.getData(), "UTF-8");
                 JSONObject json = new JSONObject(jsonString);
