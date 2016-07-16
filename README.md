@@ -2,7 +2,7 @@
 
 # Algolia Search API Client for Android
 
-<!--/NO_HTML-->
+
 
 
 Note: If you were using **version 2.x** of our Android client, read the [migration guide to version 3.x](https://github.com/algolia/algoliasearch-client-android/wiki/Migration-guide-to-version-3.x).
@@ -11,11 +11,13 @@ Note: If you were using **version 2.x** of our Android client, read the [migrati
 
 
 
-<!--NO_HTML-->
+
+
+
 
 [Algolia Search](https://www.algolia.com) is a hosted full-text, numerical, and faceted search engine capable of delivering realtime results from the first keystroke.
 
-<!--/NO_HTML-->
+
 
 Our Android client lets you easily use the [Algolia Search API](https://www.algolia.com/doc/rest) from your Android application. It wraps the [Algolia Search REST API](https://www.algolia.com/doc/rest).
 
@@ -27,10 +29,9 @@ Our Android client lets you easily use the [Algolia Search API](https://www.algo
 
 
 
-<!--NO_HTML-->
 
-Table of Contents
------------------
+## Table of Contents
+
 **Getting Started**
 
 1. [Setup](#setup)
@@ -88,12 +89,9 @@ Advanced
 1. [Get Logs](#get-logs---getlogs)
 
 
-<!--/NO_HTML-->
 
-<!--NO_HTML-->
+## Guides & Tutorials
 
-Guides & Tutorials
-================
 Check our [online guides](https://www.algolia.com/doc):
  * [Data Formatting](https://www.algolia.com/doc/indexing/formatting-your-data)
  * [Import and Synchronize data](https://www.algolia.com/doc/indexing/import-synchronize-data/android)
@@ -109,13 +107,14 @@ Check our [online guides](https://www.algolia.com/doc):
  * [REST API](https://www.algolia.com/doc/rest)
 
 
+
+
+
+
+
+
+
 <!--/NO_HTML-->
-
-
-
-
-
-
 
 
 
@@ -541,7 +540,7 @@ index.deleteByQueryAsync(query, null);
 
 
 
-### Wait for an indexing operation - `waitTask`
+### Wait for operations - `waitTask`
 
 All write operations in Algolia are asynchronous by design.
 
@@ -1711,7 +1710,6 @@ Everything that can be done using the REST API can be done using those clients.
 
 The REST API lets your interact directly with Algolia platforms from anything that can send an HTTP request
 [Go to the REST API doc](https://algolia.com/doc/rest)
-
 
 
 
