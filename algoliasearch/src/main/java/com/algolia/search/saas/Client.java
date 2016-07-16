@@ -97,7 +97,7 @@ public class Client {
     // ----------------------------------------------------------------------
 
     /**
-     * Create a new Algolia Search client targetting the default hosts.
+     * Create a new Algolia Search client targeting the default hosts.
      *
      * NOTE: This is the recommended way to initialize a client is most use cases.
      *
@@ -378,7 +378,7 @@ public class Client {
     }
 
     /**
-     * Run multiple queries, potentially targetting multiple indexes, with one API call.
+     * Run multiple queries, potentially targeting multiple indexes, with one API call.
      *
      * @param queries The queries to run.
      * @param strategy The strategy to use.
