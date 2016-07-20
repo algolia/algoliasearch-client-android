@@ -65,9 +65,6 @@ Manage Indices
 1. [Copy index](#copy-index---copyindexasync)
 1. [Move index](#move-index---moveindexasync)
 
-Api Keys
-
-1. [Generate key](#generate-key)
 
 
 
@@ -78,12 +75,6 @@ Advanced
 1. [Multiple queries](#multiple-queries---multiplequeriesasync)
 1. [Delete by query](#delete-by-query---deletebyqueryasync)
 1. [Backup / Export an index](#backup--export-an-index---browseasync)
-1. [List api keys](#list-api-keys)
-1. [Add user key](#add-user-key)
-1. [Update user key](#update-user-key)
-1. [Delete user key](#delete-user-key)
-1. [Get key permissions](#get-key-permissions)
-1. [Get Logs](#get-logs)
 
 
 
@@ -403,6 +394,9 @@ index.enableSearchCache(300, 20);
 
 ## Indexing
 
+*Note: In most use cases, updating indices is better done from your back-end. Methods in this section are documented for the sake of completeness.*
+
+
 ### Add objects - `addObjectsAsync`
 
 Each entry in an index has a unique identifier called `objectID`. There are two ways to add an entry to the index:
@@ -575,6 +569,9 @@ If you want to ensure multiple objects have been indexed, you only need to check
 the biggest `taskID`.
 
 ## Settings
+
+*Note: In most use cases, updating indices is better done from your back-end. Methods in this section are documented for the sake of completeness.*
+
 
 ### Get settings - `getSettingsAsync`
 
@@ -1601,6 +1598,9 @@ For example:
 
 ## Manage Indices
 
+*Note: In most use cases, updating indices is better done from your back-end. Methods in this section are documented for the sake of completeness.*
+
+
 ### Create an index
 
 To create an index, you need to perform any indexing operation like:
@@ -1757,6 +1757,35 @@ BrowseIterator iterator = new BrowseIterator(index, query, new BrowseIterator.Br
 iterator.start();
 ```
 
+
+### Multiple queries - `multipleQueriesAsync`
+
+You can send multiple queries with a single API call using a batch of queries:
+
+```java
+// perform 3 queries in a single API call:
+//  - 1st query targets index `categories`
+//  - 2nd and 3rd queries target index `products`
+
+List<IndexQuery> queries = new ArrayList<>();
+
+queries.add(new IndexQuery("categories", new Query(myQueryString).setHitsPerPage(3)));
+queries.add(new IndexQuery("products", new Query(myQueryString).setHitsPerPage(3).set("filters", "_tags:promotion"));
+queries.add(new IndexQuery("products", new Query(myQueryString).setHitsPerPage(10)));
+
+client.multipleQueriesAsync(queries, new CompletionHandler() {
+    @Override
+    public void requestCompleted(JSONObject content, AlgoliaException error) {
+        // [...]
+    }
+});
+```
+
+The resulting JSON answer contains a ```results``` array storing the underlying queries answers. The answers order is the same than the requests order.
+
+You can specify a `strategy` parameter to optimize your multiple queries:
+- `none`: Execute the sequence of queries until the end.
+- `stopIfEnoughMatches`: Execute the sequence of queries until the number of hits is reached by the sum of hits.
 
 
 ### REST API
