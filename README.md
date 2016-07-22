@@ -42,15 +42,15 @@ Getting started
 
 Search
 
-1. [Search in an index](#search-in-an-index---search)
-1. [Find by IDs](#find-by-ids---getobjects)
+1. [Search in an index](#search-in-an-index---searchasync)
+1. [Find by IDs](#find-by-ids---getobjectsasync)
 
 Indexing
 
-1. [Add objects](#add-objects---addobjects)
-1. [Update objects](#update-objects---saveobjects)
-1. [Partial update](#partial-update---partialupdateobjects)
-1. [Delete objects](#delete-objects---deleteobjects)
+1. [Add objects](#add-objects---addobjectsasync)
+1. [Update objects](#update-objects---saveobjectsasync)
+1. [Partial update](#partial-update---partialupdateobjectsasync)
+1. [Delete objects](#delete-objects---deleteobjectsasync)
 
 Settings
 
@@ -59,31 +59,22 @@ Settings
 
 Manage Indices
 
-1. [List indices](#list-indices---listindexes)
-1. [Delete index](#delete-index---deleteindex)
-1. [Clear index](#clear-index---clearindex)
-1. [Copy index](#copy-index---copyindex)
-1. [Move index](#move-index---moveindex)
+1. [List indices](#list-indices---listindexesasync)
+1. [Delete index](#delete-index---deleteindexasync)
+1. [Clear index](#clear-index---clearindexasync)
+1. [Copy index](#copy-index---copyindexasync)
+1. [Move index](#move-index---moveindexasync)
 
-Api Keys
-
-1. [Generate key](#generate-key---generatesecuredapikey)
 
 
 
 Advanced
 
-1. [Custom batch](#custom-batch---batch)
-1. [Wait for operations](#wait-for-operations---waittask)
-1. [Multiple queries](#multiple-queries---multiplequeries)
-1. [Delete by query](#delete-by-query---deletebyquery)
-1. [Backup / Export an index](#backup--export-an-index---browse)
-1. [List api keys](#list-api-keys---listapikeys)
-1. [Add user key](#add-user-key---adduserkey)
-1. [Update user key](#update-user-key---updateuserkey)
-1. [Delete user key](#delete-user-key---deleteuserkey)
-1. [Get key permissions](#get-key-permissions---getuserkeyacl)
-1. [Get Logs](#get-logs---getlogs)
+1. [Custom batch](#custom-batch---batchasync)
+1. [Wait for operations](#wait-for-operations---waittaskasync)
+1. [Multiple queries](#multiple-queries---multiplequeriesasync)
+1. [Delete by query](#delete-by-query---deletebyqueryasync)
+1. [Backup / Export an index](#backup--export-an-index---browseasync)
 
 
 
@@ -223,7 +214,7 @@ index.searchAsync(new Query("jim"), new CompletionHandler() {
 
 ## Search
 
-### Search in an index - `search`
+### Search in an index - `searchAsync`
 
 
 
@@ -289,7 +280,7 @@ Here is the list of parameters you can use with the search method (`search` [sco
 Parameters that can also be used in a setSettings also have the `indexing` [scope](#scope)
 
 **Search**
-- [setQueryString](#setquerystring) `search`
+- [query](#query) `search`
 
 **Attributes**
 - [attributesToRetrieve](#attributestoretrieve) `settings`, `search`
@@ -328,9 +319,9 @@ Parameters that can also be used in a setSettings also have the `indexing` [scop
 **Query Strategy**
 - [queryType](#querytype) `settings`, `search`
 - [removeWordsIfNoResults](#removewordsifnoresults) `settings`, `search`
-- [enableAdvancedSyntax](#enableadvancedsyntax) `settings`, `search`
+- [advancedSyntax](#advancedsyntax) `settings`, `search`
 - [optionalWords](#optionalwords) `settings`, `search`
-- [enableRemoveStopWords](#enableremovestopwords) `settings`, `search`
+- [removeStopWords](#removestopwords) `settings`, `search`
 - [exactOnSingleWordQuery](#exactonsinglewordquery) `settings`, `search`
 - [alternativesAsExact](#alternativesasexact) `settings`, `search`
 
@@ -340,11 +331,11 @@ Parameters that can also be used in a setSettings also have the `indexing` [scop
 - [numericFilters (deprecated)](#numericfilters-deprecated) `search`
 - [tagFilters (deprecated)](#tagfilters-deprecated) `search`
 - [facetFilters (deprecated)](#facetfilters-deprecated) `search`
-- [enableAnalytics](#enableanalytics) `settings`, `search`
+- [analytics](#analytics) `search`
 
 <!--/PARAMETERS_LINK-->
 
-### Find by IDs - `getObjects`
+### Find by IDs - `getObjectsAsync`
 
 You can easily retrieve an object using its `objectID` and optionally specify a comma separated list of attributes you want:
 
@@ -403,7 +394,10 @@ index.enableSearchCache(300, 20);
 
 ## Indexing
 
-### Add objects - `addObjects`
+*Note: In most use cases, updating indices is better done from your back-end. Methods in this section are documented for the sake of completeness.*
+
+
+### Add objects - `addObjectsAsync`
 
 Each entry in an index has a unique identifier called `objectID`. There are two ways to add an entry to the index:
 
@@ -440,7 +434,7 @@ index.addObjectAsync(object, "myID", null);
 ```
 
 
-### Update objects - `saveObjects`
+### Update objects - `saveObjectsAsync`
 
 You have three options when updating an existing object:
 
@@ -458,7 +452,7 @@ JSONObject object = new JSONObject()
 index.saveObjectAsync(object, "myID", null);
 ```
 
-### Partial update - `partialUpdateObjects`
+### Partial update - `partialUpdateObjectsAsync`
 
 You have many ways to update an object's attributes:
 
@@ -512,7 +506,7 @@ Note: Here we are decrementing the value by `42`. To decrement just by one, put
 `value:1`.
 
 
-### Delete objects - `deleteObjects`
+### Delete objects - `deleteObjectsAsync`
 
 You can delete an object using its `objectID`:
 
@@ -520,7 +514,7 @@ You can delete an object using its `objectID`:
 index.deleteObjectAsync("myID", null);
 ```
 
-### Delete by query - `deleteByQuery`
+### Delete by query - `deleteByQueryAsync`
 
 You can delete all objects matching a single query with the following code. Internally, the API client performs the query, deletes all matching hits, and waits until the deletions have been applied.
 
@@ -532,7 +526,7 @@ Query query = /* [ ... ] */;
 index.deleteByQueryAsync(query, null);
 ```
 
-### Wait for operations - `waitTask`
+### Wait for operations - `waitTaskAsync`
 
 All write operations in Algolia are asynchronous by design.
 
@@ -575,6 +569,9 @@ If you want to ensure multiple objects have been indexed, you only need to check
 the biggest `taskID`.
 
 ## Settings
+
+*Note: In most use cases, updating indices is better done from your back-end. Methods in this section are documented for the sake of completeness.*
+
 
 ### Get settings - `getSettingsAsync`
 
@@ -652,11 +649,11 @@ Parameters that can be override at search time also have the `indexing` [scope](
 **Query Strategy**
 - [queryType](#querytype) `settings`, `search`
 - [removeWordsIfNoResults](#removewordsifnoresults) `settings`, `search`
-- [enableAdvancedSyntax](#enableadvancedsyntax) `settings`, `search`
+- [advancedSyntax](#advancedsyntax) `settings`, `search`
 - [optionalWords](#optionalwords) `settings`, `search`
-- [enableRemoveStopWords](#enableremovestopwords) `settings`, `search`
+- [removeStopWords](#removestopwords) `settings`, `search`
 - [disablePrefixOnAttributes](#disableprefixonattributes) `settings`
-- [disableExactOnAttributes](#disableexactonattributes) `settings`
+- [disableExactOnAttributes](#disableexactonattributes) `settings`, `search`
 - [exactOnSingleWordQuery](#exactonsinglewordquery) `settings`, `search`
 - [alternativesAsExact](#alternativesasexact) `settings`, `search`
 
@@ -689,7 +686,7 @@ They are three scopes:
 #### Parameters List
 
 **Search**
-- [setQueryString](#setquerystring) `search`
+- [query](#query) `search`
 
 **Attributes**
 - [attributesForFaceting](#attributesforfaceting) `settings`
@@ -714,6 +711,7 @@ They are three scopes:
 - [highlightPreTag](#highlightpretag) `settings`, `search`
 - [highlightPostTag](#highlightposttag) `settings`, `search`
 - [snippetEllipsisText](#snippetellipsistext) `settings`, `search`
+- [restrictHighlightAndSnippetArrays](#restricthighlightandsnippetarrays) `settings`, `search`
 
 **Pagination**
 - [page](#page) `search`
@@ -739,11 +737,11 @@ They are three scopes:
 **Query Strategy**
 - [queryType](#querytype) `settings`, `search`
 - [removeWordsIfNoResults](#removewordsifnoresults) `settings`, `search`
-- [enableAdvancedSyntax](#enableadvancedsyntax) `settings`, `search`
+- [advancedSyntax](#advancedsyntax) `settings`, `search`
 - [optionalWords](#optionalwords) `settings`, `search`
-- [enableRemoveStopWords](#enableremovestopwords) `settings`, `search`
+- [removeStopWords](#removestopwords) `settings`, `search`
 - [disablePrefixOnAttributes](#disableprefixonattributes) `settings`
-- [disableExactOnAttributes](#disableexactonattributes) `settings`
+- [disableExactOnAttributes](#disableexactonattributes) `settings`, `search`
 - [exactOnSingleWordQuery](#exactonsinglewordquery) `settings`, `search`
 - [alternativesAsExact](#alternativesasexact) `settings`, `search`
 
@@ -756,13 +754,13 @@ They are three scopes:
 - [numericFilters (deprecated)](#numericfilters-deprecated) `search`
 - [tagFilters (deprecated)](#tagfilters-deprecated) `search`
 - [facetFilters (deprecated)](#facetfilters-deprecated) `search`
-- [enableAnalytics](#enableanalytics) `settings`, `search`
+- [analytics](#analytics) `search`
 - [altCorrections](#altcorrections) `settings`
 - [placeholders](#placeholders) `settings`
 
 ### Search
 
-#### setQueryString
+#### query
 
 - scope: `search`
 - type: `string`
@@ -964,20 +962,32 @@ The list of keywords is:
 - default: `""`
 
 
-List of object attributes that you want to use for faceting.
+You can use [facets](#facets) to retrieve only a part of your attributes declared in
+**[attributesForFaceting](#attributesforfaceting)** attributes.
+It will not filter your results, if you want to filter results you should use [filters](#filters).
 
 For each of the declared attributes, you'll be able to retrieve a list of the most relevant facet values,
 and their associated count for the current query.
 
-Attributes are separated by a comma.
+** Example **
 
-For example, `"category,author"`.
+If you have defined in your **[attributesForFaceting](#attributesforfaceting)**:
+
+['category', 'author', 'nb_views', 'nb_downloads']
+
+But for the current search want to retrieve only facet values for `category` and `author`.
+
+You can specify your attributes coma separated.
+
+For this example:  `"category,author"`.
 
 You can also use JSON string array encoding.
 
-For example, `["category","author"]`.
+For this example: `["category","author"]`.
 
-Only the attributes that have been added in **attributesForFaceting** index setting can be used in this parameter.
+**Warnings**
+
+- When using [facets](#facets) in a search query, only attributes that have been added in **attributesForFaceting** index setting can be used in this parameter.
 You can also use `*` to perform faceting on all attributes specified in `attributesForFaceting`.
 If the number of results is important, the count can be approximate,
 the attribute `exhaustiveFacetsCount` in the response is true when the count is exact.
@@ -1058,6 +1068,15 @@ Specify the string that is inserted after the highlighted parts in the query res
 
 String used as an ellipsis indicator when a snippet is truncated.
 Defaults to an empty string for all accounts created before 10/2/2016, and to … (UTF-8 U+2026) for accounts created after that date.
+
+#### restrictHighlightAndSnippetArrays
+
+- scope: `settings`, `search`
+- type: `boolean`
+- default: `false`
+
+
+If set to true, restrict arrays in highlights and snippets to items that matched the query at least partially else return all array items in highlights and snippets.
 
 ### Pagination
 
@@ -1301,7 +1320,7 @@ This is equivalent to transforming the AND operand between query terms to an OR 
 No specific processing is done when a query does not return any results (default behavior).
 
 
-#### enableAdvancedSyntax
+#### advancedSyntax
 
 - scope: `settings`, `search`
 - type: `boolean`
@@ -1324,23 +1343,23 @@ This syntax allow to do two things:
 
 A string that contains the comma separated list of words that should be considered as optional when found in the query.
 
-#### enableRemoveStopWords
+#### removeStopWords
 
 - scope: `settings`, `search`
-- type: `boolean`
+- type: `boolean`, `array of strings`
 - default: `false`
 
 
-Remove stop words from the query **before** executing it. Defaults to `false`.
-Use a boolean to enable/disable all 41 supported languages and a comma separated list
-of iso codes of the languages you want to use consider to enable the stopwords removal
-on a subset of them (select the one you have in your records).
+Remove stop words from the query **before** executing it. It can be:
 
-In most use-cases, **you shouldn't need to enable this option**.
+- a **boolean**: enable or disable stop words for all 41 supported languages; or
+- a **list of language ISO codes** (as a comma-separated string) for which stop words should be enabled.
 
-List of 41 supported languages with their associated iso code: Arabic=ar, Armenian=hy, Basque=eu, Bengali=bn, Brazilian=pt-br, Bulgarian=bg, Catalan=ca, Chinese=zh, Czech=cs, Danish=da, Dutch=nl, English=en, Finnish=fi, French=fr, Galician=gl, German=de, Greek=el, Hindi=hi, Hungarian=hu, Indonesian=id, Irish=ga, Italian=it, Japanese=ja, Korean=ko, Kurdish=ku, Latvian=lv, Lithuanian=lt, Marathi=mr, Norwegian=no, Persian (Farsi)=fa, Polish=pl, Portugese=pt, Romanian=ro, Russian=ru, Slovak=sk, Spanish=es, Swedish=sv, Thai=th, Turkish=tr, Ukranian=uk, Urdu=ur
+In most use-cases, **we don’t recommend enabling this option**.
 
-Stop words removal is applied on query words that are not interpreted as a prefix. The behavior depends of the queryType parameter:
+List of 41 supported languages with their associated iso code: Arabic=`ar`, Armenian=`hy`, Basque=`eu`, Bengali=`bn`, Brazilian=`pt-br`, Bulgarian=`bg`, Catalan=`ca`, Chinese=`zh`, Czech=`cs`, Danish=`da`, Dutch=`nl`, English=`en`, Finnish=`fi`, French=`fr`, Galician=`gl`, German=`de`, Greek=`el`, Hindi=`hi`, Hungarian=`hu`, Indonesian=`id`, Irish=`ga`, Italian=`it`, Japanese=`ja`, Korean=`ko`, Kurdish=`ku`, Latvian=`lv`, Lithuanian=`lt`, Marathi=`mr`, Norwegian=`no`, Persian (Farsi)=`fa`, Polish=`pl`, Portugese=`pt`, Romanian=`ro`, Russian=`ru`, Slovak=`sk`, Spanish=`es`, Swedish=`sv`, Thai=`th`, Turkish=`tr`, Ukranian=`uk`, Urdu=`ur`.
+
+Stop words removal is applied on query words that are not interpreted as a prefix. The behavior depends of the `queryType` parameter:
 
 * `queryType=prefixLast` means the last query word is a prefix and it won’t be considered for stop words removal
 * `queryType=prefixNone` means no query word are prefix, stop words removal will be applied on all query words
@@ -1370,7 +1389,7 @@ This setting is useful on attributes that contain string that should not be matc
 
 #### disableExactOnAttributes
 
-- scope: `settings`
+- scope: `settings`, `search`
 - type: `array of strings`
 - default: `[]`
 
@@ -1490,6 +1509,8 @@ When enabled, the integer array is reordered to reach a better compression ratio
 - default: `[]`
 
 
+*This parameter is deprecated. Please use [filters](#filters) instead.*
+
 A string that contains the comma separated list of numeric filters you want to apply.
 The filter syntax is `attributeName` followed by `operand` followed by `value`.
 Supported operands are `<`, `<=`, `=`, `>` and `>=`.
@@ -1513,6 +1534,8 @@ You can also use a string array encoding (for example `numericFilters: ["price>1
 - type: `string`
 - default: `""`
 
+
+*This parameter is deprecated. Please use [filters](#filters) instead.*
 
 Filter the query by a set of tags.
 
@@ -1540,6 +1563,8 @@ For example `{"_tags":["tag1","tag2"]}`.
 - default: `""`
 
 
+*This parameter is deprecated. Please use [filters](#filters) instead.*
+
 Filter the query with a list of facets. Facets are separated by commas and is encoded as `attributeName:value`.
 To OR facets, you must add parentheses.
 
@@ -1549,11 +1574,11 @@ You can also use a string array encoding.
 
 For example, `[["category:Book","category:Movie"],"author:John%20Doe"]`.
 
-#### enableAnalytics
+#### analytics
 
-- scope: `settings`, `search`
-- type: `string`
-- default: `['ignorePlurals', 'singleWordSynonym']`
+- scope: `search`
+- type: `boolean`
+- default: `true`
 
 
 If set to false, this query will not be taken into account in the analytics feature.
@@ -1601,13 +1626,16 @@ For example:
 
 ## Manage Indices
 
+*Note: In most use cases, updating indices is better done from your back-end. Methods in this section are documented for the sake of completeness.*
+
+
 ### Create an index
 
 To create an index, you need to perform any indexing operation like:
 - set settings
 - add object
 
-### List indices - `listIndexes`
+### List indices - `listIndexesAsync`
 
 You can list all your indices along with their associated information (number of entries, disk size, etc.) with the `listIndexes` method:
 
@@ -1630,14 +1658,14 @@ client.listIndexesAsync(new CompletionHandler() {
 
 ## Advanced
 
-### Custom batch - `batch`
+### Custom batch - `batchAsync`
 
 You may want to perform multiple operations with one API call to reduce latency.
 We expose four methods to perform batch operations:
- * Add objects - `addObjects`: Add an array of objects using automatic `objectID` assignment.
- * Update objects - `saveObjects`: Add or update an array of objects that contains an `objectID` attribute.
- * Delete objects - `deleteObjects`: Delete an array of objectIDs.
- * Partial update - `partialUpdateObjects`: Partially update an array of objects that contain an `objectID` attribute (only specified attributes will be updated).
+ * Add objects - `addObjectsAsync`: Add an array of objects using automatic `objectID` assignment.
+ * Update objects - `saveObjectsAsync`: Add or update an array of objects that contains an `objectID` attribute.
+ * Delete objects - `deleteObjectsAsync`: Delete an array of objectIDs.
+ * Partial update - `partialUpdateObjectsAsync`: Partially update an array of objects that contain an `objectID` attribute (only specified attributes will be updated).
 
 Example using automatic `objectID` assignment:
 ```java
@@ -1700,7 +1728,7 @@ The attribute **action** can have these values:
 - partialUpdateObjectNoCreate
 - deleteObject
 
-### Backup / Export an index - `browse`
+### Backup / Export an index - `browseAsync`
 
 The `search` method cannot return more than 1,000 results. If you need to
 retrieve all the content of your index (for backup, SEO purposes or for running
@@ -1757,6 +1785,35 @@ BrowseIterator iterator = new BrowseIterator(index, query, new BrowseIterator.Br
 iterator.start();
 ```
 
+
+### Multiple queries - `multipleQueriesAsync`
+
+You can send multiple queries with a single API call using a batch of queries:
+
+```java
+// perform 3 queries in a single API call:
+//  - 1st query targets index `categories`
+//  - 2nd and 3rd queries target index `products`
+
+List<IndexQuery> queries = new ArrayList<>();
+
+queries.add(new IndexQuery("categories", new Query(myQueryString).setHitsPerPage(3)));
+queries.add(new IndexQuery("products", new Query(myQueryString).setHitsPerPage(3).set("filters", "_tags:promotion"));
+queries.add(new IndexQuery("products", new Query(myQueryString).setHitsPerPage(10)));
+
+client.multipleQueriesAsync(queries, new CompletionHandler() {
+    @Override
+    public void requestCompleted(JSONObject content, AlgoliaException error) {
+        // [...]
+    }
+});
+```
+
+The resulting JSON answer contains a ```results``` array storing the underlying queries answers. The answers order is the same than the requests order.
+
+You can specify a `strategy` parameter to optimize your multiple queries:
+- `none`: Execute the sequence of queries until the end.
+- `stopIfEnoughMatches`: Execute the sequence of queries until the number of hits is reached by the sum of hits.
 
 
 ### REST API
