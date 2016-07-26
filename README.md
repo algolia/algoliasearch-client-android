@@ -44,6 +44,7 @@ Search
 
 1. [Search in an index](#search-in-an-index---searchasync)
 1. [Find by IDs](#find-by-ids---getobjectsasync)
+1. [Search cache](#search-cache)
 
 Indexing
 
