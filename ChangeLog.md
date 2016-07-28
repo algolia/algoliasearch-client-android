@@ -1,8 +1,11 @@
 Change Log
 ==========
 
-## Next version
+## 3.3.0 (2016-07-28)
 
+- removeStopWords can be either a list of language codes or a boolean, see [documentation](https://www.algolia.com/doc/rest-api/search#param-removeStopWords-2).
+- Implement new exact API: see [documentation](https://www.algolia.com/doc/rest-api/search#param-exactOnSingleWordQuery) for the new `exactOnSingleWordQuery` and `alternativesAsExact` parameters.
+- Remove app_name string resource (fixes #104)
 - New `Index.multipleQueriesAsync()` method (convenience shortcut to `Client.multipleQueriesAsync()`)
 
 The following changes impact the offline mode only:

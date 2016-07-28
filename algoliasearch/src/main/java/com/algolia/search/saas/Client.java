@@ -63,7 +63,7 @@ import java.util.zip.GZIPInputStream;
  * </p>
  */
 public class Client {
-    private final static String version = "3.2.2";
+    private final static String version = "3.3.0";
 
     protected String userAgent = "Algolia for Android " + version;
 
