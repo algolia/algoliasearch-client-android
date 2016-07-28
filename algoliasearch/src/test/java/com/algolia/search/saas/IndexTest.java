@@ -201,7 +201,7 @@ public class IndexTest extends PowerMockTestCase {
     }
 
     @Test
-    public void testDisjunctiveFaceting() throws Exception {
+    public void testDisjunctiveFacetingAsync2() throws Exception {
         // Set index settings.
         JSONObject setSettingsResult = index.setSettings(new JSONObject("{\"attributesForFaceting\":[\"city\", \"stars\", \"facilities\"]}"));
         index.waitTask(setSettingsResult.getString("taskID"));
@@ -219,37 +219,59 @@ public class IndexTest extends PowerMockTestCase {
         final Query query = new Query("h").setFacets("city");
         final List<String> disjunctiveFacets = Arrays.asList("stars", "facilities");
         final Map<String, List<String>> refinements = new HashMap<>();
-        JSONObject answer;
 
-        answer = index.searchDisjunctiveFaceting(query, disjunctiveFacets, refinements);
-        assertEquals(5, answer.getInt("nbHits"));
-        assertEquals(1, answer.getJSONObject("facets").length());
-        assertEquals(2, answer.getJSONObject("disjunctiveFacets").length());
+        final CountDownLatch signal = new CountDownLatch(4);
+
+        index.searchDisjunctiveFacetingAsync(query, disjunctiveFacets, refinements, new CompletionHandler() {
+            @Override
+            public void requestCompleted(JSONObject content, AlgoliaException error) {
+                assertEquals(5, content.optInt("nbHits"));
+                assertEquals(1, content.optJSONObject("facets").length());
+                assertEquals(2, content.optJSONObject("disjunctiveFacets").length());
+                signal.countDown();
+            }
+        });
 
         refinements.put("stars", Arrays.asList("*"));
-        answer = index.searchDisjunctiveFaceting(query, disjunctiveFacets, refinements);
-        assertEquals(2, answer.getInt("nbHits"));
-        assertEquals(1, answer.getJSONObject("facets").length());
-        assertEquals(2, answer.getJSONObject("disjunctiveFacets").length());
-        assertEquals(2, answer.getJSONObject("disjunctiveFacets").getJSONObject("stars").getInt("*"));
-        assertEquals(1, answer.getJSONObject("disjunctiveFacets").getJSONObject("stars").getInt("**"));
-        assertEquals(2, answer.getJSONObject("disjunctiveFacets").getJSONObject("stars").getInt("****"));
+        index.searchDisjunctiveFacetingAsync(query, disjunctiveFacets, refinements, new CompletionHandler() {
+            @Override
+            public void requestCompleted(JSONObject content, AlgoliaException error) {
+                assertEquals(2, content.optInt("nbHits"));
+                assertEquals(1, content.optJSONObject("facets").length());
+                assertEquals(2, content.optJSONObject("disjunctiveFacets").length());
+                assertEquals(2, content.optJSONObject("disjunctiveFacets").optJSONObject("stars").optInt("*"));
+                assertEquals(1, content.optJSONObject("disjunctiveFacets").optJSONObject("stars").optInt("**"));
+                assertEquals(2, content.optJSONObject("disjunctiveFacets").optJSONObject("stars").optInt("****"));
+                signal.countDown();
+            }
+        });
 
         refinements.put("city", Arrays.asList("Paris"));
-        answer = index.searchDisjunctiveFaceting(query, disjunctiveFacets, refinements);
-        assertEquals(2, answer.getInt("nbHits"));
-        assertEquals(1, answer.getJSONObject("facets").length());
-        assertEquals(2, answer.getJSONObject("disjunctiveFacets").length());
-        assertEquals(2, answer.getJSONObject("disjunctiveFacets").getJSONObject("stars").getInt("*"));
-        assertEquals(1, answer.getJSONObject("disjunctiveFacets").getJSONObject("stars").getInt("****"));
+        index.searchDisjunctiveFacetingAsync(query, disjunctiveFacets, refinements, new CompletionHandler() {
+            @Override
+            public void requestCompleted(JSONObject content, AlgoliaException error) {
+                assertEquals(2, content.optInt("nbHits"));
+                assertEquals(1, content.optJSONObject("facets").length());
+                assertEquals(2, content.optJSONObject("disjunctiveFacets").length());
+                assertEquals(2, content.optJSONObject("disjunctiveFacets").optJSONObject("stars").optInt("*"));
+                assertEquals(1, content.optJSONObject("disjunctiveFacets").optJSONObject("stars").optInt("****"));
+                signal.countDown();
+            }
+        });
 
         refinements.put("stars", Arrays.asList("*", "****"));
-        answer = index.searchDisjunctiveFaceting(query, disjunctiveFacets, refinements);
-        assertEquals(3, answer.getInt("nbHits"));
-        assertEquals(1, answer.getJSONObject("facets").length());
-        assertEquals(2, answer.getJSONObject("disjunctiveFacets").length());
-        assertEquals(2, answer.getJSONObject("disjunctiveFacets").getJSONObject("stars").getInt("*"));
-        assertEquals(1, answer.getJSONObject("disjunctiveFacets").getJSONObject("stars").getInt("****"));
+        index.searchDisjunctiveFacetingAsync(query, disjunctiveFacets, refinements, new CompletionHandler() {
+            @Override
+            public void requestCompleted(JSONObject content, AlgoliaException error) {
+                assertEquals(3, content.optInt("nbHits"));
+                assertEquals(1, content.optJSONObject("facets").length());
+                assertEquals(2, content.optJSONObject("disjunctiveFacets").length());
+                assertEquals(2, content.optJSONObject("disjunctiveFacets").optJSONObject("stars").optInt("*"));
+                assertEquals(1, content.optJSONObject("disjunctiveFacets").optJSONObject("stars").optInt("****"));
+                signal.countDown();
+            }
+        });
+        assertTrue(signal.await(Helpers.wait, TimeUnit.SECONDS));
     }
 
     @Test
@@ -798,5 +820,35 @@ public class IndexTest extends PowerMockTestCase {
     public void testNullCompletionHandler() throws Exception {
         // Check that the code does not crash when no completion handler is specified.
         index.addObjectAsync(new JSONObject("{\"city\": \"New York\"}"), null);
+    }
+
+    @Test
+    public void testMultipleQueries() throws Exception {
+        final List<Query> queries = Arrays.asList(
+            new Query("francisco").setHitsPerPage(1),
+            new Query("jose")
+        );
+        final CountDownLatch signal = new CountDownLatch(1);
+        index.multipleQueriesAsync(queries, Client.MultipleQueriesStrategy.STOP_IF_ENOUGH_MATCHES, new CompletionHandler() {
+            @Override
+            public void requestCompleted(JSONObject content, AlgoliaException error) {
+                if (error != null) {
+                    fail(error.getMessage());
+                } else {
+                    JSONArray results = content.optJSONArray("results");
+                    assertNotNull(results);
+                    assertEquals(results.length(), 2);
+                    JSONObject results1 = results.optJSONObject(0);
+                    assertNotNull(results1);
+                    assertEquals(results1.optInt("nbHits"), 1);
+                    JSONObject results2 = results.optJSONObject(1);
+                    assertNotNull(results2);
+                    assertEquals(results2.optBoolean("processed", true), false);
+                    assertEquals(results2.optInt("nbHits"), 0);
+                }
+                signal.countDown();
+            }
+        });
+        assertTrue("No callback was called", signal.await(Helpers.wait, TimeUnit.SECONDS));
     }
 }

@@ -136,6 +136,30 @@ public class Index {
     }
 
     /**
+     * Run multiple queries on this index with one API call.
+     * A variant of {@link Client#multipleQueriesAsync(List, Client.MultipleQueriesStrategy, CompletionHandler)}
+     * where the targeted index is always the receiver.
+     *
+     * @param queries The queries to run.
+     * @param strategy The strategy to use.
+     * @param completionHandler The listener that will be notified of the request's outcome.
+     * @return A cancellable request.
+     */
+    public Request multipleQueriesAsync(final @NonNull List<Query> queries, final Client.MultipleQueriesStrategy strategy, @NonNull CompletionHandler completionHandler) {
+        final List<Query> queriesCopy = new ArrayList<>(queries.size());
+        for (Query query: queries) {
+            queriesCopy.add(new Query(query));
+        }
+        return getClient().new AsyncTaskRequest(completionHandler) {
+            @NonNull
+            @Override
+            JSONObject run() throws AlgoliaException {
+                return multipleQueries(queriesCopy, strategy == null ? null : strategy.toString());
+            }
+        }.start();
+    }
+
+    /**
      * Search inside this index synchronously.
      *
      * @return Search results.
@@ -153,20 +177,22 @@ public class Index {
      * @param completionHandler The listener that will be notified of the request's outcome.
      * @return A cancellable request.
      */
-    public Request searchDisjunctiveFacetingAsync(@NonNull Query query, @NonNull List<String> disjunctiveFacets, @NonNull Map<String, List<String>> refinements, @NonNull CompletionHandler completionHandler) {
-        final Query queryCopy = new Query(query);
-        final List<String> disjunctiveFacetsCopy = new ArrayList<>(disjunctiveFacets);
-        final Map<String, List<String>> refinementsCopy = new HashMap<>();
-        for (Map.Entry<String, List<String>> entry : refinements.entrySet()) {
-            refinementsCopy.put(entry.getKey(), new ArrayList<String>(entry.getValue()));
-        }
-        return getClient().new AsyncTaskRequest(completionHandler) {
-            @NonNull
+    public Request searchDisjunctiveFacetingAsync(@NonNull Query query, @NonNull final List<String> disjunctiveFacets, @NonNull final Map<String, List<String>> refinements, @NonNull final CompletionHandler completionHandler) {
+        final List<Query> queries = computeDisjunctiveFacetingQueries(query, disjunctiveFacets, refinements);
+        return multipleQueriesAsync(queries, null, new CompletionHandler() {
             @Override
-            JSONObject run() throws AlgoliaException {
-                return searchDisjunctiveFaceting(queryCopy, disjunctiveFacetsCopy, refinementsCopy);
+            public void requestCompleted(JSONObject content, AlgoliaException error) {
+                JSONObject aggregatedResults = null;
+                try {
+                    if (content != null) {
+                        aggregatedResults = aggregateDisjunctiveFacetingResults(content, disjunctiveFacets, refinements);
+                    }
+                } catch (AlgoliaException e) {
+                    error = e;
+                }
+                completionHandler.requestCompleted(aggregatedResults, error);
             }
-        }.start();
+        });
     }
 
     /**
@@ -957,25 +983,38 @@ public class Index {
     }
 
     /**
-     * Perform a search with disjunctive facets generating as many queries as number of disjunctive facets
+     * Filter disjunctive refinements from generic refinements and a list of disjunctive facets.
      *
-     * @param query             the query
      * @param disjunctiveFacets the array of disjunctive facets
      * @param refinements       Map representing the current refinements
-     * @throws AlgoliaException
+     * @return The disjunctive refinements
      */
-    protected JSONObject searchDisjunctiveFaceting(@NonNull Query query, @NonNull List<String> disjunctiveFacets, @NonNull Map<String, List<String>> refinements) throws AlgoliaException {
-        // Retain only refinements corresponding to the disjunctive facets.
+    private @NonNull Map<String, List<String>> computeDisjunctiveRefinements(@NonNull List<String> disjunctiveFacets, @NonNull Map<String, List<String>> refinements)
+    {
         Map<String, List<String>> disjunctiveRefinements = new HashMap<>();
         for (Map.Entry<String, List<String>> elt : refinements.entrySet()) {
             if (disjunctiveFacets.contains(elt.getKey())) {
                 disjunctiveRefinements.put(elt.getKey(), elt.getValue());
             }
         }
+        return disjunctiveRefinements;
+    }
+
+    /**
+     * Compute the queries to run to implement disjunctive faceting.
+     *
+     * @param query             The query.
+     * @param disjunctiveFacets List of disjunctive facets.
+     * @param refinements       The current refinements, mapping facet names to a list of values.
+     * @return A list of queries suitable for {@link Index#multipleQueries}.
+     */
+    private @NonNull List<Query> computeDisjunctiveFacetingQueries(@NonNull Query query, @NonNull List<String> disjunctiveFacets, @NonNull Map<String, List<String>> refinements) {
+        // Retain only refinements corresponding to the disjunctive facets.
+        Map<String, List<String>> disjunctiveRefinements = computeDisjunctiveRefinements(disjunctiveFacets, refinements);
 
         // build queries
         // TODO: Refactor using JSON array notation: safer and clearer.
-        List<IndexQuery> queries = new ArrayList<>();
+        List<Query> queries = new ArrayList<>();
         // hits + regular facets query
         StringBuilder filters = new StringBuilder();
         boolean first_global = true;
@@ -1010,7 +1049,7 @@ public class Index {
             }
         }
 
-        queries.add(new IndexQuery(this.indexName, new Query(query).set("facetFilters", filters.toString())));
+        queries.add(new Query(query).set("facetFilters", filters.toString()));
         // one query per disjunctive facet (use all refinements but the current one + hitsPerPage=1 + single facet
         for (String disjunctiveFacet : disjunctiveFacets) {
             filters = new StringBuilder();
@@ -1049,11 +1088,25 @@ public class Index {
                 }
             }
             String[] facets = new String[]{disjunctiveFacet};
-            queries.add(new IndexQuery(this.indexName, new Query(query).setHitsPerPage(0).setAnalytics(false)
+            queries.add(new Query(query).setHitsPerPage(0).setAnalytics(false)
                     .setAttributesToRetrieve().setAttributesToHighlight().setAttributesToSnippet()
-                    .setFacets(facets).set("facetFilters", filters.toString())));
+                    .setFacets(facets).set("facetFilters", filters.toString()));
         }
-        JSONObject answers = this.client.multipleQueries(queries, null);
+        return queries;
+    }
+
+    /**
+     * Aggregate results from multiple queries into disjunctive faceting results.
+     *
+     * @param answers The response from the multiple queries.
+     * @param disjunctiveFacets List of disjunctive facets.
+     * @param refinements Facet refinements.
+     * @return The aggregated results.
+     * @throws AlgoliaException
+     */
+    private JSONObject aggregateDisjunctiveFacetingResults(@NonNull JSONObject answers, @NonNull List<String> disjunctiveFacets, @NonNull Map<String, List<String>> refinements) throws AlgoliaException
+    {
+        Map<String, List<String>> disjunctiveRefinements = computeDisjunctiveRefinements(disjunctiveFacets, refinements);
 
         // aggregate answers
         // first answer stores the hits + regular facets
@@ -1098,5 +1151,22 @@ public class Index {
         catch (UnsupportedEncodingException e) {
             throw new Error(e); // Should never happen: UTF-8 is always supported.
         }
+    }
+
+    /**
+     * Run multiple queries on this index with one API call.
+     * A variant of {@link Client#multipleQueries(List, String)} where all queries target this index.
+     *
+     * @param queries Queries to run.
+     * @param strategy Strategy to use.
+     * @return The JSON results returned by the server.
+     * @throws AlgoliaException
+     */
+    protected JSONObject multipleQueries(@NonNull List<Query> queries, String strategy) throws AlgoliaException {
+        List<IndexQuery> requests = new ArrayList<>(queries.size());
+        for (Query query: queries) {
+            requests.add(new IndexQuery(this, query));
+        }
+        return client.multipleQueries(requests, strategy);
     }
 }

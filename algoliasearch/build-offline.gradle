@@ -37,7 +37,7 @@ android {
 }
 
 dependencies {
-    offlineCompile "com.algolia:algoliasearch-offline-core-android:0.1"
+    offlineCompile "com.algolia:algoliasearch-offline-core-android:0.2"
 }
 
 

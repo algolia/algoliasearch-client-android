@@ -1,6 +1,21 @@
 Change Log
 ==========
 
+## Next version
+
+- New `Index.multipleQueriesAsync()` method (convenience shortcut to `Client.multipleQueriesAsync()`)
+
+The following changes impact the offline mode only:
+
+- Require an Android `Context` to be provided during client construction. **Warning: breaking change.**
+- Offline requests now also work for disjunctive faceting
+- New offline fallback strategy. **Warning: breaking change:** preemptive search no longer supported.
+- Improve detection of non-existent indices
+- Improve error handling
+- Fix crash on concurrent accesses to a local index
+- Fix potential race condition in lazy instantiation of the local index
+
+
 ## 3.2.2 (2016-06-06)
 
 - Better resource handling: close client streams and connection when appropriate

@@ -790,6 +790,9 @@ public class Client {
         /** The completion handler notified of the result. May be null if the caller omitted it. */
         private CompletionHandler completionHandler;
 
+        /** The executor used to execute the request. */
+        private ExecutorService executorService;
+
         private boolean finished = false;
 
         /**
@@ -820,12 +823,23 @@ public class Client {
         };
 
         /**
-         * Construct a new request with the specified completion handler.
+         * Construct a new request with the specified completion handler, executing on the client's default executor.
          *
          * @param completionHandler The completion handler to be notified of results. May be null if the caller omitted it.
          */
         AsyncTaskRequest(CompletionHandler completionHandler) {
+            this(completionHandler, searchExecutorService);
+        }
+
+        /**
+         * Construct a new request with the specified completion handler, executing on the specified executor.
+         *
+         * @param completionHandler The completion handler to be notified of results. May be null if the caller omitted it.
+         * @param executorService Executor service on which to execute the request.
+         */
+        AsyncTaskRequest(CompletionHandler completionHandler, @NonNull ExecutorService executorService) {
             this.completionHandler = completionHandler;
+            this.executorService = executorService;
         }
 
         /**
@@ -850,7 +864,7 @@ public class Client {
             // WARNING: Starting with Honeycomb (3.0), `AsyncTask` execution is serial, so we must force parallel
             // execution. See <http://developer.android.com/reference/android/os/AsyncTask.html>.
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-                task.executeOnExecutor(searchExecutorService);
+                task.executeOnExecutor(executorService);
             } else {
                 task.execute();
             }
