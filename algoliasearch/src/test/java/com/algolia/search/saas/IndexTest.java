@@ -247,7 +247,7 @@ public class IndexTest extends PowerMockTestCase {
             public void doRequestCompleted(JSONObject content, AlgoliaException error) {
                 assertEquals(2, content.optInt("nbHits"));
                 assertEquals(1, content.optJSONObject("facets").length());
-                assertEquals(42, content.optJSONObject("disjunctiveFacets").length());
+                assertEquals(2, content.optJSONObject("disjunctiveFacets").length());
                 assertEquals(2, content.optJSONObject("disjunctiveFacets").optJSONObject("stars").optInt("*"));
                 assertEquals(1, content.optJSONObject("disjunctiveFacets").optJSONObject("stars").optInt("****"));
             }
