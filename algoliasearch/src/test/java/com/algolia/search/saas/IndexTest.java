@@ -459,31 +459,32 @@ public class IndexTest extends PowerMockTestCase {
 
     @Test
     public void testConnectTimeout() throws AlgoliaException {
-        List<String> hostsArray = (List<String>) Whitebox.getInternalState(client, "readHosts");
-        hostsArray.set(0, "notcp-xx-1.algolianet.com");
-        Whitebox.setInternalState(client, "readHosts", hostsArray);
-
-        client.setConnectTimeout(1000);
-        client.setReadTimeout(1000);
-
-        Long start = System.currentTimeMillis();
-        assertNotNull(client.listIndexes());
-        assertTrue((System.currentTimeMillis() - start) < 2 * 1000);
+        testConnectTimeout(1);
     }
 
     @Test
     public void testMultipleConnectTimeout() throws AlgoliaException {
-        List<String> hostsArray = (List<String>) Whitebox.getInternalState(client, "readHosts");
-        hostsArray.set(0, "notcp-xx-1.algolianet.com");
-        hostsArray.set(1, "notcp-xx-1.algolianet.com");
+        testConnectTimeout(2);
+    }
+
+    private void testConnectTimeout(int nbHosts) throws AlgoliaException {
+        int timeout = 1000;
+        nbHosts = Math.min(nbHosts, 4);
+        int maxMillis = (nbHosts + 1) * timeout;
+
+        final List<String> hostsArray = (List<String>) Whitebox.getInternalState(client, "readHosts");
+        for (int i = 0; i < nbHosts; i++) {
+            hostsArray.set(i, "notcp-xx-1.algolianet.com");
+        }
         Whitebox.setInternalState(client, "readHosts", hostsArray);
 
         client.setConnectTimeout(1000);
         client.setReadTimeout(1000);
 
         Long start = System.currentTimeMillis();
-        assertNotNull(client.listIndexes());
-        assertTrue((System.currentTimeMillis() - start) < 3 * 1000);
+        assertNotNull("listIndexes() should return.", client.listIndexes());
+        final long totalMillis = System.currentTimeMillis() - start;
+        assertTrue(String.format("The test ran longer than expected (%d > %dms)", totalMillis, maxMillis), totalMillis <= maxMillis);
     }
 
 
