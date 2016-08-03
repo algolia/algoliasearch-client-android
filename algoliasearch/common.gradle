@@ -48,6 +48,17 @@ android {
     // WARNING: Uncomment this line if you want to use the Debug configuration when developing against this module.
     // Otherwise, **leave it commented out** as we do **not** want to publish the Debug configuration.
     // publishNonDefault true
+
+    testOptions {
+        unitTests.all {
+            testLogging {
+                events "skipped", "failed"
+                exceptionFormat "full"
+                outputs.upToDateWhen { false }
+                showStandardStreams = true
+            }
+        }
+    }
 }
 configurations {
     // Configuration solely created to make the Android classpath available when compiling Javadocs.
@@ -126,15 +137,15 @@ uploadArchives {
         // Maven Central repository.
         repository(url: "https://oss.sonatype.org/service/local/staging/deploy/maven2/") {
             authentication(
-                userName: project.hasProperty('nexusUsername') ? project['nexusUsername'] : 'FIXME',
-                password: project.hasProperty('nexusPassword') ? project['nexusPassword'] : 'FIXME'
+                    userName: project.hasProperty('nexusUsername') ? project['nexusUsername'] : 'FIXME',
+                    password: project.hasProperty('nexusPassword') ? project['nexusPassword'] : 'FIXME'
             )
         }
         // Maven Central snapshot repository.
         snapshotRepository(url: "https://oss.sonatype.org/content/repositories/snapshots/") {
             authentication(
-                userName: project.hasProperty('nexusUsername') ? project['nexusUsername'] : 'FIXME',
-                password: project.hasProperty('nexusPassword') ? project['nexusPassword'] : 'FIXME'
+                    userName: project.hasProperty('nexusUsername') ? project['nexusUsername'] : 'FIXME',
+                    password: project.hasProperty('nexusPassword') ? project['nexusPassword'] : 'FIXME'
             )
         }
     }
