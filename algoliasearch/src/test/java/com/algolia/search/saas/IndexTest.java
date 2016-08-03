@@ -445,19 +445,22 @@ public class IndexTest extends PowerMockTestCase {
         List<String> hostsArray = (List<String>) Whitebox.getInternalState(client, "readHosts");
         hostsArray.set(0, appId + "-dsn.algolia.biz");
         Whitebox.setInternalState(client, "readHosts", hostsArray);
-        client.setConnectTimeout(2000);
+
+        final boolean isTravisBuild = "true".equals(System.getenv("TRAVIS"));
+        int connectTimeout = isTravisBuild ? 20000 : 2000; // Travis forces a DNS timeout of 20 seconds.
+        client.setConnectTimeout(connectTimeout);
 
         //And an index that does not cache search queries
         index.disableSearchCache();
 
 
-        // Expect successful search within 5 seconds
+        // Expect successful search within 3 more seconds
         long startTime = System.nanoTime();
-        testSearchAsync(5);
+        testSearchAsync(3 + (isTravisBuild ? 20 : 2));
         final long duration = (System.nanoTime() - startTime) / 1000000;
 
         // Which should take at least 2 seconds, as per Client.connectTimeout
-        assertTrue("We should first timeout before successfully searching, but test took only " + duration + " ms.", duration > 2000);
+        assertTrue("We should first timeout before successfully searching, but test took only " + duration + " ms.", duration > connectTimeout);
     }
 
     @Test
@@ -487,7 +490,7 @@ public class IndexTest extends PowerMockTestCase {
         Long start = System.currentTimeMillis();
         assertNotNull("listIndexes() should return.", client.listIndexes());
         final long totalMillis = System.currentTimeMillis() - start;
-        assertTrue(String.format("The test ran longer than expected (%d > %dms)", totalMillis, maxMillis), totalMillis <= maxMillis);
+        assertTrue(String.format("The test ran longer than expected (%d > %dms).", totalMillis, maxMillis), totalMillis <= maxMillis);
     }
 
 
@@ -517,9 +520,9 @@ public class IndexTest extends PowerMockTestCase {
         client.setReadTimeout(1000);
 
         Long start = System.currentTimeMillis();
-        assertNotNull(client.listIndexes());
+        assertNotNull("listIndexes() should return.", client.listIndexes());
         long end = System.currentTimeMillis() - start;
-        assertTrue(end < 2 * 1000);
+        assertTrue("The test ran longer than expected (" + end + "ms > 2s)", end < 2 * 1000);
     }
 
     @Test
