@@ -52,14 +52,13 @@ android {
     testOptions {
         unitTests.all {
             testLogging {
-                events "skipped", "failed"
+                events "skipped", "failed", "standardOut", "standardError"
                 exceptionFormat "full"
                 outputs.upToDateWhen { false }
-                showStandardStreams = true
             }
         }
-    }
 }
+    }
 configurations {
     // Configuration solely created to make the Android classpath available when compiling Javadocs.
     // Taken from: <http://stackoverflow.com/questions/29663918/android-gradle-javadoc-annotation-does-not-exists>.
