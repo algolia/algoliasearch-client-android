@@ -23,6 +23,8 @@
 
 package com.algolia.search.saas;
 
+import android.annotation.SuppressLint;
+
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.junit.Test;
@@ -55,6 +57,7 @@ import static org.mockito.Mockito.when;
  * <a href="http://d.android.com/tools/testing/testing_android.html">Testing Fundamentals</a>
  */
 
+@SuppressLint("DefaultLocale") //We use format for logging errors, locale issues are irrelevant
 public class IndexTest extends PowerMockTestCase {
     Client client;
     Index index;
