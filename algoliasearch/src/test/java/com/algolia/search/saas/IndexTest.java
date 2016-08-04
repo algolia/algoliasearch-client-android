@@ -24,6 +24,7 @@
 package com.algolia.search.saas;
 
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 import org.junit.Test;
 import org.mockito.internal.util.reflection.Whitebox;
@@ -272,6 +273,41 @@ public class IndexTest extends PowerMockTestCase {
             }
         });
         assertTrue(signal.await(Helpers.wait, TimeUnit.SECONDS));
+    }
+
+    @Test
+    public void testAggregateResultsPropagatesNonExhaustiveCount() throws JSONException, AlgoliaException {
+        try {
+            List<String> disjunctiveFacets = new ArrayList<>();
+            Map<String, List<String>> refinements = new HashMap<>();
+
+            JSONObject answers = new JSONObject().put("results", new JSONArray()
+                    .put(new JSONObject("{\"facets\": {},\"exhaustiveFacetsCount\": true}"))
+                    .put(new JSONObject("{\"facets\": {},\"exhaustiveFacetsCount\": true}")));
+            JSONObject result = index.aggregateDisjunctiveFacetingResults(answers, disjunctiveFacets, refinements);
+            assertTrue("If all results have exhaustive counts, the aggregated one should too.", result.getBoolean("exhaustiveFacetsCount"));
+
+            answers = new JSONObject().put("results", new JSONArray()
+                    .put(new JSONObject("{\"facets\": {},\"exhaustiveFacetsCount\": false}"))
+                    .put(new JSONObject("{\"facets\": {},\"exhaustiveFacetsCount\": true}")));
+            result = index.aggregateDisjunctiveFacetingResults(answers, disjunctiveFacets, refinements);
+            assertFalse("If some results have non-exhaustive counts, neither should the aggregated one.", result.getBoolean("exhaustiveFacetsCount"));
+
+            answers = new JSONObject().put("results", new JSONArray()
+                    .put(new JSONObject("{\"facets\": {},\"exhaustiveFacetsCount\": true}"))
+                    .put(new JSONObject("{\"facets\": {},\"exhaustiveFacetsCount\": false}")));
+            result = index.aggregateDisjunctiveFacetingResults(answers, disjunctiveFacets, refinements);
+            assertFalse("If some results have non-exhaustive counts, neither should the aggregated one.", result.getBoolean("exhaustiveFacetsCount"));
+
+            answers = new JSONObject().put("results", new JSONArray()
+                    .put(new JSONObject("{\"facets\": {},\"exhaustiveFacetsCount\": false}"))
+                    .put(new JSONObject("{\"facets\": {},\"exhaustiveFacetsCount\": false}")));
+            result = index.aggregateDisjunctiveFacetingResults(answers, disjunctiveFacets, refinements);
+            assertFalse("If no results have exhaustive counts, neither should the aggregated one.", result.getBoolean("exhaustiveFacetsCount"));
+
+        } catch (AlgoliaException e) {
+            throw e;
+        }
     }
 
     @Test

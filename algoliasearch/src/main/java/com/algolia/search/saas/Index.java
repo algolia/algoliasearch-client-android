@@ -1050,7 +1050,7 @@ public class Index {
      * @return The aggregated results.
      * @throws AlgoliaException
      */
-    private JSONObject aggregateDisjunctiveFacetingResults(@NonNull JSONObject answers, @NonNull List<String> disjunctiveFacets, @NonNull Map<String, List<String>> refinements) throws AlgoliaException {
+    JSONObject aggregateDisjunctiveFacetingResults(@NonNull JSONObject answers, @NonNull List<String> disjunctiveFacets, @NonNull Map<String, List<String>> refinements) throws AlgoliaException {
         Map<String, List<String>> disjunctiveRefinements = computeDisjunctiveRefinements(disjunctiveFacets, refinements);
 
         // aggregate answers
