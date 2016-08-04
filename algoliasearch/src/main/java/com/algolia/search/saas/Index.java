@@ -1009,7 +1009,7 @@ public class Index {
             }
         }
 
-        queries.add(new Query(query).set("facetFilters", filters));
+        queries.add(new Query(query).setFacetFilters(filters));
         // one query per disjunctive facet (use all refinements but the current one + hitsPerPage=1 + single facet
         for (String disjunctiveFacet : disjunctiveFacets) {
             filters = new JSONArray();
@@ -1036,7 +1036,7 @@ public class Index {
             String[] facets = new String[]{disjunctiveFacet};
             queries.add(new Query(query).setHitsPerPage(0).setAnalytics(false)
                     .setAttributesToRetrieve().setAttributesToHighlight().setAttributesToSnippet()
-                    .setFacets(facets).set("facetFilters", filters.toString()));
+                    .setFacets(facets).setFacetFilters(filters));
         }
         return queries;
     }
