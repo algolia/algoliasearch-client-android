@@ -701,6 +701,10 @@ index.getSettingsAsync(new CompletionHandler() {
 index.setSettingsAsync(new JSONObject().append("customRanking", "desc(followers)"), null);
 ```
 
+**Warning**
+
+Performance wise, it's better to do a `setSettingsAsync` before pushing the data
+
 #### Slave settings
 
 You can forward all settings updates to the slaves of an index by using the `forwardToSlaves` option:
