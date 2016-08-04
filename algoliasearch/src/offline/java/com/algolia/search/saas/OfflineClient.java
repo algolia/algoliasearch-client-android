@@ -104,7 +104,7 @@ public class OfflineClient extends Client
         } else {
             this.rootDataDir = getDefaultDataDir();
         }
-        userAgent += ";algoliasearch-offline-core-android " + Sdk.getInstance().getVersionString();
+        this.addUserAgent(new LibraryVersion("algoliasearch-offline-core-android", Sdk.getInstance().getVersionString()));
     }
 
     /**
