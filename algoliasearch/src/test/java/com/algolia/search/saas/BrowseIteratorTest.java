@@ -35,10 +35,7 @@ import org.robolectric.util.concurrent.RoboExecutorService;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.TimeUnit;
 
-import static junit.framework.Assert.assertTrue;
 import static junit.framework.Assert.fail;
 
 public class BrowseIteratorTest extends PowerMockTestCase {
@@ -80,48 +77,81 @@ public class BrowseIteratorTest extends PowerMockTestCase {
 
     @Test
     public void testNominal() throws Exception {
-        final CountDownLatch signal = new CountDownLatch(2);
-
         Query query = new Query();
-        BrowseIterator iterator = new BrowseIterator(index, query, new BrowseIterator.BrowseIteratorHandler() {
+        AssertBrowseHandler handler = new AssertBrowseHandler() {
             @Override
-            public void handleBatch(@NonNull BrowseIterator iterator, JSONObject result, AlgoliaException error) {
-                if (error == null) {
-                    signal.countDown();
-                    if (signal.getCount() > 2) {
-                        fail("Should not reach this point");
-                    }
-                } else {
+            void doHandleBatch(BrowseIterator iterator, JSONObject result, AlgoliaException error) {
+                if (error != null) {
                     fail(error.getMessage());
                 }
             }
-        });
+        };
+        BrowseIterator iterator = new BrowseIterator(index, query, handler);
         iterator.start();
-        assertTrue("No callback was called", signal.await(Helpers.wait, TimeUnit.SECONDS));
+        handler.checkAssertions();
+        handler.checkCalledMax(2);
     }
 
     @Test
     public void testCancel() throws Exception {
-        final CountDownLatch signal = new CountDownLatch(1);
-
         Query query = new Query();
-        BrowseIterator iterator = new BrowseIterator(index, query, new BrowseIterator.BrowseIteratorHandler() {
+        AssertBrowseHandler handler = new AssertBrowseHandler() {
             @Override
-            public void handleBatch(@NonNull BrowseIterator iterator, JSONObject result, AlgoliaException error) {
+            void doHandleBatch(BrowseIterator iterator, JSONObject result, AlgoliaException error) {
                 if (error == null) {
-                    signal.countDown();
-                    if (signal.getCount() == 1) {
+                    if (getCount() == 1) {
                         iterator.cancel();
-                    }
-                    else if (signal.getCount() > 1) {
-                        fail("Should not reach this point");
                     }
                 } else {
                     fail(error.getMessage());
                 }
             }
-        });
+        };
+        BrowseIterator iterator = new BrowseIterator(index, query, handler);
         iterator.start();
-        assertTrue("No callback was called", signal.await(Helpers.wait, TimeUnit.SECONDS));
+        handler.checkAssertions();
+        handler.checkCalledMax(1);
+    }
+
+    private abstract class AssertBrowseHandler implements BrowseIterator.BrowseIteratorHandler {
+
+        private AssertionError error;
+        private int count;
+
+        abstract void doHandleBatch(BrowseIterator iterator, JSONObject result, AlgoliaException error);
+
+        /**
+         * Fail if the handler encountered at least one AssertionError.
+         */
+        public void checkAssertions() {
+            if (error != null) {
+                fail(error.getMessage());
+            }
+        }
+
+        /**
+         * Fail if the handler was called more than a certain amount of time.
+         * @param times the maximum allowed before failing.
+         */
+        public void checkCalledMax(int times) {
+            if (count > times) {
+                fail("The BrowseIterator was called more than " + times + " times.");
+            }
+        }
+
+        @Override
+        public void handleBatch(@NonNull BrowseIterator iterator, JSONObject result, AlgoliaException error) {
+            count++;
+            try {
+
+                doHandleBatch(iterator, result, error);
+            } catch (AssertionError e) {
+                this.error = e;
+            }
+        }
+
+        public int getCount() {
+            return count;
+        }
     }
 }
