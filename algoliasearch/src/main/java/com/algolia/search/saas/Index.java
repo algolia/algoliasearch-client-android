@@ -447,7 +447,7 @@ public class Index {
 
     /**
      * Set this index's settings (asynchronously).
-     * <p/>
+     *
      * Please refer to our <a href="https://www.algolia.com/doc/android#index-settings">API documentation</a> for the
      * list of supported settings.
      *
