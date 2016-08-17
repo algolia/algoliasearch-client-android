@@ -25,6 +25,9 @@ ext {
     PUBLISH_ARTIFACT_ID = "algoliasearch-offline-android"
     PUBLISH_NAME = "Algolia Search API Client for Android (offline flavor)"
     PUBLISH_DESCRIPTION = "This Android library lets you easily use the Algolia Search API from your Android Application, with additional offline capabilities. It wraps the Algolia Search REST API and the Algolia Search Offline Core."
+    DOC_DIR = "build/doc/offline"
+    DOC_TITLE = "Algolia Search Offline API Client for Android"
+    DOC_OVERVIEW = "../doc/include/reference-offline.html"
 }
 
 apply from: "common.gradle"
