@@ -27,8 +27,13 @@ import android.content.Context;
 import android.support.annotation.NonNull;
 
 import com.algolia.search.offline.core.Sdk;
+import com.algolia.search.offline.core.SearchResults;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.File;
+import java.io.UnsupportedEncodingException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -127,6 +132,10 @@ public class OfflineClient extends Client
         return rootDataDir;
     }
 
+    protected File getTemporaryDirectory() {
+        return context.getCacheDir();
+    }
+
     /**
      * Enable the offline mode.
      * @param licenseData License for Algolia's SDK.
@@ -137,6 +146,10 @@ public class OfflineClient extends Client
         // TODO: Report any error.
     }
 
+    // ----------------------------------------------------------------------
+    // Accessors
+    // ----------------------------------------------------------------------
+
     /**
      * Get the default data directory.
      * This is an "algolia" subdirectory inside the application's files directory.
@@ -145,5 +158,28 @@ public class OfflineClient extends Client
      */
     public File getDefaultDataDir() {
         return new File(context.getFilesDir(), "algolia");
+    }
+
+    public @NonNull Context getContext() {
+        return context;
+    }
+
+    // ----------------------------------------------------------------------
+    // Utils
+    // ----------------------------------------------------------------------
+
+    static protected JSONObject parseSearchResults(SearchResults searchResults) throws AlgoliaException {
+        try {
+            if (searchResults.getStatusCode() == 200) {
+                String jsonString = new String(searchResults.getData(), "UTF-8");
+                return new JSONObject(jsonString);
+            }
+            else {
+                throw new AlgoliaException(searchResults.getErrorMessage(), searchResults.getStatusCode());
+            }
+        }
+        catch (JSONException | UnsupportedEncodingException e) {
+            throw new AlgoliaException("Invalid JSON", e);
+        }
     }
 }
