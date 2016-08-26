@@ -494,7 +494,7 @@ public class MirroredIndex extends Index
             String[] objectFilePaths = new String[objectFiles.size()];
             for (int i = 0; i < objectFiles.size(); ++i)
                 objectFilePaths[i] = objectFiles.get(i).getAbsolutePath();
-            int status = getLocalIndex().build(settingsFile.getAbsolutePath(), objectFilePaths, true /* clearIndex */);
+            int status = getLocalIndex().build(settingsFile.getAbsolutePath(), objectFilePaths, true /* clearIndex */, null /* deletedObjectIDs */);
             if (status != 200) {
                 throw new AlgoliaException("Build index failed", status);
             }
