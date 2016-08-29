@@ -36,6 +36,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -231,7 +232,7 @@ public class OfflineIndex {
      * @param completionHandler The listener that will be notified of the request's outcome.
      * @return A cancellable request.
      */
-    public Request addObjectsAsync(final @NonNull JSONArray objects, CompletionHandler completionHandler) {
+    public Request addObjectsAsync(final @NonNull Collection<JSONObject> objects, CompletionHandler completionHandler) {
         return saveObjectsAsync(objects, completionHandler);
     }
 
@@ -243,13 +244,11 @@ public class OfflineIndex {
      * @return A cancellable request.
      */
     public Request saveObjectAsync(final @NonNull JSONObject object, CompletionHandler completionHandler) {
-        final JSONArray objects = new JSONArray().put(object);
-        return saveObjectsAsync(objects, completionHandler);
+        return saveObjectsAsync(Collections.singletonList(object), completionHandler);
     }
 
     private JSONObject saveObjectSync(final @NonNull JSONObject object) throws AlgoliaException {
-        final JSONArray objects = new JSONArray().put(object);
-        return saveObjectsSync(objects);
+        return saveObjectsSync(Collections.singletonList(object));
     }
 
     /**
@@ -259,7 +258,7 @@ public class OfflineIndex {
      * @param completionHandler The listener that will be notified of the request's outcome.
      * @return A cancellable request.
      */
-    public Request saveObjectsAsync(final @NonNull JSONArray objects, @NonNull CompletionHandler completionHandler) {
+    public Request saveObjectsAsync(final @NonNull Collection<JSONObject> objects, @NonNull CompletionHandler completionHandler) {
         return getClient().new AsyncTaskRequest(completionHandler) {
             @NonNull
             @Override
@@ -269,7 +268,7 @@ public class OfflineIndex {
         }.start();
     }
 
-    private JSONObject saveObjectsSync(final @NonNull JSONArray objects) throws AlgoliaException {
+    private JSONObject saveObjectsSync(final @NonNull Collection<JSONObject> objects) throws AlgoliaException {
         File objectFile = null;
         try {
             objectFile = writeTempJSONFile(objects);
@@ -581,15 +580,20 @@ public class OfflineIndex {
     }
 
     /**
-     * Write a temporary file containing a JSON array.
+     * Write a temporary file containing JSON objects. The files are written as an array.
      *
-     * @param objects JSON array to write.
+     * @param objects JSON objects to write.
      * @return Path to the created file.
      * @throws AlgoliaException
      */
-    private File writeTempJSONFile(@NonNull JSONArray objects) throws AlgoliaException {
+    private File writeTempJSONFile(@NonNull Collection<JSONObject> objects) throws AlgoliaException {
         // TODO: Maybe split in several files if too big?
-        return writeTempFile(objects.toString());
+        // TODO: Stream writing.
+        JSONArray array = new JSONArray();
+        for (JSONObject object : objects) {
+            array.put(object);
+        }
+        return writeTempFile(array.toString());
     }
 
     /**
