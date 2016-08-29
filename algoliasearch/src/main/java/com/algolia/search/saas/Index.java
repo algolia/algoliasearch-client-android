@@ -24,6 +24,7 @@
 package com.algolia.search.saas;
 
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -111,8 +112,8 @@ public class Index {
      * @param completionHandler The listener that will be notified of the request's outcome.
      * @return A cancellable request.
      */
-    public Request searchAsync(@NonNull Query query, @NonNull CompletionHandler completionHandler) {
-        final Query queryCopy = new Query(query);
+    public Request searchAsync(@Nullable Query query, @Nullable CompletionHandler completionHandler) {
+        final Query queryCopy = query != null ? new Query(query) : new Query();
         return getClient().new AsyncTaskRequest(completionHandler) {
             @NonNull
             @Override JSONObject run() throws AlgoliaException {
@@ -126,7 +127,7 @@ public class Index {
      *
      * @return Search results.
      */
-    public JSONObject searchSync(@NonNull Query query) throws AlgoliaException {
+    public JSONObject searchSync(@Nullable Query query) throws AlgoliaException {
         return search(query);
     }
 
@@ -836,7 +837,11 @@ public class Index {
      * @return a JSONObject containing search results
      * @throws AlgoliaException
      */
-    protected JSONObject search(@NonNull Query query) throws AlgoliaException {
+    protected JSONObject search(@Nullable Query query) throws AlgoliaException {
+        if (query == null) {
+            query = new Query();
+        }
+
         String cacheKey = null;
         byte[] rawResponse = null;
         if (isCacheEnabled) {
@@ -862,7 +867,11 @@ public class Index {
      * @return a byte array containing search results
      * @throws AlgoliaException
      */
-    protected byte[] searchRaw(@NonNull Query query) throws AlgoliaException {
+    protected byte[] searchRaw(@Nullable Query query) throws AlgoliaException {
+        if (query == null) {
+            query = new Query();
+        }
+
         try {
             String paramsString = query.build();
             if (paramsString.length() > 0) {
