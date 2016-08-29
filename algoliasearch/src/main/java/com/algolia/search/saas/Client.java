@@ -28,6 +28,7 @@ import android.os.Build;
 import android.os.Handler;
 import android.os.Looper;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -151,7 +152,7 @@ public class Client {
      * @param apiKey A valid API key for the service.
      * @param hosts An explicit list of hosts to target, or null to use the default hosts.
      */
-    public Client(@NonNull String applicationID, @NonNull String apiKey, String[] hosts) {
+    public Client(@NonNull String applicationID, @NonNull String apiKey, @Nullable String[] hosts) {
         this.applicationID = applicationID;
         this.apiKey = apiKey;
         this.addUserAgent(new LibraryVersion("Algolia for Android", version));
@@ -197,7 +198,7 @@ public class Client {
      * @param name  Header name.
      * @param value Value for the header. If null, the header will be removed.
      */
-    public void setHeader(@NonNull String name, String value) {
+    public void setHeader(@NonNull String name, @Nullable String value) {
         if (value == null) {
             headers.remove(name);
         } else {
@@ -916,7 +917,7 @@ public class Client {
          *
          * @param completionHandler The completion handler to be notified of results. May be null if the caller omitted it.
          */
-        AsyncTaskRequest(CompletionHandler completionHandler) {
+        AsyncTaskRequest(@Nullable CompletionHandler completionHandler) {
             this(completionHandler, searchExecutorService);
         }
 
@@ -926,7 +927,7 @@ public class Client {
          * @param completionHandler The completion handler to be notified of results. May be null if the caller omitted it.
          * @param executorService Executor service on which to execute the request.
          */
-        AsyncTaskRequest(CompletionHandler completionHandler, @NonNull ExecutorService executorService) {
+        AsyncTaskRequest(@Nullable CompletionHandler completionHandler, @NonNull ExecutorService executorService) {
             this.completionHandler = completionHandler;
             this.executorService = executorService;
         }
