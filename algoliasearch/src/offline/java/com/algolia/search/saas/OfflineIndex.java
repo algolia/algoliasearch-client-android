@@ -607,7 +607,7 @@ public class OfflineIndex {
         try {
             // Create temporary file.
             File tmpDir = client.getTemporaryDirectory();
-            File tmpFile = File.createTempFile("algolia", "json", tmpDir);
+            File tmpFile = File.createTempFile("algolia.", ".json", tmpDir);
 
             // Write to file.
             Writer writer = new OutputStreamWriter(new FileOutputStream(tmpFile), "UTF-8");
