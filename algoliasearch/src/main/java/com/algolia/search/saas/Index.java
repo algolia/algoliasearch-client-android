@@ -365,6 +365,23 @@ public class Index {
     }
 
     /**
+     * Get several objects from this index (asynchronously), optionally restricting the retrieved content (asynchronously).
+     *
+     * @param objectIDs            Identifiers of objects to retrieve.
+     * @param attributesToRetrieve List of attributes to retrieve.
+     * @param completionHandler    The listener that will be notified of the request's outcome.
+     * @return A cancellable request.
+     */
+    public Request getObjectsAsync(final @NonNull List<String> objectIDs, final List<String> attributesToRetrieve, @NonNull CompletionHandler completionHandler) {
+        return getClient().new AsyncTaskRequest(completionHandler) {
+            @NonNull
+            @Override JSONObject run() throws AlgoliaException {
+                return getObjects(objectIDs, attributesToRetrieve);
+            }
+        }.start();
+    }
+
+    /**
      * Wait until the publication of a task on the server (helper).
      * All server tasks are asynchronous. This method helps you check that a task is published.
      *
@@ -649,15 +666,8 @@ public class Index {
      */
     protected JSONObject getObject(String objectID, List<String> attributesToRetrieve) throws AlgoliaException {
         try {
-            StringBuilder params = new StringBuilder();
-            params.append("?attributes=");
-            for (int i = 0; i < attributesToRetrieve.size(); ++i) {
-                if (i > 0) {
-                    params.append(",");
-                }
-                params.append(URLEncoder.encode(attributesToRetrieve.get(i), "UTF-8"));
-            }
-            return client.getRequest("/1/indexes/" + encodedIndexName + "/" + URLEncoder.encode(objectID, "UTF-8") + params.toString(), false);
+            String params = encodeAttributes(attributesToRetrieve, true);
+            return client.getRequest("/1/indexes/" + encodedIndexName + "/" + URLEncoder.encode(objectID, "UTF-8") + params, false);
         } catch (UnsupportedEncodingException e) {
             throw new RuntimeException(e);
         }
@@ -670,20 +680,51 @@ public class Index {
      * @throws AlgoliaException
      */
     protected JSONObject getObjects(List<String> objectIDs) throws AlgoliaException {
+        return getObjects(objectIDs, null);
+    }
+
+    /**
+     * Get several objects from this index
+     *
+     * @param objectIDs            the array of unique identifier of objects to retrieve
+     * @param attributesToRetrieve contains the list of attributes to retrieve.
+     * @throws AlgoliaException
+     */
+    protected JSONObject getObjects(List<String> objectIDs, List<String> attributesToRetrieve) throws AlgoliaException {
         try {
             JSONArray requests = new JSONArray();
             for (String id : objectIDs) {
                 JSONObject request = new JSONObject();
                 request.put("indexName", this.indexName);
                 request.put("objectID", id);
+                request.put("attributesToRetrieve", encodeAttributes(attributesToRetrieve, false));
                 requests.put(request);
             }
             JSONObject body = new JSONObject();
             body.put("requests", requests);
             return client.postRequest("/1/indexes/*/objects", body.toString(), true);
-        } catch (JSONException e) {
+        } catch (JSONException | UnsupportedEncodingException e) {
             throw new AlgoliaException(e.getMessage());
         }
+    }
+
+    @Nullable
+    private String encodeAttributes(List<String> attributesToRetrieve, boolean forURL) throws UnsupportedEncodingException {
+        if (attributesToRetrieve == null) {
+            return null;
+        }
+
+        StringBuilder params = new StringBuilder();
+        if (forURL) {
+            params.append("?attributesToRetrieve=");
+        }
+        for (int i = 0; i < attributesToRetrieve.size(); ++i) {
+            if (i > 0) {
+                params.append(",");
+            }
+            params.append(URLEncoder.encode(attributesToRetrieve.get(i), "UTF-8"));
+        }
+        return params.toString();
     }
 
     /**
@@ -993,7 +1034,8 @@ public class Index {
      * @param refinements       The current refinements, mapping facet names to a list of values.
      * @return A list of queries suitable for {@link Index#multipleQueries}.
      */
-    private @NonNull List<Query> computeDisjunctiveFacetingQueries(@NonNull Query query, @NonNull List<String> disjunctiveFacets, @NonNull Map<String, List<String>> refinements) {
+    private @NonNull
+    List<Query> computeDisjunctiveFacetingQueries(@NonNull Query query, @NonNull List<String> disjunctiveFacets, @NonNull Map<String, List<String>> refinements) {
         // Retain only refinements corresponding to the disjunctive facets.
         Map<String, List<String>> disjunctiveRefinements = computeDisjunctiveRefinements(disjunctiveFacets, refinements);
 
