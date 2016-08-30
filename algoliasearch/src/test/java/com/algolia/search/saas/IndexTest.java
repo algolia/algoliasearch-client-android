@@ -37,6 +37,7 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -870,14 +871,44 @@ public class IndexTest extends PowerMockTestCase {
     @Test
     public void testUserAgent() throws Exception {
         // Test the default value.
-        String userAgent = (String)Whitebox.getInternalState(client, "userAgentRaw");
+        String userAgent = (String) Whitebox.getInternalState(client, "userAgentRaw");
         assertTrue(userAgent.matches("^Algolia for Android \\([0-9.]+\\); Android \\(([0-9.]+|unknown)\\)$"));
 
         // Manipulate the list.
         assertFalse(client.hasUserAgent(new Client.LibraryVersion("toto", "6.6.6")));
         client.addUserAgent(new Client.LibraryVersion("toto", "6.6.6"));
         assertTrue(client.hasUserAgent(new Client.LibraryVersion("toto", "6.6.6")));
-        userAgent = (String)Whitebox.getInternalState(client, "userAgentRaw");
+        userAgent = (String) Whitebox.getInternalState(client, "userAgentRaw");
         assertTrue(userAgent.matches("^.*; toto \\(6.6.6\\)$"));
+    }
+
+    @Test
+    public void testGetObjectAttributes() throws AlgoliaException {
+        for (String id : ids) {
+            JSONObject object = index.getObject(id);
+            assertEquals("The retrieved object should have two attributes.", 2, object.names().length());
+            object = index.getObject(id, Collections.singletonList("objectID"));
+            assertEquals("The retrieved object should have only one attribute.", 1, object.names().length());
+            assertTrue("The retrieved object should have one objectID attribute.", object.optString("objectID", "").length() > 0);
+        }
+    }
+
+    @Test
+    public void testGetObjectsAttributes() throws AlgoliaException {
+        try {
+            JSONArray results = index.getObjects(ids).getJSONArray("results");
+            for (int i = 0; i < results.length(); i++) {
+                JSONObject object = results.getJSONObject(i);
+                assertEquals("The retrieved object should have two attributes.", 2, object.names().length());
+            }
+            results = index.getObjects(ids, Collections.singletonList("objectID")).getJSONArray("results");
+            for (int i = 0; i < results.length(); i++) {
+                JSONObject object = results.getJSONObject(i);
+                assertEquals("The retrieved object should have only one attribute.", 1, object.names().length());
+                assertTrue("The retrieved object should have one objectID attribute.", object.optString("objectID", "").length() > 0);
+            }
+        } catch (JSONException e) {
+            fail(e.getMessage());
+        }
     }
 }
