@@ -306,7 +306,7 @@ public class OfflineIndexTest extends RobolectricTestCase  {
         assertTrue("No callback was called", signal.await(waitTimeout, TimeUnit.SECONDS));
     }
 
-    // @Test // TODO: Feature not yet implemented
+    @Test
     public void testDeleteByQuery() throws Exception {
         final CountDownLatch signal = new CountDownLatch(1);
         final OfflineIndex index = new OfflineIndex(client, getMethodName());

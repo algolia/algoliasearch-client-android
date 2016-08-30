@@ -558,8 +558,43 @@ public class OfflineIndex {
      * @return A cancellable request.
      */
     public Request deleteByQueryAsync(@NonNull Query query, CompletionHandler completionHandler) {
-        // TODO: To be implemented.
-        throw new UnsupportedOperationException("Not implemented");
+        final Query queryCopy = new Query(query);
+        return getClient().new AsyncTaskRequest(completionHandler) {
+            @NonNull
+            @Override
+            JSONObject run() throws AlgoliaException {
+                return deleteByQuerySync(queryCopy);
+            }
+        }.start();
+    }
+
+    private JSONObject deleteByQuerySync(@NonNull Query query) throws AlgoliaException {
+        try {
+            final Query browseQuery = new Query(query);
+            browseQuery.setAttributesToRetrieve("objectID");
+            final String queryParameters = browseQuery.build();
+
+            // Gather object IDs to delete.
+            List<String> objectIDsToDelete = new ArrayList<>();
+            boolean hasMore = true;
+            while (hasMore) {
+                JSONObject content = OfflineClient.parseSearchResults(localIndex.browse(queryParameters));
+                JSONArray hits = content.getJSONArray("hits");
+
+                // Retrieve object IDs.
+                for (int i = 0; i < hits.length(); ++i) {
+                    JSONObject hit = hits.getJSONObject(i);
+                    String objectID = hit.getString("objectID");
+                    objectIDsToDelete.add(objectID);
+                }
+                hasMore = content.optString("cursor", null) != null;
+            }
+
+            // Delete objects.
+            return deleteObjectsSync(objectIDsToDelete);
+        } catch (JSONException e) {
+            throw new AlgoliaException("Invalid JSON results", e);
+        }
     }
 
     // ----------------------------------------------------------------------
