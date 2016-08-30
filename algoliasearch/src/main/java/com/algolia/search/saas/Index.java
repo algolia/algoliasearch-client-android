@@ -358,8 +358,7 @@ public class Index {
     public Request getObjectsAsync(final @NonNull List<String> objectIDs, @NonNull CompletionHandler completionHandler) {
         return getClient().new AsyncTaskRequest(completionHandler) {
             @NonNull
-            @Override
-            JSONObject run() throws AlgoliaException {
+            @Override JSONObject run() throws AlgoliaException {
                 return getObjects(objectIDs);
             }
         }.start();
@@ -376,8 +375,7 @@ public class Index {
     public Request getObjectsAsync(final @NonNull List<String> objectIDs, final List<String> attributesToRetrieve, @NonNull CompletionHandler completionHandler) {
         return getClient().new AsyncTaskRequest(completionHandler) {
             @NonNull
-            @Override
-            JSONObject run() throws AlgoliaException {
+            @Override JSONObject run() throws AlgoliaException {
                 return getObjects(objectIDs, attributesToRetrieve);
             }
         }.start();
@@ -1030,7 +1028,8 @@ public class Index {
      * @param refinements       The current refinements, mapping facet names to a list of values.
      * @return A list of queries suitable for {@link Index#multipleQueries}.
      */
-    private @NonNull List<Query> computeDisjunctiveFacetingQueries(@NonNull Query query, @NonNull List<String> disjunctiveFacets, @NonNull Map<String, List<String>> refinements) {
+    private @NonNull
+    List<Query> computeDisjunctiveFacetingQueries(@NonNull Query query, @NonNull List<String> disjunctiveFacets, @NonNull Map<String, List<String>> refinements) {
         // Retain only refinements corresponding to the disjunctive facets.
         Map<String, List<String>> disjunctiveRefinements = computeDisjunctiveRefinements(disjunctiveFacets, refinements);
 
