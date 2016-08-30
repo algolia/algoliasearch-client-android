@@ -92,6 +92,8 @@ dependencies {
 // Javadoc
 // -------
 
+apply plugin: 'ch.raffael.pegdown-doclet'
+
 // Compile docs.
 task javadoc(type: Javadoc) {
     source = android.sourceSets.main.java.srcDirs
