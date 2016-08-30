@@ -24,6 +24,7 @@
 package com.algolia.search.saas;
 
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
 import org.json.JSONArray;
 import org.json.JSONException;
