@@ -27,6 +27,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import com.algolia.search.offline.core.LocalIndex;
+import com.algolia.search.saas.helpers.DisjunctiveFaceting;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -546,8 +547,12 @@ public class OfflineIndex {
      * @return A cancellable request.
      */
     public Request searchDisjunctiveFacetingAsync(@NonNull Query query, @NonNull final List<String> disjunctiveFacets, @NonNull final Map<String, List<String>> refinements, @NonNull final CompletionHandler completionHandler) {
-        // TODO: To be implemented
-        throw new UnsupportedOperationException("Not implemented");
+        return new DisjunctiveFaceting() {
+            @Override
+            protected Request multipleQueriesAsync(@NonNull List<Query> queries, @NonNull CompletionHandler completionHandler) {
+                return OfflineIndex.this.multipleQueriesAsync(queries, null, completionHandler);
+            }
+        }.searchDisjunctiveFacetingAsync(query, disjunctiveFacets, refinements, completionHandler);
     }
 
     /**
