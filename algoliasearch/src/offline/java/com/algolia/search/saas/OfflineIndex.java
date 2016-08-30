@@ -24,6 +24,7 @@
 package com.algolia.search.saas;
 
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
 import com.algolia.search.offline.core.LocalIndex;
 
@@ -36,6 +37,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -184,9 +186,24 @@ public class OfflineIndex {
      * @param completionHandler The listener that will be notified of the request's outcome.
      * @return A cancellable request.
      */
-    public Request multipleQueriesAsync(final @NonNull List<Query> queries, final Client.MultipleQueriesStrategy strategy, @NonNull CompletionHandler completionHandler) {
-        // TODO: To be implemented
-        throw new UnsupportedOperationException("Not implemented");
+    public Request multipleQueriesAsync(final @NonNull List<Query> queries, @Nullable final Client.MultipleQueriesStrategy strategy, @NonNull CompletionHandler completionHandler) {
+        final List<Query> queriesCopy = new ArrayList<>(queries);
+        return getClient().new AsyncTaskRequest(completionHandler) {
+            @NonNull
+            @Override
+            JSONObject run() throws AlgoliaException {
+                return multipleQueriesSync(queriesCopy, strategy);
+            }
+        }.start();
+    }
+
+    private JSONObject multipleQueriesSync(final @NonNull List<Query> queries, @Nullable final Client.MultipleQueriesStrategy strategy) throws AlgoliaException {
+        return new MultipleQueryEmulator(name) {
+            @Override
+            protected JSONObject singleQuery(@NonNull Query query) throws AlgoliaException {
+                return searchSync(query);
+            }
+        }.multipleQueries(queries, strategy == null ? null : strategy.toString());
     }
 
     /**

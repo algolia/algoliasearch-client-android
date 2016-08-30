@@ -308,7 +308,6 @@ public class OfflineIndexTest extends RobolectricTestCase  {
 
     // @Test // TODO: Feature not yet implemented
     public void testDeleteByQuery() throws Exception {
-
         final CountDownLatch signal = new CountDownLatch(1);
         final OfflineIndex index = new OfflineIndex(client, getMethodName());
         index.addObjectsAsync(objects.values(), new CompletionHandler() {
@@ -335,7 +334,7 @@ public class OfflineIndexTest extends RobolectricTestCase  {
         assertTrue("No callback was called", signal.await(waitTimeout, TimeUnit.SECONDS));
     }
 
-    // @Test // TODO: Feature not yet implemented
+    @Test
     public void testMultipleQueries() throws Exception {
         final CountDownLatch signal = new CountDownLatch(1);
         final OfflineIndex index = new OfflineIndex(client, getMethodName());
