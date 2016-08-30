@@ -49,8 +49,8 @@ import java.util.Map;
  * A purely offline index.
  * Such an index has no online counterpart. It is updated and queried locally.
  *
- * + Note: You cannot construct this class directly. Please use `OfflineClient.getOfflineIndex(_:)` to obtain an
- *   instance.
+ * **Note:** You cannot construct this class directly. Please use {@link OfflineClient#initOfflineIndex(String)} to
+ * obtain an instance.
  *
  *
  * # Caveats
@@ -111,7 +111,7 @@ public class OfflineIndex {
      * @param client Offline client to be used by the index.
      * @param name Index name.
      */
-    public OfflineIndex(@NonNull OfflineClient client, @NonNull String name) {
+    protected OfflineIndex(@NonNull OfflineClient client, @NonNull String name) {
         this.client = client;
         this.name = name;
         this.localIndex = new LocalIndex(getClient().getRootDataDir().getAbsolutePath(), getClient().getApplicationID(), name);

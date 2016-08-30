@@ -125,6 +125,18 @@ public class OfflineClient extends Client
     }
 
     /**
+     * Create a purely offline index.
+     *
+     * @param name Name for the new index.
+     * @return A new object representing the index.
+     *
+     * @warning The name should not overlap with any `MirroredIndex`. See {@link #initIndex(String)}.
+     */
+    public OfflineIndex initOfflineIndex(@NonNull String name) {
+        return new OfflineIndex(this, name);
+    }
+
+    /**
      * Get the path to directory where the local data is stored.
      */
     public @NonNull File getRootDataDir()

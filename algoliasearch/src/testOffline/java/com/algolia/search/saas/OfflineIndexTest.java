@@ -98,7 +98,7 @@ public class OfflineIndexTest extends RobolectricTestCase  {
     @Test
     public void testAddGetDeleteObject() throws Exception {
         final CountDownLatch signal = new CountDownLatch(1);
-        final OfflineIndex index = new OfflineIndex(client, getMethodName());
+        final OfflineIndex index = client.initOfflineIndex(getMethodName());
         index.addObjectAsync(objects.get("snoopy"), new CompletionHandler() {
             @Override
             public void requestCompleted(JSONObject content, AlgoliaException error) {
@@ -132,7 +132,7 @@ public class OfflineIndexTest extends RobolectricTestCase  {
     @Test
     public void testAddWithIDGetDeleteObject() throws Exception {
         final CountDownLatch signal = new CountDownLatch(1);
-        final OfflineIndex index = new OfflineIndex(client, getMethodName());
+        final OfflineIndex index = client.initOfflineIndex(getMethodName());
         index.addObjectAsync(new JSONObject().put("name", "unknown"), "xxx", new CompletionHandler() {
             @Override
             public void requestCompleted(JSONObject content, AlgoliaException error) {
@@ -166,7 +166,7 @@ public class OfflineIndexTest extends RobolectricTestCase  {
     @Test
     public void testAddGetDeleteObjects() throws Exception {
         final CountDownLatch signal = new CountDownLatch(1);
-        final OfflineIndex index = new OfflineIndex(client, getMethodName());
+        final OfflineIndex index = client.initOfflineIndex(getMethodName());
         index.addObjectsAsync(objects.values(), new CompletionHandler() {
             @Override
             public void requestCompleted(JSONObject content, AlgoliaException error) {
@@ -204,7 +204,7 @@ public class OfflineIndexTest extends RobolectricTestCase  {
     @Test
     public void testSearch() throws Exception {
         final CountDownLatch signal = new CountDownLatch(1);
-        final OfflineIndex index = new OfflineIndex(client, getMethodName());
+        final OfflineIndex index = client.initOfflineIndex(getMethodName());
         index.addObjectsAsync(objects.values(), new CompletionHandler() {
             @Override
             public void requestCompleted(JSONObject content, AlgoliaException error) {
@@ -230,7 +230,7 @@ public class OfflineIndexTest extends RobolectricTestCase  {
     @Test
     public void testGetSetSettings() throws Exception {
         final CountDownLatch signal = new CountDownLatch(1);
-        final OfflineIndex index = new OfflineIndex(client, getMethodName());
+        final OfflineIndex index = client.initOfflineIndex(getMethodName());
         final JSONObject settings = new JSONObject().put("attributesToIndex", new JSONArray().put("foo").put("bar"));
         index.setSettingsAsync(settings, new CompletionHandler() {
             @Override
@@ -253,7 +253,7 @@ public class OfflineIndexTest extends RobolectricTestCase  {
     @Test
     public void testClear() throws Exception {
         final CountDownLatch signal = new CountDownLatch(1);
-        final OfflineIndex index = new OfflineIndex(client, getMethodName());
+        final OfflineIndex index = client.initOfflineIndex(getMethodName());
         index.addObjectsAsync(objects.values(), new CompletionHandler() {
             @Override
             public void requestCompleted(JSONObject content, AlgoliaException error) {
@@ -280,7 +280,7 @@ public class OfflineIndexTest extends RobolectricTestCase  {
     @Test
     public void testBrowse() throws Exception {
         final CountDownLatch signal = new CountDownLatch(1);
-        final OfflineIndex index = new OfflineIndex(client, getMethodName());
+        final OfflineIndex index = client.initOfflineIndex(getMethodName());
         index.addObjectsAsync(objects.values(), new CompletionHandler() {
             @Override
             public void requestCompleted(JSONObject content, AlgoliaException error) {
@@ -309,7 +309,7 @@ public class OfflineIndexTest extends RobolectricTestCase  {
     @Test
     public void testDeleteByQuery() throws Exception {
         final CountDownLatch signal = new CountDownLatch(1);
-        final OfflineIndex index = new OfflineIndex(client, getMethodName());
+        final OfflineIndex index = client.initOfflineIndex(getMethodName());
         index.addObjectsAsync(objects.values(), new CompletionHandler() {
             @Override
             public void requestCompleted(JSONObject content, AlgoliaException error) {
@@ -337,7 +337,7 @@ public class OfflineIndexTest extends RobolectricTestCase  {
     @Test
     public void testMultipleQueries() throws Exception {
         final CountDownLatch signal = new CountDownLatch(1);
-        final OfflineIndex index = new OfflineIndex(client, getMethodName());
+        final OfflineIndex index = client.initOfflineIndex(getMethodName());
         index.addObjectsAsync(objects.values(), new CompletionHandler() {
             @Override
             public void requestCompleted(JSONObject content, AlgoliaException error) {
