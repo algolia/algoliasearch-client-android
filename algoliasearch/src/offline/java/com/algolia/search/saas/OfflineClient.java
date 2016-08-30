@@ -128,6 +128,15 @@ public class OfflineClient extends Client
     }
 
     /**
+     * Get the path to the temporary directory used by this client.
+     *
+     * @return The path to the temporary directory.
+     */
+    protected @NonNull File getTempDir() {
+        return context.getCacheDir();
+    }
+
+    /**
      * Enable the offline mode.
      * @param licenseData License for Algolia's SDK.
      */
