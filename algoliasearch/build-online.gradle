@@ -25,6 +25,9 @@ ext {
     PUBLISH_ARTIFACT_ID = "algoliasearch-android"
     PUBLISH_NAME = "Algolia Search API Client for Android"
     PUBLISH_DESCRIPTION = "This Android library lets you easily use the Algolia Search API from your Android Application. It wraps the Algolia Search REST API."
+    DOC_DIR = "build/doc"
+    DOC_TITLE = "Algolia Search API Client for Android"
+    DOC_OVERVIEW = "../doc/include/reference.html"
 }
 
 apply from: "common.gradle"

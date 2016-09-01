@@ -26,7 +26,7 @@ apply plugin: 'com.android.library'
 ext {
     PUBLISH_GROUP_ID = rootProject.properties["PUBLISH_GROUP_ID"] ?: "com.algolia"
     // NOTE: This is the official version number used during publication.
-    PUBLISH_VERSION = '3.3.0'
+    PUBLISH_VERSION = '3.4.0'
 }
 
 android {
@@ -48,7 +48,17 @@ android {
     // WARNING: Uncomment this line if you want to use the Debug configuration when developing against this module.
     // Otherwise, **leave it commented out** as we do **not** want to publish the Debug configuration.
     // publishNonDefault true
+
+    testOptions {
+        unitTests.all {
+            testLogging {
+                events "skipped", "failed", "standardOut", "standardError"
+                exceptionFormat "full"
+                outputs.upToDateWhen { false }
+            }
+        }
 }
+    }
 configurations {
     // Configuration solely created to make the Android classpath available when compiling Javadocs.
     // Taken from: <http://stackoverflow.com/questions/29663918/android-gradle-javadoc-annotation-does-not-exists>.
@@ -82,15 +92,18 @@ dependencies {
 // Javadoc
 // -------
 
+apply plugin: 'ch.raffael.pegdown-doclet'
+
 // Compile docs.
 task javadoc(type: Javadoc) {
     source = android.sourceSets.main.java.srcDirs
+    destinationDir = new File(projectDir, DOC_DIR)
+    title = DOC_TITLE
     options.memberLevel = JavadocMemberLevel.PUBLIC
+    options.noTimestamp = true // avoid noisy diffs
+    options.overview = DOC_OVERVIEW
     classpath += project.files(android.getBootClasspath().join(File.pathSeparator))
     classpath += configurations.javadoc
-    // NOTE: We always recompile from scratch because this task is shared between the online and offline flavors,
-    // and we don't want offline classes to be included in the online doc.
-    delete destinationDir
 }
 
 // Package docs into a jar.
@@ -126,15 +139,15 @@ uploadArchives {
         // Maven Central repository.
         repository(url: "https://oss.sonatype.org/service/local/staging/deploy/maven2/") {
             authentication(
-                userName: project.hasProperty('nexusUsername') ? project['nexusUsername'] : 'FIXME',
-                password: project.hasProperty('nexusPassword') ? project['nexusPassword'] : 'FIXME'
+                    userName: project.hasProperty('nexusUsername') ? project['nexusUsername'] : 'FIXME',
+                    password: project.hasProperty('nexusPassword') ? project['nexusPassword'] : 'FIXME'
             )
         }
         // Maven Central snapshot repository.
         snapshotRepository(url: "https://oss.sonatype.org/content/repositories/snapshots/") {
             authentication(
-                userName: project.hasProperty('nexusUsername') ? project['nexusUsername'] : 'FIXME',
-                password: project.hasProperty('nexusPassword') ? project['nexusPassword'] : 'FIXME'
+                    userName: project.hasProperty('nexusUsername') ? project['nexusUsername'] : 'FIXME',
+                    password: project.hasProperty('nexusPassword') ? project['nexusPassword'] : 'FIXME'
             )
         }
     }

@@ -28,6 +28,7 @@ import android.os.Build;
 import android.os.Handler;
 import android.os.Looper;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -63,9 +64,43 @@ import java.util.zip.GZIPInputStream;
  * </p>
  */
 public class Client {
-    private final static String version = "3.3.0";
+    private final static String version = "3.4.0";
 
-    protected String userAgent = "Algolia for Android " + version;
+    /**
+     * The user agents as a raw string. This is what is passed in request headers.
+     * WARNING: It is stored for efficiency purposes. It should not be modified directly.
+     */
+    private String userAgentRaw;
+
+    /***
+     * A version of a software library.
+     * Used to construct the <code>User-Agent</code> header.
+     */
+    public static class LibraryVersion {
+        public final @NonNull String name;
+        public final @NonNull String version;
+
+        public LibraryVersion(@NonNull String name, @NonNull String version) {
+            this.name = name;
+            this.version = version;
+        }
+
+        @Override
+        public boolean equals(Object object) {
+            if (!(object instanceof LibraryVersion))
+                return false;
+            LibraryVersion other = (LibraryVersion)object;
+            return this.name.equals(other.name) && this.version.equals(other.version);
+        }
+
+        @Override
+        public int hashCode() {
+            return name.hashCode() ^ version.hashCode();
+        }
+    }
+
+    /** The user agents, as a structured list of library versions. */
+    private List<LibraryVersion> userAgents = new ArrayList<>();
 
     /** Connect timeout (ms). */
     private int connectTimeout = 2000;
@@ -117,9 +152,11 @@ public class Client {
      * @param apiKey A valid API key for the service.
      * @param hosts An explicit list of hosts to target, or null to use the default hosts.
      */
-    public Client(@NonNull String applicationID, @NonNull String apiKey, String[] hosts) {
+    public Client(@NonNull String applicationID, @NonNull String apiKey, @Nullable String[] hosts) {
         this.applicationID = applicationID;
         this.apiKey = apiKey;
+        this.addUserAgent(new LibraryVersion("Algolia for Android", version));
+        this.addUserAgent(new LibraryVersion("Android", Build.VERSION.RELEASE));
         if (hosts != null) {
             setReadHosts(hosts);
             setWriteHosts(hosts);
@@ -161,7 +198,7 @@ public class Client {
      * @param name  Header name.
      * @param value Value for the header. If null, the header will be removed.
      */
-    public void setHeader(@NonNull String name, String value) {
+    public void setHeader(@NonNull String name, @Nullable String value) {
         if (value == null) {
             headers.remove(name);
         } else {
@@ -278,6 +315,59 @@ public class Client {
      */
     public Index initIndex(@NonNull String indexName) {
         return new Index(this, indexName);
+    }
+
+    /**
+     * Add a software library to the list of user agents.
+     *
+     * @param userAgent The library to add.
+     */
+    public void addUserAgent(@NonNull LibraryVersion userAgent) {
+        userAgents.add(userAgent);
+        updateUserAgents();
+    }
+
+    /**
+     * Remove a software library from the list of user agents.
+     *
+     * @param userAgent The library to remove.
+     */
+    public void removeUserAgent(@NonNull LibraryVersion userAgent) {
+        userAgents.remove(userAgent);
+        updateUserAgents();
+    }
+
+    /**
+     * Retrieve the list of declared user agents.
+     *
+     * @return The declared user agents.
+     */
+    public @NonNull LibraryVersion[] getUserAgents() {
+        return userAgents.toArray(new LibraryVersion[userAgents.size()]);
+    }
+
+    /**
+     * Test whether a user agent is declared.
+     *
+     * @param userAgent The user agent to look for.
+     * @return true if it is declared on this client, false otherwise.
+     */
+    public boolean hasUserAgent(@NonNull LibraryVersion userAgent) {
+        return userAgents.contains(userAgent);
+    }
+
+    private void updateUserAgents() {
+        StringBuilder s = new StringBuilder();
+        for (LibraryVersion userAgent : userAgents) {
+            if (s.length() != 0) {
+                s.append("; ");
+            }
+            s.append(userAgent.name);
+            s.append(" (");
+            s.append(userAgent.version);
+            s.append(")");
+        }
+        userAgentRaw = s.toString();
     }
 
     // ----------------------------------------------------------------------
@@ -679,7 +769,7 @@ public class Client {
                 }
 
                 // set user agent
-                hostConnection.setRequestProperty("User-Agent", userAgent);
+                hostConnection.setRequestProperty("User-Agent", userAgentRaw);
 
                 // write JSON entity
                 if (json != null) {
@@ -827,7 +917,7 @@ public class Client {
          *
          * @param completionHandler The completion handler to be notified of results. May be null if the caller omitted it.
          */
-        AsyncTaskRequest(CompletionHandler completionHandler) {
+        AsyncTaskRequest(@Nullable CompletionHandler completionHandler) {
             this(completionHandler, searchExecutorService);
         }
 
@@ -837,7 +927,7 @@ public class Client {
          * @param completionHandler The completion handler to be notified of results. May be null if the caller omitted it.
          * @param executorService Executor service on which to execute the request.
          */
-        AsyncTaskRequest(CompletionHandler completionHandler, @NonNull ExecutorService executorService) {
+        AsyncTaskRequest(@Nullable CompletionHandler completionHandler, @NonNull ExecutorService executorService) {
             this.completionHandler = completionHandler;
             this.executorService = executorService;
         }

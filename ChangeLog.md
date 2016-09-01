@@ -1,6 +1,11 @@
 Change Log
 ==========
 
+## 3.4.0 (2016-09-05)
+
+- Implement new user-agent convention
+- Fix propagation of exhaustiveFacetsCount on aggregated disjunctive faceting queries
+
 ## 3.3.0 (2016-07-28)
 
 - removeStopWords can be either a list of language codes or a boolean, see [documentation](https://www.algolia.com/doc/rest-api/search#param-removeStopWords-2).

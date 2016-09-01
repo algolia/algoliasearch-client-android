@@ -1,6 +1,7 @@
 package com.algolia.search.saas;
 
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.text.TextUtils;
 
 import org.json.JSONArray;
@@ -1241,7 +1242,7 @@ public class Query {
      *              It will first be converted to a String by the `toString()` method.
      * @return This instance (used to chain calls).
      */
-    public @NonNull Query set(@NonNull String name, Object value) {
+    public @NonNull Query set(@NonNull String name, @Nullable Object value) {
         if (value == null) {
             parameters.remove(name);
         } else {
@@ -1255,7 +1256,7 @@ public class Query {
      * @param name The parameter's name.
      * @return The parameter's value, or null if a parameter with the specified name does not exist.
      */
-    public String get(@NonNull String name) {
+    public @Nullable String get(@NonNull String name) {
         return parameters.get(name);
     }
 }

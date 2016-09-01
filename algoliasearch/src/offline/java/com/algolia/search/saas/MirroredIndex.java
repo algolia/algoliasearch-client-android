@@ -233,12 +233,6 @@ public class MirroredIndex extends Index
         return localIndex;
     }
 
-    private File getTempDir()
-    {
-        // TODO: Use better value
-        return getClient().getRootDataDir();
-    }
-
     private File getDataDir()
     {
         return new File(new File(getClient().getRootDataDir(), getClient().getApplicationID()), getIndexName());
@@ -435,7 +429,7 @@ public class MirroredIndex extends Index
 
         try {
             // Create temporary directory.
-            tmpDir = new File(getTempDir(), UUID.randomUUID().toString());
+            tmpDir = new File(getClient().getTempDir(), UUID.randomUUID().toString());
             tmpDir.mkdirs();
 
             // NOTE: We are doing everything sequentially, because this is a background job: we care more about

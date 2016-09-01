@@ -113,7 +113,7 @@ public class OfflineClient extends Client
         } else {
             this.rootDataDir = getDefaultDataDir();
         }
-        userAgent += ";algoliasearch-offline-core-android " + Sdk.getInstance().getVersionString();
+        this.addUserAgent(new LibraryVersion("algoliasearch-offline-core-android", Sdk.getInstance().getVersionString()));
     }
 
     /**
@@ -149,6 +149,15 @@ public class OfflineClient extends Client
     }
 
     protected File getTemporaryDirectory() {
+        return context.getCacheDir();
+    }
+
+    /**
+     * Get the path to the temporary directory used by this client.
+     *
+     * @return The path to the temporary directory.
+     */
+    protected @NonNull File getTempDir() {
         return context.getCacheDir();
     }
 

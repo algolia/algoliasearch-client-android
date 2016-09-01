@@ -24,6 +24,7 @@
 package com.algolia.search.saas;
 
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
 import com.algolia.search.saas.helpers.DisjunctiveFaceting;
 
@@ -84,9 +85,7 @@ public class Index {
     // Accessors
     // ----------------------------------------------------------------------
 
-    @Override
-    public String toString()
-    {
+    @Override public String toString() {
         return String.format("%s{%s}", this.getClass().getSimpleName(), getIndexName());
     }
 
@@ -94,13 +93,11 @@ public class Index {
         return indexName;
     }
 
-    public Client getClient()
-    {
+    public Client getClient() {
         return client;
     }
 
-    protected String getEncodedIndexName()
-    {
+    protected String getEncodedIndexName() {
         return encodedIndexName;
     }
 
@@ -111,16 +108,15 @@ public class Index {
     /**
      * Search inside this index (asynchronously).
      *
-     * @param query Search parameters. May be null to use an empty query.
+     * @param query             Search parameters. May be null to use an empty query.
      * @param completionHandler The listener that will be notified of the request's outcome.
      * @return A cancellable request.
      */
-    public Request searchAsync(@NonNull Query query, @NonNull CompletionHandler completionHandler) {
-        final Query queryCopy = new Query(query);
+    public Request searchAsync(@Nullable Query query, @Nullable CompletionHandler completionHandler) {
+        final Query queryCopy = query != null ? new Query(query) : new Query();
         return getClient().new AsyncTaskRequest(completionHandler) {
             @NonNull
-            @Override
-            JSONObject run() throws AlgoliaException {
+            @Override JSONObject run() throws AlgoliaException {
                 return search(queryCopy);
             }
         }.start();
@@ -131,7 +127,7 @@ public class Index {
      *
      * @return Search results.
      */
-    public JSONObject searchSync(@NonNull Query query) throws AlgoliaException {
+    public JSONObject searchSync(@Nullable Query query) throws AlgoliaException {
         return search(query);
     }
 
@@ -140,20 +136,19 @@ public class Index {
      * A variant of {@link Client#multipleQueriesAsync(List, Client.MultipleQueriesStrategy, CompletionHandler)}
      * where the targeted index is always the receiver.
      *
-     * @param queries The queries to run.
-     * @param strategy The strategy to use.
+     * @param queries           The queries to run.
+     * @param strategy          The strategy to use.
      * @param completionHandler The listener that will be notified of the request's outcome.
      * @return A cancellable request.
      */
     public Request multipleQueriesAsync(final @NonNull List<Query> queries, final Client.MultipleQueriesStrategy strategy, @NonNull CompletionHandler completionHandler) {
         final List<Query> queriesCopy = new ArrayList<>(queries.size());
-        for (Query query: queries) {
+        for (Query query : queries) {
             queriesCopy.add(new Query(query));
         }
         return getClient().new AsyncTaskRequest(completionHandler) {
             @NonNull
-            @Override
-            JSONObject run() throws AlgoliaException {
+            @Override JSONObject run() throws AlgoliaException {
                 return multipleQueries(queriesCopy, strategy == null ? null : strategy.toString());
             }
         }.start();
@@ -193,15 +188,14 @@ public class Index {
      * you should not modify the object after it has been passed.
      * </p>
      *
-     * @param object The object to add.
+     * @param object            The object to add.
      * @param completionHandler The listener that will be notified of the request's outcome.
      * @return A cancellable request.
      */
     public Request addObjectAsync(final @NonNull JSONObject object, CompletionHandler completionHandler) {
         return getClient().new AsyncTaskRequest(completionHandler) {
             @NonNull
-            @Override
-            JSONObject run() throws AlgoliaException {
+            @Override JSONObject run() throws AlgoliaException {
                 return addObject(object);
             }
         }.start();
@@ -215,16 +209,15 @@ public class Index {
      * you should not modify the object after it has been passed.
      * </p>
      *
-     * @param object The object to add.
-     * @param objectID Identifier that you want to assign this object.
+     * @param object            The object to add.
+     * @param objectID          Identifier that you want to assign this object.
      * @param completionHandler The listener that will be notified of the request's outcome.
      * @return A cancellable request.
      */
-    public Request addObjectAsync(final @NonNull JSONObject object, final @NonNull String objectID, CompletionHandler completionHandler)  {
+    public Request addObjectAsync(final @NonNull JSONObject object, final @NonNull String objectID, CompletionHandler completionHandler) {
         return getClient().new AsyncTaskRequest(completionHandler) {
             @NonNull
-            @Override
-            JSONObject run() throws AlgoliaException {
+            @Override JSONObject run() throws AlgoliaException {
                 return addObject(object, objectID);
             }
         }.start();
@@ -233,15 +226,14 @@ public class Index {
     /**
      * Add several objects to this index (asynchronously).
      *
-     * @param objects Objects to add.
+     * @param objects           Objects to add.
      * @param completionHandler The listener that will be notified of the request's outcome.
      * @return A cancellable request.
      */
     public Request addObjectsAsync(final @NonNull JSONArray objects, CompletionHandler completionHandler) {
         return getClient().new AsyncTaskRequest(completionHandler) {
             @NonNull
-            @Override
-            JSONObject run() throws AlgoliaException {
+            @Override JSONObject run() throws AlgoliaException {
                 return addObjects(objects);
             }
         }.start();
@@ -250,16 +242,15 @@ public class Index {
     /**
      * Update an object (asynchronously).
      *
-     * @param object New version of the object to update.
-     * @param objectID Identifier of the object to update.
+     * @param object            New version of the object to update.
+     * @param objectID          Identifier of the object to update.
      * @param completionHandler The listener that will be notified of the request's outcome.
      * @return A cancellable request.
      */
     public Request saveObjectAsync(final @NonNull JSONObject object, final @NonNull String objectID, CompletionHandler completionHandler) {
         return getClient().new AsyncTaskRequest(completionHandler) {
             @NonNull
-            @Override
-            JSONObject run() throws AlgoliaException {
+            @Override JSONObject run() throws AlgoliaException {
                 return saveObject(object, objectID);
             }
         }.start();
@@ -268,15 +259,14 @@ public class Index {
     /**
      * Update several objects (asynchronously).
      *
-     * @param objects Objects to update. Each object must contain an <code>objectID</code> attribute.
+     * @param objects           Objects to update. Each object must contain an <code>objectID</code> attribute.
      * @param completionHandler The listener that will be notified of the request's outcome.
      * @return A cancellable request.
      */
     public Request saveObjectsAsync(final @NonNull JSONArray objects, @NonNull CompletionHandler completionHandler) {
         return getClient().new AsyncTaskRequest(completionHandler) {
             @NonNull
-            @Override
-            JSONObject run() throws AlgoliaException {
+            @Override JSONObject run() throws AlgoliaException {
                 return saveObjects(objects);
             }
         }.start();
@@ -285,16 +275,15 @@ public class Index {
     /**
      * Partially update an object (asynchronously).
      *
-     * @param partialObject New value/operations for the object.
-     * @param objectID Identifier of object to be updated.
+     * @param partialObject     New value/operations for the object.
+     * @param objectID          Identifier of object to be updated.
      * @param completionHandler The listener that will be notified of the request's outcome.
      * @return A cancellable request.
      */
     public Request partialUpdateObjectAsync(final @NonNull JSONObject partialObject, final @NonNull String objectID, CompletionHandler completionHandler) {
         return getClient().new AsyncTaskRequest(completionHandler) {
             @NonNull
-            @Override
-            JSONObject run() throws AlgoliaException {
+            @Override JSONObject run() throws AlgoliaException {
                 return partialUpdateObject(partialObject, objectID);
             }
         }.start();
@@ -303,16 +292,15 @@ public class Index {
     /**
      * Partially update several objects (asynchronously).
      *
-     * @param partialObjects New values/operations for the objects. Each object must contain an <code>objectID</code>
-     *                       attribute.
+     * @param partialObjects    New values/operations for the objects. Each object must contain an <code>objectID</code>
+     *                          attribute.
      * @param completionHandler The listener that will be notified of the request's outcome.
      * @return A cancellable request.
      */
     public Request partialUpdateObjectsAsync(final @NonNull JSONArray partialObjects, CompletionHandler completionHandler) {
         return getClient().new AsyncTaskRequest(completionHandler) {
             @NonNull
-            @Override
-            JSONObject run() throws AlgoliaException {
+            @Override JSONObject run() throws AlgoliaException {
                 return partialUpdateObjects(partialObjects);
             }
         }.start();
@@ -321,15 +309,14 @@ public class Index {
     /**
      * Get an object from this index (asynchronously).
      *
-     * @param objectID Identifier of the object to retrieve.
+     * @param objectID          Identifier of the object to retrieve.
      * @param completionHandler The listener that will be notified of the request's outcome.
      * @return A cancellable request.
      */
     public Request getObjectAsync(final @NonNull String objectID, @NonNull CompletionHandler completionHandler) {
         return getClient().new AsyncTaskRequest(completionHandler) {
             @NonNull
-            @Override
-            JSONObject run() throws AlgoliaException {
+            @Override JSONObject run() throws AlgoliaException {
                 return getObject(objectID);
             }
         }.start();
@@ -338,16 +325,15 @@ public class Index {
     /**
      * Get an object from this index, optionally restricting the retrieved content (asynchronously).
      *
-     * @param objectID Identifier of the object to retrieve.
+     * @param objectID             Identifier of the object to retrieve.
      * @param attributesToRetrieve List of attributes to retrieve.
-     * @param completionHandler The listener that will be notified of the request's outcome.
+     * @param completionHandler    The listener that will be notified of the request's outcome.
      * @return A cancellable request.
      */
     public Request getObjectAsync(final @NonNull String objectID, final List<String> attributesToRetrieve, @NonNull CompletionHandler completionHandler) {
         return getClient().new AsyncTaskRequest(completionHandler) {
             @NonNull
-            @Override
-            JSONObject run() throws AlgoliaException {
+            @Override JSONObject run() throws AlgoliaException {
                 return getObject(objectID, attributesToRetrieve);
             }
         }.start();
@@ -356,16 +342,32 @@ public class Index {
     /**
      * Get several objects from this index (asynchronously).
      *
-     * @param objectIDs Identifiers of objects to retrieve.
+     * @param objectIDs         Identifiers of objects to retrieve.
      * @param completionHandler The listener that will be notified of the request's outcome.
      * @return A cancellable request.
      */
     public Request getObjectsAsync(final @NonNull List<String> objectIDs, @NonNull CompletionHandler completionHandler) {
         return getClient().new AsyncTaskRequest(completionHandler) {
             @NonNull
-            @Override
-            JSONObject run() throws AlgoliaException {
+            @Override JSONObject run() throws AlgoliaException {
                 return getObjects(objectIDs);
+            }
+        }.start();
+    }
+
+    /**
+     * Get several objects from this index (asynchronously), optionally restricting the retrieved content (asynchronously).
+     *
+     * @param objectIDs            Identifiers of objects to retrieve.
+     * @param attributesToRetrieve List of attributes to retrieve.
+     * @param completionHandler    The listener that will be notified of the request's outcome.
+     * @return A cancellable request.
+     */
+    public Request getObjectsAsync(final @NonNull List<String> objectIDs, final List<String> attributesToRetrieve, @NonNull CompletionHandler completionHandler) {
+        return getClient().new AsyncTaskRequest(completionHandler) {
+            @NonNull
+            @Override JSONObject run() throws AlgoliaException {
+                return getObjects(objectIDs, attributesToRetrieve);
             }
         }.start();
     }
@@ -374,15 +376,14 @@ public class Index {
      * Wait until the publication of a task on the server (helper).
      * All server tasks are asynchronous. This method helps you check that a task is published.
      *
-     * @param taskID Identifier of the task (as returned by the server).
+     * @param taskID            Identifier of the task (as returned by the server).
      * @param completionHandler The listener that will be notified of the request's outcome.
      * @return A cancellable request.
      */
     public Request waitTaskAsync(final @NonNull String taskID, @NonNull CompletionHandler completionHandler) {
         return getClient().new AsyncTaskRequest(completionHandler) {
             @NonNull
-            @Override
-            JSONObject run() throws AlgoliaException {
+            @Override JSONObject run() throws AlgoliaException {
                 return waitTask(taskID);
             }
         }.start();
@@ -391,15 +392,14 @@ public class Index {
     /**
      * Delete an object from this index (asynchronously).
      *
-     * @param objectID Identifier of the object to delete.
+     * @param objectID          Identifier of the object to delete.
      * @param completionHandler The listener that will be notified of the request's outcome.
      * @return A cancellable request.
      */
     public Request deleteObjectAsync(final @NonNull String objectID, CompletionHandler completionHandler) {
         return getClient().new AsyncTaskRequest(completionHandler) {
             @NonNull
-            @Override
-            JSONObject run() throws AlgoliaException {
+            @Override JSONObject run() throws AlgoliaException {
                 return deleteObject(objectID);
             }
         }.start();
@@ -408,15 +408,14 @@ public class Index {
     /**
      * Delete several objects from this index (asynchronously).
      *
-     * @param objectIDs Identifiers of objects to delete.
+     * @param objectIDs         Identifiers of objects to delete.
      * @param completionHandler The listener that will be notified of the request's outcome.
      * @return A cancellable request.
      */
     public Request deleteObjectsAsync(final @NonNull List<String> objectIDs, CompletionHandler completionHandler) {
         return getClient().new AsyncTaskRequest(completionHandler) {
             @NonNull
-            @Override
-            JSONObject run() throws AlgoliaException {
+            @Override JSONObject run() throws AlgoliaException {
                 return deleteObjects(objectIDs);
             }
         }.start();
@@ -425,7 +424,7 @@ public class Index {
     /**
      * Delete all objects matching a query (helper).
      *
-     * @param query The query that objects to delete must match.
+     * @param query             The query that objects to delete must match.
      * @param completionHandler The listener that will be notified of the request's outcome.
      * @return A cancellable request.
      */
@@ -433,8 +432,7 @@ public class Index {
         final Query queryCopy = new Query(query);
         return getClient().new AsyncTaskRequest(completionHandler) {
             @NonNull
-            @Override
-            JSONObject run() throws AlgoliaException {
+            @Override JSONObject run() throws AlgoliaException {
                 deleteByQuery(queryCopy);
                 return new JSONObject();
             }
@@ -450,8 +448,7 @@ public class Index {
     public Request getSettingsAsync(@NonNull CompletionHandler completionHandler) {
         return getClient().new AsyncTaskRequest(completionHandler) {
             @NonNull
-            @Override
-            JSONObject run() throws AlgoliaException {
+            @Override JSONObject run() throws AlgoliaException {
                 return getSettings();
             }
         }.start();
@@ -463,15 +460,14 @@ public class Index {
      * Please refer to our <a href="https://www.algolia.com/doc/android#index-settings">API documentation</a> for the
      * list of supported settings.
      *
-     * @param settings New settings.
+     * @param settings          New settings.
      * @param completionHandler The listener that will be notified of the request's outcome.
      * @return A cancellable request.
      */
     public Request setSettingsAsync(final @NonNull JSONObject settings, CompletionHandler completionHandler) {
         return getClient().new AsyncTaskRequest(completionHandler) {
             @NonNull
-            @Override
-            JSONObject run() throws AlgoliaException {
+            @Override JSONObject run() throws AlgoliaException {
                 return setSettings(settings);
             }
         }.start();
@@ -483,7 +479,7 @@ public class Index {
      * unless the end of the index has been reached. To retrieve subsequent pages, call `browseFromAsync` with that
      * cursor.
      *
-     * @param query The query parameters for the browse.
+     * @param query             The query parameters for the browse.
      * @param completionHandler The listener that will be notified of the request's outcome.
      * @return A cancellable request.
      */
@@ -491,8 +487,7 @@ public class Index {
         final Query queryCopy = new Query(query);
         return getClient().new AsyncTaskRequest(completionHandler) {
             @NonNull
-            @Override
-            JSONObject run() throws AlgoliaException {
+            @Override JSONObject run() throws AlgoliaException {
                 return browse(queryCopy);
             }
         }.start();
@@ -503,15 +498,14 @@ public class Index {
      * This method should be called after an initial call to `browseAsync()`. It returns a cursor, unless the end of
      * the index has been reached.
      *
-     * @param cursor The cursor of the next page to retrieve.
+     * @param cursor            The cursor of the next page to retrieve.
      * @param completionHandler The listener that will be notified of the request's outcome.
      * @return A cancellable request.
      */
     public Request browseFromAsync(final @NonNull String cursor, @NonNull CompletionHandler completionHandler) {
         return getClient().new AsyncTaskRequest(completionHandler) {
             @NonNull
-            @Override
-            JSONObject run() throws AlgoliaException {
+            @Override JSONObject run() throws AlgoliaException {
                 return browseFrom(cursor);
             }
         }.start();
@@ -526,8 +520,7 @@ public class Index {
     public Request clearIndexAsync(CompletionHandler completionHandler) {
         return getClient().new AsyncTaskRequest(completionHandler) {
             @NonNull
-            @Override
-            JSONObject run() throws AlgoliaException {
+            @Override JSONObject run() throws AlgoliaException {
                 return clearIndex();
             }
         }.start();
@@ -593,7 +586,7 @@ public class Index {
      *
      * @param obj      the object to add.
      * @param objectID an objectID you want to attribute to this object
-     * (if the attribute already exist the old object will be overwrite)
+     *                 (if the attribute already exist the old object will be overwrite)
      * @throws AlgoliaException
      */
     protected JSONObject addObject(JSONObject obj, String objectID) throws AlgoliaException {
@@ -664,15 +657,8 @@ public class Index {
      */
     protected JSONObject getObject(String objectID, List<String> attributesToRetrieve) throws AlgoliaException {
         try {
-            StringBuilder params = new StringBuilder();
-            params.append("?attributes=");
-            for (int i = 0; i < attributesToRetrieve.size(); ++i) {
-                if (i > 0) {
-                    params.append(",");
-                }
-                params.append(URLEncoder.encode(attributesToRetrieve.get(i), "UTF-8"));
-            }
-            return client.getRequest("/1/indexes/" + encodedIndexName + "/" + URLEncoder.encode(objectID, "UTF-8") + params.toString(), false);
+            String params = encodeAttributes(attributesToRetrieve, true);
+            return client.getRequest("/1/indexes/" + encodedIndexName + "/" + URLEncoder.encode(objectID, "UTF-8") + params, false);
         } catch (UnsupportedEncodingException e) {
             throw new RuntimeException(e);
         }
@@ -685,20 +671,51 @@ public class Index {
      * @throws AlgoliaException
      */
     protected JSONObject getObjects(List<String> objectIDs) throws AlgoliaException {
+        return getObjects(objectIDs, null);
+    }
+
+    /**
+     * Get several objects from this index
+     *
+     * @param objectIDs            the array of unique identifier of objects to retrieve
+     * @param attributesToRetrieve contains the list of attributes to retrieve.
+     * @throws AlgoliaException
+     */
+    protected JSONObject getObjects(List<String> objectIDs, List<String> attributesToRetrieve) throws AlgoliaException {
         try {
             JSONArray requests = new JSONArray();
             for (String id : objectIDs) {
                 JSONObject request = new JSONObject();
                 request.put("indexName", this.indexName);
                 request.put("objectID", id);
+                request.put("attributesToRetrieve", encodeAttributes(attributesToRetrieve, false));
                 requests.put(request);
             }
             JSONObject body = new JSONObject();
             body.put("requests", requests);
             return client.postRequest("/1/indexes/*/objects", body.toString(), true);
-        } catch (JSONException e) {
+        } catch (JSONException | UnsupportedEncodingException e) {
             throw new AlgoliaException(e.getMessage());
         }
+    }
+
+    @Nullable
+    private String encodeAttributes(List<String> attributesToRetrieve, boolean forURL) throws UnsupportedEncodingException {
+        if (attributesToRetrieve == null) {
+            return null;
+        }
+
+        StringBuilder params = new StringBuilder();
+        if (forURL) {
+            params.append("?attributesToRetrieve=");
+        }
+        for (int i = 0; i < attributesToRetrieve.size(); ++i) {
+            if (i > 0) {
+                params.append(",");
+            }
+            params.append(URLEncoder.encode(attributesToRetrieve.get(i), "UTF-8"));
+        }
+        return params.toString();
     }
 
     /**
@@ -852,7 +869,11 @@ public class Index {
      * @return a JSONObject containing search results
      * @throws AlgoliaException
      */
-    protected JSONObject search(@NonNull Query query) throws AlgoliaException {
+    protected JSONObject search(@Nullable Query query) throws AlgoliaException {
+        if (query == null) {
+            query = new Query();
+        }
+
         String cacheKey = null;
         byte[] rawResponse = null;
         if (isCacheEnabled) {
@@ -878,7 +899,11 @@ public class Index {
      * @return a byte array containing search results
      * @throws AlgoliaException
      */
-    protected byte[] searchRaw(@NonNull Query query) throws AlgoliaException {
+    protected byte[] searchRaw(@Nullable Query query) throws AlgoliaException {
+        if (query == null) {
+            query = new Query();
+        }
+
         try {
             String paramsString = query.build();
             if (paramsString.length() > 0) {
@@ -955,7 +980,7 @@ public class Index {
     /**
      * Set settings for this index.
      *
-     * @param settings the settings object.
+     * @param settings        the settings object.
      * @param forwardToSlaves if true, the new settings will be forwarded to slave indices.
      * @throws AlgoliaException
      */
@@ -980,8 +1005,7 @@ public class Index {
     protected JSONObject browseFrom(@NonNull String cursor) throws AlgoliaException {
         try {
             return client.getRequest("/1/indexes/" + encodedIndexName + "/browse?cursor=" + URLEncoder.encode(cursor, "UTF-8"), true);
-        }
-        catch (UnsupportedEncodingException e) {
+        } catch (UnsupportedEncodingException e) {
             throw new Error(e); // Should never happen: UTF-8 is always supported.
         }
     }
@@ -990,14 +1014,14 @@ public class Index {
      * Run multiple queries on this index with one API call.
      * A variant of {@link Client#multipleQueries(List, String)} where all queries target this index.
      *
-     * @param queries Queries to run.
+     * @param queries  Queries to run.
      * @param strategy Strategy to use.
      * @return The JSON results returned by the server.
      * @throws AlgoliaException
      */
     protected JSONObject multipleQueries(@NonNull List<Query> queries, String strategy) throws AlgoliaException {
         List<IndexQuery> requests = new ArrayList<>(queries.size());
-        for (Query query: queries) {
+        for (Query query : queries) {
             requests.add(new IndexQuery(this, query));
         }
         return client.multipleQueries(requests, strategy);
