@@ -61,11 +61,13 @@ import java.util.Map;
  * Though offline indices support most features of an online index, there are some limitations:
  *
  * - Objects **must contain an `objectID`** field. The SDK will refuse to index objects without an ID.
- *   As a consequence, {@link #addObjectAsync} and {@link #saveObjectAsync} are synonyms.
+ *   As a consequence, `addObject(s)Async()` and `saveObject(s)Async()` are synonyms.
  *
  * - **Partial updates** are not supported.
  *
  * - **Batch** operations are not supported.
+ *
+ * - **Slave indices** are not supported.
  *
  * ## Differences
  *
@@ -87,7 +89,7 @@ import java.util.Map;
  *
  * Read operations behave identically as on online indices.
  *
- * ### Cancellation
+ * ## Cancellation
  *
  * Just like online indices, an offline index bears **no rollback semantic**: cancelling an operation does **not**
  * prevent the data from being modified. It just prevents the completion handler from being called.

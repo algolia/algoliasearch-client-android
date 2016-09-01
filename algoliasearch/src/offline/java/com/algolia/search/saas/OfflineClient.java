@@ -134,7 +134,7 @@ public class OfflineClient extends Client
      * @param name Name for the new index.
      * @return A new object representing the index.
      *
-     * @warning The name should not overlap with any `MirroredIndex`. See {@link #initIndex(String)}.
+     * **Warning:** The name should not overlap with any `MirroredIndex`. See {@link #initIndex(String)}.
      */
     public OfflineIndex initOfflineIndex(@NonNull String name) {
         return new OfflineIndex(this, name);
