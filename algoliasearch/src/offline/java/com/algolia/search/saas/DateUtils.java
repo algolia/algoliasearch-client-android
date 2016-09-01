@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015 Algolia
+ * Copyright (c) 2012-2016 Algolia
  * http://www.algolia.com/
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -25,38 +25,29 @@ package com.algolia.search.saas;
 
 import android.support.annotation.NonNull;
 
-public class Helpers {
-    static String app_id = "APP_ID_REPLACE_ME";
-    static String api_key = "API_KEY_REPLACE_ME";
-    static String job_number = "JOB_NUMBER_REPLACE_ME";
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
+import java.util.TimeZone;
 
-    static int wait = 30;
 
-    static String safeIndexName(String name) {
-        if (job_number.matches("\\d+\\.\\d+")) {
-            name = String.format("%s_travis-%s", name, job_number);
-        }
-        return name;
+/**
+ * Utilities to deal with time zones.
+ */
+class DateUtils {
+    /** Long ISO8610 date format for UTC time zone. */
+    private static SimpleDateFormat ISO8601_DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.US);
+    static {
+        ISO8601_DATE_FORMAT.setTimeZone(TimeZone.getTimeZone("GMT+00:00"));
     }
 
     /**
-     * Get the method name of the caller.
+     * Format a date as an ISO 8601 string.
      *
-     * @return The caller's method name.
+     * @param date The date to format.
+     * @return The formatted string.
      */
-    static @NonNull
-    String getMethodName() {
-        StackTraceElement[] stack = Thread.currentThread().getStackTrace();
-        int index = 0;
-        while (index < stack.length) {
-            StackTraceElement frame = stack[index];
-            if (frame.getClassName().equals(Helpers.class.getName())) {
-                ++index;
-                break;
-            }
-            ++index;
-        }
-        assert(index < stack.length);
-        return stack[index].getMethodName();
+    public static @NonNull String iso8601String(@NonNull Date date) {
+        return ISO8601_DATE_FORMAT.format(date);
     }
 }

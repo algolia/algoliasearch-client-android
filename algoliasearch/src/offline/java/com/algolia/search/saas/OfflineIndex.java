@@ -41,6 +41,7 @@ import java.io.Writer;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -60,7 +61,7 @@ import java.util.Map;
  * Though offline indices support most features of an online index, there are some limitations:
  *
  * - Objects **must contain an `objectID`** field. The SDK will refuse to index objects without an ID.
- *   As a consequence, `addObject(...)` and `saveObject(...)` are synonyms.
+ *   As a consequence, {@link #addObjectAsync} and {@link #saveObjectAsync} are synonyms.
  *
  * - **Partial updates** are not supported.
  *
@@ -82,7 +83,7 @@ import java.util.Map;
  * operation, you have to use `waitTask()`.
  *
  * In contrast, write operations on an `OfflineIndex` are only once asynchronous: when the completion handler is
- * called, the operation has completed (eitehr successfully or unsuccessfully).
+ * called, the operation has completed (either successfully or unsuccessfully).
  *
  * Read operations behave identically as on online indices.
  *
@@ -262,11 +263,25 @@ public class OfflineIndex {
      * @return A cancellable request.
      */
     public Request saveObjectAsync(final @NonNull JSONObject object, CompletionHandler completionHandler) {
-        return saveObjectsAsync(Collections.singletonList(object), completionHandler);
+        return getClient().new AsyncTaskRequest(completionHandler) {
+            @NonNull
+            @Override
+            JSONObject run() throws AlgoliaException {
+                return saveObjectSync(object);
+            }
+        }.start();
     }
 
     private JSONObject saveObjectSync(final @NonNull JSONObject object) throws AlgoliaException {
-        return saveObjectsSync(Collections.singletonList(object));
+        try {
+            JSONObject content = saveObjectsSync(Collections.singletonList(object));
+            final Object objectID = content.getJSONArray("objectIDs").get(0);
+            return new JSONObject()
+                .put("updatedAt", DateUtils.iso8601String(new Date()))
+                .put("objectID", objectID);
+        } catch (JSONException e) {
+            throw new RuntimeException(e); // should never happen
+        }
     }
 
     /**
@@ -289,12 +304,23 @@ public class OfflineIndex {
     private JSONObject saveObjectsSync(final @NonNull Collection<JSONObject> objects) throws AlgoliaException {
         File objectFile = null;
         try {
+            JSONArray objectIDs = new JSONArray();
+            for (JSONObject object : objects) {
+                Object objectID = object.opt("objectID");
+                if (objectID == null) {
+                    throw new AlgoliaException("Object missing mandatory `objectID` attribute");
+                }
+                objectIDs.put(objectID);
+            }
             objectFile = writeTempJSONFile(objects);
             int status = localIndex.build(null /* settings */, new String[] { objectFile.getAbsolutePath() }, false /* clearIndex */, null /* deletedObjectIDs */);
             if (status != 200) {
                 throw new AlgoliaException("Failed to build index", status);
             }
-            return new JSONObject();
+            return new JSONObject()
+                .put("objectIDs", objectIDs);
+        } catch (JSONException e) {
+            throw new RuntimeException(e); // should never happen
         } finally {
             if (objectFile != null)
                 objectFile.delete();
@@ -372,11 +398,23 @@ public class OfflineIndex {
      * @return A cancellable request.
      */
     public Request deleteObjectAsync(final @NonNull String objectID, CompletionHandler completionHandler) {
-        return deleteObjectsAsync(Collections.singletonList(objectID), completionHandler);
+        return getClient().new AsyncTaskRequest(completionHandler) {
+            @NonNull
+            @Override
+            JSONObject run() throws AlgoliaException {
+                return deleteObjectSync(objectID);
+            }
+        }.start();
     }
 
     private JSONObject deleteObjectSync(@NonNull String objectID) throws AlgoliaException {
-        return deleteObjectsSync(Collections.singletonList(objectID));
+        try {
+            deleteObjectsSync(Collections.singletonList(objectID));
+            return new JSONObject()
+                .put("deletedAt", DateUtils.iso8601String(new Date()));
+        } catch (JSONException e) {
+            throw new RuntimeException(e); // should never happen
+        }
     }
 
     /**
@@ -397,12 +435,17 @@ public class OfflineIndex {
     }
 
     private JSONObject deleteObjectsSync(@NonNull List<String> objectIDs) throws AlgoliaException {
-        final String[] deletedObjectIDs = objectIDs.toArray(new String[objectIDs.size()]);
-        int status = localIndex.build(null /* settings */, new String[] {}, false /* clearIndex */, deletedObjectIDs /* deletedObjectIDs */);
-        if (status != 200) {
-            throw new AlgoliaException("Failed to build index", status);
+        try {
+            final String[] deletedObjectIDs = objectIDs.toArray(new String[objectIDs.size()]);
+            int status = localIndex.build(null /* settings */, new String[] {}, false /* clearIndex */, deletedObjectIDs /* deletedObjectIDs */);
+            if (status != 200) {
+                throw new AlgoliaException("Failed to build index", status);
+            }
+            return new JSONObject()
+                .put("objectIDs", new JSONArray(objectIDs));
+        } catch (JSONException e) {
+            throw new RuntimeException(e); // should never happen
         }
-        return new JSONObject();
     }
 
     /**
@@ -526,11 +569,16 @@ public class OfflineIndex {
     }
 
     private JSONObject clearIndexSync() throws AlgoliaException {
-        int status = localIndex.build(null, new String[] { }, true /* clearIndex */, null /* deletedObjectIDs */);
-        if (status != 200) {
-            throw new AlgoliaException("Failed to build index", status);
+        try {
+            int status = localIndex.build(null, new String[] { }, true /* clearIndex */, null /* deletedObjectIDs */);
+            if (status != 200) {
+                throw new AlgoliaException("Failed to build index", status);
+            }
+            return new JSONObject()
+                .put("updatedAt", DateUtils.iso8601String(new Date()));
+        } catch (JSONException e) {
+            throw new RuntimeException(e); // should never happen
         }
-        return new JSONObject();
     }
 
     // ----------------------------------------------------------------------

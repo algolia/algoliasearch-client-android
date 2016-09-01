@@ -26,14 +26,18 @@ package com.algolia.search.saas;
 import android.content.Context;
 import android.support.annotation.NonNull;
 
+import com.algolia.search.offline.core.LocalIndex;
 import com.algolia.search.offline.core.Sdk;
 import com.algolia.search.offline.core.SearchResults;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.File;
+import java.io.FileFilter;
 import java.io.UnsupportedEncodingException;
+import java.util.Date;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -175,6 +179,194 @@ public class OfflineClient extends Client
     public @NonNull Context getContext() {
         return context;
     }
+
+    /**
+     * Get the data directory for the current application ID.
+     *
+     * @return The data directory for the current application ID.
+     */
+    private @NonNull File getAppDir() {
+        return new File(getRootDataDir(), getApplicationID());
+    }
+
+    /**
+     * Get the data directory for the index with a specified name.
+     *
+     * @param name The index's name.
+     * @return The data directory for the index.
+     */
+    protected @NonNull File getIndexDir(@NonNull String name) {
+        return new File(getAppDir(), name);
+    }
+
+    // ----------------------------------------------------------------------
+    // Operations
+    // ----------------------------------------------------------------------
+
+    /**
+     * Test if an index has offline data on disk.
+     *
+     * **Note:** This applies both to {@link MirroredIndex} and {@link OfflineIndex} instances.
+     *
+     * **Warning:** This method is synchronous!
+     *
+     * @param name The index's name.
+     * @return `true` if data exists on disk for this index, `false` otherwise.
+     */
+    public boolean hasOfflineData(@NonNull String name) {
+        // TODO: Suboptimal; we should be able to test existence without instantiating a `LocalIndex`.
+        return new LocalIndex(getRootDataDir().getAbsolutePath(), getApplicationID(), name).exists();
+    }
+
+    /**
+     * List existing offline indices.
+     * Only indices that *actually exist* on disk are listed. If an instance was created but never synced or written
+     * to, it will not appear in the list.
+     *
+     * **Note:** This applies both to {@link MirroredIndex} and {@link OfflineIndex} instances.
+     *
+     * @param completionHandler The listener that will be notified of the request's outcome.
+     * @return A cancellable request.
+     */
+    public Request listIndexesOfflineAsync(@NonNull CompletionHandler completionHandler) {
+        return new AsyncTaskRequest(completionHandler) {
+            @NonNull
+            @Override
+            JSONObject run() throws AlgoliaException {
+                return listIndexesOfflineSync();
+            }
+        }.start();
+    }
+
+    /**
+     * List existing offline indices.
+     *
+     * **Note:** This applies both to {@link MirroredIndex} and {@link OfflineIndex} instances. Only indices that
+     * *actually exist* on disk are listed. If an instance was created but never synced or written to, it will not
+     * appear in the list.
+     *
+     * @return A JSON object with an `items` attribute containing the indices details as JSON objects.
+     */
+    private JSONObject listIndexesOfflineSync() throws AlgoliaException {
+        try {
+            final String rootDataPath = getRootDataDir().getAbsolutePath();
+            final File appDir = getAppDir();
+            final File[] directories = appDir.listFiles(new FileFilter() {
+                @Override
+                public boolean accept(File pathname) {
+                    return pathname.isDirectory();
+                }
+            });
+            JSONObject response = new JSONObject();
+            JSONArray items = new JSONArray();
+            if (directories != null) {
+                for (File directory : directories) {
+                    final String name = directory.getName();
+                    if (hasOfflineData(name)) {
+                        items.put(new JSONObject()
+                            .put("name", name)
+                        );
+                        // TODO: Do we need other data as in the online API?
+                    }
+                }
+            }
+            response.put("items", items);
+            return response;
+        } catch (JSONException e) {
+            throw new RuntimeException(e); // should never happen
+        }
+    }
+
+    /**
+     * Delete an offline index.
+     * This deletes the data on disk. If the index does not exist, this method does nothing.
+     *
+     * **Note:** This applies both to {@link MirroredIndex} and {@link OfflineIndex} instances.
+     *
+     * @param indexName Name of index to delete.
+     * @return A JSON object.
+     */
+    public Request deleteIndexOfflineAsync(final @NonNull String indexName, CompletionHandler completionHandler) {
+        return new AsyncTaskRequest(completionHandler) {
+            @NonNull
+            @Override
+            JSONObject run() throws AlgoliaException {
+                return deleteIndexOfflineSync(indexName);
+            }
+        }.start();
+    }
+
+    /**
+     * Delete an offline index.
+     * This deletes the data on disk. If the index does not exist, this method does nothing.
+     *
+     * **Note:** This applies both to {@link MirroredIndex} and {@link OfflineIndex} instances.
+     *
+     * @param indexName Name of index to delete.
+     * @return A JSON response.
+     */
+    private JSONObject deleteIndexOfflineSync(final @NonNull String indexName) throws AlgoliaException {
+        try {
+            FileUtils.deleteRecursive(getIndexDir(indexName));
+            return new JSONObject()
+                .put("deletedAt", DateUtils.iso8601String(new Date()));
+        } catch (JSONException e) {
+            throw new RuntimeException(e); // should never happen
+        }
+    }
+
+    /**
+     * Move an existing offline index.
+     *
+     * **Warning:** This will overwrite the destination index if it exists.
+     *
+     * **Note:** This applies both to {@link MirroredIndex} and {@link OfflineIndex} instances.
+     *
+     * @param srcIndexName Name of index to move.
+     * @param dstIndexName The new index name.
+     * @param completionHandler The listener that will be notified of the request's outcome.
+     * @return A cancellable request.
+     */
+    public Request moveIndexOfflineAsync(final @NonNull String srcIndexName, final @NonNull String dstIndexName, CompletionHandler completionHandler) {
+        return new AsyncTaskRequest(completionHandler) {
+            @NonNull
+            @Override
+            JSONObject run() throws AlgoliaException {
+                return moveIndexOfflineSync(srcIndexName, dstIndexName);
+            }
+        }.start();
+    }
+
+    /**
+     * Move an existing offline index.
+     *
+     * **Warning:** This will overwrite the destination index if it exists.
+     *
+     * **Note:** This applies both to {@link MirroredIndex} and {@link OfflineIndex} instances.
+     *
+     * @param srcIndexName Name of index to move.
+     * @param dstIndexName The new index name.
+     * @return A JSON response.
+     */
+    private JSONObject moveIndexOfflineSync(final @NonNull String srcIndexName, final @NonNull String dstIndexName) throws AlgoliaException {
+        try {
+            final File srcDir = getIndexDir(srcIndexName);
+            final File dstDir = getIndexDir(dstIndexName);
+            if (dstDir.exists()) {
+                FileUtils.deleteRecursive(dstDir);
+            }
+            if (srcDir.renameTo(dstDir)) {
+                return new JSONObject()
+                    .put("updatedAt", DateUtils.iso8601String(new Date()));
+            } else {
+                throw new AlgoliaException("Could not move index");
+            }
+        } catch (JSONException e) {
+            throw new RuntimeException(e); // should never happen
+        }
+    }
+
+    // NOTE: Copy not supported because it would be too resource-intensive.
 
     // ----------------------------------------------------------------------
     // Utils
