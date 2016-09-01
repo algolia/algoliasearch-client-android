@@ -263,7 +263,7 @@ public class OfflineIndex {
      * @return A cancellable request.
      */
     public Request saveObjectAsync(final @NonNull JSONObject object, CompletionHandler completionHandler) {
-        return getClient().new AsyncTaskRequest(completionHandler) {
+        return getClient().new AsyncTaskRequest(completionHandler, getClient().localBuildExecutorService) {
             @NonNull
             @Override
             JSONObject run() throws AlgoliaException {
@@ -292,7 +292,7 @@ public class OfflineIndex {
      * @return A cancellable request.
      */
     public Request saveObjectsAsync(final @NonNull Collection<JSONObject> objects, @NonNull CompletionHandler completionHandler) {
-        return getClient().new AsyncTaskRequest(completionHandler) {
+        return getClient().new AsyncTaskRequest(completionHandler, getClient().localBuildExecutorService) {
             @NonNull
             @Override
             JSONObject run() throws AlgoliaException {
@@ -398,7 +398,7 @@ public class OfflineIndex {
      * @return A cancellable request.
      */
     public Request deleteObjectAsync(final @NonNull String objectID, CompletionHandler completionHandler) {
-        return getClient().new AsyncTaskRequest(completionHandler) {
+        return getClient().new AsyncTaskRequest(completionHandler, getClient().localBuildExecutorService) {
             @NonNull
             @Override
             JSONObject run() throws AlgoliaException {
@@ -425,7 +425,7 @@ public class OfflineIndex {
      * @return A cancellable request.
      */
     public Request deleteObjectsAsync(final @NonNull List<String> objectIDs, CompletionHandler completionHandler) {
-        return getClient().new AsyncTaskRequest(completionHandler) {
+        return getClient().new AsyncTaskRequest(completionHandler, getClient().localBuildExecutorService) {
             @NonNull
             @Override
             JSONObject run() throws AlgoliaException {
@@ -479,7 +479,7 @@ public class OfflineIndex {
      * @return A cancellable request.
      */
     public Request setSettingsAsync(final @NonNull JSONObject settings, CompletionHandler completionHandler) {
-        return getClient().new AsyncTaskRequest(completionHandler) {
+        return getClient().new AsyncTaskRequest(completionHandler, getClient().localBuildExecutorService) {
             @NonNull
             @Override
             JSONObject run() throws AlgoliaException {
@@ -559,7 +559,7 @@ public class OfflineIndex {
      * @return A cancellable request.
      */
     public Request clearIndexAsync(CompletionHandler completionHandler) {
-        return getClient().new AsyncTaskRequest(completionHandler) {
+        return getClient().new AsyncTaskRequest(completionHandler, getClient().localBuildExecutorService) {
             @NonNull
             @Override
             JSONObject run() throws AlgoliaException {
@@ -612,7 +612,7 @@ public class OfflineIndex {
      */
     public Request deleteByQueryAsync(@NonNull Query query, CompletionHandler completionHandler) {
         final Query queryCopy = new Query(query);
-        return getClient().new AsyncTaskRequest(completionHandler) {
+        return getClient().new AsyncTaskRequest(completionHandler, getClient().localBuildExecutorService) {
             @NonNull
             @Override
             JSONObject run() throws AlgoliaException {

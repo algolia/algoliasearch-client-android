@@ -78,6 +78,8 @@ public abstract class OfflineTestBase extends RobolectricTestCase {
         // WARNING: Robolectric cannot work with custom executors in `AsyncTask`, so we substitute the client's
         // executor with a Robolectric-compliant one.
         Whitebox.setInternalState(client, "searchExecutorService", new RoboExecutorService());
+        Whitebox.setInternalState(client, "localBuildExecutorService", new RoboExecutorService());
+        Whitebox.setInternalState(client, "localSearchExecutorService", new RoboExecutorService());
 
         // Log the local directory used by Robolectric. Useful when debugging.
         Log.v(this.getClass().getName(), "Robolectric files dir: " + RuntimeEnvironment.application.getFilesDir().getAbsolutePath());

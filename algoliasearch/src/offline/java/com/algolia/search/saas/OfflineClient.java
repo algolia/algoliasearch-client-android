@@ -287,7 +287,7 @@ public class OfflineClient extends Client
      * @return A JSON object.
      */
     public Request deleteIndexOfflineAsync(final @NonNull String indexName, CompletionHandler completionHandler) {
-        return new AsyncTaskRequest(completionHandler) {
+        return new AsyncTaskRequest(completionHandler, localBuildExecutorService) {
             @NonNull
             @Override
             JSONObject run() throws AlgoliaException {
@@ -328,7 +328,7 @@ public class OfflineClient extends Client
      * @return A cancellable request.
      */
     public Request moveIndexOfflineAsync(final @NonNull String srcIndexName, final @NonNull String dstIndexName, CompletionHandler completionHandler) {
-        return new AsyncTaskRequest(completionHandler) {
+        return new AsyncTaskRequest(completionHandler, localBuildExecutorService) {
             @NonNull
             @Override
             JSONObject run() throws AlgoliaException {
