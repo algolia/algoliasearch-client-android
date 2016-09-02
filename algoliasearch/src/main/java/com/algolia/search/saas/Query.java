@@ -1223,7 +1223,7 @@ public class Query {
      * @param value a String containing latitude/longitude.
      * @return a LatLng object describing the given value.
      */
-    @Nullable public LatLng parseLatLng(String value) {
+    @Nullable public static LatLng parseLatLng(String value) {
         if (value == null) {
             return null;
         }
