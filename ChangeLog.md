@@ -1,6 +1,10 @@
 Change Log
 ==========
 
+## Next version
+
+- Expose parseLatLng method
+
 ## 3.4.0 (2016-09-05)
 
 - Implement new user-agent convention

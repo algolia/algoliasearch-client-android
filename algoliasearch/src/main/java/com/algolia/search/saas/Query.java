@@ -261,19 +261,7 @@ public class Query {
     }
 
     public LatLng getAroundLatLng() {
-        String value = get(KEY_AROUND_LAT_LNG);
-        if (value == null) {
-            return null;
-        }
-        String[] components = value.split(",");
-        if (components.length != 2) {
-            return null;
-        }
-        try {
-            return new LatLng(Double.valueOf(components[0]), Double.valueOf(components[1]));
-        } catch (NumberFormatException e) {
-            return null;
-        }
+        return parseLatLng(get(KEY_AROUND_LAT_LNG));
     }
 
     private static final String KEY_AROUND_LAT_LNG_VIA_IP = "aroundLatLngViaIP";
@@ -1228,6 +1216,26 @@ public class Query {
 
     private static String[] parseCommaArray(String string) {
         return string == null ? null : string.split(",");
+    }
+
+    /**
+     * Parse a LatLng from its String equivalent.
+     * @param value a String containing latitude/longitude.
+     * @return a LatLng object describing the given value.
+     */
+    @Nullable public LatLng parseLatLng(String value) {
+        if (value == null) {
+            return null;
+        }
+        String[] components = value.split(",");
+        if (components.length != 2) {
+            return null;
+        }
+        try {
+            return new LatLng(Double.valueOf(components[0]), Double.valueOf(components[1]));
+        } catch (NumberFormatException e) {
+            return null;
+        }
     }
 
     // ----------------------------------------------------------------------
