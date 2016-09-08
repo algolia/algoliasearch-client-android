@@ -1,8 +1,10 @@
 Change Log
 ==========
 
-## Next version
+## 3.4.1 (2016-09-08)
 
+- Documentation improvements
+- Fix getObjects missing a way to specify attributesToRetrieve
 - Expose parseLatLng method
 
 ## 3.4.0 (2016-09-05)

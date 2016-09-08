@@ -64,7 +64,7 @@ import java.util.zip.GZIPInputStream;
  * </p>
  */
 public class Client {
-    private final static String version = "3.4.0";
+    private final static String version = "3.4.1";
 
     /**
      * The user agents as a raw string. This is what is passed in request headers.
