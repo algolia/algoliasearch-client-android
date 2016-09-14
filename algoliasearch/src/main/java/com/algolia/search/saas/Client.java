@@ -41,6 +41,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.UnsupportedEncodingException;
+import java.lang.ref.WeakReference;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
@@ -126,6 +127,8 @@ public class Client {
 
     /** Thread pool used to run asynchronous requests. */
     protected ExecutorService searchExecutorService = Executors.newFixedThreadPool(4);
+
+    protected Map<String, WeakReference<Index>> indices = new HashMap<>();
 
     // ----------------------------------------------------------------------
     // Initialization
@@ -312,9 +315,30 @@ public class Client {
      *
      * @param indexName The name of the index.
      * @return A new proxy to the specified index.
+     *
+     * @deprecated You should now use {@link #getIndex(String)}, which re-uses instances with the same name.
      */
     public Index initIndex(@NonNull String indexName) {
         return new Index(this, indexName);
+    }
+
+    /**
+     * Obtain a proxy to an Algolia index (no server call required by this method).
+     *
+     * @param indexName The name of the index.
+     * @return A proxy to the specified index.
+     */
+    public @NonNull Index getIndex(@NonNull String indexName) {
+        Index index = null;
+        WeakReference<Index> existingIndex = indices.get(indexName);
+        if (existingIndex != null) {
+            index = existingIndex.get();
+        }
+        if (index == null) {
+            index = new Index(this, indexName);
+            indices.put(indexName, new WeakReference<Index>(index));
+        }
+        return index;
     }
 
     /**
