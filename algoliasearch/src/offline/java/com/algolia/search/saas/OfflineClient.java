@@ -135,12 +135,7 @@ public class OfflineClient extends Client
         MirroredIndex index = null;
         WeakReference<Index> existingIndex = indices.get(indexName);
         if (existingIndex != null) {
-            Index anIndex = existingIndex.get();
-            if (anIndex != null && !(anIndex instanceof MirroredIndex)) {
-                throw new IllegalStateException("An index with the same name but a different type has already been created");
-            } else {
-                index = (MirroredIndex)anIndex;
-            }
+            index = (MirroredIndex)existingIndex.get();
         }
         if (index == null) {
             index = new MirroredIndex(this, indexName);
