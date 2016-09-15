@@ -17,8 +17,8 @@
     catch(err) {
     }
 //-->
-var methods = {"i0":10,"i1":10,"i2":10,"i3":10,"i4":10,"i5":10,"i6":10,"i7":10,"i8":10,"i9":10,"i10":10,"i11":10,"i12":10,"i13":10,"i14":10,"i15":10,"i16":10,"i17":10,"i18":10,"i19":10,"i20":10,"i21":10,"i22":10,"i23":10,"i24":10};
-var tabs = {65535:["t0","All Methods"],2:["t2","Instance Methods"],8:["t4","Concrete Methods"]};
+var methods = {"i0":10,"i1":10,"i2":10,"i3":10,"i4":10,"i5":10,"i6":10,"i7":10,"i8":10,"i9":10,"i10":10,"i11":10,"i12":10,"i13":10,"i14":42,"i15":10,"i16":10,"i17":10,"i18":10,"i19":10,"i20":10,"i21":10,"i22":10,"i23":10,"i24":10,"i25":10};
+var tabs = {65535:["t0","All Methods"],2:["t2","Instance Methods"],8:["t4","Concrete Methods"],32:["t6","Deprecated Methods"]};
 var altColor = "altColor";
 var rowColor = "rowColor";
 var tableTab = "tableTab";
@@ -113,13 +113,7 @@ var activeTableTab = "activeTableTab";
 <br>
 <pre>public class <span class="typeNameLabel">Client</span>
 extends java.lang.Object</pre>
-<div class="block">Entry point to the Android API.
- You must instantiate a <code>Client</code> object with your application ID and API key to start using Algolia Search
- API.
- <p>
- WARNING: For performance reasons, arguments to asynchronous methods are not cloned. Therefore, you should not
- modify mutable arguments after they have been passed (unless explicitly noted).
- </p></div>
+<div class="block"><p>Entry point to the Android API. You must instantiate a <code>Client</code> object with your application ID and API key to start using Algolia Search API. <p> WARNING: For performance reasons, arguments to asynchronous methods are not cloned. Therefore, you should not modify mutable arguments after they have been passed (unless explicitly noted). </p></p></div>
 </li>
 </ul>
 </div>
@@ -187,7 +181,7 @@ extends java.lang.Object</pre>
 </a>
 <h3>Method Summary</h3>
 <table class="memberSummary" border="0" cellpadding="3" cellspacing="0" summary="Method Summary table, listing methods, and an explanation">
-<caption><span id="t0" class="activeTableTab"><span>All Methods</span><span class="tabEnd">&nbsp;</span></span><span id="t2" class="tableTab"><span><a href="javascript:show(2);">Instance Methods</a></span><span class="tabEnd">&nbsp;</span></span><span id="t4" class="tableTab"><span><a href="javascript:show(8);">Concrete Methods</a></span><span class="tabEnd">&nbsp;</span></span></caption>
+<caption><span id="t0" class="activeTableTab"><span>All Methods</span><span class="tabEnd">&nbsp;</span></span><span id="t2" class="tableTab"><span><a href="javascript:show(2);">Instance Methods</a></span><span class="tabEnd">&nbsp;</span></span><span id="t4" class="tableTab"><span><a href="javascript:show(8);">Concrete Methods</a></span><span class="tabEnd">&nbsp;</span></span><span id="t6" class="tableTab"><span><a href="javascript:show(32);">Deprecated Methods</a></span><span class="tabEnd">&nbsp;</span></span></caption>
 <tr>
 <th class="colFirst" scope="col">Modifier and Type</th>
 <th class="colLast" scope="col">Method and Description</th>
@@ -237,50 +231,58 @@ extends java.lang.Object</pre>
 </td>
 </tr>
 <tr id="i7" class="rowColor">
+<td class="colFirst"><code><a href="../../../../com/algolia/search/saas/Index.html" title="class in com.algolia.search.saas">Index</a></code></td>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/algolia/search/saas/Client.html#getIndex-java.lang.String-">getIndex</a></span>(java.lang.String&nbsp;indexName)</code>
+<div class="block">Obtain a proxy to an Algolia index (no server call required by this method).</div>
+</td>
+</tr>
+<tr id="i8" class="altColor">
 <td class="colFirst"><code>java.lang.String[]</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/algolia/search/saas/Client.html#getReadHosts--">getReadHosts</a></span>()</code>&nbsp;</td>
 </tr>
-<tr id="i8" class="altColor">
+<tr id="i9" class="rowColor">
 <td class="colFirst"><code>int</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/algolia/search/saas/Client.html#getReadTimeout--">getReadTimeout</a></span>()</code>
 <div class="block">Get the default read timeout.</div>
 </td>
 </tr>
-<tr id="i9" class="rowColor">
+<tr id="i10" class="altColor">
 <td class="colFirst"><code>int</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/algolia/search/saas/Client.html#getSearchTimeout--">getSearchTimeout</a></span>()</code>
 <div class="block">Get the read timeout for search requests.</div>
 </td>
 </tr>
-<tr id="i10" class="altColor">
+<tr id="i11" class="rowColor">
 <td class="colFirst"><code><a href="../../../../com/algolia/search/saas/Client.LibraryVersion.html" title="class in com.algolia.search.saas">Client.LibraryVersion</a>[]</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/algolia/search/saas/Client.html#getUserAgents--">getUserAgents</a></span>()</code>
 <div class="block">Retrieve the list of declared user agents.</div>
 </td>
 </tr>
-<tr id="i11" class="rowColor">
+<tr id="i12" class="altColor">
 <td class="colFirst"><code>java.lang.String[]</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/algolia/search/saas/Client.html#getWriteHosts--">getWriteHosts</a></span>()</code>&nbsp;</td>
 </tr>
-<tr id="i12" class="altColor">
+<tr id="i13" class="rowColor">
 <td class="colFirst"><code>boolean</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/algolia/search/saas/Client.html#hasUserAgent-com.algolia.search.saas.Client.LibraryVersion-">hasUserAgent</a></span>(<a href="../../../../com/algolia/search/saas/Client.LibraryVersion.html" title="class in com.algolia.search.saas">Client.LibraryVersion</a>&nbsp;userAgent)</code>
 <div class="block">Test whether a user agent is declared.</div>
 </td>
 </tr>
-<tr id="i13" class="rowColor">
+<tr id="i14" class="altColor">
 <td class="colFirst"><code><a href="../../../../com/algolia/search/saas/Index.html" title="class in com.algolia.search.saas">Index</a></code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/algolia/search/saas/Client.html#initIndex-java.lang.String-">initIndex</a></span>(java.lang.String&nbsp;indexName)</code>
-<div class="block">Create a proxy to an Algolia index (no server call required by this method).</div>
+<div class="block"><span class="deprecatedLabel">Deprecated.</span>&nbsp;
+<div class="block"><span class="deprecationComment">You should now use <a href="../../../../com/algolia/search/saas/Client.html#getIndex-java.lang.String-"><code>getIndex(String)</code></a>, which re-uses instances with the same name.</span></div>
+</div>
 </td>
 </tr>
-<tr id="i14" class="altColor">
+<tr id="i15" class="rowColor">
 <td class="colFirst"><code><a href="../../../../com/algolia/search/saas/Request.html" title="interface in com.algolia.search.saas">Request</a></code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/algolia/search/saas/Client.html#listIndexesAsync-com.algolia.search.saas.CompletionHandler-">listIndexesAsync</a></span>(<a href="../../../../com/algolia/search/saas/CompletionHandler.html" title="interface in com.algolia.search.saas">CompletionHandler</a>&nbsp;completionHandler)</code>
 <div class="block">List existing indexes.</div>
 </td>
 </tr>
-<tr id="i15" class="rowColor">
+<tr id="i16" class="altColor">
 <td class="colFirst"><code><a href="../../../../com/algolia/search/saas/Request.html" title="interface in com.algolia.search.saas">Request</a></code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/algolia/search/saas/Client.html#moveIndexAsync-java.lang.String-java.lang.String-com.algolia.search.saas.CompletionHandler-">moveIndexAsync</a></span>(java.lang.String&nbsp;srcIndexName,
               java.lang.String&nbsp;dstIndexName,
@@ -288,7 +290,7 @@ extends java.lang.Object</pre>
 <div class="block">Move an existing index.</div>
 </td>
 </tr>
-<tr id="i16" class="altColor">
+<tr id="i17" class="rowColor">
 <td class="colFirst"><code><a href="../../../../com/algolia/search/saas/Request.html" title="interface in com.algolia.search.saas">Request</a></code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/algolia/search/saas/Client.html#multipleQueriesAsync-java.util.List-com.algolia.search.saas.Client.MultipleQueriesStrategy-com.algolia.search.saas.CompletionHandler-">multipleQueriesAsync</a></span>(java.util.List&lt;<a href="../../../../com/algolia/search/saas/IndexQuery.html" title="class in com.algolia.search.saas">IndexQuery</a>&gt;&nbsp;queries,
                     <a href="../../../../com/algolia/search/saas/Client.MultipleQueriesStrategy.html" title="enum in com.algolia.search.saas">Client.MultipleQueriesStrategy</a>&nbsp;strategy,
@@ -296,48 +298,48 @@ extends java.lang.Object</pre>
 <div class="block">Run multiple queries, potentially targeting multiple indexes, with one API call.</div>
 </td>
 </tr>
-<tr id="i17" class="rowColor">
+<tr id="i18" class="altColor">
 <td class="colFirst"><code>void</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/algolia/search/saas/Client.html#removeUserAgent-com.algolia.search.saas.Client.LibraryVersion-">removeUserAgent</a></span>(<a href="../../../../com/algolia/search/saas/Client.LibraryVersion.html" title="class in com.algolia.search.saas">Client.LibraryVersion</a>&nbsp;userAgent)</code>
 <div class="block">Remove a software library from the list of user agents.</div>
 </td>
 </tr>
-<tr id="i18" class="altColor">
+<tr id="i19" class="rowColor">
 <td class="colFirst"><code>void</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/algolia/search/saas/Client.html#setConnectTimeout-int-">setConnectTimeout</a></span>(int&nbsp;connectTimeout)</code>
 <div class="block">Set the connection timeout.</div>
 </td>
 </tr>
-<tr id="i19" class="rowColor">
+<tr id="i20" class="altColor">
 <td class="colFirst"><code>void</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/algolia/search/saas/Client.html#setHeader-java.lang.String-java.lang.String-">setHeader</a></span>(java.lang.String&nbsp;name,
          java.lang.String&nbsp;value)</code>
 <div class="block">Set an HTTP header that will be sent with every request.</div>
 </td>
 </tr>
-<tr id="i20" class="altColor">
+<tr id="i21" class="rowColor">
 <td class="colFirst"><code>void</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/algolia/search/saas/Client.html#setHosts-java.lang.String...-">setHosts</a></span>(java.lang.String...&nbsp;hosts)</code>
 <div class="block">Set read and write hosts to the same value (convenience method).</div>
 </td>
 </tr>
-<tr id="i21" class="rowColor">
+<tr id="i22" class="altColor">
 <td class="colFirst"><code>void</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/algolia/search/saas/Client.html#setReadHosts-java.lang.String...-">setReadHosts</a></span>(java.lang.String...&nbsp;hosts)</code>&nbsp;</td>
 </tr>
-<tr id="i22" class="altColor">
+<tr id="i23" class="rowColor">
 <td class="colFirst"><code>void</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/algolia/search/saas/Client.html#setReadTimeout-int-">setReadTimeout</a></span>(int&nbsp;readTimeout)</code>
 <div class="block">Set the default read timeout.</div>
 </td>
 </tr>
-<tr id="i23" class="rowColor">
+<tr id="i24" class="altColor">
 <td class="colFirst"><code>void</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/algolia/search/saas/Client.html#setSearchTimeout-int-">setSearchTimeout</a></span>(int&nbsp;searchTimeout)</code>
 <div class="block">Set the read timeout for search requests.</div>
 </td>
 </tr>
-<tr id="i24" class="altColor">
+<tr id="i25" class="rowColor">
 <td class="colFirst"><code>void</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/algolia/search/saas/Client.html#setWriteHosts-java.lang.String...-">setWriteHosts</a></span>(java.lang.String...&nbsp;hosts)</code>&nbsp;</td>
 </tr>
@@ -371,9 +373,8 @@ extends java.lang.Object</pre>
 <h4>Client</h4>
 <pre>public&nbsp;Client(java.lang.String&nbsp;applicationID,
               java.lang.String&nbsp;apiKey)</pre>
-<div class="block">Create a new Algolia Search client targeting the default hosts.
-
- NOTE: This is the recommended way to initialize a client is most use cases.</div>
+<div class="block"><p>Create a new Algolia Search client targeting the default hosts.</p>
+<p>NOTE: This is the recommended way to initialize a client is most use cases.</p></div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>applicationID</code> - The application ID (available in your Algolia Dashboard).</dd>
@@ -390,9 +391,8 @@ extends java.lang.Object</pre>
 <pre>public&nbsp;Client(java.lang.String&nbsp;applicationID,
               java.lang.String&nbsp;apiKey,
               java.lang.String[]&nbsp;hosts)</pre>
-<div class="block">Create a new Algolia Search client with explicit hosts to target.
-
- NOTE: In most use cases, you should the default hosts. See <a href="../../../../com/algolia/search/saas/Client.html#Client-java.lang.String-java.lang.String-"><code>Client(String, String)</code></a>.</div>
+<div class="block"><p>Create a new Algolia Search client with explicit hosts to target.</p>
+<p>NOTE: In most use cases, you should the default hosts. See <a href="../../../../com/algolia/search/saas/Client.html#Client-java.lang.String-java.lang.String-"><code>Client(String, String)</code></a>.</p></div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>applicationID</code> - The application ID (available in your Algolia Dashboard).</dd>
@@ -426,7 +426,7 @@ extends java.lang.Object</pre>
 <h4>setHeader</h4>
 <pre>public&nbsp;void&nbsp;setHeader(java.lang.String&nbsp;name,
                       java.lang.String&nbsp;value)</pre>
-<div class="block">Set an HTTP header that will be sent with every request.</div>
+<div class="block"><p>Set an HTTP header that will be sent with every request.</p></div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>name</code> - Header name.</dd>
@@ -441,7 +441,7 @@ extends java.lang.Object</pre>
 <li class="blockList">
 <h4>getHeader</h4>
 <pre>public&nbsp;java.lang.String&nbsp;getHeader(java.lang.String&nbsp;name)</pre>
-<div class="block">Get an HTTP header.</div>
+<div class="block"><p>Get an HTTP header.</p></div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>name</code> - Header name.</dd>
@@ -491,7 +491,7 @@ extends java.lang.Object</pre>
 <li class="blockList">
 <h4>setHosts</h4>
 <pre>public&nbsp;void&nbsp;setHosts(java.lang.String...&nbsp;hosts)</pre>
-<div class="block">Set read and write hosts to the same value (convenience method).</div>
+<div class="block"><p>Set read and write hosts to the same value (convenience method).</p></div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>hosts</code> - New hosts. Must not be empty.</dd>
@@ -505,7 +505,7 @@ extends java.lang.Object</pre>
 <li class="blockList">
 <h4>getConnectTimeout</h4>
 <pre>public&nbsp;int&nbsp;getConnectTimeout()</pre>
-<div class="block">Get the connection timeout.</div>
+<div class="block"><p>Get the connection timeout.</p></div>
 <dl>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>The connection timeout (ms).</dd>
@@ -519,7 +519,7 @@ extends java.lang.Object</pre>
 <li class="blockList">
 <h4>setConnectTimeout</h4>
 <pre>public&nbsp;void&nbsp;setConnectTimeout(int&nbsp;connectTimeout)</pre>
-<div class="block">Set the connection timeout.</div>
+<div class="block"><p>Set the connection timeout.</p></div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>connectTimeout</code> - The new connection timeout (ms).</dd>
@@ -533,7 +533,7 @@ extends java.lang.Object</pre>
 <li class="blockList">
 <h4>getReadTimeout</h4>
 <pre>public&nbsp;int&nbsp;getReadTimeout()</pre>
-<div class="block">Get the default read timeout.</div>
+<div class="block"><p>Get the default read timeout.</p></div>
 <dl>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>The default read timeout (ms).</dd>
@@ -547,7 +547,7 @@ extends java.lang.Object</pre>
 <li class="blockList">
 <h4>setReadTimeout</h4>
 <pre>public&nbsp;void&nbsp;setReadTimeout(int&nbsp;readTimeout)</pre>
-<div class="block">Set the default read timeout.</div>
+<div class="block"><p>Set the default read timeout.</p></div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>readTimeout</code> - The default read timeout (ms).</dd>
@@ -561,7 +561,7 @@ extends java.lang.Object</pre>
 <li class="blockList">
 <h4>getSearchTimeout</h4>
 <pre>public&nbsp;int&nbsp;getSearchTimeout()</pre>
-<div class="block">Get the read timeout for search requests.</div>
+<div class="block"><p>Get the read timeout for search requests.</p></div>
 <dl>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>The read timeout for search requests (ms).</dd>
@@ -575,7 +575,7 @@ extends java.lang.Object</pre>
 <li class="blockList">
 <h4>setSearchTimeout</h4>
 <pre>public&nbsp;void&nbsp;setSearchTimeout(int&nbsp;searchTimeout)</pre>
-<div class="block">Set the read timeout for search requests.</div>
+<div class="block"><p>Set the read timeout for search requests.</p></div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>searchTimeout</code> - The read timeout for search requests (ms).</dd>
@@ -589,12 +589,29 @@ extends java.lang.Object</pre>
 <li class="blockList">
 <h4>initIndex</h4>
 <pre>public&nbsp;<a href="../../../../com/algolia/search/saas/Index.html" title="class in com.algolia.search.saas">Index</a>&nbsp;initIndex(java.lang.String&nbsp;indexName)</pre>
-<div class="block">Create a proxy to an Algolia index (no server call required by this method).</div>
+<div class="block"><span class="deprecatedLabel">Deprecated.</span>&nbsp;<span class="deprecationComment">You should now use <a href="../../../../com/algolia/search/saas/Client.html#getIndex-java.lang.String-"><code>getIndex(String)</code></a>, which re-uses instances with the same name.</span></div>
+<div class="block"><p>Create a proxy to an Algolia index (no server call required by this method).</p></div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>indexName</code> - The name of the index.</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>A new proxy to the specified index.</dd>
+</dl>
+</li>
+</ul>
+<a name="getIndex-java.lang.String-">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>getIndex</h4>
+<pre>public&nbsp;<a href="../../../../com/algolia/search/saas/Index.html" title="class in com.algolia.search.saas">Index</a>&nbsp;getIndex(java.lang.String&nbsp;indexName)</pre>
+<div class="block"><p>Obtain a proxy to an Algolia index (no server call required by this method).</p></div>
+<dl>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>indexName</code> - The name of the index.</dd>
+<dt><span class="returnLabel">Returns:</span></dt>
+<dd>A proxy to the specified index.</dd>
 </dl>
 </li>
 </ul>
@@ -605,7 +622,7 @@ extends java.lang.Object</pre>
 <li class="blockList">
 <h4>addUserAgent</h4>
 <pre>public&nbsp;void&nbsp;addUserAgent(<a href="../../../../com/algolia/search/saas/Client.LibraryVersion.html" title="class in com.algolia.search.saas">Client.LibraryVersion</a>&nbsp;userAgent)</pre>
-<div class="block">Add a software library to the list of user agents.</div>
+<div class="block"><p>Add a software library to the list of user agents.</p></div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>userAgent</code> - The library to add.</dd>
@@ -619,7 +636,7 @@ extends java.lang.Object</pre>
 <li class="blockList">
 <h4>removeUserAgent</h4>
 <pre>public&nbsp;void&nbsp;removeUserAgent(<a href="../../../../com/algolia/search/saas/Client.LibraryVersion.html" title="class in com.algolia.search.saas">Client.LibraryVersion</a>&nbsp;userAgent)</pre>
-<div class="block">Remove a software library from the list of user agents.</div>
+<div class="block"><p>Remove a software library from the list of user agents.</p></div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>userAgent</code> - The library to remove.</dd>
@@ -633,7 +650,7 @@ extends java.lang.Object</pre>
 <li class="blockList">
 <h4>getUserAgents</h4>
 <pre>public&nbsp;<a href="../../../../com/algolia/search/saas/Client.LibraryVersion.html" title="class in com.algolia.search.saas">Client.LibraryVersion</a>[]&nbsp;getUserAgents()</pre>
-<div class="block">Retrieve the list of declared user agents.</div>
+<div class="block"><p>Retrieve the list of declared user agents.</p></div>
 <dl>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>The declared user agents.</dd>
@@ -647,7 +664,7 @@ extends java.lang.Object</pre>
 <li class="blockList">
 <h4>hasUserAgent</h4>
 <pre>public&nbsp;boolean&nbsp;hasUserAgent(<a href="../../../../com/algolia/search/saas/Client.LibraryVersion.html" title="class in com.algolia.search.saas">Client.LibraryVersion</a>&nbsp;userAgent)</pre>
-<div class="block">Test whether a user agent is declared.</div>
+<div class="block"><p>Test whether a user agent is declared.</p></div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>userAgent</code> - The user agent to look for.</dd>
@@ -663,10 +680,10 @@ extends java.lang.Object</pre>
 <li class="blockList">
 <h4>listIndexesAsync</h4>
 <pre>public&nbsp;<a href="../../../../com/algolia/search/saas/Request.html" title="interface in com.algolia.search.saas">Request</a>&nbsp;listIndexesAsync(<a href="../../../../com/algolia/search/saas/CompletionHandler.html" title="interface in com.algolia.search.saas">CompletionHandler</a>&nbsp;completionHandler)</pre>
-<div class="block">List existing indexes.</div>
+<div class="block"><p>List existing indexes.</p></div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
-<dd><code>completionHandler</code> - The listener that will be notified of the request's outcome.</dd>
+<dd><code>completionHandler</code> - The listener that will be notified of the request&rsquo;s outcome.</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>A cancellable request.</dd>
 </dl>
@@ -680,11 +697,11 @@ extends java.lang.Object</pre>
 <h4>deleteIndexAsync</h4>
 <pre>public&nbsp;<a href="../../../../com/algolia/search/saas/Request.html" title="interface in com.algolia.search.saas">Request</a>&nbsp;deleteIndexAsync(java.lang.String&nbsp;indexName,
                                 <a href="../../../../com/algolia/search/saas/CompletionHandler.html" title="interface in com.algolia.search.saas">CompletionHandler</a>&nbsp;completionHandler)</pre>
-<div class="block">Delete an index.</div>
+<div class="block"><p>Delete an index.</p></div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>indexName</code> - Name of index to delete.</dd>
-<dd><code>completionHandler</code> - The listener that will be notified of the request's outcome.</dd>
+<dd><code>completionHandler</code> - The listener that will be notified of the request&rsquo;s outcome.</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>A cancellable request.</dd>
 </dl>
@@ -699,14 +716,12 @@ extends java.lang.Object</pre>
 <pre>public&nbsp;<a href="../../../../com/algolia/search/saas/Request.html" title="interface in com.algolia.search.saas">Request</a>&nbsp;moveIndexAsync(java.lang.String&nbsp;srcIndexName,
                               java.lang.String&nbsp;dstIndexName,
                               <a href="../../../../com/algolia/search/saas/CompletionHandler.html" title="interface in com.algolia.search.saas">CompletionHandler</a>&nbsp;completionHandler)</pre>
-<div class="block">Move an existing index.
- If the destination index already exists, its specific API keys will be preserved and the source index specific
- API keys will be added.</div>
+<div class="block"><p>Move an existing index. If the destination index already exists, its specific API keys will be preserved and the source index specific API keys will be added.</p></div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>srcIndexName</code> - Name of index to move.</dd>
 <dd><code>dstIndexName</code> - The new index name.</dd>
-<dd><code>completionHandler</code> - The listener that will be notified of the request's outcome.</dd>
+<dd><code>completionHandler</code> - The listener that will be notified of the request&rsquo;s outcome.</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>A cancellable request.</dd>
 </dl>
@@ -721,14 +736,12 @@ extends java.lang.Object</pre>
 <pre>public&nbsp;<a href="../../../../com/algolia/search/saas/Request.html" title="interface in com.algolia.search.saas">Request</a>&nbsp;copyIndexAsync(java.lang.String&nbsp;srcIndexName,
                               java.lang.String&nbsp;dstIndexName,
                               <a href="../../../../com/algolia/search/saas/CompletionHandler.html" title="interface in com.algolia.search.saas">CompletionHandler</a>&nbsp;completionHandler)</pre>
-<div class="block">Copy an existing index.
- If the destination index already exists, its specific API keys will be preserved and the source index specific
- API keys will be added.</div>
+<div class="block"><p>Copy an existing index. If the destination index already exists, its specific API keys will be preserved and the source index specific API keys will be added.</p></div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>srcIndexName</code> - Name of index to copy.</dd>
 <dd><code>dstIndexName</code> - The new index name.</dd>
-<dd><code>completionHandler</code> - The listener that will be notified of the request's outcome.</dd>
+<dd><code>completionHandler</code> - The listener that will be notified of the request&rsquo;s outcome.</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>A cancellable request.</dd>
 </dl>
@@ -743,12 +756,12 @@ extends java.lang.Object</pre>
 <pre>public&nbsp;<a href="../../../../com/algolia/search/saas/Request.html" title="interface in com.algolia.search.saas">Request</a>&nbsp;multipleQueriesAsync(java.util.List&lt;<a href="../../../../com/algolia/search/saas/IndexQuery.html" title="class in com.algolia.search.saas">IndexQuery</a>&gt;&nbsp;queries,
                                     <a href="../../../../com/algolia/search/saas/Client.MultipleQueriesStrategy.html" title="enum in com.algolia.search.saas">Client.MultipleQueriesStrategy</a>&nbsp;strategy,
                                     <a href="../../../../com/algolia/search/saas/CompletionHandler.html" title="interface in com.algolia.search.saas">CompletionHandler</a>&nbsp;completionHandler)</pre>
-<div class="block">Run multiple queries, potentially targeting multiple indexes, with one API call.</div>
+<div class="block"><p>Run multiple queries, potentially targeting multiple indexes, with one API call.</p></div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>queries</code> - The queries to run.</dd>
 <dd><code>strategy</code> - The strategy to use.</dd>
-<dd><code>completionHandler</code> - The listener that will be notified of the request's outcome.</dd>
+<dd><code>completionHandler</code> - The listener that will be notified of the request&rsquo;s outcome.</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>A cancellable request.</dd>
 </dl>
@@ -762,11 +775,11 @@ extends java.lang.Object</pre>
 <h4>batchAsync</h4>
 <pre>public&nbsp;<a href="../../../../com/algolia/search/saas/Request.html" title="interface in com.algolia.search.saas">Request</a>&nbsp;batchAsync(org.json.JSONArray&nbsp;operations,
                           <a href="../../../../com/algolia/search/saas/CompletionHandler.html" title="interface in com.algolia.search.saas">CompletionHandler</a>&nbsp;completionHandler)</pre>
-<div class="block">Batch operations.</div>
+<div class="block"><p>Batch operations.</p></div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>operations</code> - List of operations.</dd>
-<dd><code>completionHandler</code> - The listener that will be notified of the request's outcome.</dd>
+<dd><code>completionHandler</code> - The listener that will be notified of the request&rsquo;s outcome.</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>A cancellable request.</dd>
 </dl>
@@ -796,6 +809,10 @@ extends java.lang.Object</pre>
 <li><a href="../../../../index-all.html">Index</a></li>
 <li><a href="../../../../help-doc.html">Help</a></li>
 </ul>
+<div class="aboutLanguage"><script type="text/javascript" src="../../../../highlight.pack.js"></script>
+<script type="text/javascript"><!--
+hljs.initHighlightingOnLoad();
+//--></script></div>
 </div>
 <div class="subNav">
 <ul class="navList">

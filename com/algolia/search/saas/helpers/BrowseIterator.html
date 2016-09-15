@@ -109,12 +109,8 @@ var activeTableTab = "activeTableTab";
 <br>
 <pre>public class <span class="typeNameLabel">BrowseIterator</span>
 extends java.lang.Object</pre>
-<div class="block">Iterator to browse all index content.
-
- This helper takes care of chaining API requests and calling back the handler block with the results, until:
- - the end of the index has been reached;
- - an error has been encountered;
- - or the user cancelled the iteration.</div>
+<div class="block"><p>Iterator to browse all index content.</p>
+<p>This helper takes care of chaining API requests and calling back the handler block with the results, until: - the end of the index has been reached; - an error has been encountered; - or the user cancelled the iteration.</p></div>
 </li>
 </ul>
 </div>
@@ -224,8 +220,7 @@ extends java.lang.Object</pre>
 <pre>public&nbsp;BrowseIterator(<a href="../../../../../com/algolia/search/saas/Index.html" title="class in com.algolia.search.saas">Index</a>&nbsp;index,
                       <a href="../../../../../com/algolia/search/saas/Query.html" title="class in com.algolia.search.saas">Query</a>&nbsp;query,
                       <a href="../../../../../com/algolia/search/saas/helpers/BrowseIterator.BrowseIteratorHandler.html" title="interface in com.algolia.search.saas.helpers">BrowseIterator.BrowseIteratorHandler</a>&nbsp;handler)</pre>
-<div class="block">Construct a new browse iterator.
- NOTE: The iteration does not start automatically. You have to call `start()` explicitly.</div>
+<div class="block"><p>Construct a new browse iterator. NOTE: The iteration does not start automatically. You have to call <code>start()</code> explicitly.</p></div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>index</code> - The index to be browsed.</dd>
@@ -249,7 +244,7 @@ extends java.lang.Object</pre>
 <li class="blockList">
 <h4>start</h4>
 <pre>public&nbsp;void&nbsp;start()</pre>
-<div class="block">Start the iteration.</div>
+<div class="block"><p>Start the iteration.</p></div>
 </li>
 </ul>
 <a name="cancel--">
@@ -259,9 +254,7 @@ extends java.lang.Object</pre>
 <li class="blockList">
 <h4>cancel</h4>
 <pre>public&nbsp;void&nbsp;cancel()</pre>
-<div class="block">Cancel the iteration.
- This cancels any currently ongoing request, and cancels the iteration.
- The listener will not be called after the iteration has been cancelled.</div>
+<div class="block"><p>Cancel the iteration. This cancels any currently ongoing request, and cancels the iteration. The listener will not be called after the iteration has been cancelled.</p></div>
 </li>
 </ul>
 <a name="hasNext--">
@@ -271,8 +264,7 @@ extends java.lang.Object</pre>
 <li class="blockList">
 <h4>hasNext</h4>
 <pre>public&nbsp;boolean&nbsp;hasNext()</pre>
-<div class="block">Determine if there is more content to be browsed.
- WARNING: Can only be called from the handler, once the iteration has started.</div>
+<div class="block"><p>Determine if there is more content to be browsed. WARNING: Can only be called from the handler, once the iteration has started.</p></div>
 </li>
 </ul>
 </li>
@@ -299,6 +291,10 @@ extends java.lang.Object</pre>
 <li><a href="../../../../../index-all.html">Index</a></li>
 <li><a href="../../../../../help-doc.html">Help</a></li>
 </ul>
+<div class="aboutLanguage"><script type="text/javascript" src="../../../../../highlight.pack.js"></script>
+<script type="text/javascript"><!--
+hljs.initHighlightingOnLoad();
+//--></script></div>
 </div>
 <div class="subNav">
 <ul class="navList">

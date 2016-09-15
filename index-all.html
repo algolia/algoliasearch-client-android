@@ -302,6 +302,10 @@
 <dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="com/algolia/search/saas/Query.html#getIgnorePlurals--">getIgnorePlurals()</a></span> - Method in class com.algolia.search.saas.<a href="com/algolia/search/saas/Query.html" title="class in com.algolia.search.saas">Query</a></dt>
 <dd>&nbsp;</dd>
+<dt><span class="memberNameLink"><a href="com/algolia/search/saas/Client.html#getIndex-java.lang.String-">getIndex(String)</a></span> - Method in class com.algolia.search.saas.<a href="com/algolia/search/saas/Client.html" title="class in com.algolia.search.saas">Client</a></dt>
+<dd>
+<div class="block">Obtain a proxy to an Algolia index (no server call required by this method).</div>
+</dd>
 <dt><span class="memberNameLink"><a href="com/algolia/search/saas/Index.html#getIndexName--">getIndexName()</a></span> - Method in class com.algolia.search.saas.<a href="com/algolia/search/saas/Index.html" title="class in com.algolia.search.saas">Index</a></dt>
 <dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="com/algolia/search/saas/IndexQuery.html#getIndexName--">getIndexName()</a></span> - Method in class com.algolia.search.saas.<a href="com/algolia/search/saas/IndexQuery.html" title="class in com.algolia.search.saas">IndexQuery</a></dt>
@@ -334,6 +338,10 @@
 <dd>
 <div class="block">Get several objects from this index (asynchronously).</div>
 </dd>
+<dt><span class="memberNameLink"><a href="com/algolia/search/saas/Index.html#getObjectsAsync-java.util.List-java.util.List-com.algolia.search.saas.CompletionHandler-">getObjectsAsync(List&lt;String&gt;, List&lt;String&gt;, CompletionHandler)</a></span> - Method in class com.algolia.search.saas.<a href="com/algolia/search/saas/Index.html" title="class in com.algolia.search.saas">Index</a></dt>
+<dd>
+<div class="block">Get several objects from this index (asynchronously), optionally restricting the retrieved content (asynchronously).</div>
+</dd>
 <dt><span class="memberNameLink"><a href="com/algolia/search/saas/Query.html#getOptionalWords--">getOptionalWords()</a></span> - Method in class com.algolia.search.saas.<a href="com/algolia/search/saas/Query.html" title="class in com.algolia.search.saas">Query</a></dt>
 <dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="com/algolia/search/saas/Query.html#getPage--">getPage()</a></span> - Method in class com.algolia.search.saas.<a href="com/algolia/search/saas/Query.html" title="class in com.algolia.search.saas">Query</a></dt>
@@ -364,13 +372,13 @@
 </dd>
 <dt><span class="memberNameLink"><a href="com/algolia/search/saas/Index.html#getSettingsAsync-com.algolia.search.saas.CompletionHandler-">getSettingsAsync(CompletionHandler)</a></span> - Method in class com.algolia.search.saas.<a href="com/algolia/search/saas/Index.html" title="class in com.algolia.search.saas">Index</a></dt>
 <dd>
-<div class="block">Get this index's settings (asynchronously).</div>
+<div class="block">Get this index&rsquo;s settings (asynchronously).</div>
 </dd>
 <dt><span class="memberNameLink"><a href="com/algolia/search/saas/Query.html#getSnippetEllipsisText--">getSnippetEllipsisText()</a></span> - Method in class com.algolia.search.saas.<a href="com/algolia/search/saas/Query.html" title="class in com.algolia.search.saas">Query</a></dt>
 <dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="com/algolia/search/saas/AlgoliaException.html#getStatusCode--">getStatusCode()</a></span> - Method in exception com.algolia.search.saas.<a href="com/algolia/search/saas/AlgoliaException.html" title="class in com.algolia.search.saas">AlgoliaException</a></dt>
 <dd>
-<div class="block">Get the error's HTTP status code (if any).</div>
+<div class="block">Get the error&rsquo;s HTTP status code (if any).</div>
 </dd>
 <dt><span class="memberNameLink"><a href="com/algolia/search/saas/Query.html#getSynonyms--">getSynonyms()</a></span> - Method in class com.algolia.search.saas.<a href="com/algolia/search/saas/Query.html" title="class in com.algolia.search.saas">Query</a></dt>
 <dd>&nbsp;</dd>
@@ -430,7 +438,9 @@
 <dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="com/algolia/search/saas/Client.html#initIndex-java.lang.String-">initIndex(String)</a></span> - Method in class com.algolia.search.saas.<a href="com/algolia/search/saas/Client.html" title="class in com.algolia.search.saas">Client</a></dt>
 <dd>
-<div class="block">Create a proxy to an Algolia index (no server call required by this method).</div>
+<div class="block"><span class="deprecatedLabel">Deprecated.</span>
+<div class="block"><span class="deprecationComment">You should now use <a href="com/algolia/search/saas/Client.html#getIndex-java.lang.String-"><code>Client.getIndex(String)</code></a>, which re-uses instances with the same name.</span></div>
+</div>
 </dd>
 <dt><span class="memberNameLink"><a href="com/algolia/search/saas/Request.html#isCancelled--">isCancelled()</a></span> - Method in interface com.algolia.search.saas.<a href="com/algolia/search/saas/Request.html" title="interface in com.algolia.search.saas">Request</a></dt>
 <dd>
@@ -498,6 +508,10 @@
 <dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="com/algolia/search/saas/Query.GeoRect.html#p2">p2</a></span> - Variable in class com.algolia.search.saas.<a href="com/algolia/search/saas/Query.GeoRect.html" title="class in com.algolia.search.saas">Query.GeoRect</a></dt>
 <dd>&nbsp;</dd>
+<dt><span class="memberNameLink"><a href="com/algolia/search/saas/Query.html#parseLatLng-java.lang.String-">parseLatLng(String)</a></span> - Static method in class com.algolia.search.saas.<a href="com/algolia/search/saas/Query.html" title="class in com.algolia.search.saas">Query</a></dt>
+<dd>
+<div class="block">Parse a LatLng from its String equivalent.</div>
+</dd>
 <dt><span class="memberNameLink"><a href="com/algolia/search/saas/Index.html#partialUpdateObjectAsync-org.json.JSONObject-java.lang.String-com.algolia.search.saas.CompletionHandler-">partialUpdateObjectAsync(JSONObject, String, CompletionHandler)</a></span> - Method in class com.algolia.search.saas.<a href="com/algolia/search/saas/Index.html" title="class in com.algolia.search.saas">Index</a></dt>
 <dd>
 <div class="block">Partially update an object (asynchronously).</div>
@@ -614,8 +628,7 @@
 </dd>
 <dt><span class="memberNameLink"><a href="com/algolia/search/saas/Query.html#setAroundLatLngViaIP-java.lang.Boolean-">setAroundLatLngViaIP(Boolean)</a></span> - Method in class com.algolia.search.saas.<a href="com/algolia/search/saas/Query.html" title="class in com.algolia.search.saas">Query</a></dt>
 <dd>
-<div class="block">Search for entries around the latitude/longitude of user (using IP
- geolocation)</div>
+<div class="block">Search for entries around the latitude/longitude of user (using IP geolocation)</div>
 </dd>
 <dt><span class="memberNameLink"><a href="com/algolia/search/saas/Query.html#setAroundPrecision-java.lang.Integer-">setAroundPrecision(Integer)</a></span> - Method in class com.algolia.search.saas.<a href="com/algolia/search/saas/Query.html" title="class in com.algolia.search.saas">Query</a></dt>
 <dd>
@@ -635,8 +648,7 @@
 </dd>
 <dt><span class="memberNameLink"><a href="com/algolia/search/saas/Query.html#setAttributesToSnippet-java.lang.String...-">setAttributesToSnippet(String...)</a></span> - Method in class com.algolia.search.saas.<a href="com/algolia/search/saas/Query.html" title="class in com.algolia.search.saas">Query</a></dt>
 <dd>
-<div class="block">Specify the list of attribute names to Snippet alongside the number of
- words to return (syntax is 'attributeName:nbWords').</div>
+<div class="block">Specify the list of attribute names to Snippet alongside the number of words to return (syntax is &lsquo;attributeName:nbWords&rsquo;).</div>
 </dd>
 <dt><span class="memberNameLink"><a href="com/algolia/search/saas/Client.html#setConnectTimeout-int-">setConnectTimeout(int)</a></span> - Method in class com.algolia.search.saas.<a href="com/algolia/search/saas/Client.html" title="class in com.algolia.search.saas">Client</a></dt>
 <dd>
@@ -648,9 +660,7 @@
 </dd>
 <dt><span class="memberNameLink"><a href="com/algolia/search/saas/Query.html#setDistinct-java.lang.Integer-">setDistinct(Integer)</a></span> - Method in class com.algolia.search.saas.<a href="com/algolia/search/saas/Query.html" title="class in com.algolia.search.saas">Query</a></dt>
 <dd>
-<div class="block">This feature is similar to the distinct just before but instead of
- keeping the best value per value of attributeForDistinct, it allows to
- keep N values.</div>
+<div class="block">This feature is similar to the distinct just before but instead of keeping the best value per value of attributeForDistinct, it allows to keep N values.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="com/algolia/search/saas/Query.html#setExactOnSingleWordQuery-com.algolia.search.saas.Query.ExactOnSingleWordQuery-">setExactOnSingleWordQuery(Query.ExactOnSingleWordQuery)</a></span> - Method in class com.algolia.search.saas.<a href="com/algolia/search/saas/Query.html" title="class in com.algolia.search.saas">Query</a></dt>
 <dd>&nbsp;</dd>
@@ -664,8 +674,7 @@
 <dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="com/algolia/search/saas/Query.html#setGetRankingInfo-java.lang.Boolean-">setGetRankingInfo(Boolean)</a></span> - Method in class com.algolia.search.saas.<a href="com/algolia/search/saas/Query.html" title="class in com.algolia.search.saas">Query</a></dt>
 <dd>
-<div class="block">if set, the result hits will contain ranking information in _rankingInfo
- attribute.</div>
+<div class="block">if set, the result hits will contain ranking information in _rankingInfo attribute.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="com/algolia/search/saas/Client.html#setHeader-java.lang.String-java.lang.String-">setHeader(String, String)</a></span> - Method in class com.algolia.search.saas.<a href="com/algolia/search/saas/Client.html" title="class in com.algolia.search.saas">Client</a></dt>
 <dd>
@@ -685,19 +694,15 @@
 </dd>
 <dt><span class="memberNameLink"><a href="com/algolia/search/saas/Query.html#setIgnorePlurals-java.lang.Boolean-">setIgnorePlurals(Boolean)</a></span> - Method in class com.algolia.search.saas.<a href="com/algolia/search/saas/Query.html" title="class in com.algolia.search.saas">Query</a></dt>
 <dd>
-<div class="block">If set to true, plural won't be considered as a typo (for example
- car/cars will be considered as equals).</div>
+<div class="block">If set to true, plural won&rsquo;t be considered as a typo (for example car/cars will be considered as equals).</div>
 </dd>
 <dt><span class="memberNameLink"><a href="com/algolia/search/saas/Query.html#setInsideBoundingBox-com.algolia.search.saas.Query.GeoRect...-">setInsideBoundingBox(Query.GeoRect...)</a></span> - Method in class com.algolia.search.saas.<a href="com/algolia/search/saas/Query.html" title="class in com.algolia.search.saas">Query</a></dt>
 <dd>
-<div class="block">Search for entries inside a given area defined by the two extreme points
- of a rectangle.</div>
+<div class="block">Search for entries inside a given area defined by the two extreme points of a rectangle.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="com/algolia/search/saas/Query.html#setInsidePolygon-com.algolia.search.saas.Query.LatLng...-">setInsidePolygon(Query.LatLng...)</a></span> - Method in class com.algolia.search.saas.<a href="com/algolia/search/saas/Query.html" title="class in com.algolia.search.saas">Query</a></dt>
 <dd>
-<div class="block">Add a point to the polygon of geo-search (requires a minimum of three points to define a valid polygon)
- At indexing, you should specify geoloc of an object with the _geoloc attribute (in the form "_geoloc":{"lat":48.853409, "lng":2.348800} or
- "_geoloc":[{"lat":48.853409, "lng":2.348800},{"lat":48.547456, "lng":2.972075}] if you have several geo-locations in your record).</div>
+<div class="block">Add a point to the polygon of geo-search (requires a minimum of three points to define a valid polygon) At indexing, you should specify geoloc of an object with the _geoloc attribute (in the form &quot;_geoloc&ldquo;:{&rdquo;lat&ldquo;:48.853409, &rdquo;lng&ldquo;:2.348800} or &rdquo;_geoloc&quot;:[{&ldquo;lat&rdquo;:48.853409, &ldquo;lng&rdquo;:2.348800},{&ldquo;lat&rdquo;:48.547456, &ldquo;lng&rdquo;:2.972075}] if you have several geo-locations in your record).</div>
 </dd>
 <dt><span class="memberNameLink"><a href="com/algolia/search/saas/Query.html#setMaxValuesPerFacet-java.lang.Integer-">setMaxValuesPerFacet(Integer)</a></span> - Method in class com.algolia.search.saas.<a href="com/algolia/search/saas/Query.html" title="class in com.algolia.search.saas">Query</a></dt>
 <dd>
@@ -705,30 +710,25 @@
 </dd>
 <dt><span class="memberNameLink"><a href="com/algolia/search/saas/Query.html#setMinimumAroundRadius-java.lang.Integer-">setMinimumAroundRadius(Integer)</a></span> - Method in class com.algolia.search.saas.<a href="com/algolia/search/saas/Query.html" title="class in com.algolia.search.saas">Query</a></dt>
 <dd>
-<div class="block">Specify the minimum number of characters in a query word to accept one
- typo in this word.</div>
+<div class="block">Specify the minimum number of characters in a query word to accept one typo in this word.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="com/algolia/search/saas/Query.html#setMinProximity-java.lang.Integer-">setMinProximity(Integer)</a></span> - Method in class com.algolia.search.saas.<a href="com/algolia/search/saas/Query.html" title="class in com.algolia.search.saas">Query</a></dt>
 <dd>
-<div class="block">Specify the minimum number of characters in a query word to accept one
- typo in this word.</div>
+<div class="block">Specify the minimum number of characters in a query word to accept one typo in this word.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="com/algolia/search/saas/Query.html#setMinWordSizefor1Typo-java.lang.Integer-">setMinWordSizefor1Typo(Integer)</a></span> - Method in class com.algolia.search.saas.<a href="com/algolia/search/saas/Query.html" title="class in com.algolia.search.saas">Query</a></dt>
 <dd>
-<div class="block">Specify the minimum number of characters in a query word to accept one
- typo in this word.</div>
+<div class="block">Specify the minimum number of characters in a query word to accept one typo in this word.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="com/algolia/search/saas/Query.html#setMinWordSizefor2Typos-java.lang.Integer-">setMinWordSizefor2Typos(Integer)</a></span> - Method in class com.algolia.search.saas.<a href="com/algolia/search/saas/Query.html" title="class in com.algolia.search.saas">Query</a></dt>
 <dd>
-<div class="block">Specify the minimum number of characters in a query word to accept one
- typo in this word.</div>
+<div class="block">Specify the minimum number of characters in a query word to accept one typo in this word.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="com/algolia/search/saas/Query.html#setNumericFilters-org.json.JSONArray-">setNumericFilters(JSONArray)</a></span> - Method in class com.algolia.search.saas.<a href="com/algolia/search/saas/Query.html" title="class in com.algolia.search.saas">Query</a></dt>
 <dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="com/algolia/search/saas/Query.html#setOptionalWords-java.lang.String...-">setOptionalWords(String...)</a></span> - Method in class com.algolia.search.saas.<a href="com/algolia/search/saas/Query.html" title="class in com.algolia.search.saas">Query</a></dt>
 <dd>
-<div class="block">Set the list of words that should be considered as optional when found in
- the query.</div>
+<div class="block">Set the list of words that should be considered as optional when found in the query.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="com/algolia/search/saas/Query.html#setPage-java.lang.Integer-">setPage(Integer)</a></span> - Method in class com.algolia.search.saas.<a href="com/algolia/search/saas/Query.html" title="class in com.algolia.search.saas">Query</a></dt>
 <dd>
@@ -760,8 +760,7 @@
 <dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="com/algolia/search/saas/Query.html#setRestrictSearchableAttributes-java.lang.String...-">setRestrictSearchableAttributes(String...)</a></span> - Method in class com.algolia.search.saas.<a href="com/algolia/search/saas/Query.html" title="class in com.algolia.search.saas">Query</a></dt>
 <dd>
-<div class="block">List of object attributes you want to use for textual search (must be a
- subset of the attributesToIndex index setting).</div>
+<div class="block">List of object attributes you want to use for textual search (must be a subset of the attributesToIndex index setting).</div>
 </dd>
 <dt><span class="memberNameLink"><a href="com/algolia/search/saas/Client.html#setSearchTimeout-int-">setSearchTimeout(int)</a></span> - Method in class com.algolia.search.saas.<a href="com/algolia/search/saas/Client.html" title="class in com.algolia.search.saas">Client</a></dt>
 <dd>
@@ -769,12 +768,11 @@
 </dd>
 <dt><span class="memberNameLink"><a href="com/algolia/search/saas/Index.html#setSettingsAsync-org.json.JSONObject-com.algolia.search.saas.CompletionHandler-">setSettingsAsync(JSONObject, CompletionHandler)</a></span> - Method in class com.algolia.search.saas.<a href="com/algolia/search/saas/Index.html" title="class in com.algolia.search.saas">Index</a></dt>
 <dd>
-<div class="block">Set this index's settings (asynchronously).</div>
+<div class="block">Set this index&rsquo;s settings (asynchronously).</div>
 </dd>
 <dt><span class="memberNameLink"><a href="com/algolia/search/saas/Query.html#setSnippetEllipsisText-java.lang.String-">setSnippetEllipsisText(String)</a></span> - Method in class com.algolia.search.saas.<a href="com/algolia/search/saas/Query.html" title="class in com.algolia.search.saas">Query</a></dt>
 <dd>
-<div class="block">Specify the string that is used as an ellipsis indicator when a snippet
- is truncated (defaults to the empty string).</div>
+<div class="block">Specify the string that is used as an ellipsis indicator when a snippet is truncated (defaults to the empty string).</div>
 </dd>
 <dt><span class="memberNameLink"><a href="com/algolia/search/saas/Query.html#setSynonyms-java.lang.Boolean-">setSynonyms(Boolean)</a></span> - Method in class com.algolia.search.saas.<a href="com/algolia/search/saas/Query.html" title="class in com.algolia.search.saas">Query</a></dt>
 <dd>&nbsp;</dd>
@@ -893,6 +891,10 @@ the order they are declared.</div>
 <li class="navBarCell1Rev">Index</li>
 <li><a href="help-doc.html">Help</a></li>
 </ul>
+<div class="aboutLanguage"><script type="text/javascript" src="./highlight.pack.js"></script>
+<script type="text/javascript"><!--
+hljs.initHighlightingOnLoad();
+//--></script></div>
 </div>
 <div class="subNav">
 <ul class="navList">

@@ -17,7 +17,7 @@
     catch(err) {
     }
 //-->
-var methods = {"i0":10,"i1":10,"i2":10,"i3":10,"i4":10,"i5":10,"i6":10,"i7":10,"i8":10,"i9":10,"i10":10,"i11":10,"i12":10,"i13":10,"i14":10,"i15":10,"i16":10,"i17":10,"i18":10,"i19":10,"i20":10,"i21":10,"i22":10,"i23":10,"i24":10,"i25":10,"i26":10,"i27":10,"i28":10,"i29":10};
+var methods = {"i0":10,"i1":10,"i2":10,"i3":10,"i4":10,"i5":10,"i6":10,"i7":10,"i8":10,"i9":10,"i10":10,"i11":10,"i12":10,"i13":10,"i14":10,"i15":10,"i16":10,"i17":10,"i18":10,"i19":10,"i20":10,"i21":10,"i22":10,"i23":10,"i24":10,"i25":10,"i26":10,"i27":10,"i28":10,"i29":10,"i30":10};
 var tabs = {65535:["t0","All Methods"],2:["t2","Instance Methods"],8:["t4","Concrete Methods"]};
 var altColor = "altColor";
 var rowColor = "rowColor";
@@ -109,14 +109,7 @@ var activeTableTab = "activeTableTab";
 <br>
 <pre>public class <span class="typeNameLabel">Index</span>
 extends java.lang.Object</pre>
-<div class="block">A proxy to an Algolia index.
- <p>
- You cannot construct this class directly. Please use <a href="../../../../com/algolia/search/saas/Client.html#initIndex-java.lang.String-"><code>Client.initIndex(String)</code></a> to obtain an instance.
- </p>
- <p>
- WARNING: For performance reasons, arguments to asynchronous methods are not cloned. Therefore, you should not
- modify mutable arguments after they have been passed (unless explicitly noted).
- </p></div>
+<div class="block"><p>A proxy to an Algolia index. <p> You cannot construct this class directly. Please use <a href="../../../../com/algolia/search/saas/Client.html#initIndex-java.lang.String-"><code>Client.initIndex(String)</code></a> to obtain an instance. </p> <p> WARNING: For performance reasons, arguments to asynchronous methods are not cloned. Therefore, you should not modify mutable arguments after they have been passed (unless explicitly noted). </p></p></div>
 </li>
 </ul>
 </div>
@@ -255,11 +248,19 @@ extends java.lang.Object</pre>
 </tr>
 <tr id="i18" class="altColor">
 <td class="colFirst"><code><a href="../../../../com/algolia/search/saas/Request.html" title="interface in com.algolia.search.saas">Request</a></code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/algolia/search/saas/Index.html#getSettingsAsync-com.algolia.search.saas.CompletionHandler-">getSettingsAsync</a></span>(<a href="../../../../com/algolia/search/saas/CompletionHandler.html" title="interface in com.algolia.search.saas">CompletionHandler</a>&nbsp;completionHandler)</code>
-<div class="block">Get this index's settings (asynchronously).</div>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/algolia/search/saas/Index.html#getObjectsAsync-java.util.List-java.util.List-com.algolia.search.saas.CompletionHandler-">getObjectsAsync</a></span>(java.util.List&lt;java.lang.String&gt;&nbsp;objectIDs,
+               java.util.List&lt;java.lang.String&gt;&nbsp;attributesToRetrieve,
+               <a href="../../../../com/algolia/search/saas/CompletionHandler.html" title="interface in com.algolia.search.saas">CompletionHandler</a>&nbsp;completionHandler)</code>
+<div class="block">Get several objects from this index (asynchronously), optionally restricting the retrieved content (asynchronously).</div>
 </td>
 </tr>
 <tr id="i19" class="rowColor">
+<td class="colFirst"><code><a href="../../../../com/algolia/search/saas/Request.html" title="interface in com.algolia.search.saas">Request</a></code></td>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/algolia/search/saas/Index.html#getSettingsAsync-com.algolia.search.saas.CompletionHandler-">getSettingsAsync</a></span>(<a href="../../../../com/algolia/search/saas/CompletionHandler.html" title="interface in com.algolia.search.saas">CompletionHandler</a>&nbsp;completionHandler)</code>
+<div class="block">Get this index&rsquo;s settings (asynchronously).</div>
+</td>
+</tr>
+<tr id="i20" class="altColor">
 <td class="colFirst"><code><a href="../../../../com/algolia/search/saas/Request.html" title="interface in com.algolia.search.saas">Request</a></code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/algolia/search/saas/Index.html#multipleQueriesAsync-java.util.List-com.algolia.search.saas.Client.MultipleQueriesStrategy-com.algolia.search.saas.CompletionHandler-">multipleQueriesAsync</a></span>(java.util.List&lt;<a href="../../../../com/algolia/search/saas/Query.html" title="class in com.algolia.search.saas">Query</a>&gt;&nbsp;queries,
                     <a href="../../../../com/algolia/search/saas/Client.MultipleQueriesStrategy.html" title="enum in com.algolia.search.saas">Client.MultipleQueriesStrategy</a>&nbsp;strategy,
@@ -267,7 +268,7 @@ extends java.lang.Object</pre>
 <div class="block">Run multiple queries on this index with one API call.</div>
 </td>
 </tr>
-<tr id="i20" class="altColor">
+<tr id="i21" class="rowColor">
 <td class="colFirst"><code><a href="../../../../com/algolia/search/saas/Request.html" title="interface in com.algolia.search.saas">Request</a></code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/algolia/search/saas/Index.html#partialUpdateObjectAsync-org.json.JSONObject-java.lang.String-com.algolia.search.saas.CompletionHandler-">partialUpdateObjectAsync</a></span>(org.json.JSONObject&nbsp;partialObject,
                         java.lang.String&nbsp;objectID,
@@ -275,14 +276,14 @@ extends java.lang.Object</pre>
 <div class="block">Partially update an object (asynchronously).</div>
 </td>
 </tr>
-<tr id="i21" class="rowColor">
+<tr id="i22" class="altColor">
 <td class="colFirst"><code><a href="../../../../com/algolia/search/saas/Request.html" title="interface in com.algolia.search.saas">Request</a></code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/algolia/search/saas/Index.html#partialUpdateObjectsAsync-org.json.JSONArray-com.algolia.search.saas.CompletionHandler-">partialUpdateObjectsAsync</a></span>(org.json.JSONArray&nbsp;partialObjects,
                          <a href="../../../../com/algolia/search/saas/CompletionHandler.html" title="interface in com.algolia.search.saas">CompletionHandler</a>&nbsp;completionHandler)</code>
 <div class="block">Partially update several objects (asynchronously).</div>
 </td>
 </tr>
-<tr id="i22" class="altColor">
+<tr id="i23" class="rowColor">
 <td class="colFirst"><code><a href="../../../../com/algolia/search/saas/Request.html" title="interface in com.algolia.search.saas">Request</a></code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/algolia/search/saas/Index.html#saveObjectAsync-org.json.JSONObject-java.lang.String-com.algolia.search.saas.CompletionHandler-">saveObjectAsync</a></span>(org.json.JSONObject&nbsp;object,
                java.lang.String&nbsp;objectID,
@@ -290,21 +291,21 @@ extends java.lang.Object</pre>
 <div class="block">Update an object (asynchronously).</div>
 </td>
 </tr>
-<tr id="i23" class="rowColor">
+<tr id="i24" class="altColor">
 <td class="colFirst"><code><a href="../../../../com/algolia/search/saas/Request.html" title="interface in com.algolia.search.saas">Request</a></code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/algolia/search/saas/Index.html#saveObjectsAsync-org.json.JSONArray-com.algolia.search.saas.CompletionHandler-">saveObjectsAsync</a></span>(org.json.JSONArray&nbsp;objects,
                 <a href="../../../../com/algolia/search/saas/CompletionHandler.html" title="interface in com.algolia.search.saas">CompletionHandler</a>&nbsp;completionHandler)</code>
 <div class="block">Update several objects (asynchronously).</div>
 </td>
 </tr>
-<tr id="i24" class="altColor">
+<tr id="i25" class="rowColor">
 <td class="colFirst"><code><a href="../../../../com/algolia/search/saas/Request.html" title="interface in com.algolia.search.saas">Request</a></code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/algolia/search/saas/Index.html#searchAsync-com.algolia.search.saas.Query-com.algolia.search.saas.CompletionHandler-">searchAsync</a></span>(<a href="../../../../com/algolia/search/saas/Query.html" title="class in com.algolia.search.saas">Query</a>&nbsp;query,
            <a href="../../../../com/algolia/search/saas/CompletionHandler.html" title="interface in com.algolia.search.saas">CompletionHandler</a>&nbsp;completionHandler)</code>
 <div class="block">Search inside this index (asynchronously).</div>
 </td>
 </tr>
-<tr id="i25" class="rowColor">
+<tr id="i26" class="altColor">
 <td class="colFirst"><code><a href="../../../../com/algolia/search/saas/Request.html" title="interface in com.algolia.search.saas">Request</a></code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/algolia/search/saas/Index.html#searchDisjunctiveFacetingAsync-com.algolia.search.saas.Query-java.util.List-java.util.Map-com.algolia.search.saas.CompletionHandler-">searchDisjunctiveFacetingAsync</a></span>(<a href="../../../../com/algolia/search/saas/Query.html" title="class in com.algolia.search.saas">Query</a>&nbsp;query,
                               java.util.List&lt;java.lang.String&gt;&nbsp;disjunctiveFacets,
@@ -313,24 +314,24 @@ extends java.lang.Object</pre>
 <div class="block">Perform a search with disjunctive facets, generating as many queries as number of disjunctive facets (helper).</div>
 </td>
 </tr>
-<tr id="i26" class="altColor">
+<tr id="i27" class="rowColor">
 <td class="colFirst"><code>org.json.JSONObject</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/algolia/search/saas/Index.html#searchSync-com.algolia.search.saas.Query-">searchSync</a></span>(<a href="../../../../com/algolia/search/saas/Query.html" title="class in com.algolia.search.saas">Query</a>&nbsp;query)</code>
 <div class="block">Search inside this index (synchronously).</div>
 </td>
 </tr>
-<tr id="i27" class="rowColor">
+<tr id="i28" class="altColor">
 <td class="colFirst"><code><a href="../../../../com/algolia/search/saas/Request.html" title="interface in com.algolia.search.saas">Request</a></code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/algolia/search/saas/Index.html#setSettingsAsync-org.json.JSONObject-com.algolia.search.saas.CompletionHandler-">setSettingsAsync</a></span>(org.json.JSONObject&nbsp;settings,
                 <a href="../../../../com/algolia/search/saas/CompletionHandler.html" title="interface in com.algolia.search.saas">CompletionHandler</a>&nbsp;completionHandler)</code>
-<div class="block">Set this index's settings (asynchronously).</div>
+<div class="block">Set this index&rsquo;s settings (asynchronously).</div>
 </td>
 </tr>
-<tr id="i28" class="altColor">
+<tr id="i29" class="rowColor">
 <td class="colFirst"><code>java.lang.String</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/algolia/search/saas/Index.html#toString--">toString</a></span>()</code>&nbsp;</td>
 </tr>
-<tr id="i29" class="rowColor">
+<tr id="i30" class="altColor">
 <td class="colFirst"><code><a href="../../../../com/algolia/search/saas/Request.html" title="interface in com.algolia.search.saas">Request</a></code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/algolia/search/saas/Index.html#waitTaskAsync-java.lang.String-com.algolia.search.saas.CompletionHandler-">waitTaskAsync</a></span>(java.lang.String&nbsp;taskID,
              <a href="../../../../com/algolia/search/saas/CompletionHandler.html" title="interface in com.algolia.search.saas">CompletionHandler</a>&nbsp;completionHandler)</code>
@@ -398,11 +399,11 @@ extends java.lang.Object</pre>
 <h4>searchAsync</h4>
 <pre>public&nbsp;<a href="../../../../com/algolia/search/saas/Request.html" title="interface in com.algolia.search.saas">Request</a>&nbsp;searchAsync(<a href="../../../../com/algolia/search/saas/Query.html" title="class in com.algolia.search.saas">Query</a>&nbsp;query,
                            <a href="../../../../com/algolia/search/saas/CompletionHandler.html" title="interface in com.algolia.search.saas">CompletionHandler</a>&nbsp;completionHandler)</pre>
-<div class="block">Search inside this index (asynchronously).</div>
+<div class="block"><p>Search inside this index (asynchronously).</p></div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>query</code> - Search parameters. May be null to use an empty query.</dd>
-<dd><code>completionHandler</code> - The listener that will be notified of the request's outcome.</dd>
+<dd><code>completionHandler</code> - The listener that will be notified of the request&rsquo;s outcome.</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>A cancellable request.</dd>
 </dl>
@@ -416,7 +417,7 @@ extends java.lang.Object</pre>
 <h4>searchSync</h4>
 <pre>public&nbsp;org.json.JSONObject&nbsp;searchSync(<a href="../../../../com/algolia/search/saas/Query.html" title="class in com.algolia.search.saas">Query</a>&nbsp;query)
                                throws <a href="../../../../com/algolia/search/saas/AlgoliaException.html" title="class in com.algolia.search.saas">AlgoliaException</a></pre>
-<div class="block">Search inside this index (synchronously).</div>
+<div class="block"><p>Search inside this index (synchronously).</p></div>
 <dl>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>Search results.</dd>
@@ -434,14 +435,12 @@ extends java.lang.Object</pre>
 <pre>public&nbsp;<a href="../../../../com/algolia/search/saas/Request.html" title="interface in com.algolia.search.saas">Request</a>&nbsp;multipleQueriesAsync(java.util.List&lt;<a href="../../../../com/algolia/search/saas/Query.html" title="class in com.algolia.search.saas">Query</a>&gt;&nbsp;queries,
                                     <a href="../../../../com/algolia/search/saas/Client.MultipleQueriesStrategy.html" title="enum in com.algolia.search.saas">Client.MultipleQueriesStrategy</a>&nbsp;strategy,
                                     <a href="../../../../com/algolia/search/saas/CompletionHandler.html" title="interface in com.algolia.search.saas">CompletionHandler</a>&nbsp;completionHandler)</pre>
-<div class="block">Run multiple queries on this index with one API call.
- A variant of <a href="../../../../com/algolia/search/saas/Client.html#multipleQueriesAsync-java.util.List-com.algolia.search.saas.Client.MultipleQueriesStrategy-com.algolia.search.saas.CompletionHandler-"><code>Client.multipleQueriesAsync(List, Client.MultipleQueriesStrategy, CompletionHandler)</code></a>
- where the targeted index is always the receiver.</div>
+<div class="block"><p>Run multiple queries on this index with one API call. A variant of <a href="../../../../com/algolia/search/saas/Client.html#multipleQueriesAsync-java.util.List-com.algolia.search.saas.Client.MultipleQueriesStrategy-com.algolia.search.saas.CompletionHandler-"><code>Client.multipleQueriesAsync(List, Client.MultipleQueriesStrategy, CompletionHandler)</code></a> where the targeted index is always the receiver.</p></div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>queries</code> - The queries to run.</dd>
 <dd><code>strategy</code> - The strategy to use.</dd>
-<dd><code>completionHandler</code> - The listener that will be notified of the request's outcome.</dd>
+<dd><code>completionHandler</code> - The listener that will be notified of the request&rsquo;s outcome.</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>A cancellable request.</dd>
 </dl>
@@ -457,13 +456,13 @@ extends java.lang.Object</pre>
                                               java.util.List&lt;java.lang.String&gt;&nbsp;disjunctiveFacets,
                                               java.util.Map&lt;java.lang.String,java.util.List&lt;java.lang.String&gt;&gt;&nbsp;refinements,
                                               <a href="../../../../com/algolia/search/saas/CompletionHandler.html" title="interface in com.algolia.search.saas">CompletionHandler</a>&nbsp;completionHandler)</pre>
-<div class="block">Perform a search with disjunctive facets, generating as many queries as number of disjunctive facets (helper).</div>
+<div class="block"><p>Perform a search with disjunctive facets, generating as many queries as number of disjunctive facets (helper).</p></div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>query</code> - The query.</dd>
 <dd><code>disjunctiveFacets</code> - List of disjunctive facets.</dd>
 <dd><code>refinements</code> - The current refinements, mapping facet names to a list of values.</dd>
-<dd><code>completionHandler</code> - The listener that will be notified of the request's outcome.</dd>
+<dd><code>completionHandler</code> - The listener that will be notified of the request&rsquo;s outcome.</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>A cancellable request.</dd>
 </dl>
@@ -477,15 +476,11 @@ extends java.lang.Object</pre>
 <h4>addObjectAsync</h4>
 <pre>public&nbsp;<a href="../../../../com/algolia/search/saas/Request.html" title="interface in com.algolia.search.saas">Request</a>&nbsp;addObjectAsync(org.json.JSONObject&nbsp;object,
                               <a href="../../../../com/algolia/search/saas/CompletionHandler.html" title="interface in com.algolia.search.saas">CompletionHandler</a>&nbsp;completionHandler)</pre>
-<div class="block">Add an object to this index (asynchronously).
- <p>
- WARNING: For performance reasons, the arguments are not cloned. Since the method is executed in the background,
- you should not modify the object after it has been passed.
- </p></div>
+<div class="block"><p>Add an object to this index (asynchronously). <p> WARNING: For performance reasons, the arguments are not cloned. Since the method is executed in the background, you should not modify the object after it has been passed. </p></p></div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>object</code> - The object to add.</dd>
-<dd><code>completionHandler</code> - The listener that will be notified of the request's outcome.</dd>
+<dd><code>completionHandler</code> - The listener that will be notified of the request&rsquo;s outcome.</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>A cancellable request.</dd>
 </dl>
@@ -500,17 +495,12 @@ extends java.lang.Object</pre>
 <pre>public&nbsp;<a href="../../../../com/algolia/search/saas/Request.html" title="interface in com.algolia.search.saas">Request</a>&nbsp;addObjectAsync(org.json.JSONObject&nbsp;object,
                               java.lang.String&nbsp;objectID,
                               <a href="../../../../com/algolia/search/saas/CompletionHandler.html" title="interface in com.algolia.search.saas">CompletionHandler</a>&nbsp;completionHandler)</pre>
-<div class="block">Add an object to this index, assigning it the specified object ID (asynchronously).
- If an object already exists with the same object ID, the existing object will be overwritten.
- <p>
- WARNING: For performance reasons, the arguments are not cloned. Since the method is executed in the background,
- you should not modify the object after it has been passed.
- </p></div>
+<div class="block"><p>Add an object to this index, assigning it the specified object ID (asynchronously). If an object already exists with the same object ID, the existing object will be overwritten. <p> WARNING: For performance reasons, the arguments are not cloned. Since the method is executed in the background, you should not modify the object after it has been passed. </p></p></div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>object</code> - The object to add.</dd>
 <dd><code>objectID</code> - Identifier that you want to assign this object.</dd>
-<dd><code>completionHandler</code> - The listener that will be notified of the request's outcome.</dd>
+<dd><code>completionHandler</code> - The listener that will be notified of the request&rsquo;s outcome.</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>A cancellable request.</dd>
 </dl>
@@ -524,11 +514,11 @@ extends java.lang.Object</pre>
 <h4>addObjectsAsync</h4>
 <pre>public&nbsp;<a href="../../../../com/algolia/search/saas/Request.html" title="interface in com.algolia.search.saas">Request</a>&nbsp;addObjectsAsync(org.json.JSONArray&nbsp;objects,
                                <a href="../../../../com/algolia/search/saas/CompletionHandler.html" title="interface in com.algolia.search.saas">CompletionHandler</a>&nbsp;completionHandler)</pre>
-<div class="block">Add several objects to this index (asynchronously).</div>
+<div class="block"><p>Add several objects to this index (asynchronously).</p></div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>objects</code> - Objects to add.</dd>
-<dd><code>completionHandler</code> - The listener that will be notified of the request's outcome.</dd>
+<dd><code>completionHandler</code> - The listener that will be notified of the request&rsquo;s outcome.</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>A cancellable request.</dd>
 </dl>
@@ -543,12 +533,12 @@ extends java.lang.Object</pre>
 <pre>public&nbsp;<a href="../../../../com/algolia/search/saas/Request.html" title="interface in com.algolia.search.saas">Request</a>&nbsp;saveObjectAsync(org.json.JSONObject&nbsp;object,
                                java.lang.String&nbsp;objectID,
                                <a href="../../../../com/algolia/search/saas/CompletionHandler.html" title="interface in com.algolia.search.saas">CompletionHandler</a>&nbsp;completionHandler)</pre>
-<div class="block">Update an object (asynchronously).</div>
+<div class="block"><p>Update an object (asynchronously).</p></div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>object</code> - New version of the object to update.</dd>
 <dd><code>objectID</code> - Identifier of the object to update.</dd>
-<dd><code>completionHandler</code> - The listener that will be notified of the request's outcome.</dd>
+<dd><code>completionHandler</code> - The listener that will be notified of the request&rsquo;s outcome.</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>A cancellable request.</dd>
 </dl>
@@ -562,11 +552,11 @@ extends java.lang.Object</pre>
 <h4>saveObjectsAsync</h4>
 <pre>public&nbsp;<a href="../../../../com/algolia/search/saas/Request.html" title="interface in com.algolia.search.saas">Request</a>&nbsp;saveObjectsAsync(org.json.JSONArray&nbsp;objects,
                                 <a href="../../../../com/algolia/search/saas/CompletionHandler.html" title="interface in com.algolia.search.saas">CompletionHandler</a>&nbsp;completionHandler)</pre>
-<div class="block">Update several objects (asynchronously).</div>
+<div class="block"><p>Update several objects (asynchronously).</p></div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>objects</code> - Objects to update. Each object must contain an <code>objectID</code> attribute.</dd>
-<dd><code>completionHandler</code> - The listener that will be notified of the request's outcome.</dd>
+<dd><code>completionHandler</code> - The listener that will be notified of the request&rsquo;s outcome.</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>A cancellable request.</dd>
 </dl>
@@ -581,12 +571,12 @@ extends java.lang.Object</pre>
 <pre>public&nbsp;<a href="../../../../com/algolia/search/saas/Request.html" title="interface in com.algolia.search.saas">Request</a>&nbsp;partialUpdateObjectAsync(org.json.JSONObject&nbsp;partialObject,
                                         java.lang.String&nbsp;objectID,
                                         <a href="../../../../com/algolia/search/saas/CompletionHandler.html" title="interface in com.algolia.search.saas">CompletionHandler</a>&nbsp;completionHandler)</pre>
-<div class="block">Partially update an object (asynchronously).</div>
+<div class="block"><p>Partially update an object (asynchronously).</p></div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>partialObject</code> - New value/operations for the object.</dd>
 <dd><code>objectID</code> - Identifier of object to be updated.</dd>
-<dd><code>completionHandler</code> - The listener that will be notified of the request's outcome.</dd>
+<dd><code>completionHandler</code> - The listener that will be notified of the request&rsquo;s outcome.</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>A cancellable request.</dd>
 </dl>
@@ -600,12 +590,11 @@ extends java.lang.Object</pre>
 <h4>partialUpdateObjectsAsync</h4>
 <pre>public&nbsp;<a href="../../../../com/algolia/search/saas/Request.html" title="interface in com.algolia.search.saas">Request</a>&nbsp;partialUpdateObjectsAsync(org.json.JSONArray&nbsp;partialObjects,
                                          <a href="../../../../com/algolia/search/saas/CompletionHandler.html" title="interface in com.algolia.search.saas">CompletionHandler</a>&nbsp;completionHandler)</pre>
-<div class="block">Partially update several objects (asynchronously).</div>
+<div class="block"><p>Partially update several objects (asynchronously).</p></div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
-<dd><code>partialObjects</code> - New values/operations for the objects. Each object must contain an <code>objectID</code>
-                          attribute.</dd>
-<dd><code>completionHandler</code> - The listener that will be notified of the request's outcome.</dd>
+<dd><code>partialObjects</code> - New values/operations for the objects. Each object must contain an <code>objectID</code>  attribute.</dd>
+<dd><code>completionHandler</code> - The listener that will be notified of the request&rsquo;s outcome.</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>A cancellable request.</dd>
 </dl>
@@ -619,11 +608,11 @@ extends java.lang.Object</pre>
 <h4>getObjectAsync</h4>
 <pre>public&nbsp;<a href="../../../../com/algolia/search/saas/Request.html" title="interface in com.algolia.search.saas">Request</a>&nbsp;getObjectAsync(java.lang.String&nbsp;objectID,
                               <a href="../../../../com/algolia/search/saas/CompletionHandler.html" title="interface in com.algolia.search.saas">CompletionHandler</a>&nbsp;completionHandler)</pre>
-<div class="block">Get an object from this index (asynchronously).</div>
+<div class="block"><p>Get an object from this index (asynchronously).</p></div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>objectID</code> - Identifier of the object to retrieve.</dd>
-<dd><code>completionHandler</code> - The listener that will be notified of the request's outcome.</dd>
+<dd><code>completionHandler</code> - The listener that will be notified of the request&rsquo;s outcome.</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>A cancellable request.</dd>
 </dl>
@@ -638,12 +627,12 @@ extends java.lang.Object</pre>
 <pre>public&nbsp;<a href="../../../../com/algolia/search/saas/Request.html" title="interface in com.algolia.search.saas">Request</a>&nbsp;getObjectAsync(java.lang.String&nbsp;objectID,
                               java.util.List&lt;java.lang.String&gt;&nbsp;attributesToRetrieve,
                               <a href="../../../../com/algolia/search/saas/CompletionHandler.html" title="interface in com.algolia.search.saas">CompletionHandler</a>&nbsp;completionHandler)</pre>
-<div class="block">Get an object from this index, optionally restricting the retrieved content (asynchronously).</div>
+<div class="block"><p>Get an object from this index, optionally restricting the retrieved content (asynchronously).</p></div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>objectID</code> - Identifier of the object to retrieve.</dd>
 <dd><code>attributesToRetrieve</code> - List of attributes to retrieve.</dd>
-<dd><code>completionHandler</code> - The listener that will be notified of the request's outcome.</dd>
+<dd><code>completionHandler</code> - The listener that will be notified of the request&rsquo;s outcome.</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>A cancellable request.</dd>
 </dl>
@@ -657,11 +646,31 @@ extends java.lang.Object</pre>
 <h4>getObjectsAsync</h4>
 <pre>public&nbsp;<a href="../../../../com/algolia/search/saas/Request.html" title="interface in com.algolia.search.saas">Request</a>&nbsp;getObjectsAsync(java.util.List&lt;java.lang.String&gt;&nbsp;objectIDs,
                                <a href="../../../../com/algolia/search/saas/CompletionHandler.html" title="interface in com.algolia.search.saas">CompletionHandler</a>&nbsp;completionHandler)</pre>
-<div class="block">Get several objects from this index (asynchronously).</div>
+<div class="block"><p>Get several objects from this index (asynchronously).</p></div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>objectIDs</code> - Identifiers of objects to retrieve.</dd>
-<dd><code>completionHandler</code> - The listener that will be notified of the request's outcome.</dd>
+<dd><code>completionHandler</code> - The listener that will be notified of the request&rsquo;s outcome.</dd>
+<dt><span class="returnLabel">Returns:</span></dt>
+<dd>A cancellable request.</dd>
+</dl>
+</li>
+</ul>
+<a name="getObjectsAsync-java.util.List-java.util.List-com.algolia.search.saas.CompletionHandler-">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>getObjectsAsync</h4>
+<pre>public&nbsp;<a href="../../../../com/algolia/search/saas/Request.html" title="interface in com.algolia.search.saas">Request</a>&nbsp;getObjectsAsync(java.util.List&lt;java.lang.String&gt;&nbsp;objectIDs,
+                               java.util.List&lt;java.lang.String&gt;&nbsp;attributesToRetrieve,
+                               <a href="../../../../com/algolia/search/saas/CompletionHandler.html" title="interface in com.algolia.search.saas">CompletionHandler</a>&nbsp;completionHandler)</pre>
+<div class="block"><p>Get several objects from this index (asynchronously), optionally restricting the retrieved content (asynchronously).</p></div>
+<dl>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>objectIDs</code> - Identifiers of objects to retrieve.</dd>
+<dd><code>attributesToRetrieve</code> - List of attributes to retrieve.</dd>
+<dd><code>completionHandler</code> - The listener that will be notified of the request&rsquo;s outcome.</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>A cancellable request.</dd>
 </dl>
@@ -675,12 +684,11 @@ extends java.lang.Object</pre>
 <h4>waitTaskAsync</h4>
 <pre>public&nbsp;<a href="../../../../com/algolia/search/saas/Request.html" title="interface in com.algolia.search.saas">Request</a>&nbsp;waitTaskAsync(java.lang.String&nbsp;taskID,
                              <a href="../../../../com/algolia/search/saas/CompletionHandler.html" title="interface in com.algolia.search.saas">CompletionHandler</a>&nbsp;completionHandler)</pre>
-<div class="block">Wait until the publication of a task on the server (helper).
- All server tasks are asynchronous. This method helps you check that a task is published.</div>
+<div class="block"><p>Wait until the publication of a task on the server (helper). All server tasks are asynchronous. This method helps you check that a task is published.</p></div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>taskID</code> - Identifier of the task (as returned by the server).</dd>
-<dd><code>completionHandler</code> - The listener that will be notified of the request's outcome.</dd>
+<dd><code>completionHandler</code> - The listener that will be notified of the request&rsquo;s outcome.</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>A cancellable request.</dd>
 </dl>
@@ -694,11 +702,11 @@ extends java.lang.Object</pre>
 <h4>deleteObjectAsync</h4>
 <pre>public&nbsp;<a href="../../../../com/algolia/search/saas/Request.html" title="interface in com.algolia.search.saas">Request</a>&nbsp;deleteObjectAsync(java.lang.String&nbsp;objectID,
                                  <a href="../../../../com/algolia/search/saas/CompletionHandler.html" title="interface in com.algolia.search.saas">CompletionHandler</a>&nbsp;completionHandler)</pre>
-<div class="block">Delete an object from this index (asynchronously).</div>
+<div class="block"><p>Delete an object from this index (asynchronously).</p></div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>objectID</code> - Identifier of the object to delete.</dd>
-<dd><code>completionHandler</code> - The listener that will be notified of the request's outcome.</dd>
+<dd><code>completionHandler</code> - The listener that will be notified of the request&rsquo;s outcome.</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>A cancellable request.</dd>
 </dl>
@@ -712,11 +720,11 @@ extends java.lang.Object</pre>
 <h4>deleteObjectsAsync</h4>
 <pre>public&nbsp;<a href="../../../../com/algolia/search/saas/Request.html" title="interface in com.algolia.search.saas">Request</a>&nbsp;deleteObjectsAsync(java.util.List&lt;java.lang.String&gt;&nbsp;objectIDs,
                                   <a href="../../../../com/algolia/search/saas/CompletionHandler.html" title="interface in com.algolia.search.saas">CompletionHandler</a>&nbsp;completionHandler)</pre>
-<div class="block">Delete several objects from this index (asynchronously).</div>
+<div class="block"><p>Delete several objects from this index (asynchronously).</p></div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>objectIDs</code> - Identifiers of objects to delete.</dd>
-<dd><code>completionHandler</code> - The listener that will be notified of the request's outcome.</dd>
+<dd><code>completionHandler</code> - The listener that will be notified of the request&rsquo;s outcome.</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>A cancellable request.</dd>
 </dl>
@@ -730,11 +738,11 @@ extends java.lang.Object</pre>
 <h4>deleteByQueryAsync</h4>
 <pre>public&nbsp;<a href="../../../../com/algolia/search/saas/Request.html" title="interface in com.algolia.search.saas">Request</a>&nbsp;deleteByQueryAsync(<a href="../../../../com/algolia/search/saas/Query.html" title="class in com.algolia.search.saas">Query</a>&nbsp;query,
                                   <a href="../../../../com/algolia/search/saas/CompletionHandler.html" title="interface in com.algolia.search.saas">CompletionHandler</a>&nbsp;completionHandler)</pre>
-<div class="block">Delete all objects matching a query (helper).</div>
+<div class="block"><p>Delete all objects matching a query (helper).</p></div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>query</code> - The query that objects to delete must match.</dd>
-<dd><code>completionHandler</code> - The listener that will be notified of the request's outcome.</dd>
+<dd><code>completionHandler</code> - The listener that will be notified of the request&rsquo;s outcome.</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>A cancellable request.</dd>
 </dl>
@@ -747,10 +755,10 @@ extends java.lang.Object</pre>
 <li class="blockList">
 <h4>getSettingsAsync</h4>
 <pre>public&nbsp;<a href="../../../../com/algolia/search/saas/Request.html" title="interface in com.algolia.search.saas">Request</a>&nbsp;getSettingsAsync(<a href="../../../../com/algolia/search/saas/CompletionHandler.html" title="interface in com.algolia.search.saas">CompletionHandler</a>&nbsp;completionHandler)</pre>
-<div class="block">Get this index's settings (asynchronously).</div>
+<div class="block"><p>Get this index&rsquo;s settings (asynchronously).</p></div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
-<dd><code>completionHandler</code> - The listener that will be notified of the request's outcome.</dd>
+<dd><code>completionHandler</code> - The listener that will be notified of the request&rsquo;s outcome.</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>A cancellable request.</dd>
 </dl>
@@ -764,14 +772,12 @@ extends java.lang.Object</pre>
 <h4>setSettingsAsync</h4>
 <pre>public&nbsp;<a href="../../../../com/algolia/search/saas/Request.html" title="interface in com.algolia.search.saas">Request</a>&nbsp;setSettingsAsync(org.json.JSONObject&nbsp;settings,
                                 <a href="../../../../com/algolia/search/saas/CompletionHandler.html" title="interface in com.algolia.search.saas">CompletionHandler</a>&nbsp;completionHandler)</pre>
-<div class="block">Set this index's settings (asynchronously).
-
- Please refer to our <a href="https://www.algolia.com/doc/android#index-settings">API documentation</a> for the
- list of supported settings.</div>
+<div class="block"><p>Set this index&rsquo;s settings (asynchronously).</p>
+<p>Please refer to our <a href="https://www.algolia.com/doc/android#index-settings">API documentation</a> for the list of supported settings.</p></div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>settings</code> - New settings.</dd>
-<dd><code>completionHandler</code> - The listener that will be notified of the request's outcome.</dd>
+<dd><code>completionHandler</code> - The listener that will be notified of the request&rsquo;s outcome.</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>A cancellable request.</dd>
 </dl>
@@ -785,14 +791,11 @@ extends java.lang.Object</pre>
 <h4>browseAsync</h4>
 <pre>public&nbsp;<a href="../../../../com/algolia/search/saas/Request.html" title="interface in com.algolia.search.saas">Request</a>&nbsp;browseAsync(<a href="../../../../com/algolia/search/saas/Query.html" title="class in com.algolia.search.saas">Query</a>&nbsp;query,
                            <a href="../../../../com/algolia/search/saas/CompletionHandler.html" title="interface in com.algolia.search.saas">CompletionHandler</a>&nbsp;completionHandler)</pre>
-<div class="block">Browse all index content (initial call).
- This method should be called once to initiate a browse. It will return the first page of results and a cursor,
- unless the end of the index has been reached. To retrieve subsequent pages, call `browseFromAsync` with that
- cursor.</div>
+<div class="block"><p>Browse all index content (initial call). This method should be called once to initiate a browse. It will return the first page of results and a cursor, unless the end of the index has been reached. To retrieve subsequent pages, call <code>browseFromAsync</code> with that cursor.</p></div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>query</code> - The query parameters for the browse.</dd>
-<dd><code>completionHandler</code> - The listener that will be notified of the request's outcome.</dd>
+<dd><code>completionHandler</code> - The listener that will be notified of the request&rsquo;s outcome.</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>A cancellable request.</dd>
 </dl>
@@ -806,13 +809,11 @@ extends java.lang.Object</pre>
 <h4>browseFromAsync</h4>
 <pre>public&nbsp;<a href="../../../../com/algolia/search/saas/Request.html" title="interface in com.algolia.search.saas">Request</a>&nbsp;browseFromAsync(java.lang.String&nbsp;cursor,
                                <a href="../../../../com/algolia/search/saas/CompletionHandler.html" title="interface in com.algolia.search.saas">CompletionHandler</a>&nbsp;completionHandler)</pre>
-<div class="block">Browse the index from a cursor.
- This method should be called after an initial call to `browseAsync()`. It returns a cursor, unless the end of
- the index has been reached.</div>
+<div class="block"><p>Browse the index from a cursor. This method should be called after an initial call to <code>browseAsync()</code>. It returns a cursor, unless the end of the index has been reached.</p></div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>cursor</code> - The cursor of the next page to retrieve.</dd>
-<dd><code>completionHandler</code> - The listener that will be notified of the request's outcome.</dd>
+<dd><code>completionHandler</code> - The listener that will be notified of the request&rsquo;s outcome.</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>A cancellable request.</dd>
 </dl>
@@ -825,10 +826,10 @@ extends java.lang.Object</pre>
 <li class="blockList">
 <h4>clearIndexAsync</h4>
 <pre>public&nbsp;<a href="../../../../com/algolia/search/saas/Request.html" title="interface in com.algolia.search.saas">Request</a>&nbsp;clearIndexAsync(<a href="../../../../com/algolia/search/saas/CompletionHandler.html" title="interface in com.algolia.search.saas">CompletionHandler</a>&nbsp;completionHandler)</pre>
-<div class="block">Clear this index.</div>
+<div class="block"><p>Clear this index.</p></div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
-<dd><code>completionHandler</code> - The listener that will be notified of the request's outcome.</dd>
+<dd><code>completionHandler</code> - The listener that will be notified of the request&rsquo;s outcome.</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>A cancellable request.</dd>
 </dl>
@@ -841,7 +842,7 @@ extends java.lang.Object</pre>
 <li class="blockList">
 <h4>enableSearchCache</h4>
 <pre>public&nbsp;void&nbsp;enableSearchCache()</pre>
-<div class="block">Enable search cache with default parameters</div>
+<div class="block"><p>Enable search cache with default parameters</p></div>
 </li>
 </ul>
 <a name="enableSearchCache-int-int-">
@@ -852,7 +853,7 @@ extends java.lang.Object</pre>
 <h4>enableSearchCache</h4>
 <pre>public&nbsp;void&nbsp;enableSearchCache(int&nbsp;timeoutInSeconds,
                               int&nbsp;maxRequests)</pre>
-<div class="block">Enable search cache with custom parameters</div>
+<div class="block"><p>Enable search cache with custom parameters</p></div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>timeoutInSeconds</code> - duration during which an request is kept in cache</dd>
@@ -867,7 +868,7 @@ extends java.lang.Object</pre>
 <li class="blockList">
 <h4>disableSearchCache</h4>
 <pre>public&nbsp;void&nbsp;disableSearchCache()</pre>
-<div class="block">Disable and reset cache</div>
+<div class="block"><p>Disable and reset cache</p></div>
 </li>
 </ul>
 <a name="clearSearchCache--">
@@ -877,7 +878,7 @@ extends java.lang.Object</pre>
 <li class="blockList">
 <h4>clearSearchCache</h4>
 <pre>public&nbsp;void&nbsp;clearSearchCache()</pre>
-<div class="block">Remove all entries from cache</div>
+<div class="block"><p>Remove all entries from cache</p></div>
 </li>
 </ul>
 </li>
@@ -904,6 +905,10 @@ extends java.lang.Object</pre>
 <li><a href="../../../../index-all.html">Index</a></li>
 <li><a href="../../../../help-doc.html">Help</a></li>
 </ul>
+<div class="aboutLanguage"><script type="text/javascript" src="../../../../highlight.pack.js"></script>
+<script type="text/javascript"><!--
+hljs.initHighlightingOnLoad();
+//--></script></div>
 </div>
 <div class="subNav">
 <ul class="navList">
