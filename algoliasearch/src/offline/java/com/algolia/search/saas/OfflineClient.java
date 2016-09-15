@@ -27,8 +27,8 @@ import android.content.Context;
 import android.support.annotation.NonNull;
 
 import com.algolia.search.offline.core.LocalIndex;
+import com.algolia.search.offline.core.Response;
 import com.algolia.search.offline.core.Sdk;
-import com.algolia.search.offline.core.SearchResults;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -381,7 +381,7 @@ public class OfflineClient extends Client
     // Utils
     // ----------------------------------------------------------------------
 
-    static protected JSONObject parseSearchResults(SearchResults searchResults) throws AlgoliaException {
+    static protected JSONObject parseSearchResults(Response searchResults) throws AlgoliaException {
         try {
             if (searchResults.getStatusCode() == 200) {
                 String jsonString = new String(searchResults.getData(), "UTF-8");
