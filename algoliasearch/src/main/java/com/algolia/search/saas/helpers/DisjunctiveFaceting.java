@@ -212,10 +212,14 @@ public abstract class DisjunctiveFaceting {
         // aggregate answers
         // first answer stores the hits + regular facets
         try {
+            boolean nonExhaustiveFacetsCount = false;
             JSONArray results = answers.getJSONArray("results");
             JSONObject aggregatedAnswer = results.getJSONObject(0);
             JSONObject disjunctiveFacetsJSON = new JSONObject();
             for (int i = 1; i < results.length(); ++i) {
+                if (!results.getJSONObject(i).optBoolean("exhaustiveFacetsCount")) {
+                    nonExhaustiveFacetsCount = true;
+                }
                 JSONObject facets = results.getJSONObject(i).getJSONObject("facets");
                 @SuppressWarnings("unchecked")
                 Iterator<String> keys = facets.keys();
@@ -235,6 +239,9 @@ public abstract class DisjunctiveFaceting {
                 }
             }
             aggregatedAnswer.put("disjunctiveFacets", disjunctiveFacetsJSON);
+            if (nonExhaustiveFacetsCount) {
+                aggregatedAnswer.put("exhaustiveFacetsCount", false);
+            }
             return aggregatedAnswer;
         } catch (JSONException e) {
             throw new AlgoliaException("Failed to aggregate results", e);
