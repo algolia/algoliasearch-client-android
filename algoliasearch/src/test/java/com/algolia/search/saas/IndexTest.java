@@ -25,6 +25,8 @@ package com.algolia.search.saas;
 
 import android.annotation.SuppressLint;
 
+import com.algolia.search.saas.helpers.DisjunctiveFaceting;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -277,7 +279,7 @@ public class IndexTest extends PowerMockTestCase {
     }
 
     @Test
-    public void testAggregateResultsPropagatesNonExhaustiveCount() throws JSONException, AlgoliaException {
+    public void testAggregateResultsPropagatesNonExhaustiveCount() throws Exception {
         try {
             List<String> disjunctiveFacets = new ArrayList<>();
             Map<String, List<String>> refinements = new HashMap<>();
@@ -285,28 +287,28 @@ public class IndexTest extends PowerMockTestCase {
             JSONObject answers = new JSONObject().put("results", new JSONArray()
                     .put(new JSONObject("{\"facets\": {},\"exhaustiveFacetsCount\": true}"))
                     .put(new JSONObject("{\"facets\": {},\"exhaustiveFacetsCount\": true}")));
-            JSONObject result = index.aggregateDisjunctiveFacetingResults(answers, disjunctiveFacets, refinements);
+            JSONObject result = org.powermock.reflect.Whitebox.invokeMethod(DisjunctiveFaceting.class, "aggregateDisjunctiveFacetingResults", answers, disjunctiveFacets, refinements);
             assertTrue("If all results have exhaustive counts, the aggregated one should too.", result.getBoolean("exhaustiveFacetsCount"));
 
             answers = new JSONObject().put("results", new JSONArray()
                     .put(new JSONObject("{\"facets\": {},\"exhaustiveFacetsCount\": false}"))
                     .put(new JSONObject("{\"facets\": {},\"exhaustiveFacetsCount\": true}")));
-            result = index.aggregateDisjunctiveFacetingResults(answers, disjunctiveFacets, refinements);
+            result = org.powermock.reflect.Whitebox.invokeMethod(DisjunctiveFaceting.class, "aggregateDisjunctiveFacetingResults", answers, disjunctiveFacets, refinements);
             assertFalse("If some results have non-exhaustive counts, neither should the aggregated one.", result.getBoolean("exhaustiveFacetsCount"));
 
             answers = new JSONObject().put("results", new JSONArray()
                     .put(new JSONObject("{\"facets\": {},\"exhaustiveFacetsCount\": true}"))
                     .put(new JSONObject("{\"facets\": {},\"exhaustiveFacetsCount\": false}")));
-            result = index.aggregateDisjunctiveFacetingResults(answers, disjunctiveFacets, refinements);
+            result = org.powermock.reflect.Whitebox.invokeMethod(DisjunctiveFaceting.class, "aggregateDisjunctiveFacetingResults", answers, disjunctiveFacets, refinements);
             assertFalse("If some results have non-exhaustive counts, neither should the aggregated one.", result.getBoolean("exhaustiveFacetsCount"));
 
             answers = new JSONObject().put("results", new JSONArray()
                     .put(new JSONObject("{\"facets\": {},\"exhaustiveFacetsCount\": false}"))
                     .put(new JSONObject("{\"facets\": {},\"exhaustiveFacetsCount\": false}")));
-            result = index.aggregateDisjunctiveFacetingResults(answers, disjunctiveFacets, refinements);
+            result = org.powermock.reflect.Whitebox.invokeMethod(DisjunctiveFaceting.class, "aggregateDisjunctiveFacetingResults", answers, disjunctiveFacets, refinements);
             assertFalse("If no results have exhaustive counts, neither should the aggregated one.", result.getBoolean("exhaustiveFacetsCount"));
 
-        } catch (AlgoliaException e) {
+        } catch (Exception e) {
             throw e;
         }
     }

@@ -90,7 +90,7 @@ public abstract class DisjunctiveFaceting {
      * @param refinements       Map representing the current refinements
      * @return The disjunctive refinements
      */
-    private @NonNull Map<String, List<String>> computeDisjunctiveRefinements(@NonNull List<String> disjunctiveFacets, @NonNull Map<String, List<String>> refinements)
+    static private @NonNull Map<String, List<String>> computeDisjunctiveRefinements(@NonNull List<String> disjunctiveFacets, @NonNull Map<String, List<String>> refinements)
     {
         Map<String, List<String>> disjunctiveRefinements = new HashMap<>();
         for (Map.Entry<String, List<String>> elt : refinements.entrySet()) {
@@ -109,7 +109,7 @@ public abstract class DisjunctiveFaceting {
      * @param refinements       The current refinements, mapping facet names to a list of values.
      * @return A list of queries suitable for {@link Index#multipleQueries}.
      */
-    private @NonNull List<Query> computeDisjunctiveFacetingQueries(@NonNull Query query, @NonNull List<String> disjunctiveFacets, @NonNull Map<String, List<String>> refinements) {
+    static private @NonNull List<Query> computeDisjunctiveFacetingQueries(@NonNull Query query, @NonNull List<String> disjunctiveFacets, @NonNull Map<String, List<String>> refinements) {
         // Retain only refinements corresponding to the disjunctive facets.
         Map<String, List<String>> disjunctiveRefinements = computeDisjunctiveRefinements(disjunctiveFacets, refinements);
 
@@ -205,7 +205,7 @@ public abstract class DisjunctiveFaceting {
      * @return The aggregated results.
      * @throws AlgoliaException
      */
-    private JSONObject aggregateDisjunctiveFacetingResults(@NonNull JSONObject answers, @NonNull List<String> disjunctiveFacets, @NonNull Map<String, List<String>> refinements) throws AlgoliaException
+    static private JSONObject aggregateDisjunctiveFacetingResults(@NonNull JSONObject answers, @NonNull List<String> disjunctiveFacets, @NonNull Map<String, List<String>> refinements) throws AlgoliaException
     {
         Map<String, List<String>> disjunctiveRefinements = computeDisjunctiveRefinements(disjunctiveFacets, refinements);
 
