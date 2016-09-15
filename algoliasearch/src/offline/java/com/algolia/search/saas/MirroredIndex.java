@@ -27,7 +27,7 @@ import android.support.annotation.NonNull;
 import android.util.Log;
 
 import com.algolia.search.offline.core.LocalIndex;
-import com.algolia.search.offline.core.SearchResults;
+import com.algolia.search.offline.core.Response;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -488,7 +488,7 @@ public class MirroredIndex extends Index
             String[] objectFilePaths = new String[objectFiles.size()];
             for (int i = 0; i < objectFiles.size(); ++i)
                 objectFilePaths[i] = objectFiles.get(i).getAbsolutePath();
-            int status = getLocalIndex().build(settingsFile.getAbsolutePath(), objectFilePaths, true /* clearIndex */);
+            int status = getLocalIndex().build(settingsFile.getAbsolutePath(), objectFilePaths, true /* clearIndex */, null /* deletedObjectIDs */);
             if (status != 200) {
                 throw new AlgoliaException("Build index failed", status);
             }
@@ -840,7 +840,7 @@ public class MirroredIndex extends Index
     private JSONObject _searchOffline(@NonNull Query query) throws AlgoliaException
     {
         try {
-            SearchResults searchResults = getLocalIndex().search(query.build());
+            Response searchResults = getLocalIndex().search(query.build());
             if (searchResults.getStatusCode() == 200) {
                 String jsonString = new String(searchResults.getData(), "UTF-8");
                 JSONObject json = new JSONObject(jsonString);
@@ -1068,7 +1068,7 @@ public class MirroredIndex extends Index
     private JSONObject _browseMirror(@NonNull Query query) throws AlgoliaException
     {
         try {
-            SearchResults searchResults = getLocalIndex().browse(query.build());
+            Response searchResults = getLocalIndex().browse(query.build());
             if (searchResults.getStatusCode() == 200) {
                 String jsonString = new String(searchResults.getData(), "UTF-8");
                 JSONObject json = new JSONObject(jsonString);
