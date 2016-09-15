@@ -29,6 +29,7 @@ import android.support.annotation.NonNull;
 import com.algolia.search.offline.core.Sdk;
 
 import java.io.File;
+import java.lang.ref.WeakReference;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -110,13 +111,37 @@ public class OfflineClient extends Client
     /**
      * Create a new index. Although this will always be an instance of {@link MirroredIndex}, mirroring is deactivated
      * by default.
+     *
      * @param indexName the name of index
      * @return The newly created index.
+     *
+     * @deprecated You should now use {@link #getIndex(String)}, which re-uses instances with the same name.
      */
     @Override
     public MirroredIndex initIndex(@NonNull String indexName)
     {
         return new MirroredIndex(this, indexName);
+    }
+
+    /**
+     * Obtain a mirrored index. Although this will always be an instance of {@link MirroredIndex}, mirroring is
+     * deactivated by default.
+     *
+     * @param indexName The name of the index.
+     * @return A proxy to the specified index.
+     */
+    @Override
+    public @NonNull MirroredIndex getIndex(@NonNull String indexName) {
+        MirroredIndex index = null;
+        WeakReference<Index> existingIndex = indices.get(indexName);
+        if (existingIndex != null) {
+            index = (MirroredIndex)existingIndex.get();
+        }
+        if (index == null) {
+            index = new MirroredIndex(this, indexName);
+            indices.put(indexName, new WeakReference<Index>(index));
+        }
+        return index;
     }
 
     /**
