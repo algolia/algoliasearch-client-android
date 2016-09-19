@@ -599,7 +599,7 @@ public class OfflineIndex {
      *  @param completionHandler Completion handler to be notified of the transaction's outcome.
      *  @return A cancellable operation (see warning for important caveat).
      */
-    public Request rollbackTransactionAsync(@NonNull CompletionHandler completionHandler) {
+    public Request rollbackTransactionAsync(CompletionHandler completionHandler) {
         assertTransaction();
         return getClient().new AsyncTaskRequest(completionHandler, getClient().transactionExecutorService) {
             @NonNull
