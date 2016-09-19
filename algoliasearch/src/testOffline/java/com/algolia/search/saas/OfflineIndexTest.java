@@ -507,4 +507,36 @@ public class OfflineIndexTest extends OfflineTestBase  {
         assertTrue("No callback was called", signal.await(waitTimeout, TimeUnit.SECONDS));
     }
 
+    /**
+     * Test that we can chain async write operations without waiting for the handler to be called, and that it
+     * still works.
+     * */
+    @Test
+    public void testAsyncUpdatesInParallel() throws Exception {
+        final CountDownLatch signal = new CountDownLatch(1);
+        final OfflineIndex index = client.getOfflineIndex(Helpers.getMethodName());
+        index.beginTransaction();
+        index.clearIndexAsync(null);
+        index.saveObjectAsync(objects.get("snoopy"), null);
+        index.saveObjectAsync(objects.get("woodstock"), null);
+        index.deleteObjectAsync("1", null);
+        index.setSettingsAsync(new JSONObject(), null);
+        index.commitTransactionAsync(new CompletionHandler() {
+            @Override
+            public void requestCompleted(JSONObject content, AlgoliaException error) {
+                assertNull(error);
+                index.browseAsync(new Query(), new CompletionHandler() {
+                    @Override
+                    public void requestCompleted(JSONObject content, AlgoliaException error) {
+                        assertNotNull(content);
+                        assertEquals(1, content.optInt("nbHits"));
+                        assertNull(content.optString("cursor", null));
+                        assertEquals("Woodstock", content.optJSONArray("hits").optJSONObject(0).optString("name"));
+                        signal.countDown();
+                    }
+                });
+            }
+        });
+        assertTrue("No callback was called", signal.await(waitTimeout, TimeUnit.SECONDS));
+    }
 }
