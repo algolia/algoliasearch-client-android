@@ -35,6 +35,7 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
@@ -474,4 +475,36 @@ public class OfflineIndexTest extends OfflineTestBase  {
         });
         assertTrue("No callback was called", signal.await(waitTimeout, TimeUnit.SECONDS));
     }
+
+    @Test
+    public void testRollback() throws Exception {
+        final CountDownLatch signal = new CountDownLatch(1);
+        final String indexName = Helpers.getMethodName();
+        final OfflineIndex index = client.getOfflineIndex(indexName);
+        index.beginTransaction();
+        index.saveObjectsSync(objects.values());
+        index.rollbackTransactionSync();
+        assertFalse(client.hasOfflineData(indexName));
+
+        index.beginTransaction();
+        index.saveObjectSync(objects.get("snoopy"));
+        index.commitTransactionSync();
+        assertTrue(client.hasOfflineData(indexName));
+
+        index.beginTransaction();
+        index.saveObjectSync(objects.get("woodstock"));
+        index.rollbackTransactionSync();
+
+        index.browseAsync(new Query(), new CompletionHandler() {
+            @Override
+            public void requestCompleted(JSONObject content, AlgoliaException error) {
+                assertNotNull(content);
+                assertEquals(1, content.optInt("nbHits"));
+                assertNull(content.optString("cursor", null));
+                signal.countDown();
+            }
+        });
+        assertTrue("No callback was called", signal.await(waitTimeout, TimeUnit.SECONDS));
+    }
+
 }
