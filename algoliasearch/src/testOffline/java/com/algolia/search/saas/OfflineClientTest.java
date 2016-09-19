@@ -45,7 +45,7 @@ public class OfflineClientTest extends OfflineTestBase  {
     @Test
     public void testListIndexes() throws Exception {
         final CountDownLatch signal = new CountDownLatch(1);
-        final OfflineIndex index = client.initOfflineIndex(Helpers.getMethodName());
+        final OfflineIndex index = client.getOfflineIndex(Helpers.getMethodName());
         client.listIndexesOfflineAsync(new CompletionHandler() {
             @Override
             public void requestCompleted(JSONObject content, AlgoliaException error) {
@@ -97,7 +97,7 @@ public class OfflineClientTest extends OfflineTestBase  {
     @Test
     public void testDeleteIndex() throws Exception {
         final CountDownLatch signal = new CountDownLatch(1);
-        final OfflineIndex index = client.initOfflineIndex(Helpers.getMethodName());
+        final OfflineIndex index = client.getOfflineIndex(Helpers.getMethodName());
         index.addObjectsAsync(objects.values(), new CompletionHandler() {
             @Override
             public void requestCompleted(JSONObject content, AlgoliaException error) {
@@ -120,8 +120,8 @@ public class OfflineClientTest extends OfflineTestBase  {
     @Test
     public void testMoveIndex() throws Exception {
         final CountDownLatch signal = new CountDownLatch(1);
-        final OfflineIndex srcIndex = client.initOfflineIndex(Helpers.getMethodName());
-        final OfflineIndex dstIndex = client.initOfflineIndex(Helpers.getMethodName() + "_new");
+        final OfflineIndex srcIndex = client.getOfflineIndex(Helpers.getMethodName());
+        final OfflineIndex dstIndex = client.getOfflineIndex(Helpers.getMethodName() + "_new");
         srcIndex.addObjectsAsync(objects.values(), new CompletionHandler() {
             @Override
             public void requestCompleted(JSONObject content, AlgoliaException error) {

@@ -37,6 +37,7 @@ import org.json.JSONObject;
 import java.io.File;
 import java.io.FileFilter;
 import java.io.UnsupportedEncodingException;
+import java.lang.ref.WeakReference;
 import java.util.Date;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -119,8 +120,11 @@ public class OfflineClient extends Client
     /**
      * Create a new index. Although this will always be an instance of {@link MirroredIndex}, mirroring is deactivated
      * by default.
+     *
      * @param indexName the name of index
      * @return The newly created index.
+     *
+     * @deprecated You should now use {@link #getIndex(String)}, which re-uses instances with the same name.
      */
     @Override
     public MirroredIndex initIndex(@NonNull String indexName)
@@ -129,15 +133,47 @@ public class OfflineClient extends Client
     }
 
     /**
-     * Create a purely offline index.
+     * Obtain a mirrored index. Although this will always be an instance of {@link MirroredIndex}, mirroring is
+     * deactivated by default.
      *
-     * @param name Name for the new index.
-     * @return A new object representing the index.
+     * @param indexName The name of the index.
+     * @return A proxy to the specified index.
      *
-     * **Warning:** The name should not overlap with any `MirroredIndex`. See {@link #initIndex(String)}.
+     * **Warning:** The name should not overlap with any `OfflineIndex`. See {@link #getOfflineIndex(String)}.
      */
-    public OfflineIndex initOfflineIndex(@NonNull String name) {
-        return new OfflineIndex(this, name);
+    @Override
+    public @NonNull MirroredIndex getIndex(@NonNull String indexName) {
+        MirroredIndex index = null;
+        WeakReference<Object> existingIndex = indices.get(indexName);
+        if (existingIndex != null) {
+            index = (MirroredIndex)existingIndex.get();
+        }
+        if (index == null) {
+            index = new MirroredIndex(this, indexName);
+            indices.put(indexName, new WeakReference<Object>(index));
+        }
+        return index;
+    }
+
+    /**
+     * Obtain a purely offline index.
+     *
+     * @param indexName The name of the index.
+     * @return A proxy to the specified index.
+     *
+     * **Warning:** The name should not overlap with any `MirroredIndex`. See {@link #getIndex(String)}.
+     */
+    public OfflineIndex getOfflineIndex(@NonNull String indexName) {
+        OfflineIndex index = null;
+        WeakReference<Object> existingIndex = indices.get(indexName);
+        if (existingIndex != null) {
+            index = (OfflineIndex)existingIndex.get();
+        }
+        if (index == null) {
+            index = new OfflineIndex(this, indexName);
+            indices.put(indexName, new WeakReference<Object>(index));
+        }
+        return index;
     }
 
     /**

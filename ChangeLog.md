@@ -1,6 +1,17 @@
 Change Log
 ==========
 
+## 3.4.2 (2016-09-15)
+
+- New `Client.getIndex()` method to automatically share `Index` instances with same name
+- [Offline mode] Upgrade to Offline Core 1.0
+
+## 3.4.1 (2016-09-08)
+
+- Documentation improvements
+- Fix getObjects missing a way to specify attributesToRetrieve
+- Expose parseLatLng method
+
 ## 3.4.0 (2016-09-05)
 
 - Implement new user-agent convention
@@ -601,5 +612,3 @@ detailed instructions.
 - Removed note about javascript. [Julien Lemoine]
 
 - Initial import. [Julien Lemoine]
-
-
