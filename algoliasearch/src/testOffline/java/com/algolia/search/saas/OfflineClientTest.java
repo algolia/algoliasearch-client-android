@@ -61,30 +61,37 @@ public class OfflineClientTest extends OfflineTestBase  {
                     // Check that the index does not exist yet.
                     assertNotEquals(index.getName(), name);
                 }
-                index.addObjectAsync(objects.get("snoopy"), new CompletionHandler() {
+                index.beginTransaction();
+                index.saveObjectAsync(objects.get("snoopy"), new CompletionHandler() {
                     @Override
                     public void requestCompleted(JSONObject content, AlgoliaException error) {
                         assertNull(error);
-                        client.listIndexesOfflineAsync(new CompletionHandler() {
+                        index.commitTransactionAsync(new CompletionHandler() {
                             @Override
                             public void requestCompleted(JSONObject content, AlgoliaException error) {
-                                // Check that response is valid.
-                                assertNotNull(content);
-                                JSONArray items = content.optJSONArray("items");
-                                assertNotNull(items);
-                                boolean found = false;
-                                for (int i = 0; i < items.length(); ++i) {
-                                    JSONObject indexDetails = items.optJSONObject(i);
-                                    assertNotNull(indexDetails);
-                                    String name = indexDetails.optString("name", null);
-                                    assertNotNull(name);
-                                    // Check that the index *does* exist.
-                                    if (index.getName().equals(name)) {
-                                        found = true;
+                                assertNull(error);
+                                client.listIndexesOfflineAsync(new CompletionHandler() {
+                                    @Override
+                                    public void requestCompleted(JSONObject content, AlgoliaException error) {
+                                        // Check that response is valid.
+                                        assertNotNull(content);
+                                        JSONArray items = content.optJSONArray("items");
+                                        assertNotNull(items);
+                                        boolean found = false;
+                                        for (int i = 0; i < items.length(); ++i) {
+                                            JSONObject indexDetails = items.optJSONObject(i);
+                                            assertNotNull(indexDetails);
+                                            String name = indexDetails.optString("name", null);
+                                            assertNotNull(name);
+                                            // Check that the index *does* exist.
+                                            if (index.getName().equals(name)) {
+                                                found = true;
+                                            }
+                                        }
+                                        assertTrue(found);
+                                        signal.countDown();
                                     }
-                                }
-                                assertTrue(found);
-                                signal.countDown();
+                                });
                             }
                         });
                     }
@@ -98,18 +105,25 @@ public class OfflineClientTest extends OfflineTestBase  {
     public void testDeleteIndex() throws Exception {
         final CountDownLatch signal = new CountDownLatch(1);
         final OfflineIndex index = client.getOfflineIndex(Helpers.getMethodName());
-        index.addObjectsAsync(objects.values(), new CompletionHandler() {
+        index.beginTransaction();
+        index.saveObjectsAsync(objects.values(), new CompletionHandler() {
             @Override
             public void requestCompleted(JSONObject content, AlgoliaException error) {
                 assertNull(error);
-                assertTrue(client.hasOfflineData(index.getName()));
-                client.deleteIndexOfflineAsync(index.getName(), new CompletionHandler() {
+                index.commitTransactionAsync(new CompletionHandler() {
                     @Override
                     public void requestCompleted(JSONObject content, AlgoliaException error) {
-                        assertNotNull(content);
-                        assertNotNull(content.optString("deletedAt", null));
-                        assertFalse(client.hasOfflineData(index.getName()));
-                        signal.countDown();
+                        assertNull(error);
+                        assertTrue(client.hasOfflineData(index.getName()));
+                        client.deleteIndexOfflineAsync(index.getName(), new CompletionHandler() {
+                            @Override
+                            public void requestCompleted(JSONObject content, AlgoliaException error) {
+                                assertNotNull(content);
+                                assertNotNull(content.optString("deletedAt", null));
+                                assertFalse(client.hasOfflineData(index.getName()));
+                                signal.countDown();
+                            }
+                        });
                     }
                 });
             }
@@ -122,25 +136,32 @@ public class OfflineClientTest extends OfflineTestBase  {
         final CountDownLatch signal = new CountDownLatch(1);
         final OfflineIndex srcIndex = client.getOfflineIndex(Helpers.getMethodName());
         final OfflineIndex dstIndex = client.getOfflineIndex(Helpers.getMethodName() + "_new");
-        srcIndex.addObjectsAsync(objects.values(), new CompletionHandler() {
+        srcIndex.beginTransaction();
+        srcIndex.saveObjectsAsync(objects.values(), new CompletionHandler() {
             @Override
             public void requestCompleted(JSONObject content, AlgoliaException error) {
                 assertNull(error);
-                assertTrue(client.hasOfflineData(srcIndex.getName()));
-                assertFalse(client.hasOfflineData(dstIndex.getName()));
-                client.moveIndexOfflineAsync(srcIndex.getName(), dstIndex.getName(), new CompletionHandler() {
+                srcIndex.commitTransactionAsync(new CompletionHandler() {
                     @Override
                     public void requestCompleted(JSONObject content, AlgoliaException error) {
-                        assertNotNull(content);
-                        assertNotNull(content.optString("updatedAt", null));
-                        assertFalse(client.hasOfflineData(srcIndex.getName()));
-                        assertTrue(client.hasOfflineData(dstIndex.getName()));
-                        dstIndex.searchAsync(new Query("woodstock"), new CompletionHandler() {
+                        assertNull(error);
+                        assertTrue(client.hasOfflineData(srcIndex.getName()));
+                        assertFalse(client.hasOfflineData(dstIndex.getName()));
+                        client.moveIndexOfflineAsync(srcIndex.getName(), dstIndex.getName(), new CompletionHandler() {
                             @Override
                             public void requestCompleted(JSONObject content, AlgoliaException error) {
                                 assertNotNull(content);
-                                assertEquals(1, content.optInt("nbHits"));
-                                signal.countDown();
+                                assertNotNull(content.optString("updatedAt", null));
+                                assertFalse(client.hasOfflineData(srcIndex.getName()));
+                                assertTrue(client.hasOfflineData(dstIndex.getName()));
+                                dstIndex.searchAsync(new Query("woodstock"), new CompletionHandler() {
+                                    @Override
+                                    public void requestCompleted(JSONObject content, AlgoliaException error) {
+                                        assertNotNull(content);
+                                        assertEquals(1, content.optInt("nbHits"));
+                                        signal.countDown();
+                                    }
+                                });
                             }
                         });
                     }

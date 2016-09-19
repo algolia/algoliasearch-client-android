@@ -69,6 +69,9 @@ public class OfflineClient extends Client
     /** Background queue used to search local indices. */
     protected ExecutorService localSearchExecutorService = Executors.newSingleThreadExecutor();
 
+    /** Background queue used to run transaction bodies (but not the build). */
+    protected ExecutorService transactionExecutorService = Executors.newSingleThreadExecutor();
+
     /**
      * Construct a new offline-enabled API client.
      *
