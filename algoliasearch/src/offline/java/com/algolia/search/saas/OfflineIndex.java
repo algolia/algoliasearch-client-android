@@ -58,46 +58,57 @@ import java.util.UUID;
  * **Note:** You cannot construct this class directly. Please use {@link OfflineClient#getOfflineIndex(String)} to
  * obtain an instance.
  *
+ * ## Caveats
  *
- * # Caveats
- *
- * ## Limitations
+ * ### Limitations
  *
  * Though offline indices support most features of an online index, there are some limitations:
  *
  * - Objects **must contain an `objectID`** field. The SDK will refuse to index objects without an ID.
- *   As a consequence, `addObject(s)Async()` and `saveObject(s)Async()` are synonyms.
  *
  * - **Partial updates** are not supported.
  *
  * - **Batch** operations are not supported.
  *
- * - **Slave indices** are not supported.
+ * - **Replica indices** are not supported.
  *
- * ## Differences
+ * ### Differences
  *
  * - **Settings** are not incremental: the new settings completely replace the previous ones. If a setting
  *   is omitted in the new version, it reverts back to its default value. (This is in contrast with the online API,
  *   where you can only specify the settings you want to change and omit the others.)
  *
  *
- * # Operations
+ * ## Operations
  *
- * ## Asynchronicity
+ * ### Writing
  *
- * **Reminder:** Write operations on an online `Index` are twice asynchronous: the response from the server received
- * by the completion handler is merely an acknowledgement of the task. If you want to detect the end of the write
- * operation, you have to use `waitTask()`.
+ * Updating an index involves rebuilding it, which is an expensive and potentially lengthy operation. Therefore, all
+ * updates must be wrapped inside a **transaction**.
  *
- * In contrast, write operations on an `OfflineIndex` are only once asynchronous: when the completion handler is
- * called, the operation has completed (either successfully or unsuccessfully).
+ * + Warning: You cannot have several parallel transactions on a given index.
  *
- * Read operations behave identically as on online indices.
+ * The procedure to update an index is as follows:
  *
- * ## Cancellation
+ * - Initiate a transaction by calling {@link #beginTransaction()}.
  *
- * Just like online indices, an offline index bears **no rollback semantic**: cancelling an operation does **not**
- * prevent the data from being modified. It just prevents the completion handler from being called.
+ * - Populate the transaction: call the asynchronous methods similar to those in the {@link Index} class (like
+ * `saveObjects` or `deleteObjects`). Each method requires you to provide a completion handler.
+ *
+ * - Either commit ({@link #commitTransactionAsync(CompletionHandler)}) or rollback
+ *   ({@link #rollbackTransactionAsync(CompletionHandler)}) the transaction.
+ *
+ * #### Synchronous updates
+ *
+ * If you already have a background thread/queue performing data-handling tasks, you may find it more convenient to
+ * use the synchronous versions of the write methods. They are named after the asynchronous versions, suffixed by
+ * `Sync`. The flow is identical to the asynchronous version (see above).
+ *
+ * **Warning:** You must not call synchronous methods from the main thread. The methods will assert if you do so.
+ *
+ * ### Reading
+ *
+ * Read operations behave identically as with online indices.
  */
 public class OfflineIndex {
     /** The client to which this index belongs. */

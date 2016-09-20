@@ -43,6 +43,7 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
@@ -50,6 +51,8 @@ import java.util.concurrent.TimeUnit;
 /**
  * An online index that can also be mirrored locally.
  *
+ * You cannot construct this class directly. Please use {@link OfflineClient#getIndex(String)} to obtain an instance.
+
  * <p>When created, an instance of this class has its <code>mirrored</code> flag set to false, and behaves like a normal,
  * online {@link Index}. When the <code>mirrored</code> flag is set to true, the index becomes capable of acting upon
  * local data.</p>
@@ -74,9 +77,11 @@ import java.util.concurrent.TimeUnit;
  * mirror in case of failure (including network unavailability).
  *
  * NOTE: If you want to explicitly target either the online API or the offline mirror, doing so is always possible
- * using the {@link #searchOnlineAsync} or {@link #searchOfflineAsync}` methods.
+ * using the {@link #searchOnlineAsync(Query, CompletionHandler)} or {@link #searchOfflineAsync(Query, CompletionHandler)}
+ * methods.
  *
- * NOTE: The strategy applies both to {@link #searchAsync} and {@link #searchDisjunctiveFacetingAsync}..
+ * NOTE: The strategy applies both to {@link #searchAsync(Query, CompletionHandler)} and
+ * {@link #searchDisjunctiveFacetingAsync(Query, List, Map, CompletionHandler)}.
  */
 public class MirroredIndex extends Index
 {

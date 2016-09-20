@@ -35,6 +35,27 @@ import org.robolectric.util.concurrent.RoboExecutorService;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * Base class for offline test cases.
+ *
+ * **WARNING:** Robolectric tests run *on the local platform* (whatever that is, e.g. Linux or macOS), not in a real
+ * Android environment. Therefore, the various native libraries supplied with `algoliasearch-offline-core-android`
+ * cannot be loaded, leaving this module with an unsatisfied runtime dependency that will make the tests crash.
+ * The solution is to provide an ad hoc JNI library similar to those bundled with `algoliasearch-offline-core-android`,
+ * but compiled for the local platform. Currently, such a library only exists on macOS.
+ * Consequently, **the offline tests cannot run in Travis**.
+ *
+ * **Note:** The JNI library should be placed somewhere in the JVM's path (as indicated by the system property
+ * `java.library.path`). On macOS, it normally contains the following directories;
+ *
+ * - `~/Library/Java/Extensions`
+ * - `/Library/Java/Extensions`
+ * - `/Network/Library/Java/Extensions`
+ * - `/System/Library/Java/Extensions`
+ * - `/usr/lib/java`
+ *
+ * I found the first one to be the most convenient to use.
+ */
 public abstract class OfflineTestBase extends RobolectricTestCase {
     /** Offline client. */
     protected OfflineClient client;

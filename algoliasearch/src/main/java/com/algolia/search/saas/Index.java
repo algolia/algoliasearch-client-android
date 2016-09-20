@@ -41,7 +41,7 @@ import java.util.Map;
 /**
  * A proxy to an Algolia index.
  * <p>
- * You cannot construct this class directly. Please use {@link Client#initIndex(String)} to obtain an instance.
+ * You cannot construct this class directly. Please use {@link Client#getIndex(String)} to obtain an instance.
  * </p>
  * <p>
  * WARNING: For performance reasons, arguments to asynchronous methods are not cloned. Therefore, you should not
