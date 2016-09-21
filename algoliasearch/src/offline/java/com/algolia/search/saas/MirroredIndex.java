@@ -469,7 +469,7 @@ public class MirroredIndex extends Index
                     writer.write(data);
                     writer.close();
 
-                    cursor = objectsJSON.optString("cursor");
+                    cursor = objectsJSON.optString("cursor", null);
                     JSONArray hits = objectsJSON.optJSONArray("hits");
                     if (hits == null) {
                         // Something went wrong:
