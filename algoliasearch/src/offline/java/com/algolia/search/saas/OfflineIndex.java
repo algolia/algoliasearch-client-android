@@ -448,13 +448,18 @@ public class OfflineIndex {
          *
          * @param objects New versions of the objects to update. Each one must contain an `objectID` attribute.
          */
-        public void saveObjects(@NonNull Collection<JSONObject> objects) throws AlgoliaException {
-            synchronized(this) {
-                if (finished) throw new IllegalStateException();
-                for (JSONObject object : objects) {
-                    tmpObjects.add(object);
+        public void saveObjects(@NonNull JSONArray objects) throws AlgoliaException {
+            try {
+                synchronized(this) {
+                    if (finished) throw new IllegalStateException();
+                    for (int i = 0; i < objects.length(); ++i) {
+                        JSONObject object = objects.getJSONObject(i);
+                        tmpObjects.add(object);
+                    }
+                    flushObjectsToDisk(false);
                 }
-                flushObjectsToDisk(false);
+            } catch (JSONException e) {
+                throw new AlgoliaException("Array must contain only objects", e);
             }
         }
 
@@ -767,7 +772,7 @@ public class OfflineIndex {
     public String saveObjectSync(JSONObject object) throws AlgoliaException {
         assertNotMainThread();
         assertTransaction();
-        Collection<String> objectIDs = saveObjectsSync(Collections.singletonList(object));
+        Collection<String> objectIDs = saveObjectsSync(new JSONArray(Collections.singletonList(object)));
         return objectIDs.iterator().next();
     }
 
@@ -780,7 +785,7 @@ public class OfflineIndex {
      *  @param completionHandler Completion handler to be notified of the request's outcome.
      *  @return A cancellable operation.
      */
-    public Request saveObjectsAsync(final @NonNull Collection<JSONObject> objects, CompletionHandler completionHandler) {
+    public Request saveObjectsAsync(final @NonNull JSONArray objects, CompletionHandler completionHandler) {
         assertTransaction();
         return getClient().new AsyncTaskRequest(completionHandler, getClient().transactionExecutorService) {
             @NonNull
@@ -809,19 +814,24 @@ public class OfflineIndex {
      *  @param objects New versions of the objects to update. Each one must contain an `objectID` attribute.
      *  @return Identifiers of passed objects.
      */
-    public Collection<String> saveObjectsSync(Collection<JSONObject> objects) throws AlgoliaException {
+    public Collection<String> saveObjectsSync(@NonNull JSONArray objects) throws AlgoliaException {
         assertNotMainThread();
         assertTransaction();
-        List<String> objectIDs = new ArrayList<>(objects.size());
-        for (JSONObject object : objects) {
-            String objectID = object.optString("objectID");
-            if (objectID == null) {
-                throw new AlgoliaException("Object missing mandatory `objectID` attribute");
+        try {
+            List<String> objectIDs = new ArrayList<>(objects.length());
+            for (int i = 0; i < objects.length(); ++i) {
+                JSONObject object = objects.getJSONObject(i);
+                String objectID = object.optString("objectID");
+                if (objectID == null) {
+                    throw new AlgoliaException("Object missing mandatory `objectID` attribute");
+                }
+                objectIDs.add(objectID);
             }
-            objectIDs.add(objectID);
+            transaction.saveObjects(objects);
+            return objectIDs;
+        } catch (JSONException e) {
+            throw new AlgoliaException("Array must contain only objects", e);
         }
-        transaction.saveObjects(objects);
-        return objectIDs;
     }
 
     /**

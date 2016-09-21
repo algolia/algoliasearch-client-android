@@ -140,7 +140,7 @@ public class OfflineIndexTest extends OfflineTestBase  {
         final CountDownLatch signal = new CountDownLatch(1);
         final OfflineIndex index = client.getOfflineIndex(Helpers.getMethodName());
         index.beginTransaction();
-        index.saveObjectsAsync(objects.values(), new CompletionHandler() {
+        index.saveObjectsAsync(new JSONArray(objects.values()), new CompletionHandler() {
             @Override
             public void requestCompleted(JSONObject content, AlgoliaException error) {
                 assertNotNull(content);
@@ -195,7 +195,7 @@ public class OfflineIndexTest extends OfflineTestBase  {
         final OfflineIndex index = client.getOfflineIndex(Helpers.getMethodName());
         try {
             index.beginTransaction();
-            index.saveObjectsSync(objects.values());
+            index.saveObjectsSync(new JSONArray(objects.values()));
             index.commitTransactionSync();
             index.getObjectsAsync(Arrays.asList("1", "2"), new CompletionHandler() {
                 @Override
@@ -234,7 +234,7 @@ public class OfflineIndexTest extends OfflineTestBase  {
         final CountDownLatch signal = new CountDownLatch(1);
         final OfflineIndex index = client.getOfflineIndex(Helpers.getMethodName());
         index.beginTransaction();
-        index.saveObjectsAsync(objects.values(), new CompletionHandler() {
+        index.saveObjectsAsync(new JSONArray(objects.values()), new CompletionHandler() {
             @Override
             public void requestCompleted(JSONObject content, AlgoliaException error) {
                 assertNull(error);
@@ -295,7 +295,7 @@ public class OfflineIndexTest extends OfflineTestBase  {
         final CountDownLatch signal = new CountDownLatch(1);
         final OfflineIndex index = client.getOfflineIndex(Helpers.getMethodName());
         index.beginTransaction();
-        index.saveObjectsAsync(objects.values(), new CompletionHandler() {
+        index.saveObjectsAsync(new JSONArray(objects.values()), new CompletionHandler() {
             @Override
             public void requestCompleted(JSONObject content, AlgoliaException error) {
                 assertNotNull(content);
@@ -336,7 +336,7 @@ public class OfflineIndexTest extends OfflineTestBase  {
         final CountDownLatch signal = new CountDownLatch(1);
         final OfflineIndex index = client.getOfflineIndex(Helpers.getMethodName());
         index.beginTransaction();
-        index.saveObjectsAsync(objects.values(), new CompletionHandler() {
+        index.saveObjectsAsync(new JSONArray(objects.values()), new CompletionHandler() {
             @Override
             public void requestCompleted(JSONObject content, AlgoliaException error) {
                 assertNull(error);
@@ -372,7 +372,7 @@ public class OfflineIndexTest extends OfflineTestBase  {
         final CountDownLatch signal = new CountDownLatch(1);
         final OfflineIndex index = client.getOfflineIndex(Helpers.getMethodName());
         index.beginTransaction();
-        index.saveObjectsAsync(objects.values(), new CompletionHandler() {
+        index.saveObjectsAsync(new JSONArray(objects.values()), new CompletionHandler() {
             @Override
             public void requestCompleted(JSONObject content, AlgoliaException error) {
                 assertNull(error);
@@ -413,7 +413,7 @@ public class OfflineIndexTest extends OfflineTestBase  {
         final CountDownLatch signal = new CountDownLatch(1);
         final OfflineIndex index = client.getOfflineIndex(Helpers.getMethodName());
         index.beginTransaction();
-        index.saveObjectsAsync(objects.values(), new CompletionHandler() {
+        index.saveObjectsAsync(new JSONArray(objects.values()), new CompletionHandler() {
             @Override
             public void requestCompleted(JSONObject content, AlgoliaException error) {
                 assertNull(error);
@@ -459,7 +459,7 @@ public class OfflineIndexTest extends OfflineTestBase  {
             for (int j = 0; j < 13; ++j) {
                 objects.add(new JSONObject().put("objectID", Integer.toString(++objectCount)));
             }
-            index.saveObjectsSync(objects);
+            index.saveObjectsSync(new JSONArray(objects));
         }
         index.commitTransactionSync();
         assertTrue(objectCount <= 100); // required for our limited license key to work
@@ -482,7 +482,7 @@ public class OfflineIndexTest extends OfflineTestBase  {
         final String indexName = Helpers.getMethodName();
         final OfflineIndex index = client.getOfflineIndex(indexName);
         index.beginTransaction();
-        index.saveObjectsSync(objects.values());
+        index.saveObjectsSync(new JSONArray(objects.values()));
         index.rollbackTransactionSync();
         assertFalse(client.hasOfflineData(indexName));
 

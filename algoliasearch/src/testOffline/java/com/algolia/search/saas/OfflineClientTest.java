@@ -106,7 +106,7 @@ public class OfflineClientTest extends OfflineTestBase  {
         final CountDownLatch signal = new CountDownLatch(1);
         final OfflineIndex index = client.getOfflineIndex(Helpers.getMethodName());
         index.beginTransaction();
-        index.saveObjectsAsync(objects.values(), new CompletionHandler() {
+        index.saveObjectsAsync(new JSONArray(objects.values()), new CompletionHandler() {
             @Override
             public void requestCompleted(JSONObject content, AlgoliaException error) {
                 assertNull(error);
@@ -137,7 +137,7 @@ public class OfflineClientTest extends OfflineTestBase  {
         final OfflineIndex srcIndex = client.getOfflineIndex(Helpers.getMethodName());
         final OfflineIndex dstIndex = client.getOfflineIndex(Helpers.getMethodName() + "_new");
         srcIndex.beginTransaction();
-        srcIndex.saveObjectsAsync(objects.values(), new CompletionHandler() {
+        srcIndex.saveObjectsAsync(new JSONArray(objects.values()), new CompletionHandler() {
             @Override
             public void requestCompleted(JSONObject content, AlgoliaException error) {
                 assertNull(error);
