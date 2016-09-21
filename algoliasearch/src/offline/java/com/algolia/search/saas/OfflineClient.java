@@ -187,10 +187,6 @@ public class OfflineClient extends Client
         return rootDataDir;
     }
 
-    protected File getTemporaryDirectory() {
-        return context.getCacheDir();
-    }
-
     /**
      * Get the path to the temporary directory used by this client.
      *

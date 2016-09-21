@@ -1060,7 +1060,7 @@ public class OfflineIndex {
     private File writeTempFile(@NonNull String data) throws AlgoliaException {
         try {
             // Create temporary file.
-            File tmpDir = client.getTemporaryDirectory();
+            File tmpDir = client.getTempDir();
             File tmpFile = File.createTempFile("algolia.", ".json", tmpDir);
 
             // Write to file.
