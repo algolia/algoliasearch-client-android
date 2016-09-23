@@ -68,8 +68,6 @@ import java.util.UUID;
  *
  * - **Partial updates** are not supported.
  *
- * - **Batch** operations are not supported.
- *
  * - **Replica indices** are not supported.
  *
  * ### Differences
@@ -78,6 +76,8 @@ import java.util.UUID;
  *   is omitted in the new version, it reverts back to its default value. (This is in contrast with the online API,
  *   where you can only specify the settings you want to change and omit the others.)
  *
+ * - You cannot batch arbitrary write operations in a single method call (as you would do with {@link Index#batch(JSONArray)}).
+ *   However, all write operations are *de facto* batches, since they must be wrapped inside a transaction (see below).
  *
  * ## Operations
  *
