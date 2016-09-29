@@ -50,7 +50,7 @@ Indexing
 
 1. [Add objects](#add-objects---addobjectsasync)
 1. [Update objects](#update-objects---saveobjectsasync)
-1. [Partial update](#partial-update---partialupdateobjectsasync)
+1. [Partial update objects](#partial-update-objects---partialupdateobjectsasync)
 1. [Delete objects](#delete-objects---deleteobjectsasync)
 
 Settings
@@ -577,30 +577,31 @@ index.enableSearchCache(300, 20);
 
 Each entry in an index has a unique identifier called `objectID`. There are two ways to add an entry to the index:
 
- 1. Using automatic `objectID` assignment. You will be able to access it in the answer.
- 2. Supplying your own `objectID`.
+ 1. Supplying your own `objectID`.
+ 2. Using automatic `objectID` assignment. You will be able to access it in the answer.
 
 You don't need to explicitly create an index, it will be automatically created the first time you add an object.
 Objects are schema less so you don't need any configuration to start indexing. If you wish to configure things, the settings section provides details about advanced settings.
 
-Example with automatic `objectID` assignment:
+Example with automatic `objectID` assignments:
 
 ```java
-JSONObject object = new JSONObject()
-    .put("firstname", "Jimmie")
-    .put("lastname", "Barninger");
-index.addObjectAsync(object, new CompletionHandler() {
-    @Override
-    public void requestCompleted(JSONObject content, AlgoliaException error) {
-        // Retrieve the auto-assigned object ID:
-        if (content != null) {
-            String objectID = content.optString("objectID");
-        }
-    }
-});
+List<JSONObject> array = new ArrayList<JSONObject>();
+array.add(new JSONObject().put("firstname", "Jimmie").put("lastname", "Barninger"));
+array.add(new JSONObject().put("firstname", "Warren").put("lastname", "Speach"));
+index.addObjectsAsync(new JSONArray(array), null);
 ```
 
-Example with manual `objectID` assignment:
+Example with manual `objectID` assignments:
+
+```java
+List<JSONObject> array = new ArrayList<JSONObject>();
+array.add(new JSONObject().put("objectID", "1").put("firstname", "Jimmie").put("lastname", "Barninger"));
+array.add(new JSONObject().put("objectID", "2").put("firstname", "Warren").put("lastname", "Speach"));
+index.addObjectsAsync(new JSONArray(array), null);
+```
+
+To add a single object, use the `[Add object](#add-object---addobjectasync)` method:
 
 ```java
 JSONObject object = new JSONObject()
@@ -608,7 +609,6 @@ JSONObject object = new JSONObject()
     .put("lastname", "Barninger");
 index.addObjectAsync(object, "myID", null);
 ```
-
 
 ### Update objects - `saveObjectsAsync`
 
@@ -618,7 +618,16 @@ You have three options when updating an existing object:
  2. Replace only some attributes.
  3. Apply an operation to some attributes.
 
-Example on how to replace all attributes of an existing object:
+Example on how to replace all attributes existing objects:
+
+```java
+List<JSONObject> array = new ArrayList<JSONObject>();
+array.add(new JSONObject().put("firstname", "Jimmie").put("lastname", "Barninger").put("objectID", "SFO"));
+array.add(new JSONObject().put("firstname", "Warren").put("lastname", "Speach").put("objectID", "LA"));
+index.saveObjectsAsync(new JSONArray(array), null);
+```
+
+To update a single object, you can use the `[Update object](#update-object---saveobjectasync) method:
 
 ```java
 JSONObject object = new JSONObject()
@@ -628,7 +637,8 @@ JSONObject object = new JSONObject()
 index.saveObjectAsync(object, "myID", null);
 ```
 
-### Partial update - `partialUpdateObjectsAsync`
+
+### Partial update objects - `partialUpdateObjectsAsync`
 
 You have many ways to update an object's attributes:
 
@@ -681,10 +691,25 @@ index.partialUpdateObjectAsync(new JSONObject("{\"price\": {\"value\": 42, \"_op
 Note: Here we are decrementing the value by `42`. To decrement just by one, put
 `value:1`.
 
+To partial update multiple objects using one API call, you can use the `[Partial update objects](#partial-update-objects---partialupdateobjectsasync)` method:
+
+```java
+List<JSONObject> array = new ArrayList<JSONObject>();
+array.add(new JSONObject().put("firstname", "Jimmie").put("objectID", "SFO"));
+array.add(new JSONObject().put("firstname", "Warren").put("objectID", "LA"));
+index.partialUpdateObjectsAsync(new JSONArray(array), null);
+```
+
 
 ### Delete objects - `deleteObjectsAsync`
 
-You can delete an object using its `objectID`:
+You can delete objects using their `objectID`:
+
+```java
+index.deleteObjectsAsync(Arrays.asList("myID1", "myID2"), null);
+```
+
+To delete a single object, you can use the `[Delete object](#delete-object---deleteobjectasync)` method:
 
 ```java
 index.deleteObjectAsync("myID", null);
@@ -1978,45 +2003,6 @@ client.listIndexesAsync(new CompletionHandler() {
 ### Custom batch - `batchAsync`
 
 You may want to perform multiple operations with one API call to reduce latency.
-We expose four methods to perform batch operations:
-
-* Add objects - `addObjectsAsync`: Add an array of objects using automatic `objectID` assignment.
-* Update objects - `saveObjectsAsync`: Add or update an array of objects that contains an `objectID` attribute.
-* Delete objects - `deleteObjectsAsync`: Delete an array of objectIDs.
-* Partial update - `partialUpdateObjectsAsync`: Partially update an array of objects that contain an `objectID` attribute (only specified attributes will be updated).
-
-Example using automatic `objectID` assignment:
-
-```java
-List<JSONObject> array = new ArrayList<JSONObject>();
-array.add(new JSONObject().put("firstname", "Jimmie").put("lastname", "Barninger"));
-array.add(new JSONObject().put("firstname", "Warren").put("lastname", "Speach"));
-index.addObjectsAsync(new JSONArray(array), null);
-```
-
-Example with user defined `objectID` (add or update):
-
-```java
-List<JSONObject> array = new ArrayList<JSONObject>();
-array.add(new JSONObject().put("firstname", "Jimmie").put("lastname", "Barninger").put("objectID", "SFO"));
-array.add(new JSONObject().put("firstname", "Warren").put("lastname", "Speach").put("objectID", "LA"));
-index.saveObjectsAsync(new JSONArray(array), null);
-```
-
-Example that deletes a set of records:
-
-```java
-index.deleteObjectsAsync(Arrays.asList("myID1", "myID2"), null);
-```
-
-Example that updates only the `firstname` attribute:
-
-```java
-List<JSONObject> array = new ArrayList<JSONObject>();
-array.add(new JSONObject().put("firstname", "Jimmie").put("objectID", "SFO"));
-array.add(new JSONObject().put("firstname", "Warren").put("objectID", "LA"));
-index.partialUpdateObjectsAsync(new JSONArray(array), null);
-```
 
 
 
