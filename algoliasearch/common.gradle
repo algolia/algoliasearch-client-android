@@ -78,7 +78,7 @@ dependencies {
 
     testCompile "junit:junit:4.12"
     testCompile "org.assertj:assertj-core:1.7.0"
-    testCompile "org.robolectric:robolectric:3.0"
+    testCompile "org.robolectric:robolectric:3.1.2"
 
     // PowerMock brings in the mockito dependency
     testCompile "org.powermock:powermock-module-junit4:1.6.1"
