@@ -86,25 +86,37 @@ import java.util.UUID;
  * Updating an index involves rebuilding it, which is an expensive and potentially lengthy operation. Therefore, all
  * updates must be wrapped inside a **transaction**.
  *
- * + Warning: You cannot have several parallel transactions on a given index.
+ * **Warning:** You cannot have several parallel transactions on a given index.
  *
  * The procedure to update an index is as follows:
  *
- * - Initiate a transaction by calling {@link #beginTransaction()}.
+ * - Create a transaction by calling {@link #newTransaction()}.
  *
- * - Populate the transaction: call the asynchronous methods similar to those in the {@link Index} class (like
- * `saveObjects` or `deleteObjects`). Each method requires you to provide a completion handler.
+ * - Populate the transaction: call the various write methods on the {@link WriteTransaction} class.
  *
- * - Either commit ({@link #commitTransactionAsync(CompletionHandler)}) or rollback
- *   ({@link #rollbackTransactionAsync(CompletionHandler)}) the transaction.
+ * - Either commit or rollback the transaction.
  *
- * #### Synchronous updates
+ * #### Synchronous vs asynchronous updates
+ *
+ * Any write operation, especially (but not limited to) the final commit, is potentially lengthy. This is why all
+ * operations provide an asynchronous version, which accepts an optional completion handler that will be notified of
+ * the operation's completion (either successful or erroneous).
  *
  * If you already have a background thread/queue performing data-handling tasks, you may find it more convenient to
  * use the synchronous versions of the write methods. They are named after the asynchronous versions, suffixed by
  * `Sync`. The flow is identical to the asynchronous version (see above).
  *
  * **Warning:** You must not call synchronous methods from the main thread. The methods will assert if you do so.
+ *
+ * **Note:** The synchronous methods can throw; you have to catch and handle the error.
+ *
+ * #### Parallel transactions
+ *
+ * While it is possible to create parallel transactions, there is little interest in doing so, since each committed
+ * transaction results in an index rebuild. Multiplying transactions therefore only degrades performance.
+ *
+ * Also, transactions are serially executed in the order they were committed, the latest transaction potentially
+ * overwriting the previous transactions' result.
  *
  * ### Reading
  *
@@ -122,9 +134,6 @@ public class OfflineIndex {
 
     /** Serial number for transactions. */
     private int transactionSeqNo = 0;
-
-    /** The current transaction, or `null` if no transaction is currently open. */
-    private WriteTransaction transaction;
 
     // ----------------------------------------------------------------------
     // Initialization
@@ -377,9 +386,9 @@ public class OfflineIndex {
      * 1. Avoid rebuilding the index for every individual operation, which would be astonishingly costly.
      * 2. Avoid keeping all the necessary data in memory, e.g. by flushing added objects to temporary files on disk.
      *
-     * A transaction can be created by calling `OfflineIndex.beginTransaction()`.
+     * A transaction can be created by calling {@link #newTransaction()}.
      */
-    private class WriteTransaction {
+    public class WriteTransaction {
 
         /**
          * This transaction's ID.
@@ -436,19 +445,112 @@ public class OfflineIndex {
         @Override
         public void finalize() {
             if (!finished) {
-                rollback();
+                Log.w("AlgoliaSearch", String.format("Transaction %s was never committed nor rolled back", this));
+                doRollback();
             }
+        }
+
+        // Accessors
+        // ---------
+
+        @Override
+        public @NonNull String toString() {
+            return String.format("%s{index: %s, id: %d}", this.getClass().getSimpleName(), OfflineIndex.this, id);
+        }
+
+        /**
+         * Get this transaction's ID.
+         * @return This transaction's ID.
+         */
+        public int getId() {
+            return id;
+        }
+
+        /**
+         * Test whether this transaction is finished.
+         * @return Whether this transaction is finished.
+         */
+        public boolean isFinished() {
+            return finished;
         }
 
         // Populating
         // ----------
 
         /**
-         * Update several objects.
+         * Save an object.
          *
-         * @param objects New versions of the objects to update. Each one must contain an `objectID` attribute.
+         *  @param object Object to save. Must contain an `objectID` attribute.
+         *  @param completionHandler Completion handler to be notified of the request's outcome.
+         *  @return A cancellable operation.
          */
-        public void saveObjects(@NonNull JSONArray objects) throws AlgoliaException {
+        public Request saveObjectAsync(final @NonNull JSONObject object, CompletionHandler completionHandler) {
+            return getClient().new AsyncTaskRequest(completionHandler, getClient().transactionExecutorService) {
+                @NonNull
+                @Override
+                JSONObject run() throws AlgoliaException {
+                    try {
+                        String objectID = object.getString("objectID");
+                        saveObjectSync(object);
+                        return new JSONObject()
+                                .put("objectID", objectID)
+                                .put("taskID", id);
+                    } catch (JSONException e) {
+                        throw new AlgoliaException("Object missing `objectID` attribute", e);
+                    }
+                }
+            }.start();
+        }
+
+        /**
+         * Save an object (synchronously).
+         *
+         * @param object Object to save. Must contain an `objectID` attribute.
+         */
+        public void saveObjectSync(@NonNull JSONObject object) throws AlgoliaException {
+            assertNotMainThread();
+            synchronized(this) {
+                if (finished) throw new IllegalStateException();
+                tmpObjects.add(object);
+                flushObjectsToDisk(false);
+            }
+        }
+
+        /**
+         * Save multiple objects.
+         *
+         *  @param objects Objects to save. Each one must contain an `objectID` attribute.
+         *  @param completionHandler Completion handler to be notified of the request's outcome.
+         *  @return A cancellable operation.
+         */
+        public Request saveObjectsAsync(final @NonNull JSONArray objects, CompletionHandler completionHandler) {
+            return getClient().new AsyncTaskRequest(completionHandler, getClient().transactionExecutorService) {
+                @NonNull
+                @Override
+                JSONObject run() throws AlgoliaException {
+                    try {
+                        List<String> objectIDs = new ArrayList<>();
+                        for (int i = 0; i < objects.length(); ++i) {
+                            objectIDs.add(objects.getJSONObject(i).getString("objectID"));
+                        }
+                        saveObjectsSync(objects);
+                        return new JSONObject()
+                                .put("objectIDs", new JSONArray(objectIDs))
+                                .put("taskID", id);
+                    } catch (JSONException e) {
+                        throw new AlgoliaException("Object missing `objectID` attribute", e);
+                    }
+                }
+            }.start();
+        }
+
+        /**
+         * Save multiple objects (synchronously).
+         *
+         * @param objects Objects to save. Each one must contain an `objectID` attribute.
+         */
+        public void saveObjectsSync(@NonNull JSONArray objects) throws AlgoliaException {
+            assertNotMainThread();
             try {
                 synchronized(this) {
                     if (finished) throw new IllegalStateException();
@@ -464,11 +566,67 @@ public class OfflineIndex {
         }
 
         /**
-         * Delete several objects.
+         * Delete an object.
+         *
+         *  @param objectID Identifier of object to delete.
+         *  @param completionHandler Completion handler to be notified of the request's outcome.
+         *  @return A cancellable operation.
+         */
+        public Request deleteObjectAsync(final @NonNull String objectID, CompletionHandler completionHandler) {
+            return getClient().new AsyncTaskRequest(completionHandler, getClient().transactionExecutorService) {
+                @NonNull
+                @Override
+                JSONObject run() throws AlgoliaException {
+                    deleteObjectSync(objectID);
+                    return new JSONObject();
+                }
+            }.start();
+        }
+
+        /**
+         * Delete an object (synchronously).
+         *
+         * @param objectID Identifier of the object to delete.
+         */
+        public void deleteObjectSync(@NonNull String objectID) throws AlgoliaException {
+            assertNotMainThread();
+            synchronized(this) {
+                if (finished) throw new IllegalStateException();
+                deletedObjectIDs.add(objectID);
+            }
+        }
+
+        /**
+         * Delete multiple objects.
+         *
+         *  @param objectIDs Identifiers of objects to delete.
+         *  @param completionHandler Completion handler to be notified of the request's outcome.
+         *  @return A cancellable operation.
+         */
+        public Request deleteObjectsAsync(final Collection<String> objectIDs, CompletionHandler completionHandler) {
+            return getClient().new AsyncTaskRequest(completionHandler, getClient().transactionExecutorService) {
+                @NonNull
+                @Override
+                JSONObject run() throws AlgoliaException {
+                    try {
+                        deleteObjectsSync(objectIDs);
+                        return new JSONObject()
+                                .put("objectIDs", new JSONArray(objectIDs))
+                                .put("taskID", id);
+                    } catch (JSONException e) {
+                        throw new RuntimeException(e); // should never happen
+                    }
+                }
+            }.start();
+        }
+
+        /**
+         * Delete multiple objects (synchronously).
          *
          * @param objectIDs Identifiers of the objects to delete.
          */
-        public void deleteObjects(@NonNull Collection<String> objectIDs) throws AlgoliaException {
+        public void deleteObjectsSync(@NonNull Collection<String> objectIDs) throws AlgoliaException {
+            assertNotMainThread();
             synchronized(this) {
                 if (finished) throw new IllegalStateException();
                 deletedObjectIDs.addAll(objectIDs);
@@ -476,14 +634,41 @@ public class OfflineIndex {
         }
 
         /**
-         * Set the index's settings.
+         * Set the index settings.
+         *
+         * Please refer to our [API documentation](https://www.algolia.com/doc/swift#index-settings) for the list of
+         * supported settings.
+         *
+         *  @param settings New settings.
+         *  @param completionHandler Completion handler to be notified of the request's outcome.
+         *  @return A cancellable operation.
+         */
+        public Request setSettingsAsync(final @NonNull JSONObject settings, CompletionHandler completionHandler) {
+            return getClient().new AsyncTaskRequest(completionHandler, getClient().transactionExecutorService) {
+                @NonNull
+                @Override
+                JSONObject run() throws AlgoliaException {
+                    try {
+                        setSettingsSync(settings);
+                        return new JSONObject()
+                                .put("taskID", id);
+                    } catch (JSONException e) {
+                        throw new RuntimeException(e); // should never happen
+                    }
+                }
+            }.start();
+        }
+
+        /**
+         * Set the index settings (synchronously).
          *
          * Please refer to our [API documentation](https://www.algolia.com/doc/swift#index-settings) for the list of
          * supported settings.
          *
          * @param settings New settings.
          */
-        public void setSettings(@NonNull  JSONObject settings) throws AlgoliaException {
+        public void setSettingsSync(@NonNull  JSONObject settings) throws AlgoliaException {
+            assertNotMainThread();
             synchronized(this) {
                 if (finished) throw new IllegalStateException();
                 settingsFile = writeTmpJSONFile(settings);
@@ -492,8 +677,31 @@ public class OfflineIndex {
 
         /**
          * Delete the index content without removing settings.
+         *
+         *  @param completionHandler Completion handler to be notified of the request's outcome.
+         *  @return A cancellable operation.
          */
-        public void clearIndex() throws AlgoliaException {
+        public Request clearIndexAsync(CompletionHandler completionHandler) {
+            return getClient().new AsyncTaskRequest(completionHandler, getClient().transactionExecutorService) {
+                @NonNull
+                @Override
+                JSONObject run() throws AlgoliaException {
+                    try {
+                        clearIndexSync();
+                        return new JSONObject()
+                                .put("taskID", id);
+                    } catch (JSONException e) {
+                        throw new RuntimeException(e); // should never happen
+                    }
+                }
+            }.start();
+        }
+
+        /**
+         * Delete the index content without removing settings.
+         */
+        public void clearIndexSync() throws AlgoliaException {
+            assertNotMainThread();
             synchronized(this) {
                 if (finished) throw new IllegalStateException();
                 shouldClearIndex = true;
@@ -508,9 +716,32 @@ public class OfflineIndex {
         /**
          * Commit the transaction.
          *
-         * **Warning:** It is the caller's responsibility to serialize commits with respect to the local build queue.
+         * **Warning:** Cancelling the returned operation does **not** roll back the transaction. The operation is returned
+         *   for lifetime management purposes only.
+         *
+         * @param completionHandler Completion handler to be notified of the transaction's outcome.
+         * @return A cancellable operation (see warning for important caveat).
          */
-        public void commit() throws AlgoliaException {
+        public Request commitAsync(@NonNull CompletionHandler completionHandler) {
+            return getClient().new AsyncTaskRequest(completionHandler, getClient().localBuildExecutorService) {
+                @NonNull
+                @Override
+                JSONObject run() throws AlgoliaException {
+                    doCommit();
+                    return new JSONObject();
+                }
+            }.start();
+        }
+
+        /**
+         * Commit the transaction (synchronously).
+         */
+        public void commitSync() throws AlgoliaException {
+            assertNotMainThread();
+            doCommit();
+        }
+
+        private void doCommit() throws AlgoliaException {
             // Serialize calls with respect to this transaction.
             synchronized (this) {
                 if (finished) throw new IllegalStateException();
@@ -532,11 +763,37 @@ public class OfflineIndex {
         }
 
         /**
+         * Roll back the current write transaction.
+         *
+         *  **Warning:** Cancelling the returned operation does **not** cancel the rollback. The operation is returned
+         *   for lifetime management purposes only.
+         *
+         *  @param completionHandler Completion handler to be notified of the transaction's outcome.
+         *  @return A cancellable operation (see warning for important caveat).
+         */
+        public Request rollbackAsync(CompletionHandler completionHandler) {
+            return getClient().new AsyncTaskRequest(completionHandler, getClient().transactionExecutorService) {
+                @NonNull
+                @Override
+                JSONObject run() throws AlgoliaException {
+                    rollbackSync();
+                    return new JSONObject();
+                }
+            }.start();
+        }
+
+        /**
          * Rollback the transaction.
          * The index will be left untouched.
          */
-        public void rollback() {
+        public void rollbackSync() {
+            assertNotMainThread();
+            doRollback();
+        }
+
+        private void doRollback() {
             synchronized(this) {
+                if (finished) throw new IllegalStateException();
                 FileUtils.deleteRecursive(tmpDir);
                 finished = true;
             }
@@ -556,369 +813,9 @@ public class OfflineIndex {
 
     /**
      * Create a new write transaction.
-     *
-     * **Warning:** You cannot open parallel transactions. This method will assert if a transaction is already open.
      */
-    public void beginTransaction() {
-        if (transaction != null) throw new IllegalStateException("A transaction is already open");
-        transaction = new WriteTransaction();
-    }
-
-    /**
-     * Commit the current write transaction.
-     *
-     * **Warning:** This method will assert/crash if no transaction is currently open.
-     *
-     * **Warning:** Cancelling the returned operation does **not** roll back the transaction. The operation is returned
-     *   for lifetime management purposes only.
-     *
-     * @param completionHandler Completion handler to be notified of the transaction's outcome.
-     * @return A cancellable operation (see warning for important caveat).
-     */
-    public Request commitTransactionAsync(@NonNull CompletionHandler completionHandler) {
-        assertTransaction();
-        return getClient().new AsyncTaskRequest(completionHandler, getClient().localBuildExecutorService) {
-            @NonNull
-            @Override
-            JSONObject run() throws AlgoliaException {
-                commitTransactionSync();
-                return new JSONObject();
-            }
-        }.start();
-    }
-
-    /**
-     * Commit the current write transaction (synchronously).
-     *
-     *  **Warning:** This method will assert/crash if no transaction is currently open.
-     *
-     *  **Warning:** This method must not be called from the main thread.
-     */
-    public void commitTransactionSync() throws AlgoliaException {
-        assertNotMainThread();
-        assertTransaction();
-        try {
-            transaction.commit();
-        } finally {
-            transaction = null;
-        }
-    }
-
-    /**
-     * Roll back the current write transaction.
-     *
-     *  **Warning:** This method will assert/crash if no transaction is currently open.
-     *
-     *  **Warning:** Cancelling the returned operation does **not** cancel the rollback. The operation is returned
-     *   for lifetime management purposes only.
-     *
-     *  @param completionHandler Completion handler to be notified of the transaction's outcome.
-     *  @return A cancellable operation (see warning for important caveat).
-     */
-    public Request rollbackTransactionAsync(CompletionHandler completionHandler) {
-        assertTransaction();
-        return getClient().new AsyncTaskRequest(completionHandler, getClient().transactionExecutorService) {
-            @NonNull
-            @Override
-            JSONObject run() throws AlgoliaException {
-                rollbackTransactionSync();
-                return new JSONObject();
-            }
-        }.start();
-    }
-
-    /**
-     * Roll back the current write transaction (synchronously).
-     *
-     *  **Warning:** This method will assert/crash if no transaction is currently open.
-     *
-     *  **Warning:** This method must not be called from the main thread.
-     */
-    public void rollbackTransactionSync() throws AlgoliaException {
-        assertNotMainThread();
-        assertTransaction();
-        try {
-            transaction.rollback();
-        } finally {
-            transaction = null;
-        }
-    }
-
-    // ----------------------------------------------------------------------
-    // Write operations
-    // ----------------------------------------------------------------------
-
-    /**
-     * Delete an object from this index.
-     *
-     *  **Warning:** This method will assert/crash if no transaction is currently open.
-     *
-     *  @param objectID Identifier of object to delete.
-     *  @param completionHandler Completion handler to be notified of the request's outcome.
-     *  @return A cancellable operation.
-     */
-    public Request deleteObjectAsync(final @NonNull String objectID, CompletionHandler completionHandler) {
-        assertTransaction();
-        return getClient().new AsyncTaskRequest(completionHandler, getClient().transactionExecutorService) {
-            @NonNull
-            @Override
-            JSONObject run() throws AlgoliaException {
-                try {
-                    deleteObjectSync(objectID);
-                    return new JSONObject()
-                        .put("deletedAt", DateUtils.iso8601String(new Date()));
-                } catch (JSONException e) {
-                    throw new RuntimeException(e); // should never happen
-                }
-            }
-        }.start();
-    }
-
-    /**
-     * Delete an object from this index (synchronous version).
-     *
-     *  **Warning:** This method will assert/crash if no transaction is currently open.
-     *
-     *  **Warning:** This method must not be called from the main thread.
-     *
-     *  @param objectID Identifier of object to delete.
-     */
-    public void deleteObjectSync(String objectID) throws AlgoliaException {
-        assertNotMainThread();
-        assertTransaction();
-        deleteObjectsSync(Collections.singletonList(objectID));
-    }
-
-    /**
-     * Delete several objects from this index.
-     *
-     *  **Warning:** This method will assert/crash if no transaction is currently open.
-     *
-     *  @param objectIDs Identifiers of objects to delete.
-     *  @param completionHandler Completion handler to be notified of the request's outcome.
-     *  @return A cancellable operation.
-     */
-    public Request deleteObjectsAsync(final Collection<String> objectIDs, CompletionHandler completionHandler) {
-        assertTransaction();
-        return getClient().new AsyncTaskRequest(completionHandler, getClient().transactionExecutorService) {
-            @NonNull
-            @Override
-            JSONObject run() throws AlgoliaException {
-                try {
-                    deleteObjectsSync(objectIDs);
-                    return new JSONObject()
-                        .put("objectIDs", new JSONArray(objectIDs))
-                        .put("taskID", transaction.id);
-                } catch (JSONException e) {
-                    throw new RuntimeException(e); // should never happen
-                }
-            }
-        }.start();
-    }
-
-    /**
-     * Delete several objects from this index (synchronous version).
-     *
-     *  **Warning:** This method will assert/crash if no transaction is currently open.
-     *
-     *  **Warning:** This method must not be called from the main thread.
-     *
-     *  @param objectIDs Identifiers of objects to delete.
-     */
-    public void deleteObjectsSync(Collection<String> objectIDs) throws AlgoliaException {
-        assertNotMainThread();
-        assertTransaction();
-        transaction.deleteObjects(objectIDs);
-    }
-
-    /**
-     * Update an object.
-     *
-     *  **Warning:** This method will assert/crash if no transaction is currently open.
-     *
-     *  @param object New version of the object to update. Must contain an `objectID` attribute.
-     *  @param completionHandler Completion handler to be notified of the request's outcome.
-     *  @return A cancellable operation.
-     */
-    public Request saveObjectAsync(final @NonNull JSONObject object, CompletionHandler completionHandler) {
-        assertTransaction();
-        return getClient().new AsyncTaskRequest(completionHandler, getClient().transactionExecutorService) {
-            @NonNull
-            @Override
-            JSONObject run() throws AlgoliaException {
-                try {
-                    String objectID = saveObjectSync(object);
-                    return new JSONObject()
-                        .put("objectID", objectID)
-                        .put("updatedAt", DateUtils.iso8601String(new Date()))
-                        .put("taskID", transaction.id);
-                } catch (JSONException e) {
-                    throw new RuntimeException(e); // should never happen
-                }
-            }
-        }.start();
-    }
-
-    /**
-     * Update an object (synchronous version).
-     *
-     *  **Warning:** This method will assert/crash if no transaction is currently open.
-     *
-     *  **Warning:** This method must not be called from the main thread.
-     *
-     *  @param object New version of the object to update. Must contain an `objectID` attribute.
-     *  @return Identifier of saved object.
-     */
-    public String saveObjectSync(JSONObject object) throws AlgoliaException {
-        assertNotMainThread();
-        assertTransaction();
-        Collection<String> objectIDs = saveObjectsSync(new JSONArray(Collections.singletonList(object)));
-        return objectIDs.iterator().next();
-    }
-
-    /**
-     * Update several objects.
-     *
-     *  **Warning:** This method will assert/crash if no transaction is currently open.
-     *
-     *  @param objects New versions of the objects to update. Each one must contain an `objectID` attribute.
-     *  @param completionHandler Completion handler to be notified of the request's outcome.
-     *  @return A cancellable operation.
-     */
-    public Request saveObjectsAsync(final @NonNull JSONArray objects, CompletionHandler completionHandler) {
-        assertTransaction();
-        return getClient().new AsyncTaskRequest(completionHandler, getClient().transactionExecutorService) {
-            @NonNull
-            @Override
-            JSONObject run() throws AlgoliaException {
-                try {
-                    Collection<String> objectIDs = saveObjectsSync(objects);
-                    return new JSONObject()
-                        .put("objectIDs", new JSONArray(objectIDs))
-                        .put("updatedAt", DateUtils.iso8601String(new Date()))
-                        .put("taskID", transaction.id);
-                } catch (JSONException e) {
-                    throw new RuntimeException(e); // should never happen
-                }
-            }
-        }.start();
-    }
-
-    /**
-     * Update several objects (synchronous version).
-     *
-     *  **Warning:** This method will assert/crash if no transaction is currently open.
-     *
-     *  **Warning:** This method must not be called from the main thread.
-     *
-     *  @param objects New versions of the objects to update. Each one must contain an `objectID` attribute.
-     *  @return Identifiers of passed objects.
-     */
-    public Collection<String> saveObjectsSync(@NonNull JSONArray objects) throws AlgoliaException {
-        assertNotMainThread();
-        assertTransaction();
-        try {
-            List<String> objectIDs = new ArrayList<>(objects.length());
-            for (int i = 0; i < objects.length(); ++i) {
-                JSONObject object = objects.getJSONObject(i);
-                String objectID = object.optString("objectID");
-                if (objectID == null) {
-                    throw new AlgoliaException("Object missing mandatory `objectID` attribute");
-                }
-                objectIDs.add(objectID);
-            }
-            transaction.saveObjects(objects);
-            return objectIDs;
-        } catch (JSONException e) {
-            throw new AlgoliaException("Array must contain only objects", e);
-        }
-    }
-
-    /**
-     * Set this index's settings.
-     *
-     * Please refer to our [API documentation](https://www.algolia.com/doc/swift#index-settings) for the list of
-     * supported settings.
-     *
-     *  **Warning:** This method will assert/crash if no transaction is currently open.
-     *
-     *  @param settings New settings.
-     *  @param completionHandler Completion handler to be notified of the request's outcome.
-     *  @return A cancellable operation.
-     */
-    public Request setSettingsAsync(final @NonNull JSONObject settings, CompletionHandler completionHandler) {
-        assertTransaction();
-        return getClient().new AsyncTaskRequest(completionHandler, getClient().transactionExecutorService) {
-            @NonNull
-            @Override
-            JSONObject run() throws AlgoliaException {
-                try {
-                    setSettingsSync(settings);
-                    return new JSONObject()
-                            .put("updatedAt", DateUtils.iso8601String(new Date()))
-                            .put("taskID", transaction.id);
-                } catch (JSONException e) {
-                    throw new RuntimeException(e); // should never happen
-                }
-            }
-        }.start();
-    }
-
-    /**
-     * Set this index's settings (synchronous version).
-     *
-     * Please refer to our [API documentation](https://www.algolia.com/doc/swift#index-settings) for the list of
-     * supported settings.
-     *
-     *  **Warning:** This method will assert/crash if no transaction is currently open.
-     *
-     *  **Warning:** This method must not be called from the main thread.
-     *
-     *  @param settings New settings.
-     */
-    public void setSettingsSync(JSONObject settings) throws AlgoliaException {
-        assertNotMainThread();
-        assertTransaction();
-        transaction.setSettings(settings);
-    }
-
-    /**
-     * Delete the index content without removing settings.
-     *
-     *  **Warning:** This method will assert/crash if no transaction is currently open.
-     *
-     *  @param completionHandler Completion handler to be notified of the request's outcome.
-     *  @return A cancellable operation.
-     */
-    public Request clearIndexAsync(CompletionHandler completionHandler) {
-        assertTransaction();
-        return getClient().new AsyncTaskRequest(completionHandler, getClient().transactionExecutorService) {
-            @NonNull
-            @Override
-            JSONObject run() throws AlgoliaException {
-                try {
-                    clearIndexSync();
-                    return new JSONObject()
-                            .put("updatedAt", DateUtils.iso8601String(new Date()))
-                            .put("taskID", transaction.id);
-                } catch (JSONException e) {
-                    throw new RuntimeException(e); // should never happen
-                }
-            }
-        }.start();
-    }
-
-    /**
-     * Delete the index content without removing settings.
-     *
-     *  **Warning:** This method will assert/crash if no transaction is currently open.
-     *
-     *  **Warning:** This method must not be called from the main thread.
-     */
-    public void clearIndexSync() throws AlgoliaException {
-        assertNotMainThread();
-        assertTransaction();
-        transaction.clearIndex();
+    public @NonNull WriteTransaction newTransaction() {
+        return new WriteTransaction();
     }
 
     // ----------------------------------------------------------------------
@@ -951,13 +848,15 @@ public class OfflineIndex {
      * @return A cancellable request.
      */
     public Request deleteByQueryAsync(@NonNull Query query, CompletionHandler completionHandler) {
+        final WriteTransaction transaction = newTransaction();
         final Query queryCopy = new Query(query);
-        return getClient().new AsyncTaskRequest(completionHandler, getClient().localBuildExecutorService) {
+        return getClient().new AsyncTaskRequest(completionHandler, getClient().transactionExecutorService) {
             @NonNull
             @Override
             JSONObject run() throws AlgoliaException {
                 try {
-                    Collection<String> deletedObjectIDs = deleteByQuerySync(queryCopy);
+                    Collection<String> deletedObjectIDs = deleteByQuerySync(queryCopy, transaction);
+                    transaction.commitSync();
                     return new JSONObject()
                         .put("objectIDs", new JSONArray(deletedObjectIDs))
                         .put("updatedAt", DateUtils.iso8601String(new Date()))
@@ -969,7 +868,7 @@ public class OfflineIndex {
         }.start();
     }
 
-    private Collection<String> deleteByQuerySync(@NonNull Query query) throws AlgoliaException {
+    private Collection<String> deleteByQuerySync(@NonNull Query query, @NonNull WriteTransaction transaction) throws AlgoliaException {
         try {
             final Query browseQuery = new Query(query);
             browseQuery.setAttributesToRetrieve("objectID");
@@ -992,7 +891,7 @@ public class OfflineIndex {
             }
 
             // Delete objects.
-            deleteObjectsSync(objectIDsToDelete);
+            transaction.deleteObjectsSync(objectIDsToDelete);
             return objectIDsToDelete;
         } catch (JSONException e) {
             throw new AlgoliaException("Invalid JSON results", e);
@@ -1079,13 +978,9 @@ public class OfflineIndex {
         return transactionSeqNo;
     }
 
-    private void assertTransaction() {
-        if (transaction == null) {
-            throw new IllegalStateException("Write operations must be wrapped inside a transaction");
-        }
-    }
-
     private void assertNotMainThread() {
+        // NOTE: Throwing an exception would be rather extreme, and also causes problems with unit tests, where all
+        // threads are unwound onto the main thread. => A log message should be deterrent enough.
         if (Looper.getMainLooper().getThread() == Thread.currentThread()) {
             Log.println(Log.ASSERT, "AlgoliaSearch", "Synchronous methods should not be called from the main thread");
         }
