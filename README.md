@@ -774,9 +774,9 @@ index.setSettingsAsync(new JSONObject().append("customRanking", "desc(followers)
 
 Performance wise, it's better to do a `setSettingsAsync` before pushing the data
 
-#### Slave settings
+#### Replica settings
 
-You can forward all settings updates to the slaves of an index by using the `forwardToSlaves` option:
+You can forward all settings updates to the replicas of an index by using the `forwardToReplicas` option:
 
 ```android
 JSONObject settings = new JSONObject("{\"attributesToRetrieve\": [\"name\", \"birthdate\"]}");
@@ -806,7 +806,7 @@ Parameters that can be overridden at search time also have the `search` [scope](
 
 - [ranking](#ranking) `settings`
 - [customRanking](#customranking) `settings`
-- [slaves](#slaves) `settings`
+- [replicas](#replicas) `settings`
 
 **Filtering / Faceting**
 
@@ -892,7 +892,7 @@ They are three scopes:
 
 - [ranking](#ranking) `settings`
 - [customRanking](#customranking) `settings`
-- [slaves](#slaves) `settings`
+- [replicas](#replicas) `settings`
 
 **Filtering / Faceting**
 
@@ -1104,7 +1104,7 @@ For example, `"customRanking" => ["desc(population)", "asc(name)"]`.
 To get a full description of how the Custom Ranking works,
 you can have a look at our [Ranking guide](https://www.algolia.com/doc/guides/relevance/ranking).
 
-#### slaves
+#### replicas
 
 - scope: `settings`
 - type: `array of strings`
@@ -1119,7 +1119,7 @@ If you want to use different ranking configurations depending of the use case,
 you need to create one index per ranking configuration.
 
 This option enables you to perform write operations only on this index and automatically
-update slave indices with the same operations.
+update replica indices with the same operations.
 
 ### Filtering / Faceting
 
