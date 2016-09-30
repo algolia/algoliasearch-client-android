@@ -4,7 +4,7 @@ branches:
 sudo: false # Explicitely choose container-based infrastructure, see https://docs.travis-ci.com/user/ci-environment/
 language: android
 jdk:
-  - oraclejdk7
+  - oraclejdk8
 env:
   global:
     - secure: DENCjlvzW54U9QH7mWO3LJVLYEiX0Mj9U44QoGQcienflSDlVN1UhAiT7xnCKwWT38B37CzeQlHc541z78vAj+YPzPbebowFW0aiq/LNdFMigsT1j3gLpqrICjylG08i1Ho95FLCOaJSQWZJ5nSd3OceWLLxCYUXtS9E3BuMHGg=
