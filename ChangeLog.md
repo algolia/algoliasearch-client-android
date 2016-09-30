@@ -1,6 +1,9 @@
 Change Log
 ==========
 
+## Upcoming
+- Rename master/slave to primary/replica
+
 ## 3.4.2 (2016-09-15)
 
 - New `Client.getIndex()` method to automatically share `Index` instances with same name
