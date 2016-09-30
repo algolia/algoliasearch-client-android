@@ -23,6 +23,8 @@ android:
     - tools
     - build-tools-24.0.1
     - android-24
+    - extra-android-support
+    - extra-android-m2repository
 cache:
   directories:
     - $HOME/.gradle/caches/
