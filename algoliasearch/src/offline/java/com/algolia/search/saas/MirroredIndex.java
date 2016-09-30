@@ -77,6 +77,26 @@ import java.util.concurrent.TimeUnit;
  * using the {@link #searchOnlineAsync} or {@link #searchOfflineAsync}` methods.
  *
  * NOTE: The strategy applies both to {@link #searchAsync} and {@link #searchDisjunctiveFacetingAsync}..
+ *
+ * ## Limitations
+ *
+ * Algolia's core features are fully supported offline, including (but not limited to): **ranking**,
+ * **typo tolerance**, **filtering**, **faceting**, **highlighting/snippeting**...
+ *
+ * However, and partly due to tight memory, CPU and disk space constraints, some features are disabled:
+ *
+ * - **Synonyms** are only partially supported:
+ *
+ *     - Multi-way ("regular") synonyms are fully supported.
+ *     - One-way synonyms are not supported.
+ *     - Alternative corrections are limited to one alternative (compared to multiple alternatives with online indices).
+ *     - Placeholders are fully supported.
+ *
+ * - Dictionary-based **plurals** are not supported. ("Simple" plurals with a final S are supported.)
+ *
+ * - **IP geolocation** (see {@link Query#setAroundLatLngViaIP}) is not supported.
+ *
+ * - **CJK segmentation** is not supported.
  */
 public class MirroredIndex extends Index
 {
