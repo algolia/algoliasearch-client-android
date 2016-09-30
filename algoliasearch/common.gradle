@@ -30,11 +30,11 @@ ext {
 }
 
 android {
-    compileSdkVersion 21
-    buildToolsVersion '21.1.2'
+    compileSdkVersion 24
+    buildToolsVersion "24.0.1"
     defaultConfig {
         minSdkVersion 7
-        targetSdkVersion 21
+        targetSdkVersion 24
         versionCode 1
         versionName PUBLISH_VERSION
     }
@@ -73,7 +73,7 @@ repositories {
 }
 
 dependencies {
-    compile 'com.android.support:appcompat-v7:21.0.3'
+    compile 'com.android.support:appcompat-v7:24.2.1'
     compile fileTree(include: ['*.jar'], dir: 'libs')
 
     testCompile "junit:junit:4.12"
@@ -86,7 +86,7 @@ dependencies {
     testCompile "org.powermock:powermock-classloading-xstream:1.6.1"
     testCompile "org.powermock:powermock-api-mockito:1.6.1"
 
-    javadoc 'com.android.support:support-annotations:22.2.0'
+    javadoc 'com.android.support:support-annotations:24.2.1'
 }
 
 // Javadoc
