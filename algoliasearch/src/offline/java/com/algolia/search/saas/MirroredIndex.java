@@ -457,7 +457,7 @@ public class MirroredIndex extends Index
 
             // Fetch settings.
             {
-                JSONObject settingsJSON = this.getSettings();
+                JSONObject settingsJSON = this.getSettings(1);
                 settingsFile = new File(tmpDir, "settings.json");
                 String data = settingsJSON.toString();
                 Writer writer = new OutputStreamWriter(new FileOutputStream(settingsFile), "UTF-8");
