@@ -43,6 +43,7 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
@@ -50,6 +51,8 @@ import java.util.concurrent.TimeUnit;
 /**
  * An online index that can also be mirrored locally.
  *
+ * You cannot construct this class directly. Please use {@link OfflineClient#getIndex(String)} to obtain an instance.
+
  * <p>When created, an instance of this class has its <code>mirrored</code> flag set to false, and behaves like a normal,
  * online {@link Index}. When the <code>mirrored</code> flag is set to true, the index becomes capable of acting upon
  * local data.</p>
@@ -74,9 +77,11 @@ import java.util.concurrent.TimeUnit;
  * mirror in case of failure (including network unavailability).
  *
  * NOTE: If you want to explicitly target either the online API or the offline mirror, doing so is always possible
- * using the {@link #searchOnlineAsync} or {@link #searchOfflineAsync}` methods.
+ * using the {@link #searchOnlineAsync(Query, CompletionHandler)} or {@link #searchOfflineAsync(Query, CompletionHandler)}
+ * methods.
  *
- * NOTE: The strategy applies both to {@link #searchAsync} and {@link #searchDisjunctiveFacetingAsync}..
+ * NOTE: The strategy applies both to {@link #searchAsync(Query, CompletionHandler)} and
+ * {@link #searchDisjunctiveFacetingAsync(Query, List, Map, CompletionHandler)}.
  *
  * ## Limitations
  *
@@ -484,7 +489,7 @@ public class MirroredIndex extends Index
                     writer.write(data);
                     writer.close();
 
-                    cursor = objectsJSON.optString("cursor");
+                    cursor = objectsJSON.optString("cursor", null);
                     JSONArray hits = objectsJSON.optJSONArray("hits");
                     if (hits == null) {
                         // Something went wrong:
@@ -987,49 +992,12 @@ public class MirroredIndex extends Index
         if (!mirrored) {
             throw new IllegalStateException("Cannot run offline search on a non-mirrored index");
         }
-        // TODO: Move to `LocalIndex` to factorize implementation between platforms?
-        try {
-            JSONArray results = new JSONArray();
-            boolean shouldProcess = true;
-            for (Query query: queries) {
-                // Implement the "stop if enough matches" strategy.
-                if (!shouldProcess) {
-                    JSONObject returnedContent = new JSONObject()
-                        .put("hits", new JSONArray())
-                        .put("page", 0)
-                        .put("nbHits", 0)
-                        .put("nbPages", 0)
-                        .put("hitsPerPage", 0)
-                        .put("processingTimeMS", 1)
-                        .put("params", query.build())
-                        .put("index", this.getIndexName())
-                        .put("processed", false);
-                    results.put(returnedContent);
-                    continue;
-                }
-
-                JSONObject returnedContent = this._searchOffline(query);
-                returnedContent.put("index", this.getIndexName());
-                results.put(returnedContent);
-
-                // Implement the "stop if enough matches strategy".
-                if (strategy != null && strategy.equals(Client.MultipleQueriesStrategy.STOP_IF_ENOUGH_MATCHES.toString())) {
-                    int nbHits = returnedContent.getInt("nbHits");
-                    int hitsPerPage = returnedContent.getInt("hitsPerPage");
-                    if (nbHits >= hitsPerPage) {
-                        shouldProcess = false;
-                    }
-                }
+        return new MultipleQueryEmulator(this.getIndexName()) {
+            @Override
+            protected JSONObject singleQuery(@NonNull Query query) throws AlgoliaException {
+                return _searchOffline(query);
             }
-            return new JSONObject()
-                .put("results", results)
-                .put(JSON_KEY_ORIGIN, JSON_VALUE_ORIGIN_LOCAL);
-        }
-        catch (JSONException e) {
-            // The `put()` calls should never throw, but the `getInt()` calls may if individual queries return
-            // unexpected results.
-            throw new AlgoliaException("When running multiple queries", e);
-        }
+        }.multipleQueries(queries, strategy);
     }
 
     // ----------------------------------------------------------------------

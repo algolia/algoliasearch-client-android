@@ -23,6 +23,8 @@
 
 package com.algolia.search.saas;
 
+import android.support.annotation.NonNull;
+
 public class Helpers {
     static String app_id = "APP_ID_REPLACE_ME";
     static String api_key = "API_KEY_REPLACE_ME";
@@ -35,5 +37,26 @@ public class Helpers {
             name = String.format("%s_travis-%s", name, job_number);
         }
         return name;
+    }
+
+    /**
+     * Get the method name of the caller.
+     *
+     * @return The caller's method name.
+     */
+    static @NonNull
+    String getMethodName() {
+        StackTraceElement[] stack = Thread.currentThread().getStackTrace();
+        int index = 0;
+        while (index < stack.length) {
+            StackTraceElement frame = stack[index];
+            if (frame.getClassName().equals(Helpers.class.getName())) {
+                ++index;
+                break;
+            }
+            ++index;
+        }
+        assert(index < stack.length);
+        return stack[index].getMethodName();
     }
 }

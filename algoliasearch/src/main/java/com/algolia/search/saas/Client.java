@@ -128,7 +128,7 @@ public class Client {
     /** Thread pool used to run asynchronous requests. */
     protected ExecutorService searchExecutorService = Executors.newFixedThreadPool(4);
 
-    protected Map<String, WeakReference<Index>> indices = new HashMap<>();
+    protected Map<String, WeakReference<Object>> indices = new HashMap<>();
 
     // ----------------------------------------------------------------------
     // Initialization
@@ -330,13 +330,13 @@ public class Client {
      */
     public @NonNull Index getIndex(@NonNull String indexName) {
         Index index = null;
-        WeakReference<Index> existingIndex = indices.get(indexName);
+        WeakReference<Object> existingIndex = indices.get(indexName);
         if (existingIndex != null) {
-            index = existingIndex.get();
+            index = (Index)existingIndex.get();
         }
         if (index == null) {
             index = new Index(this, indexName);
-            indices.put(indexName, new WeakReference<Index>(index));
+            indices.put(indexName, new WeakReference<Object>(index));
         }
         return index;
     }

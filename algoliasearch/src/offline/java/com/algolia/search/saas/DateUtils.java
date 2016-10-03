@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015 Algolia
+ * Copyright (c) 2012-2016 Algolia
  * http://www.algolia.com/
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -21,39 +21,33 @@
  * THE SOFTWARE.
  */
 
-// Top-level build file where you can add configuration options common to all sub-projects/modules.
+package com.algolia.search.saas;
 
-buildscript {
-    repositories {
-        jcenter()
+import android.support.annotation.NonNull;
+
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
+import java.util.TimeZone;
+
+
+/**
+ * Utilities to deal with time zones.
+ */
+class DateUtils {
+    /** Long ISO8610 date format for UTC time zone. */
+    private static SimpleDateFormat ISO8601_DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.US);
+    static {
+        ISO8601_DATE_FORMAT.setTimeZone(TimeZone.getTimeZone("GMT+00:00"));
     }
-    dependencies {
-        classpath 'ch.raffael.pegdown-doclet:pegdown-doclet:1.3'
-        classpath 'com.android.tools.build:gradle:2.1.0'
-        classpath "io.codearte.gradle.nexus:gradle-nexus-staging-plugin:0.5.3"
 
-        // NOTE: Do not place your application dependencies here; they belong
-        // in the individual module build.gradle files
+    /**
+     * Format a date as an ISO 8601 string.
+     *
+     * @param date The date to format.
+     * @return The formatted string.
+     */
+    public static @NonNull String iso8601String(@NonNull Date date) {
+        return ISO8601_DATE_FORMAT.format(date);
     }
-}
-
-allprojects {
-    repositories {
-        jcenter()
-    }
-}
-
-ext {
-    PUBLISH_GROUP_ID = 'com.algolia'
-}
-
-
-apply plugin: 'io.codearte.nexus-staging'
-
-nexusStaging {
-    packageGroup = PUBLISH_GROUP_ID
-    stagingProfileId = 'f6edc053ff913'
-    /* To get the staging id, you can either:
-    - Use the 'getStagingProfile' task added by the 'io.codearte.nexus-staging' plugin
-    - Log-in on sonatype.org, go to staging profile, select com.algolia, id = last part of URL */
 }
