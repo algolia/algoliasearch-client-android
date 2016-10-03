@@ -880,7 +880,7 @@ public class IndexTest extends RobolectricTestCase {
     public void testUserAgent() throws Exception {
         // Test the default value.
         String userAgent = (String) Whitebox.getInternalState(client, "userAgentRaw");
-        assertTrue(userAgent.matches("^Algolia for Android \\([0-9.]+\\); Android \\(([0-9.]+|unknown)\\)$"));
+        assertTrue(userAgent.matches("^Algolia for Android \\([0-9.]+\\); Android \\(([0-9.]+(_r[0-9]+)?|unknown)\\)$"));
 
         // Manipulate the list.
         assertFalse(client.hasUserAgent(new Client.LibraryVersion("toto", "6.6.6")));
