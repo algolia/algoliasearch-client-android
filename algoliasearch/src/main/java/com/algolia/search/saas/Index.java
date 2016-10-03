@@ -502,7 +502,7 @@ public class Index {
         return getClient().new AsyncTaskRequest(completionHandler) {
             @NonNull
             @Override JSONObject run() throws AlgoliaException {
-                return getSettings();
+                return getSettings(2);
             }
         }.start();
     }
@@ -1021,8 +1021,8 @@ public class Index {
      *
      * @throws AlgoliaException
      */
-    protected JSONObject getSettings() throws AlgoliaException {
-        return client.getRequest("/1/indexes/" + encodedIndexName + "/settings", false);
+    protected JSONObject getSettings(int formatVersion) throws AlgoliaException {
+        return client.getRequest("/1/indexes/" + encodedIndexName + "/settings?getVersion=" + formatVersion, false);
     }
 
     /**
