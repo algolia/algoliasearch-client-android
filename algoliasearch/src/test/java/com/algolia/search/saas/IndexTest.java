@@ -62,7 +62,7 @@ import static org.mockito.Mockito.when;
  */
 
 @SuppressLint("DefaultLocale") //We use format for logging errors, locale issues are irrelevant
-public class IndexTest extends PowerMockTestCase {
+public class IndexTest extends RobolectricTestCase {
     Client client;
     Index index;
     String indexName;

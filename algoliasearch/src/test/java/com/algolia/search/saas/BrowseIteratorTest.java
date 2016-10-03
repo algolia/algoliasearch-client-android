@@ -38,7 +38,7 @@ import java.util.List;
 
 import static junit.framework.Assert.fail;
 
-public class BrowseIteratorTest extends PowerMockTestCase {
+public class BrowseIteratorTest extends RobolectricTestCase {
     Client client;
     Index index;
     String indexName;

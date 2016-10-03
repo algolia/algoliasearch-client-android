@@ -39,7 +39,7 @@ import static org.junit.Assert.assertEquals;
  */
 
 @SuppressLint("DefaultLocale") //We use format for logging errors, locale issues are irrelevant
-public class ClientTest extends PowerMockTestCase {
+public class ClientTest extends RobolectricTestCase {
     Client client;
 
     @Override
