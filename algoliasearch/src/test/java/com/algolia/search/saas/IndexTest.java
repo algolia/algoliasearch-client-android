@@ -96,8 +96,14 @@ public class IndexTest extends PowerMockTestCase {
     }
 
     @Override
-    public void tearDown() throws Exception {
-        client.deleteIndex(indexName);
+    public void tearDown() {
+        try {
+            client.deleteIndex(indexName);
+        }
+        catch (AlgoliaException e) {
+            fail(e.getMessage());
+        }
+        AssertCompletionHandler.checkAllHandlers();
     }
 
     @Test
@@ -910,5 +916,175 @@ public class IndexTest extends PowerMockTestCase {
         } catch (JSONException e) {
             fail(e.getMessage());
         }
+    }
+
+    @Test
+    public void testPartialUpdateObject() throws Exception {
+        JSONObject partialObject = new JSONObject().put("city", "Paris");
+        index.partialUpdateObjectAsync(partialObject, ids.get(0), new AssertCompletionHandler() {
+            @Override
+            public void doRequestCompleted(JSONObject content, AlgoliaException error) {
+                assertNull(error);
+                String taskID = content.optString("taskID");
+                index.waitTaskAsync(taskID, new AssertCompletionHandler() {
+                    @Override
+                    public void doRequestCompleted(JSONObject content, AlgoliaException error) {
+                        assertNull(error);
+                        index.getObjectAsync(ids.get(0), new AssertCompletionHandler() {
+                            @Override
+                            public void doRequestCompleted(JSONObject content, AlgoliaException error) {
+                                assertNotNull(content);
+                                assertEquals(ids.get(0), content.optString("objectID"));
+                            }
+                        });
+                    }
+                });
+            }
+        });
+    }
+
+    @Test
+    public void testPartialUpdateObjectNoCreate() throws Exception {
+        final String objectID = "unknown";
+        final JSONObject partialObject = new JSONObject().put("city", "Paris");
+
+        // Partial update on a nonexistent object with `createIfNotExists=false` should not create the object.
+        index.partialUpdateObjectAsync(partialObject, objectID, false, new AssertCompletionHandler() {
+            @Override
+            public void doRequestCompleted(JSONObject content, AlgoliaException error) {
+                assertNull(error);
+                String taskID = content.optString("taskID");
+                index.waitTaskAsync(taskID, new AssertCompletionHandler() {
+                    @Override
+                    public void doRequestCompleted(JSONObject content, AlgoliaException error) {
+                        assertNull(error);
+                        index.getObjectAsync(objectID, new AssertCompletionHandler() {
+                            @Override
+                            public void doRequestCompleted(JSONObject content, AlgoliaException error) {
+                                assertNotNull(error);
+                                assertEquals(404, error.getStatusCode());
+
+                                // Partial update on a nonexistent object with `createIfNotExists=true` should create the object.
+                                index.partialUpdateObjectAsync(partialObject, objectID, true, new AssertCompletionHandler() {
+                                    @Override
+                                    public void doRequestCompleted(JSONObject content, AlgoliaException error) {
+                                        assertNull(error);
+                                        String taskID = content.optString("taskID");
+                                        index.waitTaskAsync(taskID, new AssertCompletionHandler() {
+                                            @Override
+                                            public void doRequestCompleted(JSONObject content, AlgoliaException error) {
+                                                assertNull(error);
+                                                index.getObjectAsync(objectID, new AssertCompletionHandler() {
+                                                    @Override
+                                                    public void doRequestCompleted(JSONObject content, AlgoliaException error) {
+                                                        assertNotNull(content);
+                                                        assertEquals(objectID, content.optString("objectID"));
+                                                    }
+                                                });
+                                            }
+                                        });
+                                    }
+                                });
+                            }
+                        });
+                    }
+                });
+            }
+        });
+    }
+
+    @Test
+    public void testPartialUpdateObjects() throws Exception {
+        final JSONArray partialObjects = new JSONArray()
+                .put(new JSONObject().put("objectID", ids.get(0)).put("city", "Paris"))
+                .put(new JSONObject().put("objectID", ids.get(1)).put("city", "Berlin"));
+
+        index.partialUpdateObjectsAsync(partialObjects, false, new AssertCompletionHandler() {
+            @Override
+            public void doRequestCompleted(JSONObject content, AlgoliaException error) {
+                assertNull(error);
+                String taskID = content.optString("taskID");
+                index.waitTaskAsync(taskID, new AssertCompletionHandler() {
+                    @Override
+                    public void doRequestCompleted(JSONObject content, AlgoliaException error) {
+                        assertNull(error);
+                        index.getObjectsAsync(ids, new AssertCompletionHandler() {
+                            @Override
+                            public void doRequestCompleted(JSONObject content, AlgoliaException error) {
+                                assertNotNull(content);
+                                JSONArray results = content.optJSONArray("results");
+                                assertNotNull(results);
+                                assertEquals(2, results.length());
+                                for (int i = 0; i < partialObjects.length(); ++i) {
+                                    assertEquals(ids.get(i), results.optJSONObject(i).optString("objectID"));
+                                    assertEquals(partialObjects.optJSONObject(i).optString("city"), results.optJSONObject(i).optString("city"));
+                                }
+                            }
+                        });
+                    }
+                });
+            }
+        });
+    }
+
+    @Test
+    public void testPartialUpdateObjectsNoCreate() throws Exception {
+        final List<String> newIds = Arrays.asList("unknown", "none");
+        final JSONArray partialObjects = new JSONArray()
+            .put(new JSONObject().put("objectID", newIds.get(0)).put("city", "Paris"))
+            .put(new JSONObject().put("objectID", newIds.get(1)).put("city", "Berlin"));
+
+        index.partialUpdateObjectsAsync(partialObjects, false, new AssertCompletionHandler() {
+            @Override
+            public void doRequestCompleted(JSONObject content, AlgoliaException error) {
+                assertNull(error);
+                String taskID = content.optString("taskID");
+                index.waitTaskAsync(taskID, new AssertCompletionHandler() {
+                    @Override
+                    public void doRequestCompleted(JSONObject content, AlgoliaException error) {
+                        assertNull(error);
+                        index.getObjectsAsync(newIds, new AssertCompletionHandler() {
+                            @Override
+                            public void doRequestCompleted(JSONObject content, AlgoliaException error) {
+                                // NOTE: A multiple get objects doesn't return an error for nonexistent objects,
+                                // but simply returns `null` for the missing objects.
+                                assertNotNull(content);
+                                JSONArray results = content.optJSONArray("results");
+                                assertNotNull(results);
+                                assertEquals(2, results.length());
+                                assertEquals(null, results.optJSONObject(0));
+                                assertEquals(null, results.optJSONObject(1));
+
+                                index.partialUpdateObjectsAsync(partialObjects, false, new AssertCompletionHandler() {
+                                    @Override
+                                    public void doRequestCompleted(JSONObject content, AlgoliaException error) {
+                                        assertNull(error);
+                                        String taskID = content.optString("taskID");
+                                        index.waitTaskAsync(taskID, new AssertCompletionHandler() {
+                                            @Override
+                                            public void doRequestCompleted(JSONObject content, AlgoliaException error) {
+                                                assertNull(error);
+                                                index.getObjectsAsync(newIds, new AssertCompletionHandler() {
+                                                    @Override
+                                                    public void doRequestCompleted(JSONObject content, AlgoliaException error) {
+                                                        assertNotNull(content);
+                                                        JSONArray results = content.optJSONArray("results");
+                                                        assertNotNull(results);
+                                                        assertEquals(2, results.length());
+                                                        for (int i = 0; i < partialObjects.length(); ++i) {
+                                                            assertEquals(partialObjects.optJSONObject(i).optString("city"), results.optJSONObject(i).optString("city"));
+                                                        }
+                                                    }
+                                                });
+                                            }
+                                        });
+                                    }
+                                });
+                            }
+                        });
+                    }
+                });
+            }
+        });
     }
 }

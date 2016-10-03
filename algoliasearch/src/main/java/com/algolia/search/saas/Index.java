@@ -284,6 +284,10 @@ public class Index {
     /**
      * Partially update an object (asynchronously).
      *
+     * **Note:** This method will create the object if it does not exist already. If you don't wish to, you can use
+     * {@link #partialUpdateObjectAsync(JSONObject, String, boolean, CompletionHandler)} and specify `false` for the
+     * `createIfNotExists` argument.
+     *
      * @param partialObject     New value/operations for the object.
      * @param objectID          Identifier of object to be updated.
      * @param completionHandler The listener that will be notified of the request's outcome.
@@ -293,13 +297,35 @@ public class Index {
         return getClient().new AsyncTaskRequest(completionHandler) {
             @NonNull
             @Override JSONObject run() throws AlgoliaException {
-                return partialUpdateObject(partialObject, objectID);
+                return partialUpdateObject(partialObject, objectID, null);
+            }
+        }.start();
+    }
+
+    /**
+     * Partially update an object (asynchronously).
+     *
+     * @param partialObject     New value/operations for the object.
+     * @param objectID          Identifier of object to be updated.
+     * @param createIfNotExists Whether the object should be created if it does not exist already.
+     * @param completionHandler The listener that will be notified of the request's outcome.
+     * @return A cancellable request.
+     */
+    public Request partialUpdateObjectAsync(final @NonNull JSONObject partialObject, final @NonNull String objectID, final boolean createIfNotExists, CompletionHandler completionHandler) {
+        return getClient().new AsyncTaskRequest(completionHandler) {
+            @NonNull
+            @Override JSONObject run() throws AlgoliaException {
+                return partialUpdateObject(partialObject, objectID, createIfNotExists);
             }
         }.start();
     }
 
     /**
      * Partially update several objects (asynchronously).
+     *
+     * **Note:** This method will create the objects if they do not exist already. If you don't wish to, you can use
+     * {@link #partialUpdateObjectsAsync(JSONArray, boolean, CompletionHandler)} and specify `false` for the
+     * `createIfNotExists` argument.
      *
      * @param partialObjects    New values/operations for the objects. Each object must contain an <code>objectID</code>
      *                          attribute.
@@ -310,7 +336,25 @@ public class Index {
         return getClient().new AsyncTaskRequest(completionHandler) {
             @NonNull
             @Override JSONObject run() throws AlgoliaException {
-                return partialUpdateObjects(partialObjects);
+                return partialUpdateObjects(partialObjects, true);
+            }
+        }.start();
+    }
+
+    /**
+     * Partially update several objects (asynchronously).
+     *
+     * @param partialObjects    New values/operations for the objects. Each object must contain an <code>objectID</code>
+     *                          attribute.
+     * @param createIfNotExists Whether objects should be created if they do not exist already.
+     * @param completionHandler The listener that will be notified of the request's outcome.
+     * @return A cancellable request.
+     */
+    public Request partialUpdateObjectsAsync(final @NonNull JSONArray partialObjects, final boolean createIfNotExists, CompletionHandler completionHandler) {
+        return getClient().new AsyncTaskRequest(completionHandler) {
+            @NonNull
+            @Override JSONObject run() throws AlgoliaException {
+                return partialUpdateObjects(partialObjects, createIfNotExists);
             }
         }.start();
     }
@@ -733,9 +777,13 @@ public class Index {
      * @param partialObject the object attributes to override
      * @throws AlgoliaException
      */
-    protected JSONObject partialUpdateObject(JSONObject partialObject, String objectID) throws AlgoliaException {
+    protected JSONObject partialUpdateObject(JSONObject partialObject, String objectID, Boolean createIfNotExists) throws AlgoliaException {
         try {
-            return client.postRequest("/1/indexes/" + encodedIndexName + "/" + URLEncoder.encode(objectID, "UTF-8") + "/partial", partialObject.toString(), false);
+            String path = "/1/indexes/" + encodedIndexName + "/" + URLEncoder.encode(objectID, "UTF-8") + "/partial";
+            if (createIfNotExists != null) {
+                path += "?createIfNotExists=" + createIfNotExists.toString();
+            }
+            return client.postRequest(path, partialObject.toString(), false);
         } catch (UnsupportedEncodingException e) {
             throw new RuntimeException(e);
         }
@@ -747,16 +795,17 @@ public class Index {
      * @param inputArray the array of objects to update (each object must contains an objectID attribute)
      * @throws AlgoliaException
      */
-    protected JSONObject partialUpdateObjects(JSONArray inputArray) throws AlgoliaException {
+    protected JSONObject partialUpdateObjects(JSONArray inputArray, boolean createIfNotExists) throws AlgoliaException {
         try {
+            final String action = createIfNotExists ? "partialUpdateObject" : "partialUpdateObjectNoCreate";
             JSONArray array = new JSONArray();
             for (int n = 0; n < inputArray.length(); n++) {
                 JSONObject obj = inputArray.getJSONObject(n);
-                JSONObject action = new JSONObject();
-                action.put("action", "partialUpdateObject");
-                action.put("objectID", obj.getString("objectID"));
-                action.put("body", obj);
-                array.put(action);
+                JSONObject operation = new JSONObject();
+                operation.put("action", action);
+                operation.put("objectID", obj.getString("objectID"));
+                operation.put("body", obj);
+                array.put(operation);
             }
             return batch(array);
         } catch (JSONException e) {
