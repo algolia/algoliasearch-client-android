@@ -1,8 +1,25 @@
 Change Log
 ==========
 
-## Upcoming
-- Rename master/slave to primary/replica
+## 3.5 (2016-10-03)
+
+### New features
+
+- Support the `createIfNoExists` parameter in partial updates
+- [offline] Offline-only indices
+
+### Bug fixes
+
+- (#157) Use new format version when retrieving settings
+
+### Other changes
+
+- Rename "master"/"slave" to "primary"/"replica"
+- Rename `attributesToIndex` to `searchableAttributes`
+- Upgrade to Android API level 24. **Note:** As a consequence, the **minimum supported SDK version** is now 10 (was 7 previously).
+- Upgrade to Build Tools 24.0.3
+- Upgrade to Oracle JDK 8 in Travis
+
 
 ## 3.4.2 (2016-09-15)
 
