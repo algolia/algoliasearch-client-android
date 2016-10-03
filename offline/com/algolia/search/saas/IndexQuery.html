@@ -95,7 +95,7 @@ var activeTableTab = "activeTableTab";
 </div>
 <div class="contentContainer">
 <ul class="inheritance">
-<li>java.lang.Object</li>
+<li>Object</li>
 <li>
 <ul class="inheritance">
 <li>com.algolia.search.saas.IndexQuery</li>
@@ -108,7 +108,7 @@ var activeTableTab = "activeTableTab";
 <hr>
 <br>
 <pre>public class <span class="typeNameLabel">IndexQuery</span>
-extends java.lang.Object</pre>
+extends Object</pre>
 <div class="block"><p>A search query targeting a specific index.</p></div>
 </li>
 </ul>
@@ -132,7 +132,7 @@ extends java.lang.Object</pre>
           <a href="../../../../com/algolia/search/saas/Query.html" title="class in com.algolia.search.saas">Query</a>&nbsp;query)</code>&nbsp;</td>
 </tr>
 <tr class="rowColor">
-<td class="colOne"><code><span class="memberNameLink"><a href="../../../../com/algolia/search/saas/IndexQuery.html#IndexQuery-java.lang.String-com.algolia.search.saas.Query-">IndexQuery</a></span>(java.lang.String&nbsp;indexName,
+<td class="colOne"><code><span class="memberNameLink"><a href="../../../../com/algolia/search/saas/IndexQuery.html#IndexQuery-java.lang.String-com.algolia.search.saas.Query-">IndexQuery</a></span>(String&nbsp;indexName,
           <a href="../../../../com/algolia/search/saas/Query.html" title="class in com.algolia.search.saas">Query</a>&nbsp;query)</code>&nbsp;</td>
 </tr>
 </table>
@@ -151,7 +151,7 @@ extends java.lang.Object</pre>
 <th class="colLast" scope="col">Method and Description</th>
 </tr>
 <tr id="i0" class="altColor">
-<td class="colFirst"><code>java.lang.String</code></td>
+<td class="colFirst"><code>String</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/algolia/search/saas/IndexQuery.html#getIndexName--">getIndexName</a></span>()</code>&nbsp;</td>
 </tr>
 <tr id="i1" class="rowColor">
@@ -160,10 +160,10 @@ extends java.lang.Object</pre>
 </tr>
 </table>
 <ul class="blockList">
-<li class="blockList"><a name="methods.inherited.from.class.java.lang.Object">
+<li class="blockList"><a name="methods.inherited.from.class.Object">
 <!--   -->
 </a>
-<h3>Methods inherited from class&nbsp;java.lang.Object</h3>
+<h3>Methods inherited from class&nbsp;Object</h3>
 <code>equals, getClass, hashCode, notify, notifyAll, toString, wait, wait, wait</code></li>
 </ul>
 </li>
@@ -186,7 +186,9 @@ extends java.lang.Object</pre>
 <ul class="blockList">
 <li class="blockList">
 <h4>IndexQuery</h4>
-<pre>public&nbsp;IndexQuery(java.lang.String&nbsp;indexName,
+<pre>public&nbsp;IndexQuery(@NonNull
+                  String&nbsp;indexName,
+                  @NonNull
                   <a href="../../../../com/algolia/search/saas/Query.html" title="class in com.algolia.search.saas">Query</a>&nbsp;query)</pre>
 </li>
 </ul>
@@ -196,7 +198,9 @@ extends java.lang.Object</pre>
 <ul class="blockListLast">
 <li class="blockList">
 <h4>IndexQuery</h4>
-<pre>public&nbsp;IndexQuery(<a href="../../../../com/algolia/search/saas/Index.html" title="class in com.algolia.search.saas">Index</a>&nbsp;index,
+<pre>public&nbsp;IndexQuery(@NonNull
+                  <a href="../../../../com/algolia/search/saas/Index.html" title="class in com.algolia.search.saas">Index</a>&nbsp;index,
+                  @NonNull
                   <a href="../../../../com/algolia/search/saas/Query.html" title="class in com.algolia.search.saas">Query</a>&nbsp;query)</pre>
 </li>
 </ul>
@@ -214,7 +218,8 @@ extends java.lang.Object</pre>
 <ul class="blockList">
 <li class="blockList">
 <h4>getIndexName</h4>
-<pre>public&nbsp;java.lang.String&nbsp;getIndexName()</pre>
+<pre>@NonNull
+public&nbsp;String&nbsp;getIndexName()</pre>
 </li>
 </ul>
 <a name="getQuery--">
@@ -223,7 +228,8 @@ extends java.lang.Object</pre>
 <ul class="blockListLast">
 <li class="blockList">
 <h4>getQuery</h4>
-<pre>public&nbsp;<a href="../../../../com/algolia/search/saas/Query.html" title="class in com.algolia.search.saas">Query</a>&nbsp;getQuery()</pre>
+<pre>@NonNull
+public&nbsp;<a href="../../../../com/algolia/search/saas/Query.html" title="class in com.algolia.search.saas">Query</a>&nbsp;getQuery()</pre>
 </li>
 </ul>
 </li>

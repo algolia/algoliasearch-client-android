@@ -95,7 +95,7 @@ var activeTableTab = "activeTableTab";
 </div>
 <div class="contentContainer">
 <ul class="inheritance">
-<li>java.lang.Object</li>
+<li>Object</li>
 <li>
 <ul class="inheritance">
 <li><a href="../../../../com/algolia/search/saas/Index.html" title="class in com.algolia.search.saas">com.algolia.search.saas.Index</a></li>
@@ -115,6 +115,7 @@ var activeTableTab = "activeTableTab";
 <pre>public class <span class="typeNameLabel">MirroredIndex</span>
 extends <a href="../../../../com/algolia/search/saas/Index.html" title="class in com.algolia.search.saas">Index</a></pre>
 <div class="block"><p>An online index that can also be mirrored locally.</p>
+<p>You cannot construct this class directly. Please use <a href="../../../../com/algolia/search/saas/OfflineClient.html#getIndex-java.lang.String-"><code>OfflineClient.getIndex(String)</code></a> to obtain an instance.</p>
 <p>When created, an instance of this class has its <code>mirrored</code> flag set to false, and behaves like a normal,
 online <a href="../../../../com/algolia/search/saas/Index.html" title="class in com.algolia.search.saas"><code>Index</code></a>. When the <code>mirrored</code> flag is set to true, the index becomes capable of acting upon
 local data.</p>
@@ -128,8 +129,28 @@ native resources.</p>
 a valid license key prior to calling any offline-related method.</p>
 <h3>Request strategy</h3>
 <p>When the index is mirrored and the device is online, it becomes possible to transparently switch between online and offline requests. There is no single best strategy for that, because it depends on the use case and the current network conditions. You can choose the strategy through <a href="../../../../com/algolia/search/saas/MirroredIndex.html#setRequestStrategy-com.algolia.search.saas.MirroredIndex.Strategy-"><code>setRequestStrategy(Strategy)</code></a>. The default is <a href="../../../../com/algolia/search/saas/MirroredIndex.Strategy.html#FALLBACK_ON_FAILURE"><code>MirroredIndex.Strategy.FALLBACK_ON_FAILURE</code></a>, which will always target the online API first, then fallback to the offline mirror in case of failure (including network unavailability).</p>
-<p>NOTE: If you want to explicitly target either the online API or the offline mirror, doing so is always possible using the <a href="../../../../com/algolia/search/saas/MirroredIndex.html#searchOnlineAsync-com.algolia.search.saas.Query-com.algolia.search.saas.CompletionHandler-"><code>searchOnlineAsync(com.algolia.search.saas.Query, com.algolia.search.saas.CompletionHandler)</code></a> or <a href="../../../../com/algolia/search/saas/MirroredIndex.html#searchOfflineAsync-com.algolia.search.saas.Query-com.algolia.search.saas.CompletionHandler-"><code>searchOfflineAsync(com.algolia.search.saas.Query, com.algolia.search.saas.CompletionHandler)</code></a>` methods.</p>
-<p>NOTE: The strategy applies both to <a href="../../../../com/algolia/search/saas/MirroredIndex.html#searchAsync-com.algolia.search.saas.Query-com.algolia.search.saas.CompletionHandler-"><code>searchAsync(com.algolia.search.saas.Query, com.algolia.search.saas.CompletionHandler)</code></a> and <a href="../../../../com/algolia/search/saas/Index.html#searchDisjunctiveFacetingAsync-com.algolia.search.saas.Query-java.util.List-java.util.Map-com.algolia.search.saas.CompletionHandler-"><code>Index.searchDisjunctiveFacetingAsync(com.algolia.search.saas.Query, java.util.List&lt;java.lang.String&gt;, java.util.Map&lt;java.lang.String, java.util.List&lt;java.lang.String&gt;&gt;, com.algolia.search.saas.CompletionHandler)</code></a>..</p></div>
+<p>NOTE: If you want to explicitly target either the online API or the offline mirror, doing so is always possible using the <a href="../../../../com/algolia/search/saas/MirroredIndex.html#searchOnlineAsync-com.algolia.search.saas.Query-com.algolia.search.saas.CompletionHandler-"><code>searchOnlineAsync(Query, CompletionHandler)</code></a> or <a href="../../../../com/algolia/search/saas/MirroredIndex.html#searchOfflineAsync-com.algolia.search.saas.Query-com.algolia.search.saas.CompletionHandler-"><code>searchOfflineAsync(Query, CompletionHandler)</code></a> methods.</p>
+<p>NOTE: The strategy applies both to <a href="../../../../com/algolia/search/saas/MirroredIndex.html#searchAsync-com.algolia.search.saas.Query-com.algolia.search.saas.CompletionHandler-"><code>searchAsync(Query, CompletionHandler)</code></a> and <a href="../../../../com/algolia/search/saas/Index.html#searchDisjunctiveFacetingAsync-com.algolia.search.saas.Query-java.util.List-java.util.Map-com.algolia.search.saas.CompletionHandler-"><code>Index.searchDisjunctiveFacetingAsync(Query, List, Map, CompletionHandler)</code></a>.</p>
+<h2>Limitations</h2>
+<p>Algolia&rsquo;s core features are fully supported offline, including (but not limited to): <strong>ranking</strong>, <strong>typo tolerance</strong>, <strong>filtering</strong>, <strong>faceting</strong>, <strong>highlighting/snippeting</strong>&hellip;</p>
+<p>However, and partly due to tight memory, CPU and disk space constraints, some features are disabled:</p>
+<ul>
+  <li>
+    <p><strong>Synonyms</strong> are only partially supported:</p>
+    <ul>
+      <li>Multi-way (&ldquo;regular&rdquo;) synonyms are fully supported.</li>
+      <li>One-way synonyms are not supported.</li>
+      <li>Alternative corrections are limited to one alternative (compared to multiple alternatives with online indices).</li>
+      <li>Placeholders are fully supported.</li>
+    </ul>
+  </li>
+  <li>
+  <p>Dictionary-based <strong>plurals</strong> are not supported. (&ldquo;Simple&rdquo; plurals with a final S are supported.)</p></li>
+  <li>
+  <p><strong>IP geolocation</strong> (see <a href="../../../../com/algolia/search/saas/Query.html#setAroundLatLngViaIP-java.lang.Boolean-"><code>Query.setAroundLatLngViaIP(java.lang.Boolean)</code></a>) is not supported.</p></li>
+  <li>
+  <p><strong>CJK segmentation</strong> is not supported.</p></li>
+</ul></div>
 </li>
 </ul>
 </div>
@@ -194,19 +215,19 @@ a valid license key prior to calling any offline-related method.</p>
 </td>
 </tr>
 <tr class="altColor">
-<td class="colFirst"><code>static java.lang.String</code></td>
+<td class="colFirst"><code>static String</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/algolia/search/saas/MirroredIndex.html#JSON_KEY_ORIGIN">JSON_KEY_ORIGIN</a></span></code>
 <div class="block">Key used to indicate the origin of results in the returned JSON.</div>
 </td>
 </tr>
 <tr class="rowColor">
-<td class="colFirst"><code>static java.lang.String</code></td>
+<td class="colFirst"><code>static String</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/algolia/search/saas/MirroredIndex.html#JSON_VALUE_ORIGIN_LOCAL">JSON_VALUE_ORIGIN_LOCAL</a></span></code>
 <div class="block">Value for <code>JSON_KEY_ORIGIN</code> indicating that the results come from the local mirror.</div>
 </td>
 </tr>
 <tr class="altColor">
-<td class="colFirst"><code>static java.lang.String</code></td>
+<td class="colFirst"><code>static String</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/algolia/search/saas/MirroredIndex.html#JSON_VALUE_ORIGIN_REMOTE">JSON_VALUE_ORIGIN_REMOTE</a></span></code>
 <div class="block">Value for <code>JSON_KEY_ORIGIN</code> indicating that the results come from the online API.</div>
 </td>
@@ -247,7 +268,7 @@ a valid license key prior to calling any offline-related method.</p>
 </tr>
 <tr id="i3" class="rowColor">
 <td class="colFirst"><code><a href="../../../../com/algolia/search/saas/Request.html" title="interface in com.algolia.search.saas">Request</a></code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/algolia/search/saas/MirroredIndex.html#browseMirrorFromAsync-java.lang.String-com.algolia.search.saas.CompletionHandler-">browseMirrorFromAsync</a></span>(java.lang.String&nbsp;cursor,
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/algolia/search/saas/MirroredIndex.html#browseMirrorFromAsync-java.lang.String-com.algolia.search.saas.CompletionHandler-">browseMirrorFromAsync</a></span>(String&nbsp;cursor,
                      <a href="../../../../com/algolia/search/saas/CompletionHandler.html" title="interface in com.algolia.search.saas">CompletionHandler</a>&nbsp;completionHandler)</code>
 <div class="block">Browse the local mirror (subsequent calls).</div>
 </td>
@@ -284,7 +305,7 @@ a valid license key prior to calling any offline-related method.</p>
 </tr>
 <tr id="i11" class="rowColor">
 <td class="colFirst"><code><a href="../../../../com/algolia/search/saas/Request.html" title="interface in com.algolia.search.saas">Request</a></code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/algolia/search/saas/MirroredIndex.html#multipleQueriesAsync-java.util.List-com.algolia.search.saas.Client.MultipleQueriesStrategy-com.algolia.search.saas.CompletionHandler-">multipleQueriesAsync</a></span>(java.util.List&lt;<a href="../../../../com/algolia/search/saas/Query.html" title="class in com.algolia.search.saas">Query</a>&gt;&nbsp;queries,
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/algolia/search/saas/MirroredIndex.html#multipleQueriesAsync-java.util.List-com.algolia.search.saas.Client.MultipleQueriesStrategy-com.algolia.search.saas.CompletionHandler-">multipleQueriesAsync</a></span>(List&lt;<a href="../../../../com/algolia/search/saas/Query.html" title="class in com.algolia.search.saas">Query</a>&gt;&nbsp;queries,
                     <a href="../../../../com/algolia/search/saas/Client.MultipleQueriesStrategy.html" title="enum in com.algolia.search.saas">Client.MultipleQueriesStrategy</a>&nbsp;strategy,
                     <a href="../../../../com/algolia/search/saas/CompletionHandler.html" title="interface in com.algolia.search.saas">CompletionHandler</a>&nbsp;completionHandler)</code>
 <div class="block">Run multiple queries on this index with one API call.</div>
@@ -292,7 +313,7 @@ a valid license key prior to calling any offline-related method.</p>
 </tr>
 <tr id="i12" class="altColor">
 <td class="colFirst"><code><a href="../../../../com/algolia/search/saas/Request.html" title="interface in com.algolia.search.saas">Request</a></code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/algolia/search/saas/MirroredIndex.html#multipleQueriesOfflineAsync-java.util.List-com.algolia.search.saas.Client.MultipleQueriesStrategy-com.algolia.search.saas.CompletionHandler-">multipleQueriesOfflineAsync</a></span>(java.util.List&lt;<a href="../../../../com/algolia/search/saas/Query.html" title="class in com.algolia.search.saas">Query</a>&gt;&nbsp;queries,
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/algolia/search/saas/MirroredIndex.html#multipleQueriesOfflineAsync-java.util.List-com.algolia.search.saas.Client.MultipleQueriesStrategy-com.algolia.search.saas.CompletionHandler-">multipleQueriesOfflineAsync</a></span>(List&lt;<a href="../../../../com/algolia/search/saas/Query.html" title="class in com.algolia.search.saas">Query</a>&gt;&nbsp;queries,
                            <a href="../../../../com/algolia/search/saas/Client.MultipleQueriesStrategy.html" title="enum in com.algolia.search.saas">Client.MultipleQueriesStrategy</a>&nbsp;strategy,
                            <a href="../../../../com/algolia/search/saas/CompletionHandler.html" title="interface in com.algolia.search.saas">CompletionHandler</a>&nbsp;completionHandler)</code>
 <div class="block">Run multiple queries on this index, explicitly targeting the offline mirror.</div>
@@ -300,7 +321,7 @@ a valid license key prior to calling any offline-related method.</p>
 </tr>
 <tr id="i13" class="rowColor">
 <td class="colFirst"><code><a href="../../../../com/algolia/search/saas/Request.html" title="interface in com.algolia.search.saas">Request</a></code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/algolia/search/saas/MirroredIndex.html#multipleQueriesOnlineAsync-java.util.List-com.algolia.search.saas.Client.MultipleQueriesStrategy-com.algolia.search.saas.CompletionHandler-">multipleQueriesOnlineAsync</a></span>(java.util.List&lt;<a href="../../../../com/algolia/search/saas/Query.html" title="class in com.algolia.search.saas">Query</a>&gt;&nbsp;queries,
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/algolia/search/saas/MirroredIndex.html#multipleQueriesOnlineAsync-java.util.List-com.algolia.search.saas.Client.MultipleQueriesStrategy-com.algolia.search.saas.CompletionHandler-">multipleQueriesOnlineAsync</a></span>(List&lt;<a href="../../../../com/algolia/search/saas/Query.html" title="class in com.algolia.search.saas">Query</a>&gt;&nbsp;queries,
                           <a href="../../../../com/algolia/search/saas/Client.MultipleQueriesStrategy.html" title="enum in com.algolia.search.saas">Client.MultipleQueriesStrategy</a>&nbsp;strategy,
                           <a href="../../../../com/algolia/search/saas/CompletionHandler.html" title="interface in com.algolia.search.saas">CompletionHandler</a>&nbsp;completionHandler)</code>
 <div class="block">Run multiple queries on this index, explicitly targeting the online API.</div>
@@ -387,13 +408,13 @@ a valid license key prior to calling any offline-related method.</p>
 <!--   -->
 </a>
 <h3>Methods inherited from class&nbsp;com.algolia.search.saas.<a href="../../../../com/algolia/search/saas/Index.html" title="class in com.algolia.search.saas">Index</a></h3>
-<code><a href="../../../../com/algolia/search/saas/Index.html#addObjectAsync-org.json.JSONObject-com.algolia.search.saas.CompletionHandler-">addObjectAsync</a>, <a href="../../../../com/algolia/search/saas/Index.html#addObjectAsync-org.json.JSONObject-java.lang.String-com.algolia.search.saas.CompletionHandler-">addObjectAsync</a>, <a href="../../../../com/algolia/search/saas/Index.html#addObjectsAsync-org.json.JSONArray-com.algolia.search.saas.CompletionHandler-">addObjectsAsync</a>, <a href="../../../../com/algolia/search/saas/Index.html#browseAsync-com.algolia.search.saas.Query-com.algolia.search.saas.CompletionHandler-">browseAsync</a>, <a href="../../../../com/algolia/search/saas/Index.html#browseFromAsync-java.lang.String-com.algolia.search.saas.CompletionHandler-">browseFromAsync</a>, <a href="../../../../com/algolia/search/saas/Index.html#clearIndexAsync-com.algolia.search.saas.CompletionHandler-">clearIndexAsync</a>, <a href="../../../../com/algolia/search/saas/Index.html#clearSearchCache--">clearSearchCache</a>, <a href="../../../../com/algolia/search/saas/Index.html#deleteByQueryAsync-com.algolia.search.saas.Query-com.algolia.search.saas.CompletionHandler-">deleteByQueryAsync</a>, <a href="../../../../com/algolia/search/saas/Index.html#deleteObjectAsync-java.lang.String-com.algolia.search.saas.CompletionHandler-">deleteObjectAsync</a>, <a href="../../../../com/algolia/search/saas/Index.html#deleteObjectsAsync-java.util.List-com.algolia.search.saas.CompletionHandler-">deleteObjectsAsync</a>, <a href="../../../../com/algolia/search/saas/Index.html#disableSearchCache--">disableSearchCache</a>, <a href="../../../../com/algolia/search/saas/Index.html#enableSearchCache--">enableSearchCache</a>, <a href="../../../../com/algolia/search/saas/Index.html#enableSearchCache-int-int-">enableSearchCache</a>, <a href="../../../../com/algolia/search/saas/Index.html#getIndexName--">getIndexName</a>, <a href="../../../../com/algolia/search/saas/Index.html#getObjectAsync-java.lang.String-com.algolia.search.saas.CompletionHandler-">getObjectAsync</a>, <a href="../../../../com/algolia/search/saas/Index.html#getObjectAsync-java.lang.String-java.util.List-com.algolia.search.saas.CompletionHandler-">getObjectAsync</a>, <a href="../../../../com/algolia/search/saas/Index.html#getObjectsAsync-java.util.List-com.algolia.search.saas.CompletionHandler-">getObjectsAsync</a>, <a href="../../../../com/algolia/search/saas/Index.html#getObjectsAsync-java.util.List-java.util.List-com.algolia.search.saas.CompletionHandler-">getObjectsAsync</a>, <a href="../../../../com/algolia/search/saas/Index.html#getSettingsAsync-com.algolia.search.saas.CompletionHandler-">getSettingsAsync</a>, <a href="../../../../com/algolia/search/saas/Index.html#partialUpdateObjectAsync-org.json.JSONObject-java.lang.String-com.algolia.search.saas.CompletionHandler-">partialUpdateObjectAsync</a>, <a href="../../../../com/algolia/search/saas/Index.html#partialUpdateObjectsAsync-org.json.JSONArray-com.algolia.search.saas.CompletionHandler-">partialUpdateObjectsAsync</a>, <a href="../../../../com/algolia/search/saas/Index.html#saveObjectAsync-org.json.JSONObject-java.lang.String-com.algolia.search.saas.CompletionHandler-">saveObjectAsync</a>, <a href="../../../../com/algolia/search/saas/Index.html#saveObjectsAsync-org.json.JSONArray-com.algolia.search.saas.CompletionHandler-">saveObjectsAsync</a>, <a href="../../../../com/algolia/search/saas/Index.html#searchDisjunctiveFacetingAsync-com.algolia.search.saas.Query-java.util.List-java.util.Map-com.algolia.search.saas.CompletionHandler-">searchDisjunctiveFacetingAsync</a>, <a href="../../../../com/algolia/search/saas/Index.html#searchSync-com.algolia.search.saas.Query-">searchSync</a>, <a href="../../../../com/algolia/search/saas/Index.html#setSettingsAsync-org.json.JSONObject-com.algolia.search.saas.CompletionHandler-">setSettingsAsync</a>, <a href="../../../../com/algolia/search/saas/Index.html#toString--">toString</a>, <a href="../../../../com/algolia/search/saas/Index.html#waitTaskAsync-java.lang.String-com.algolia.search.saas.CompletionHandler-">waitTaskAsync</a></code></li>
+<code><a href="../../../../com/algolia/search/saas/Index.html#addObjectAsync-org.json.JSONObject-com.algolia.search.saas.CompletionHandler-">addObjectAsync</a>, <a href="../../../../com/algolia/search/saas/Index.html#addObjectAsync-org.json.JSONObject-java.lang.String-com.algolia.search.saas.CompletionHandler-">addObjectAsync</a>, <a href="../../../../com/algolia/search/saas/Index.html#addObjectsAsync-org.json.JSONArray-com.algolia.search.saas.CompletionHandler-">addObjectsAsync</a>, <a href="../../../../com/algolia/search/saas/Index.html#browseAsync-com.algolia.search.saas.Query-com.algolia.search.saas.CompletionHandler-">browseAsync</a>, <a href="../../../../com/algolia/search/saas/Index.html#browseFromAsync-java.lang.String-com.algolia.search.saas.CompletionHandler-">browseFromAsync</a>, <a href="../../../../com/algolia/search/saas/Index.html#clearIndexAsync-com.algolia.search.saas.CompletionHandler-">clearIndexAsync</a>, <a href="../../../../com/algolia/search/saas/Index.html#clearSearchCache--">clearSearchCache</a>, <a href="../../../../com/algolia/search/saas/Index.html#deleteByQueryAsync-com.algolia.search.saas.Query-com.algolia.search.saas.CompletionHandler-">deleteByQueryAsync</a>, <a href="../../../../com/algolia/search/saas/Index.html#deleteObjectAsync-java.lang.String-com.algolia.search.saas.CompletionHandler-">deleteObjectAsync</a>, <a href="../../../../com/algolia/search/saas/Index.html#deleteObjectsAsync-java.util.List-com.algolia.search.saas.CompletionHandler-">deleteObjectsAsync</a>, <a href="../../../../com/algolia/search/saas/Index.html#disableSearchCache--">disableSearchCache</a>, <a href="../../../../com/algolia/search/saas/Index.html#enableSearchCache--">enableSearchCache</a>, <a href="../../../../com/algolia/search/saas/Index.html#enableSearchCache-int-int-">enableSearchCache</a>, <a href="../../../../com/algolia/search/saas/Index.html#getIndexName--">getIndexName</a>, <a href="../../../../com/algolia/search/saas/Index.html#getObjectAsync-java.lang.String-com.algolia.search.saas.CompletionHandler-">getObjectAsync</a>, <a href="../../../../com/algolia/search/saas/Index.html#getObjectAsync-java.lang.String-java.util.List-com.algolia.search.saas.CompletionHandler-">getObjectAsync</a>, <a href="../../../../com/algolia/search/saas/Index.html#getObjectsAsync-java.util.List-com.algolia.search.saas.CompletionHandler-">getObjectsAsync</a>, <a href="../../../../com/algolia/search/saas/Index.html#getObjectsAsync-java.util.List-java.util.List-com.algolia.search.saas.CompletionHandler-">getObjectsAsync</a>, <a href="../../../../com/algolia/search/saas/Index.html#getSettingsAsync-com.algolia.search.saas.CompletionHandler-">getSettingsAsync</a>, <a href="../../../../com/algolia/search/saas/Index.html#partialUpdateObjectAsync-org.json.JSONObject-java.lang.String-boolean-com.algolia.search.saas.CompletionHandler-">partialUpdateObjectAsync</a>, <a href="../../../../com/algolia/search/saas/Index.html#partialUpdateObjectAsync-org.json.JSONObject-java.lang.String-com.algolia.search.saas.CompletionHandler-">partialUpdateObjectAsync</a>, <a href="../../../../com/algolia/search/saas/Index.html#partialUpdateObjectsAsync-org.json.JSONArray-boolean-com.algolia.search.saas.CompletionHandler-">partialUpdateObjectsAsync</a>, <a href="../../../../com/algolia/search/saas/Index.html#partialUpdateObjectsAsync-org.json.JSONArray-com.algolia.search.saas.CompletionHandler-">partialUpdateObjectsAsync</a>, <a href="../../../../com/algolia/search/saas/Index.html#saveObjectAsync-org.json.JSONObject-java.lang.String-com.algolia.search.saas.CompletionHandler-">saveObjectAsync</a>, <a href="../../../../com/algolia/search/saas/Index.html#saveObjectsAsync-org.json.JSONArray-com.algolia.search.saas.CompletionHandler-">saveObjectsAsync</a>, <a href="../../../../com/algolia/search/saas/Index.html#searchDisjunctiveFacetingAsync-com.algolia.search.saas.Query-java.util.List-java.util.Map-com.algolia.search.saas.CompletionHandler-">searchDisjunctiveFacetingAsync</a>, <a href="../../../../com/algolia/search/saas/Index.html#searchSync-com.algolia.search.saas.Query-">searchSync</a>, <a href="../../../../com/algolia/search/saas/Index.html#setSettingsAsync-org.json.JSONObject-com.algolia.search.saas.CompletionHandler-">setSettingsAsync</a>, <a href="../../../../com/algolia/search/saas/Index.html#toString--">toString</a>, <a href="../../../../com/algolia/search/saas/Index.html#waitTaskAsync-java.lang.String-com.algolia.search.saas.CompletionHandler-">waitTaskAsync</a></code></li>
 </ul>
 <ul class="blockList">
-<li class="blockList"><a name="methods.inherited.from.class.java.lang.Object">
+<li class="blockList"><a name="methods.inherited.from.class.Object">
 <!--   -->
 </a>
-<h3>Methods inherited from class&nbsp;java.lang.Object</h3>
+<h3>Methods inherited from class&nbsp;Object</h3>
 <code>equals, getClass, hashCode, notify, notifyAll, wait, wait, wait</code></li>
 </ul>
 </li>
@@ -416,7 +437,7 @@ a valid license key prior to calling any offline-related method.</p>
 <ul class="blockList">
 <li class="blockList">
 <h4>JSON_KEY_ORIGIN</h4>
-<pre>public static final&nbsp;java.lang.String JSON_KEY_ORIGIN</pre>
+<pre>public static final&nbsp;String JSON_KEY_ORIGIN</pre>
 <div class="block"><p>Key used to indicate the origin of results in the returned JSON.</p></div>
 <dl>
 <dt><span class="seeLabel">See Also:</span></dt>
@@ -430,7 +451,7 @@ a valid license key prior to calling any offline-related method.</p>
 <ul class="blockList">
 <li class="blockList">
 <h4>JSON_VALUE_ORIGIN_LOCAL</h4>
-<pre>public static final&nbsp;java.lang.String JSON_VALUE_ORIGIN_LOCAL</pre>
+<pre>public static final&nbsp;String JSON_VALUE_ORIGIN_LOCAL</pre>
 <div class="block"><p>Value for <code>JSON_KEY_ORIGIN</code> indicating that the results come from the local mirror.</p></div>
 <dl>
 <dt><span class="seeLabel">See Also:</span></dt>
@@ -444,7 +465,7 @@ a valid license key prior to calling any offline-related method.</p>
 <ul class="blockList">
 <li class="blockList">
 <h4>JSON_VALUE_ORIGIN_REMOTE</h4>
-<pre>public static final&nbsp;java.lang.String JSON_VALUE_ORIGIN_REMOTE</pre>
+<pre>public static final&nbsp;String JSON_VALUE_ORIGIN_REMOTE</pre>
 <div class="block"><p>Value for <code>JSON_KEY_ORIGIN</code> indicating that the results come from the online API.</p></div>
 <dl>
 <dt><span class="seeLabel">See Also:</span></dt>
@@ -525,7 +546,8 @@ a valid license key prior to calling any offline-related method.</p>
 <ul class="blockList">
 <li class="blockList">
 <h4>addDataSelectionQuery</h4>
-<pre>public&nbsp;void&nbsp;addDataSelectionQuery(<a href="../../../../com/algolia/search/saas/MirroredIndex.DataSelectionQuery.html" title="class in com.algolia.search.saas">MirroredIndex.DataSelectionQuery</a>&nbsp;query)</pre>
+<pre>public&nbsp;void&nbsp;addDataSelectionQuery(@NonNull
+                                  <a href="../../../../com/algolia/search/saas/MirroredIndex.DataSelectionQuery.html" title="class in com.algolia.search.saas">MirroredIndex.DataSelectionQuery</a>&nbsp;query)</pre>
 <div class="block"><p>Add a data selection query to this index. NOTE: All queries are implicitly browse queries (and not search queries).</p></div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
@@ -539,7 +561,8 @@ a valid license key prior to calling any offline-related method.</p>
 <ul class="blockList">
 <li class="blockList">
 <h4>setDataSelectionQueries</h4>
-<pre>public&nbsp;void&nbsp;setDataSelectionQueries(<a href="../../../../com/algolia/search/saas/MirroredIndex.DataSelectionQuery.html" title="class in com.algolia.search.saas">MirroredIndex.DataSelectionQuery</a>...&nbsp;queries)</pre>
+<pre>public&nbsp;void&nbsp;setDataSelectionQueries(@NonNull
+                                    <a href="../../../../com/algolia/search/saas/MirroredIndex.DataSelectionQuery.html" title="class in com.algolia.search.saas">MirroredIndex.DataSelectionQuery</a>...&nbsp;queries)</pre>
 <div class="block"><p>Replace all data selection queries associated to this index.</p></div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
@@ -553,7 +576,8 @@ a valid license key prior to calling any offline-related method.</p>
 <ul class="blockList">
 <li class="blockList">
 <h4>getDataSelectionQueries</h4>
-<pre>public&nbsp;<a href="../../../../com/algolia/search/saas/MirroredIndex.DataSelectionQuery.html" title="class in com.algolia.search.saas">MirroredIndex.DataSelectionQuery</a>[]&nbsp;getDataSelectionQueries()</pre>
+<pre>@NonNull
+public&nbsp;<a href="../../../../com/algolia/search/saas/MirroredIndex.DataSelectionQuery.html" title="class in com.algolia.search.saas">MirroredIndex.DataSelectionQuery</a>[]&nbsp;getDataSelectionQueries()</pre>
 </li>
 </ul>
 <a name="getDelayBetweenSyncs--">
@@ -585,7 +609,8 @@ a valid license key prior to calling any offline-related method.</p>
 <ul class="blockList">
 <li class="blockList">
 <h4>getDelayBetweenSyncs</h4>
-<pre>public&nbsp;long&nbsp;getDelayBetweenSyncs(java.util.concurrent.TimeUnit&nbsp;unit)</pre>
+<pre>public&nbsp;long&nbsp;getDelayBetweenSyncs(@NonNull
+                                 java.util.concurrent.TimeUnit&nbsp;unit)</pre>
 <div class="block"><p>Get the delay between two syncs.</p></div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
@@ -602,6 +627,7 @@ a valid license key prior to calling any offline-related method.</p>
 <li class="blockList">
 <h4>setDelayBetweenSyncs</h4>
 <pre>public&nbsp;void&nbsp;setDelayBetweenSyncs(long&nbsp;duration,
+                                 @NonNull
                                  java.util.concurrent.TimeUnit&nbsp;unit)</pre>
 <div class="block"><p>Set the delay after which data is considered to be obsolete.</p></div>
 <dl>
@@ -622,7 +648,7 @@ a valid license key prior to calling any offline-related method.</p>
 <p>NOTE: All index syncs are sequential: no two syncs can run at the same time.</p></div>
 <dl>
 <dt><span class="throwsLabel">Throws:</span></dt>
-<dd><code>java.lang.IllegalStateException</code> - If no data selection queries were set.</dd>
+<dd><code>IllegalStateException</code> - If no data selection queries were set.</dd>
 </dl>
 </li>
 </ul>
@@ -636,7 +662,7 @@ a valid license key prior to calling any offline-related method.</p>
 <div class="block"><p>Launch a sync only if the data is obsolete. The data is obsolete if the last successful sync is older than the delay between syncs, or if the data selection queries have been changed in the meantime.</p></div>
 <dl>
 <dt><span class="throwsLabel">Throws:</span></dt>
-<dd><code>java.lang.IllegalStateException</code> - If no data selection queries were set.</dd>
+<dd><code>IllegalStateException</code> - If no data selection queries were set.</dd>
 </dl>
 </li>
 </ul>
@@ -692,7 +718,9 @@ a valid license key prior to calling any offline-related method.</p>
 <ul class="blockList">
 <li class="blockList">
 <h4>searchAsync</h4>
-<pre>public&nbsp;<a href="../../../../com/algolia/search/saas/Request.html" title="interface in com.algolia.search.saas">Request</a>&nbsp;searchAsync(<a href="../../../../com/algolia/search/saas/Query.html" title="class in com.algolia.search.saas">Query</a>&nbsp;query,
+<pre>public&nbsp;<a href="../../../../com/algolia/search/saas/Request.html" title="interface in com.algolia.search.saas">Request</a>&nbsp;searchAsync(@NonNull
+                           <a href="../../../../com/algolia/search/saas/Query.html" title="class in com.algolia.search.saas">Query</a>&nbsp;query,
+                           @NonNull
                            <a href="../../../../com/algolia/search/saas/CompletionHandler.html" title="interface in com.algolia.search.saas">CompletionHandler</a>&nbsp;completionHandler)</pre>
 <div class="block"><p>Search the online API, falling back to the local mirror if enabled in case of error.</p></div>
 <dl>
@@ -712,7 +740,9 @@ a valid license key prior to calling any offline-related method.</p>
 <ul class="blockList">
 <li class="blockList">
 <h4>searchOnlineAsync</h4>
-<pre>public&nbsp;<a href="../../../../com/algolia/search/saas/Request.html" title="interface in com.algolia.search.saas">Request</a>&nbsp;searchOnlineAsync(<a href="../../../../com/algolia/search/saas/Query.html" title="class in com.algolia.search.saas">Query</a>&nbsp;query,
+<pre>public&nbsp;<a href="../../../../com/algolia/search/saas/Request.html" title="interface in com.algolia.search.saas">Request</a>&nbsp;searchOnlineAsync(@NonNull
+                                 <a href="../../../../com/algolia/search/saas/Query.html" title="class in com.algolia.search.saas">Query</a>&nbsp;query,
+                                 @NonNull
                                  <a href="../../../../com/algolia/search/saas/CompletionHandler.html" title="interface in com.algolia.search.saas">CompletionHandler</a>&nbsp;completionHandler)</pre>
 <div class="block"><p>Search the online API.</p></div>
 <dl>
@@ -730,7 +760,9 @@ a valid license key prior to calling any offline-related method.</p>
 <ul class="blockList">
 <li class="blockList">
 <h4>searchOfflineAsync</h4>
-<pre>public&nbsp;<a href="../../../../com/algolia/search/saas/Request.html" title="interface in com.algolia.search.saas">Request</a>&nbsp;searchOfflineAsync(<a href="../../../../com/algolia/search/saas/Query.html" title="class in com.algolia.search.saas">Query</a>&nbsp;query,
+<pre>public&nbsp;<a href="../../../../com/algolia/search/saas/Request.html" title="interface in com.algolia.search.saas">Request</a>&nbsp;searchOfflineAsync(@NonNull
+                                  <a href="../../../../com/algolia/search/saas/Query.html" title="class in com.algolia.search.saas">Query</a>&nbsp;query,
+                                  @NonNull
                                   <a href="../../../../com/algolia/search/saas/CompletionHandler.html" title="interface in com.algolia.search.saas">CompletionHandler</a>&nbsp;completionHandler)</pre>
 <div class="block"><p>Search the local mirror.</p></div>
 <dl>
@@ -740,7 +772,7 @@ a valid license key prior to calling any offline-related method.</p>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>A cancellable request.</dd>
 <dt><span class="throwsLabel">Throws:</span></dt>
-<dd><code>java.lang.IllegalStateException</code> - if mirroring is not activated on this index.</dd>
+<dd><code>IllegalStateException</code> - if mirroring is not activated on this index.</dd>
 </dl>
 </li>
 </ul>
@@ -750,8 +782,10 @@ a valid license key prior to calling any offline-related method.</p>
 <ul class="blockList">
 <li class="blockList">
 <h4>multipleQueriesAsync</h4>
-<pre>public&nbsp;<a href="../../../../com/algolia/search/saas/Request.html" title="interface in com.algolia.search.saas">Request</a>&nbsp;multipleQueriesAsync(java.util.List&lt;<a href="../../../../com/algolia/search/saas/Query.html" title="class in com.algolia.search.saas">Query</a>&gt;&nbsp;queries,
+<pre>public&nbsp;<a href="../../../../com/algolia/search/saas/Request.html" title="interface in com.algolia.search.saas">Request</a>&nbsp;multipleQueriesAsync(@NonNull
+                                    List&lt;<a href="../../../../com/algolia/search/saas/Query.html" title="class in com.algolia.search.saas">Query</a>&gt;&nbsp;queries,
                                     <a href="../../../../com/algolia/search/saas/Client.MultipleQueriesStrategy.html" title="enum in com.algolia.search.saas">Client.MultipleQueriesStrategy</a>&nbsp;strategy,
+                                    @NonNull
                                     <a href="../../../../com/algolia/search/saas/CompletionHandler.html" title="interface in com.algolia.search.saas">CompletionHandler</a>&nbsp;completionHandler)</pre>
 <div class="block"><span class="descfrmTypeLabel">Description copied from class:&nbsp;<code><a href="../../../../com/algolia/search/saas/Index.html#multipleQueriesAsync-java.util.List-com.algolia.search.saas.Client.MultipleQueriesStrategy-com.algolia.search.saas.CompletionHandler-">Index</a></code></span></div>
 <div class="block"><p>Run multiple queries on this index with one API call. A variant of <a href="../../../../com/algolia/search/saas/Client.html#multipleQueriesAsync-java.util.List-com.algolia.search.saas.Client.MultipleQueriesStrategy-com.algolia.search.saas.CompletionHandler-"><code>Client.multipleQueriesAsync(List, Client.MultipleQueriesStrategy, CompletionHandler)</code></a> where the targeted index is always the receiver.</p></div>
@@ -773,8 +807,10 @@ a valid license key prior to calling any offline-related method.</p>
 <ul class="blockList">
 <li class="blockList">
 <h4>multipleQueriesOnlineAsync</h4>
-<pre>public&nbsp;<a href="../../../../com/algolia/search/saas/Request.html" title="interface in com.algolia.search.saas">Request</a>&nbsp;multipleQueriesOnlineAsync(java.util.List&lt;<a href="../../../../com/algolia/search/saas/Query.html" title="class in com.algolia.search.saas">Query</a>&gt;&nbsp;queries,
+<pre>public&nbsp;<a href="../../../../com/algolia/search/saas/Request.html" title="interface in com.algolia.search.saas">Request</a>&nbsp;multipleQueriesOnlineAsync(@NonNull
+                                          List&lt;<a href="../../../../com/algolia/search/saas/Query.html" title="class in com.algolia.search.saas">Query</a>&gt;&nbsp;queries,
                                           <a href="../../../../com/algolia/search/saas/Client.MultipleQueriesStrategy.html" title="enum in com.algolia.search.saas">Client.MultipleQueriesStrategy</a>&nbsp;strategy,
+                                          @NonNull
                                           <a href="../../../../com/algolia/search/saas/CompletionHandler.html" title="interface in com.algolia.search.saas">CompletionHandler</a>&nbsp;completionHandler)</pre>
 <div class="block"><p>Run multiple queries on this index, explicitly targeting the online API.</p></div>
 <dl>
@@ -793,8 +829,10 @@ a valid license key prior to calling any offline-related method.</p>
 <ul class="blockList">
 <li class="blockList">
 <h4>multipleQueriesOfflineAsync</h4>
-<pre>public&nbsp;<a href="../../../../com/algolia/search/saas/Request.html" title="interface in com.algolia.search.saas">Request</a>&nbsp;multipleQueriesOfflineAsync(java.util.List&lt;<a href="../../../../com/algolia/search/saas/Query.html" title="class in com.algolia.search.saas">Query</a>&gt;&nbsp;queries,
+<pre>public&nbsp;<a href="../../../../com/algolia/search/saas/Request.html" title="interface in com.algolia.search.saas">Request</a>&nbsp;multipleQueriesOfflineAsync(@NonNull
+                                           List&lt;<a href="../../../../com/algolia/search/saas/Query.html" title="class in com.algolia.search.saas">Query</a>&gt;&nbsp;queries,
                                            <a href="../../../../com/algolia/search/saas/Client.MultipleQueriesStrategy.html" title="enum in com.algolia.search.saas">Client.MultipleQueriesStrategy</a>&nbsp;strategy,
+                                           @NonNull
                                            <a href="../../../../com/algolia/search/saas/CompletionHandler.html" title="interface in com.algolia.search.saas">CompletionHandler</a>&nbsp;completionHandler)</pre>
 <div class="block"><p>Run multiple queries on this index, explicitly targeting the offline mirror.</p></div>
 <dl>
@@ -805,7 +843,7 @@ a valid license key prior to calling any offline-related method.</p>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>A cancellable request.</dd>
 <dt><span class="throwsLabel">Throws:</span></dt>
-<dd><code>java.lang.IllegalStateException</code> - if mirroring is not activated on this index.</dd>
+<dd><code>IllegalStateException</code> - if mirroring is not activated on this index.</dd>
 </dl>
 </li>
 </ul>
@@ -815,7 +853,9 @@ a valid license key prior to calling any offline-related method.</p>
 <ul class="blockList">
 <li class="blockList">
 <h4>browseMirrorAsync</h4>
-<pre>public&nbsp;<a href="../../../../com/algolia/search/saas/Request.html" title="interface in com.algolia.search.saas">Request</a>&nbsp;browseMirrorAsync(<a href="../../../../com/algolia/search/saas/Query.html" title="class in com.algolia.search.saas">Query</a>&nbsp;query,
+<pre>public&nbsp;<a href="../../../../com/algolia/search/saas/Request.html" title="interface in com.algolia.search.saas">Request</a>&nbsp;browseMirrorAsync(@NonNull
+                                 <a href="../../../../com/algolia/search/saas/Query.html" title="class in com.algolia.search.saas">Query</a>&nbsp;query,
+                                 @NonNull
                                  <a href="../../../../com/algolia/search/saas/CompletionHandler.html" title="interface in com.algolia.search.saas">CompletionHandler</a>&nbsp;completionHandler)</pre>
 <div class="block"><p>Browse the local mirror (initial call). Same semantics as <a href="../../../../com/algolia/search/saas/Index.html#browseAsync-com.algolia.search.saas.Query-com.algolia.search.saas.CompletionHandler-"><code>Index.browseAsync(com.algolia.search.saas.Query, com.algolia.search.saas.CompletionHandler)</code></a>.</p></div>
 <dl>
@@ -825,7 +865,7 @@ a valid license key prior to calling any offline-related method.</p>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>A cancellable request.</dd>
 <dt><span class="throwsLabel">Throws:</span></dt>
-<dd><code>java.lang.IllegalStateException</code> - if mirroring is not activated on this index.</dd>
+<dd><code>IllegalStateException</code> - if mirroring is not activated on this index.</dd>
 </dl>
 </li>
 </ul>
@@ -835,7 +875,9 @@ a valid license key prior to calling any offline-related method.</p>
 <ul class="blockList">
 <li class="blockList">
 <h4>browseMirrorFromAsync</h4>
-<pre>public&nbsp;<a href="../../../../com/algolia/search/saas/Request.html" title="interface in com.algolia.search.saas">Request</a>&nbsp;browseMirrorFromAsync(java.lang.String&nbsp;cursor,
+<pre>public&nbsp;<a href="../../../../com/algolia/search/saas/Request.html" title="interface in com.algolia.search.saas">Request</a>&nbsp;browseMirrorFromAsync(@NonNull
+                                     String&nbsp;cursor,
+                                     @NonNull
                                      <a href="../../../../com/algolia/search/saas/CompletionHandler.html" title="interface in com.algolia.search.saas">CompletionHandler</a>&nbsp;completionHandler)</pre>
 <div class="block"><p>Browse the local mirror (subsequent calls). Same semantics as <a href="../../../../com/algolia/search/saas/Index.html#browseFromAsync-java.lang.String-com.algolia.search.saas.CompletionHandler-"><code>Index.browseFromAsync(java.lang.String, com.algolia.search.saas.CompletionHandler)</code></a>.</p></div>
 <dl>
@@ -845,7 +887,7 @@ a valid license key prior to calling any offline-related method.</p>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>A cancellable request.</dd>
 <dt><span class="throwsLabel">Throws:</span></dt>
-<dd><code>java.lang.IllegalStateException</code> - if mirroring is not activated on this index.</dd>
+<dd><code>IllegalStateException</code> - if mirroring is not activated on this index.</dd>
 </dl>
 </li>
 </ul>
@@ -855,7 +897,8 @@ a valid license key prior to calling any offline-related method.</p>
 <ul class="blockList">
 <li class="blockList">
 <h4>addSyncListener</h4>
-<pre>public&nbsp;void&nbsp;addSyncListener(<a href="../../../../com/algolia/search/saas/SyncListener.html" title="interface in com.algolia.search.saas">SyncListener</a>&nbsp;listener)</pre>
+<pre>public&nbsp;void&nbsp;addSyncListener(@NonNull
+                            <a href="../../../../com/algolia/search/saas/SyncListener.html" title="interface in com.algolia.search.saas">SyncListener</a>&nbsp;listener)</pre>
 <div class="block"><p>Add a listener for sync events.</p></div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
@@ -869,7 +912,8 @@ a valid license key prior to calling any offline-related method.</p>
 <ul class="blockListLast">
 <li class="blockList">
 <h4>removeSyncListener</h4>
-<pre>public&nbsp;void&nbsp;removeSyncListener(<a href="../../../../com/algolia/search/saas/SyncListener.html" title="interface in com.algolia.search.saas">SyncListener</a>&nbsp;listener)</pre>
+<pre>public&nbsp;void&nbsp;removeSyncListener(@NonNull
+                               <a href="../../../../com/algolia/search/saas/SyncListener.html" title="interface in com.algolia.search.saas">SyncListener</a>&nbsp;listener)</pre>
 <div class="block"><p>Remove a listener for sync events.</p></div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>

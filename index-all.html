@@ -208,6 +208,12 @@
 <dd>
 <div class="block">Disable and reset cache</div>
 </dd>
+<dt><a href="com/algolia/search/saas/helpers/DisjunctiveFaceting.html" title="class in com.algolia.search.saas.helpers"><span class="typeNameLink">DisjunctiveFaceting</span></a> - Class in <a href="com/algolia/search/saas/helpers/package-summary.html">com.algolia.search.saas.helpers</a></dt>
+<dd>
+<div class="block">Disjunctive faceting helper.</div>
+</dd>
+<dt><span class="memberNameLink"><a href="com/algolia/search/saas/helpers/DisjunctiveFaceting.html#DisjunctiveFaceting--">DisjunctiveFaceting()</a></span> - Constructor for class com.algolia.search.saas.helpers.<a href="com/algolia/search/saas/helpers/DisjunctiveFaceting.html" title="class in com.algolia.search.saas.helpers">DisjunctiveFaceting</a></dt>
+<dd>&nbsp;</dd>
 </dl>
 <a name="I:E">
 <!--   -->
@@ -516,7 +522,15 @@
 <dd>
 <div class="block">Partially update an object (asynchronously).</div>
 </dd>
+<dt><span class="memberNameLink"><a href="com/algolia/search/saas/Index.html#partialUpdateObjectAsync-org.json.JSONObject-java.lang.String-boolean-com.algolia.search.saas.CompletionHandler-">partialUpdateObjectAsync(JSONObject, String, boolean, CompletionHandler)</a></span> - Method in class com.algolia.search.saas.<a href="com/algolia/search/saas/Index.html" title="class in com.algolia.search.saas">Index</a></dt>
+<dd>
+<div class="block">Partially update an object (asynchronously).</div>
+</dd>
 <dt><span class="memberNameLink"><a href="com/algolia/search/saas/Index.html#partialUpdateObjectsAsync-org.json.JSONArray-com.algolia.search.saas.CompletionHandler-">partialUpdateObjectsAsync(JSONArray, CompletionHandler)</a></span> - Method in class com.algolia.search.saas.<a href="com/algolia/search/saas/Index.html" title="class in com.algolia.search.saas">Index</a></dt>
+<dd>
+<div class="block">Partially update several objects (asynchronously).</div>
+</dd>
+<dt><span class="memberNameLink"><a href="com/algolia/search/saas/Index.html#partialUpdateObjectsAsync-org.json.JSONArray-boolean-com.algolia.search.saas.CompletionHandler-">partialUpdateObjectsAsync(JSONArray, boolean, CompletionHandler)</a></span> - Method in class com.algolia.search.saas.<a href="com/algolia/search/saas/Index.html" title="class in com.algolia.search.saas">Index</a></dt>
 <dd>
 <div class="block">Partially update several objects (asynchronously).</div>
 </dd>
@@ -598,6 +612,10 @@
 <dd>
 <div class="block">Search inside this index (asynchronously).</div>
 </dd>
+<dt><span class="memberNameLink"><a href="com/algolia/search/saas/helpers/DisjunctiveFaceting.html#searchDisjunctiveFacetingAsync-com.algolia.search.saas.Query-java.util.List-java.util.Map-com.algolia.search.saas.CompletionHandler-">searchDisjunctiveFacetingAsync(Query, List&lt;String&gt;, Map&lt;String, List&lt;String&gt;&gt;, CompletionHandler)</a></span> - Method in class com.algolia.search.saas.helpers.<a href="com/algolia/search/saas/helpers/DisjunctiveFaceting.html" title="class in com.algolia.search.saas.helpers">DisjunctiveFaceting</a></dt>
+<dd>
+<div class="block">Perform a search with disjunctive facets, generating as many queries as number of disjunctive facets.</div>
+</dd>
 <dt><span class="memberNameLink"><a href="com/algolia/search/saas/Index.html#searchDisjunctiveFacetingAsync-com.algolia.search.saas.Query-java.util.List-java.util.Map-com.algolia.search.saas.CompletionHandler-">searchDisjunctiveFacetingAsync(Query, List&lt;String&gt;, Map&lt;String, List&lt;String&gt;&gt;, CompletionHandler)</a></span> - Method in class com.algolia.search.saas.<a href="com/algolia/search/saas/Index.html" title="class in com.algolia.search.saas">Index</a></dt>
 <dd>
 <div class="block">Perform a search with disjunctive facets, generating as many queries as number of disjunctive facets (helper).</div>
@@ -656,7 +674,7 @@
 </dd>
 <dt><span class="memberNameLink"><a href="com/algolia/search/saas/Query.html#setDisableTypoToleranceOnAttributes-java.lang.String...-">setDisableTypoToleranceOnAttributes(String...)</a></span> - Method in class com.algolia.search.saas.<a href="com/algolia/search/saas/Query.html" title="class in com.algolia.search.saas">Query</a></dt>
 <dd>
-<div class="block">List of attributes on which you want to disable typo tolerance (must be a subset of the attributesToIndex index setting).</div>
+<div class="block">List of attributes on which you want to disable typo tolerance (must be a subset of the <code>searchableAttributes</code> index setting).</div>
 </dd>
 <dt><span class="memberNameLink"><a href="com/algolia/search/saas/Query.html#setDistinct-java.lang.Integer-">setDistinct(Integer)</a></span> - Method in class com.algolia.search.saas.<a href="com/algolia/search/saas/Query.html" title="class in com.algolia.search.saas">Query</a></dt>
 <dd>
@@ -760,7 +778,7 @@
 <dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="com/algolia/search/saas/Query.html#setRestrictSearchableAttributes-java.lang.String...-">setRestrictSearchableAttributes(String...)</a></span> - Method in class com.algolia.search.saas.<a href="com/algolia/search/saas/Query.html" title="class in com.algolia.search.saas">Query</a></dt>
 <dd>
-<div class="block">List of object attributes you want to use for textual search (must be a subset of the attributesToIndex index setting).</div>
+<div class="block">List of object attributes you want to use for textual search (must be a subset of the <code>searchableAttributes</code> index setting).</div>
 </dd>
 <dt><span class="memberNameLink"><a href="com/algolia/search/saas/Client.html#setSearchTimeout-int-">setSearchTimeout(int)</a></span> - Method in class com.algolia.search.saas.<a href="com/algolia/search/saas/Client.html" title="class in com.algolia.search.saas">Client</a></dt>
 <dd>

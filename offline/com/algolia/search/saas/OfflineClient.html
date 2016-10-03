@@ -17,7 +17,7 @@
     catch(err) {
     }
 //-->
-var methods = {"i0":10,"i1":10,"i2":10,"i3":10,"i4":42};
+var methods = {"i0":10,"i1":10,"i2":10,"i3":10,"i4":10,"i5":10,"i6":10,"i7":10,"i8":42,"i9":10,"i10":10};
 var tabs = {65535:["t0","All Methods"],2:["t2","Instance Methods"],8:["t4","Concrete Methods"],32:["t6","Deprecated Methods"]};
 var altColor = "altColor";
 var rowColor = "rowColor";
@@ -48,7 +48,7 @@ var activeTableTab = "activeTableTab";
 <div class="subNav">
 <ul class="navList">
 <li><a href="../../../../com/algolia/search/saas/MirroredIndex.SyncStats.html" title="class in com.algolia.search.saas"><span class="typeNameLink">Prev&nbsp;Class</span></a></li>
-<li><a href="../../../../com/algolia/search/saas/Query.html" title="class in com.algolia.search.saas"><span class="typeNameLink">Next&nbsp;Class</span></a></li>
+<li><a href="../../../../com/algolia/search/saas/OfflineIndex.html" title="class in com.algolia.search.saas"><span class="typeNameLink">Next&nbsp;Class</span></a></li>
 </ul>
 <ul class="navList">
 <li><a href="../../../../index.html?com/algolia/search/saas/OfflineClient.html" target="_top">Frames</a></li>
@@ -95,7 +95,7 @@ var activeTableTab = "activeTableTab";
 </div>
 <div class="contentContainer">
 <ul class="inheritance">
-<li>java.lang.Object</li>
+<li>Object</li>
 <li>
 <ul class="inheritance">
 <li><a href="../../../../com/algolia/search/saas/Client.html" title="class in com.algolia.search.saas">com.algolia.search.saas.Client</a></li>
@@ -151,25 +151,25 @@ key prior to calling any offline-related method.</p></div>
 </tr>
 <tr class="altColor">
 <td class="colOne"><code><span class="memberNameLink"><a href="../../../../com/algolia/search/saas/OfflineClient.html#OfflineClient-android.content.Context-java.lang.String-java.lang.String-">OfflineClient</a></span>(android.content.Context&nbsp;context,
-             java.lang.String&nbsp;applicationID,
-             java.lang.String&nbsp;apiKey)</code>
+             String&nbsp;applicationID,
+             String&nbsp;apiKey)</code>
 <div class="block">Construct a new offline-enabled API client.</div>
 </td>
 </tr>
 <tr class="rowColor">
 <td class="colOne"><code><span class="memberNameLink"><a href="../../../../com/algolia/search/saas/OfflineClient.html#OfflineClient-android.content.Context-java.lang.String-java.lang.String-java.io.File-">OfflineClient</a></span>(android.content.Context&nbsp;context,
-             java.lang.String&nbsp;applicationID,
-             java.lang.String&nbsp;apiKey,
-             java.io.File&nbsp;dataDir)</code>
+             String&nbsp;applicationID,
+             String&nbsp;apiKey,
+             File&nbsp;dataDir)</code>
 <div class="block">Construct a new offline-enabled API client.</div>
 </td>
 </tr>
 <tr class="altColor">
 <td class="colOne"><code><span class="memberNameLink"><a href="../../../../com/algolia/search/saas/OfflineClient.html#OfflineClient-android.content.Context-java.lang.String-java.lang.String-java.io.File-java.lang.String:A-">OfflineClient</a></span>(android.content.Context&nbsp;context,
-             java.lang.String&nbsp;applicationID,
-             java.lang.String&nbsp;apiKey,
-             java.io.File&nbsp;dataDir,
-             java.lang.String[]&nbsp;hosts)</code>
+             String&nbsp;applicationID,
+             String&nbsp;apiKey,
+             File&nbsp;dataDir,
+             String[]&nbsp;hosts)</code>
 <div class="block">Construct a new offline-enabled API client.</div>
 </td>
 </tr>
@@ -189,35 +189,72 @@ key prior to calling any offline-related method.</p></div>
 <th class="colLast" scope="col">Method and Description</th>
 </tr>
 <tr id="i0" class="altColor">
-<td class="colFirst"><code>void</code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/algolia/search/saas/OfflineClient.html#enableOfflineMode-java.lang.String-">enableOfflineMode</a></span>(java.lang.String&nbsp;licenseData)</code>
-<div class="block">Enable the offline mode.</div>
+<td class="colFirst"><code><a href="../../../../com/algolia/search/saas/Request.html" title="interface in com.algolia.search.saas">Request</a></code></td>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/algolia/search/saas/OfflineClient.html#deleteIndexOfflineAsync-java.lang.String-com.algolia.search.saas.CompletionHandler-">deleteIndexOfflineAsync</a></span>(String&nbsp;indexName,
+                       <a href="../../../../com/algolia/search/saas/CompletionHandler.html" title="interface in com.algolia.search.saas">CompletionHandler</a>&nbsp;completionHandler)</code>
+<div class="block">Delete an offline index.</div>
 </td>
 </tr>
 <tr id="i1" class="rowColor">
-<td class="colFirst"><code>java.io.File</code></td>
+<td class="colFirst"><code>void</code></td>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/algolia/search/saas/OfflineClient.html#enableOfflineMode-java.lang.String-">enableOfflineMode</a></span>(String&nbsp;licenseData)</code>
+<div class="block">Enable the offline mode.</div>
+</td>
+</tr>
+<tr id="i2" class="altColor">
+<td class="colFirst"><code>android.content.Context</code></td>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/algolia/search/saas/OfflineClient.html#getContext--">getContext</a></span>()</code>&nbsp;</td>
+</tr>
+<tr id="i3" class="rowColor">
+<td class="colFirst"><code>File</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/algolia/search/saas/OfflineClient.html#getDefaultDataDir--">getDefaultDataDir</a></span>()</code>
 <div class="block">Get the default data directory.</div>
 </td>
 </tr>
-<tr id="i2" class="altColor">
+<tr id="i4" class="altColor">
 <td class="colFirst"><code><a href="../../../../com/algolia/search/saas/MirroredIndex.html" title="class in com.algolia.search.saas">MirroredIndex</a></code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/algolia/search/saas/OfflineClient.html#getIndex-java.lang.String-">getIndex</a></span>(java.lang.String&nbsp;indexName)</code>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/algolia/search/saas/OfflineClient.html#getIndex-java.lang.String-">getIndex</a></span>(String&nbsp;indexName)</code>
 <div class="block">Obtain a mirrored index.</div>
 </td>
 </tr>
-<tr id="i3" class="rowColor">
-<td class="colFirst"><code>java.io.File</code></td>
+<tr id="i5" class="rowColor">
+<td class="colFirst"><code><a href="../../../../com/algolia/search/saas/OfflineIndex.html" title="class in com.algolia.search.saas">OfflineIndex</a></code></td>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/algolia/search/saas/OfflineClient.html#getOfflineIndex-java.lang.String-">getOfflineIndex</a></span>(String&nbsp;indexName)</code>
+<div class="block">Obtain a purely offline index.</div>
+</td>
+</tr>
+<tr id="i6" class="altColor">
+<td class="colFirst"><code>File</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/algolia/search/saas/OfflineClient.html#getRootDataDir--">getRootDataDir</a></span>()</code>
 <div class="block">Get the path to directory where the local data is stored.</div>
 </td>
 </tr>
-<tr id="i4" class="altColor">
+<tr id="i7" class="rowColor">
+<td class="colFirst"><code>boolean</code></td>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/algolia/search/saas/OfflineClient.html#hasOfflineData-java.lang.String-">hasOfflineData</a></span>(String&nbsp;name)</code>
+<div class="block">Test if an index has offline data on disk.</div>
+</td>
+</tr>
+<tr id="i8" class="altColor">
 <td class="colFirst"><code><a href="../../../../com/algolia/search/saas/MirroredIndex.html" title="class in com.algolia.search.saas">MirroredIndex</a></code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/algolia/search/saas/OfflineClient.html#initIndex-java.lang.String-">initIndex</a></span>(java.lang.String&nbsp;indexName)</code>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/algolia/search/saas/OfflineClient.html#initIndex-java.lang.String-">initIndex</a></span>(String&nbsp;indexName)</code>
 <div class="block"><span class="deprecatedLabel">Deprecated.</span>&nbsp;
 <div class="block"><span class="deprecationComment">You should now use <a href="../../../../com/algolia/search/saas/OfflineClient.html#getIndex-java.lang.String-"><code>getIndex(String)</code></a>, which re-uses instances with the same name.</span></div>
 </div>
+</td>
+</tr>
+<tr id="i9" class="rowColor">
+<td class="colFirst"><code><a href="../../../../com/algolia/search/saas/Request.html" title="interface in com.algolia.search.saas">Request</a></code></td>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/algolia/search/saas/OfflineClient.html#listIndexesOfflineAsync-com.algolia.search.saas.CompletionHandler-">listIndexesOfflineAsync</a></span>(<a href="../../../../com/algolia/search/saas/CompletionHandler.html" title="interface in com.algolia.search.saas">CompletionHandler</a>&nbsp;completionHandler)</code>
+<div class="block">List existing offline indices.</div>
+</td>
+</tr>
+<tr id="i10" class="altColor">
+<td class="colFirst"><code><a href="../../../../com/algolia/search/saas/Request.html" title="interface in com.algolia.search.saas">Request</a></code></td>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/algolia/search/saas/OfflineClient.html#moveIndexOfflineAsync-java.lang.String-java.lang.String-com.algolia.search.saas.CompletionHandler-">moveIndexOfflineAsync</a></span>(String&nbsp;srcIndexName,
+                     String&nbsp;dstIndexName,
+                     <a href="../../../../com/algolia/search/saas/CompletionHandler.html" title="interface in com.algolia.search.saas">CompletionHandler</a>&nbsp;completionHandler)</code>
+<div class="block">Move an existing offline index.</div>
 </td>
 </tr>
 </table>
@@ -229,10 +266,10 @@ key prior to calling any offline-related method.</p></div>
 <code><a href="../../../../com/algolia/search/saas/Client.html#addUserAgent-com.algolia.search.saas.Client.LibraryVersion-">addUserAgent</a>, <a href="../../../../com/algolia/search/saas/Client.html#batchAsync-org.json.JSONArray-com.algolia.search.saas.CompletionHandler-">batchAsync</a>, <a href="../../../../com/algolia/search/saas/Client.html#copyIndexAsync-java.lang.String-java.lang.String-com.algolia.search.saas.CompletionHandler-">copyIndexAsync</a>, <a href="../../../../com/algolia/search/saas/Client.html#deleteIndexAsync-java.lang.String-com.algolia.search.saas.CompletionHandler-">deleteIndexAsync</a>, <a href="../../../../com/algolia/search/saas/Client.html#getApplicationID--">getApplicationID</a>, <a href="../../../../com/algolia/search/saas/Client.html#getConnectTimeout--">getConnectTimeout</a>, <a href="../../../../com/algolia/search/saas/Client.html#getHeader-java.lang.String-">getHeader</a>, <a href="../../../../com/algolia/search/saas/Client.html#getReadHosts--">getReadHosts</a>, <a href="../../../../com/algolia/search/saas/Client.html#getReadTimeout--">getReadTimeout</a>, <a href="../../../../com/algolia/search/saas/Client.html#getSearchTimeout--">getSearchTimeout</a>, <a href="../../../../com/algolia/search/saas/Client.html#getUserAgents--">getUserAgents</a>, <a href="../../../../com/algolia/search/saas/Client.html#getWriteHosts--">getWriteHosts</a>, <a href="../../../../com/algolia/search/saas/Client.html#hasUserAgent-com.algolia.search.saas.Client.LibraryVersion-">hasUserAgent</a>, <a href="../../../../com/algolia/search/saas/Client.html#listIndexesAsync-com.algolia.search.saas.CompletionHandler-">listIndexesAsync</a>, <a href="../../../../com/algolia/search/saas/Client.html#moveIndexAsync-java.lang.String-java.lang.String-com.algolia.search.saas.CompletionHandler-">moveIndexAsync</a>, <a href="../../../../com/algolia/search/saas/Client.html#multipleQueriesAsync-java.util.List-com.algolia.search.saas.Client.MultipleQueriesStrategy-com.algolia.search.saas.CompletionHandler-">multipleQueriesAsync</a>, <a href="../../../../com/algolia/search/saas/Client.html#removeUserAgent-com.algolia.search.saas.Client.LibraryVersion-">removeUserAgent</a>, <a href="../../../../com/algolia/search/saas/Client.html#setConnectTimeout-int-">setConnectTimeout</a>, <a href="../../../../com/algolia/search/saas/Client.html#setHeader-java.lang.String-java.lang.String-">setHeader</a>, <a href="../../../../com/algolia/search/saas/Client.html#setHosts-java.lang.String...-">setHosts</a>, <a href="../../../../com/algolia/search/saas/Client.html#setReadHosts-java.lang.String...-">setReadHosts</a>, <a href="../../../../com/algolia/search/saas/Client.html#setReadTimeout-int-">setReadTimeout</a>, <a href="../../../../com/algolia/search/saas/Client.html#setSearchTimeout-int-">setSearchTimeout</a>, <a href="../../../../com/algolia/search/saas/Client.html#setWriteHosts-java.lang.String...-">setWriteHosts</a></code></li>
 </ul>
 <ul class="blockList">
-<li class="blockList"><a name="methods.inherited.from.class.java.lang.Object">
+<li class="blockList"><a name="methods.inherited.from.class.Object">
 <!--   -->
 </a>
-<h3>Methods inherited from class&nbsp;java.lang.Object</h3>
+<h3>Methods inherited from class&nbsp;Object</h3>
 <code>equals, getClass, hashCode, notify, notifyAll, toString, wait, wait, wait</code></li>
 </ul>
 </li>
@@ -255,9 +292,12 @@ key prior to calling any offline-related method.</p></div>
 <ul class="blockList">
 <li class="blockList">
 <h4>OfflineClient</h4>
-<pre>public&nbsp;OfflineClient(android.content.Context&nbsp;context,
-                     java.lang.String&nbsp;applicationID,
-                     java.lang.String&nbsp;apiKey)</pre>
+<pre>public&nbsp;OfflineClient(@NonNull
+                     android.content.Context&nbsp;context,
+                     @NonNull
+                     String&nbsp;applicationID,
+                     @NonNull
+                     String&nbsp;apiKey)</pre>
 <div class="block"><p>Construct a new offline-enabled API client.</p></div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
@@ -273,10 +313,13 @@ key prior to calling any offline-related method.</p></div>
 <ul class="blockList">
 <li class="blockList">
 <h4>OfflineClient</h4>
-<pre>public&nbsp;OfflineClient(android.content.Context&nbsp;context,
-                     java.lang.String&nbsp;applicationID,
-                     java.lang.String&nbsp;apiKey,
-                     java.io.File&nbsp;dataDir)</pre>
+<pre>public&nbsp;OfflineClient(@NonNull
+                     android.content.Context&nbsp;context,
+                     @NonNull
+                     String&nbsp;applicationID,
+                     @NonNull
+                     String&nbsp;apiKey,
+                     File&nbsp;dataDir)</pre>
 <div class="block"><p>Construct a new offline-enabled API client.</p></div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
@@ -293,11 +336,14 @@ key prior to calling any offline-related method.</p></div>
 <ul class="blockListLast">
 <li class="blockList">
 <h4>OfflineClient</h4>
-<pre>public&nbsp;OfflineClient(android.content.Context&nbsp;context,
-                     java.lang.String&nbsp;applicationID,
-                     java.lang.String&nbsp;apiKey,
-                     java.io.File&nbsp;dataDir,
-                     java.lang.String[]&nbsp;hosts)</pre>
+<pre>public&nbsp;OfflineClient(@NonNull
+                     android.content.Context&nbsp;context,
+                     @NonNull
+                     String&nbsp;applicationID,
+                     @NonNull
+                     String&nbsp;apiKey,
+                     File&nbsp;dataDir,
+                     String[]&nbsp;hosts)</pre>
 <div class="block"><p>Construct a new offline-enabled API client.</p></div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
@@ -323,7 +369,8 @@ key prior to calling any offline-related method.</p></div>
 <ul class="blockList">
 <li class="blockList">
 <h4>initIndex</h4>
-<pre>public&nbsp;<a href="../../../../com/algolia/search/saas/MirroredIndex.html" title="class in com.algolia.search.saas">MirroredIndex</a>&nbsp;initIndex(java.lang.String&nbsp;indexName)</pre>
+<pre>public&nbsp;<a href="../../../../com/algolia/search/saas/MirroredIndex.html" title="class in com.algolia.search.saas">MirroredIndex</a>&nbsp;initIndex(@NonNull
+                               String&nbsp;indexName)</pre>
 <div class="block"><span class="deprecatedLabel">Deprecated.</span>&nbsp;<span class="deprecationComment">You should now use <a href="../../../../com/algolia/search/saas/OfflineClient.html#getIndex-java.lang.String-"><code>getIndex(String)</code></a>, which re-uses instances with the same name.</span></div>
 <div class="block"><p>Create a new index. Although this will always be an instance of <a href="../../../../com/algolia/search/saas/MirroredIndex.html" title="class in com.algolia.search.saas"><code>MirroredIndex</code></a>, mirroring is deactivated by default.</p></div>
 <dl>
@@ -342,7 +389,9 @@ key prior to calling any offline-related method.</p></div>
 <ul class="blockList">
 <li class="blockList">
 <h4>getIndex</h4>
-<pre>public&nbsp;<a href="../../../../com/algolia/search/saas/MirroredIndex.html" title="class in com.algolia.search.saas">MirroredIndex</a>&nbsp;getIndex(java.lang.String&nbsp;indexName)</pre>
+<pre>@NonNull
+public&nbsp;<a href="../../../../com/algolia/search/saas/MirroredIndex.html" title="class in com.algolia.search.saas">MirroredIndex</a>&nbsp;getIndex(@NonNull
+                                       String&nbsp;indexName)</pre>
 <div class="block"><p>Obtain a mirrored index. Although this will always be an instance of <a href="../../../../com/algolia/search/saas/MirroredIndex.html" title="class in com.algolia.search.saas"><code>MirroredIndex</code></a>, mirroring is deactivated by default.</p></div>
 <dl>
 <dt><span class="overrideSpecifyLabel">Overrides:</span></dt>
@@ -350,7 +399,26 @@ key prior to calling any offline-related method.</p></div>
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>indexName</code> - The name of the index.</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
-<dd>A proxy to the specified index.</dd>
+<dd>A proxy to the specified index.</p>
+<p><strong>Warning:</strong> The name should not overlap with any <code>OfflineIndex</code>. See <a href="../../../../com/algolia/search/saas/OfflineClient.html#getOfflineIndex-java.lang.String-"><code>getOfflineIndex(String)</code></a>.</dd>
+</dl>
+</li>
+</ul>
+<a name="getOfflineIndex-java.lang.String-">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>getOfflineIndex</h4>
+<pre>public&nbsp;<a href="../../../../com/algolia/search/saas/OfflineIndex.html" title="class in com.algolia.search.saas">OfflineIndex</a>&nbsp;getOfflineIndex(@NonNull
+                                    String&nbsp;indexName)</pre>
+<div class="block"><p>Obtain a purely offline index.</p></div>
+<dl>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>indexName</code> - The name of the index.</dd>
+<dt><span class="returnLabel">Returns:</span></dt>
+<dd>A proxy to the specified index.</p>
+<p><strong>Warning:</strong> The name should not overlap with any <code>MirroredIndex</code>. See <a href="../../../../com/algolia/search/saas/OfflineClient.html#getIndex-java.lang.String-"><code>getIndex(String)</code></a>.</dd>
 </dl>
 </li>
 </ul>
@@ -360,7 +428,8 @@ key prior to calling any offline-related method.</p></div>
 <ul class="blockList">
 <li class="blockList">
 <h4>getRootDataDir</h4>
-<pre>public&nbsp;java.io.File&nbsp;getRootDataDir()</pre>
+<pre>@NonNull
+public&nbsp;File&nbsp;getRootDataDir()</pre>
 <div class="block"><p>Get the path to directory where the local data is stored.</p></div>
 </li>
 </ul>
@@ -370,7 +439,8 @@ key prior to calling any offline-related method.</p></div>
 <ul class="blockList">
 <li class="blockList">
 <h4>enableOfflineMode</h4>
-<pre>public&nbsp;void&nbsp;enableOfflineMode(java.lang.String&nbsp;licenseData)</pre>
+<pre>public&nbsp;void&nbsp;enableOfflineMode(@NonNull
+                              String&nbsp;licenseData)</pre>
 <div class="block"><p>Enable the offline mode.</p></div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
@@ -381,14 +451,104 @@ key prior to calling any offline-related method.</p></div>
 <a name="getDefaultDataDir--">
 <!--   -->
 </a>
-<ul class="blockListLast">
+<ul class="blockList">
 <li class="blockList">
 <h4>getDefaultDataDir</h4>
-<pre>public&nbsp;java.io.File&nbsp;getDefaultDataDir()</pre>
+<pre>public&nbsp;File&nbsp;getDefaultDataDir()</pre>
 <div class="block"><p>Get the default data directory. This is an &ldquo;algolia&rdquo; subdirectory inside the application&rsquo;s files directory.</p></div>
 <dl>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>The default data directory.</dd>
+</dl>
+</li>
+</ul>
+<a name="getContext--">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>getContext</h4>
+<pre>@NonNull
+public&nbsp;android.content.Context&nbsp;getContext()</pre>
+</li>
+</ul>
+<a name="hasOfflineData-java.lang.String-">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>hasOfflineData</h4>
+<pre>public&nbsp;boolean&nbsp;hasOfflineData(@NonNull
+                              String&nbsp;name)</pre>
+<div class="block"><p>Test if an index has offline data on disk.</p>
+<p><strong>Note:</strong> This applies both to <a href="../../../../com/algolia/search/saas/MirroredIndex.html" title="class in com.algolia.search.saas"><code>MirroredIndex</code></a> and <a href="../../../../com/algolia/search/saas/OfflineIndex.html" title="class in com.algolia.search.saas"><code>OfflineIndex</code></a> instances.</p>
+<p><strong>Warning:</strong> This method is synchronous!</p></div>
+<dl>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>name</code> - The index&rsquo;s name.</dd>
+<dt><span class="returnLabel">Returns:</span></dt>
+<dd><code>true</code> if data exists on disk for this index, <code>false</code> otherwise.</dd>
+</dl>
+</li>
+</ul>
+<a name="listIndexesOfflineAsync-com.algolia.search.saas.CompletionHandler-">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>listIndexesOfflineAsync</h4>
+<pre>public&nbsp;<a href="../../../../com/algolia/search/saas/Request.html" title="interface in com.algolia.search.saas">Request</a>&nbsp;listIndexesOfflineAsync(@NonNull
+                                       <a href="../../../../com/algolia/search/saas/CompletionHandler.html" title="interface in com.algolia.search.saas">CompletionHandler</a>&nbsp;completionHandler)</pre>
+<div class="block"><p>List existing offline indices. Only indices that <em>actually exist</em> on disk are listed. If an instance was created but never synced or written to, it will not appear in the list.</p>
+<p><strong>Note:</strong> This applies both to <a href="../../../../com/algolia/search/saas/MirroredIndex.html" title="class in com.algolia.search.saas"><code>MirroredIndex</code></a> and <a href="../../../../com/algolia/search/saas/OfflineIndex.html" title="class in com.algolia.search.saas"><code>OfflineIndex</code></a> instances.</p></div>
+<dl>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>completionHandler</code> - The listener that will be notified of the request&rsquo;s outcome.</dd>
+<dt><span class="returnLabel">Returns:</span></dt>
+<dd>A cancellable request.</dd>
+</dl>
+</li>
+</ul>
+<a name="deleteIndexOfflineAsync-java.lang.String-com.algolia.search.saas.CompletionHandler-">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>deleteIndexOfflineAsync</h4>
+<pre>public&nbsp;<a href="../../../../com/algolia/search/saas/Request.html" title="interface in com.algolia.search.saas">Request</a>&nbsp;deleteIndexOfflineAsync(@NonNull
+                                       String&nbsp;indexName,
+                                       <a href="../../../../com/algolia/search/saas/CompletionHandler.html" title="interface in com.algolia.search.saas">CompletionHandler</a>&nbsp;completionHandler)</pre>
+<div class="block"><p>Delete an offline index. This deletes the data on disk. If the index does not exist, this method does nothing.</p>
+<p><strong>Note:</strong> This applies both to <a href="../../../../com/algolia/search/saas/MirroredIndex.html" title="class in com.algolia.search.saas"><code>MirroredIndex</code></a> and <a href="../../../../com/algolia/search/saas/OfflineIndex.html" title="class in com.algolia.search.saas"><code>OfflineIndex</code></a> instances.</p></div>
+<dl>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>indexName</code> - Name of index to delete.</dd>
+<dt><span class="returnLabel">Returns:</span></dt>
+<dd>A JSON object.</dd>
+</dl>
+</li>
+</ul>
+<a name="moveIndexOfflineAsync-java.lang.String-java.lang.String-com.algolia.search.saas.CompletionHandler-">
+<!--   -->
+</a>
+<ul class="blockListLast">
+<li class="blockList">
+<h4>moveIndexOfflineAsync</h4>
+<pre>public&nbsp;<a href="../../../../com/algolia/search/saas/Request.html" title="interface in com.algolia.search.saas">Request</a>&nbsp;moveIndexOfflineAsync(@NonNull
+                                     String&nbsp;srcIndexName,
+                                     @NonNull
+                                     String&nbsp;dstIndexName,
+                                     <a href="../../../../com/algolia/search/saas/CompletionHandler.html" title="interface in com.algolia.search.saas">CompletionHandler</a>&nbsp;completionHandler)</pre>
+<div class="block"><p>Move an existing offline index.</p>
+<p><strong>Warning:</strong> This will overwrite the destination index if it exists.</p>
+<p><strong>Note:</strong> This applies both to <a href="../../../../com/algolia/search/saas/MirroredIndex.html" title="class in com.algolia.search.saas"><code>MirroredIndex</code></a> and <a href="../../../../com/algolia/search/saas/OfflineIndex.html" title="class in com.algolia.search.saas"><code>OfflineIndex</code></a> instances.</p></div>
+<dl>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>srcIndexName</code> - Name of index to move.</dd>
+<dd><code>dstIndexName</code> - The new index name.</dd>
+<dd><code>completionHandler</code> - The listener that will be notified of the request&rsquo;s outcome.</dd>
+<dt><span class="returnLabel">Returns:</span></dt>
+<dd>A cancellable request.</dd>
 </dl>
 </li>
 </ul>
@@ -424,7 +584,7 @@ hljs.initHighlightingOnLoad();
 <div class="subNav">
 <ul class="navList">
 <li><a href="../../../../com/algolia/search/saas/MirroredIndex.SyncStats.html" title="class in com.algolia.search.saas"><span class="typeNameLink">Prev&nbsp;Class</span></a></li>
-<li><a href="../../../../com/algolia/search/saas/Query.html" title="class in com.algolia.search.saas"><span class="typeNameLink">Next&nbsp;Class</span></a></li>
+<li><a href="../../../../com/algolia/search/saas/OfflineIndex.html" title="class in com.algolia.search.saas"><span class="typeNameLink">Next&nbsp;Class</span></a></li>
 </ul>
 <ul class="navList">
 <li><a href="../../../../index.html?com/algolia/search/saas/OfflineClient.html" target="_top">Frames</a></li>

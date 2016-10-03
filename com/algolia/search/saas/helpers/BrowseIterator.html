@@ -95,7 +95,7 @@ var activeTableTab = "activeTableTab";
 </div>
 <div class="contentContainer">
 <ul class="inheritance">
-<li>java.lang.Object</li>
+<li>Object</li>
 <li>
 <ul class="inheritance">
 <li>com.algolia.search.saas.helpers.BrowseIterator</li>
@@ -108,7 +108,7 @@ var activeTableTab = "activeTableTab";
 <hr>
 <br>
 <pre>public class <span class="typeNameLabel">BrowseIterator</span>
-extends java.lang.Object</pre>
+extends Object</pre>
 <div class="block"><p>Iterator to browse all index content.</p>
 <p>This helper takes care of chaining API requests and calling back the handler block with the results, until: - the end of the index has been reached; - an error has been encountered; - or the user cancelled the iteration.</p></div>
 </li>
@@ -191,10 +191,10 @@ extends java.lang.Object</pre>
 </tr>
 </table>
 <ul class="blockList">
-<li class="blockList"><a name="methods.inherited.from.class.java.lang.Object">
+<li class="blockList"><a name="methods.inherited.from.class.Object">
 <!--   -->
 </a>
-<h3>Methods inherited from class&nbsp;java.lang.Object</h3>
+<h3>Methods inherited from class&nbsp;Object</h3>
 <code>equals, getClass, hashCode, notify, notifyAll, toString, wait, wait, wait</code></li>
 </ul>
 </li>
@@ -217,8 +217,11 @@ extends java.lang.Object</pre>
 <ul class="blockListLast">
 <li class="blockList">
 <h4>BrowseIterator</h4>
-<pre>public&nbsp;BrowseIterator(<a href="../../../../../com/algolia/search/saas/Index.html" title="class in com.algolia.search.saas">Index</a>&nbsp;index,
+<pre>public&nbsp;BrowseIterator(@NonNull
+                      <a href="../../../../../com/algolia/search/saas/Index.html" title="class in com.algolia.search.saas">Index</a>&nbsp;index,
+                      @NonNull
                       <a href="../../../../../com/algolia/search/saas/Query.html" title="class in com.algolia.search.saas">Query</a>&nbsp;query,
+                      @NonNull
                       <a href="../../../../../com/algolia/search/saas/helpers/BrowseIterator.BrowseIteratorHandler.html" title="interface in com.algolia.search.saas.helpers">BrowseIterator.BrowseIteratorHandler</a>&nbsp;handler)</pre>
 <div class="block"><p>Construct a new browse iterator. NOTE: The iteration does not start automatically. You have to call <code>start()</code> explicitly.</p></div>
 <dl>
