@@ -116,7 +116,7 @@ public class IndexTest extends RobolectricTestCase {
     public void testSearchAsync(int waitTimeoutSeconds) throws Exception {
         final long begin = System.nanoTime();
         // Empty search.
-        AssertCompletionHandler handler = new AssertCompletionHandler() {
+        index.searchAsync(new Query(), new AssertCompletionHandler() {
             @Override public void doRequestCompleted(JSONObject content, AlgoliaException error) {
                 if (error == null) {
                     assertEquals("Result length does not match nbHits", objects.size(), content.optInt("nbHits"));
@@ -124,12 +124,10 @@ public class IndexTest extends RobolectricTestCase {
                     fail(error.getMessage());
                 }
             }
-        };
-        index.searchAsync(new Query(), handler);
-        handler.checkAssertions();
+        });
 
         // Search with query.
-        handler = new AssertCompletionHandler() {
+        index.searchAsync(new Query("Francisco"), new AssertCompletionHandler() {
             @Override public void doRequestCompleted(JSONObject content, AlgoliaException error) {
                 if (error == null) {
                     assertEquals(1, content.optInt("nbHits"));
@@ -137,9 +135,7 @@ public class IndexTest extends RobolectricTestCase {
                     fail(error.getMessage());
                 }
             }
-        };
-        index.searchAsync(new Query("Francisco"), handler);
-        handler.checkAssertions();
+        });
 
         final long elapsedMillis = (System.nanoTime() - begin) / 1000000;
         final int waitTimeoutMillis = waitTimeoutSeconds * 1000;
@@ -155,7 +151,7 @@ public class IndexTest extends RobolectricTestCase {
         // Empty query
         // -----------
         // Not very useful, but we have to check this edge case.
-        AssertCompletionHandler handler = new AssertCompletionHandler() {
+        index.searchDisjunctiveFacetingAsync(new Query(), new ArrayList<String>(), new HashMap<String, List<String>>(), new AssertCompletionHandler() {
             @Override public void doRequestCompleted(JSONObject content, AlgoliaException error) {
                 if (error == null) {
                     assertEquals("Result length does not match nbHits", objects.size(), content.optInt("nbHits"));
@@ -163,9 +159,7 @@ public class IndexTest extends RobolectricTestCase {
                     fail(error.getMessage());
                 }
             }
-        };
-        index.searchDisjunctiveFacetingAsync(new Query(), new ArrayList<String>(), new HashMap<String, List<String>>(), handler);
-        handler.checkAssertions();
+        });
 
         // "Real" query
         // ------------
@@ -187,7 +181,7 @@ public class IndexTest extends RobolectricTestCase {
         final Map<String, List<String>> refinements = new HashMap<>();
         refinements.put("brand", Arrays.asList("Apple", "Samsung")); // disjunctive facet
         refinements.put("category", Arrays.asList("device")); // conjunctive facet
-        handler = new AssertCompletionHandler() {
+        index.searchDisjunctiveFacetingAsync(query, disjunctiveFacets, refinements, new AssertCompletionHandler() {
             @Override
             public void doRequestCompleted(JSONObject content, AlgoliaException error) {
                 if (error != null) {
@@ -203,9 +197,7 @@ public class IndexTest extends RobolectricTestCase {
                     assertEquals(1, brandFacetCounts.optInt("Whatever"));
                 }
             }
-        };
-        index.searchDisjunctiveFacetingAsync(query, disjunctiveFacets, refinements, handler);
-        handler.checkAssertions();
+        });
     }
 
     @Test
@@ -228,19 +220,17 @@ public class IndexTest extends RobolectricTestCase {
         final List<String> disjunctiveFacets = Arrays.asList("stars", "facilities");
         final Map<String, List<String>> refinements = new HashMap<>();
 
-        AssertCompletionHandler handler = new AssertCompletionHandler() {
+        index.searchDisjunctiveFacetingAsync(query, disjunctiveFacets, refinements, new AssertCompletionHandler() {
             @Override
             public void doRequestCompleted(JSONObject content, AlgoliaException error) {
                 assertEquals(5, content.optInt("nbHits"));
                 assertEquals(1, content.optJSONObject("facets").length());
                 assertEquals(2, content.optJSONObject("disjunctiveFacets").length());
             }
-        };
-        index.searchDisjunctiveFacetingAsync(query, disjunctiveFacets, refinements, handler);
-        handler.checkAssertions();
+        });
 
         refinements.put("stars", Arrays.asList("*"));
-        handler = new AssertCompletionHandler() {
+        index.searchDisjunctiveFacetingAsync(query, disjunctiveFacets, refinements, new AssertCompletionHandler() {
             @Override
             public void doRequestCompleted(JSONObject content, AlgoliaException error) {
                 assertEquals(2, content.optInt("nbHits"));
@@ -250,12 +240,10 @@ public class IndexTest extends RobolectricTestCase {
                 assertEquals(1, content.optJSONObject("disjunctiveFacets").optJSONObject("stars").optInt("**"));
                 assertEquals(2, content.optJSONObject("disjunctiveFacets").optJSONObject("stars").optInt("****"));
             }
-        };
-        index.searchDisjunctiveFacetingAsync(query, disjunctiveFacets, refinements, handler);
-        handler.checkAssertions();
+        });
 
         refinements.put("city", Arrays.asList("Paris"));
-        handler = new AssertCompletionHandler() {
+        index.searchDisjunctiveFacetingAsync(query, disjunctiveFacets, refinements, new AssertCompletionHandler() {
             @Override
             public void doRequestCompleted(JSONObject content, AlgoliaException error) {
                 assertEquals(2, content.optInt("nbHits"));
@@ -264,12 +252,10 @@ public class IndexTest extends RobolectricTestCase {
                 assertEquals(2, content.optJSONObject("disjunctiveFacets").optJSONObject("stars").optInt("*"));
                 assertEquals(1, content.optJSONObject("disjunctiveFacets").optJSONObject("stars").optInt("****"));
             }
-        };
-        index.searchDisjunctiveFacetingAsync(query, disjunctiveFacets, refinements, handler);
-        handler.checkAssertions();
+        });
 
         refinements.put("stars", Arrays.asList("*", "****"));
-        handler = new AssertCompletionHandler() {
+        index.searchDisjunctiveFacetingAsync(query, disjunctiveFacets, refinements, new AssertCompletionHandler() {
             @Override
             public void doRequestCompleted(JSONObject content, AlgoliaException error) {
 
@@ -279,9 +265,7 @@ public class IndexTest extends RobolectricTestCase {
                 assertEquals(2, content.optJSONObject("disjunctiveFacets").optJSONObject("stars").optInt("*"));
                 assertEquals(1, content.optJSONObject("disjunctiveFacets").optJSONObject("stars").optInt("****"));
             }
-        };
-        index.searchDisjunctiveFacetingAsync(query, disjunctiveFacets, refinements, handler);
-        handler.checkAssertions();
+        });
     }
 
     @Test
@@ -321,7 +305,7 @@ public class IndexTest extends RobolectricTestCase {
 
     @Test
     public void testAddObjectAsync() throws Exception {
-        AssertCompletionHandler handler = new AssertCompletionHandler() {
+        index.addObjectAsync(new JSONObject("{\"city\": \"New York\"}"), new AssertCompletionHandler() {
             @Override public void doRequestCompleted(JSONObject content, AlgoliaException error) {
                 if (error == null) {
                     assertNotNull("Result has no objectId:" + content, content.optString("objectID", null));
@@ -329,14 +313,12 @@ public class IndexTest extends RobolectricTestCase {
                     fail(error.getMessage());
                 }
             }
-        };
-        index.addObjectAsync(new JSONObject("{\"city\": \"New York\"}"), handler);
-        handler.checkAssertions();
+        });
     }
 
     @Test
     public void testAddObjectWithObjectIDAsync() throws Exception {
-        AssertCompletionHandler handler = new AssertCompletionHandler() {
+        index.addObjectAsync(new JSONObject("{\"city\": \"New York\"}"), "a1b2c3", new AssertCompletionHandler() {
             @Override public void doRequestCompleted(JSONObject content, AlgoliaException error) {
                 if (error == null) {
                     assertTrue("Object has unexpected objectId", content.optString("objectID").equals("a1b2c3"));
@@ -344,14 +326,12 @@ public class IndexTest extends RobolectricTestCase {
                     fail(error.getMessage());
                 }
             }
-        };
-        index.addObjectAsync(new JSONObject("{\"city\": \"New York\"}"), "a1b2c3", handler);
-        handler.checkAssertions();
+        });
     }
 
     @Test
     public void testAddObjectsAsync() throws Exception {
-        AssertCompletionHandler handler = new AssertCompletionHandler() {
+        index.addObjectsAsync(new JSONArray("[{\"city\": \"New York\"}, {\"city\": \"Paris\"}]"), new AssertCompletionHandler() {
             @Override public void doRequestCompleted(JSONObject content, AlgoliaException error) {
                 if (error == null) {
                     assertEquals("Objects have unexpected objectId count", 2, content.optJSONArray("objectIDs").length());
@@ -359,14 +339,12 @@ public class IndexTest extends RobolectricTestCase {
                     fail(error.getMessage());
                 }
             }
-        };
-        index.addObjectsAsync(new JSONArray("[{\"city\": \"New York\"}, {\"city\": \"Paris\"}]"), handler);
-        handler.checkAssertions();
+        });
     }
 
     @Test
     public void testSaveObjectAsync() throws Exception {
-        AssertCompletionHandler handler = new AssertCompletionHandler() {
+        index.saveObjectAsync(new JSONObject("{\"city\": \"New York\"}"), "a1b2c3", new AssertCompletionHandler() {
             @Override public void doRequestCompleted(JSONObject content, AlgoliaException error) {
                 if (error == null) {
                     assertTrue("Object has unexpected objectId", content.optString("objectID").equals("a1b2c3"));
@@ -374,14 +352,12 @@ public class IndexTest extends RobolectricTestCase {
                     fail(error.getMessage());
                 }
             }
-        };
-        index.saveObjectAsync(new JSONObject("{\"city\": \"New York\"}"), "a1b2c3", handler);
-        handler.checkAssertions();
+        });
     }
 
     @Test
     public void testSaveObjectsAsync() throws Exception {
-        AssertCompletionHandler handler = new AssertCompletionHandler() {
+        index.saveObjectsAsync(new JSONArray("[{\"city\": \"New York\", \"objectID\": 123}, {\"city\": \"Paris\", \"objectID\": 456}]"), new AssertCompletionHandler() {
             @Override public void doRequestCompleted(JSONObject content, AlgoliaException error) {
                 if (error == null) {
                     assertEquals("Objects have unexpected objectId count", 2, content.optJSONArray("objectIDs").length());
@@ -391,14 +367,12 @@ public class IndexTest extends RobolectricTestCase {
                     fail(error.getMessage());
                 }
             }
-        };
-        index.saveObjectsAsync(new JSONArray("[{\"city\": \"New York\", \"objectID\": 123}, {\"city\": \"Paris\", \"objectID\": 456}]"), handler);
-        handler.checkAssertions();
+        });
     }
 
     @Test
     public void testGetObjectAsync() throws Exception {
-        AssertCompletionHandler handler = new AssertCompletionHandler() {
+        index.getObjectAsync(ids.get(0), new AssertCompletionHandler() {
             @Override public void doRequestCompleted(JSONObject content, AlgoliaException error) {
                 if (error == null) {
                     assertTrue("Object has unexpected objectId", content.optString("objectID").equals(ids.get(0)));
@@ -407,16 +381,14 @@ public class IndexTest extends RobolectricTestCase {
                     fail(error.getMessage());
                 }
             }
-        };
-        index.getObjectAsync(ids.get(0), handler);
-        handler.checkAssertions();
+        });
     }
 
     @Test
     public void testGetObjectWithAttributesToRetrieveAsync() throws Exception {
         List<String> attributesToRetrieve = new ArrayList<String>();
         attributesToRetrieve.add("objectID");
-        AssertCompletionHandler handler = new AssertCompletionHandler() {
+        index.getObjectAsync(ids.get(0), attributesToRetrieve, new AssertCompletionHandler() {
             @Override public void doRequestCompleted(JSONObject content, AlgoliaException error) {
                 if (error == null) {
                     assertTrue("Object has unexpected objectId", content.optString("objectID").equals(ids.get(0)));
@@ -425,14 +397,12 @@ public class IndexTest extends RobolectricTestCase {
                     fail(error.getMessage());
                 }
             }
-        };
-        index.getObjectAsync(ids.get(0), attributesToRetrieve, handler);
-        handler.checkAssertions();
+        });
     }
 
     @Test
     public void testGetObjectsAsync() throws Exception {
-        AssertCompletionHandler handler = new AssertCompletionHandler() {
+        index.getObjectsAsync(ids, new AssertCompletionHandler() {
             @Override public void doRequestCompleted(JSONObject content, AlgoliaException error) {
                 if (error == null) {
                     JSONArray res = content.optJSONArray("results");
@@ -443,19 +413,17 @@ public class IndexTest extends RobolectricTestCase {
                     fail(error.getMessage());
                 }
             }
-        };
-        index.getObjectsAsync(ids, handler);
-        handler.checkAssertions();
+        });
     }
 
     @Test
     public void testWaitTaskAsync() throws Exception {
-        AssertCompletionHandler handler = new AssertCompletionHandler() {
+        index.addObjectAsync(new JSONObject("{\"city\": \"New York\"}"), new AssertCompletionHandler() {
             @Override public void doRequestCompleted(JSONObject content, AlgoliaException error) {
                 if (error == null) {
-                    index.waitTaskAsync(content.optString("taskID"), new CompletionHandler() {
+                    index.waitTaskAsync(content.optString("taskID"), new AssertCompletionHandler() {
                         @Override
-                        public void requestCompleted(JSONObject content, AlgoliaException error) {
+                        public void doRequestCompleted(JSONObject content, AlgoliaException error) {
                             if (error == null) {
                                 assertEquals(content.optString("status"), "published");
                             } else {
@@ -467,9 +435,7 @@ public class IndexTest extends RobolectricTestCase {
                     fail(error.getMessage());
                 }
             }
-        };
-        index.addObjectAsync(new JSONObject("{\"city\": \"New York\"}"), handler);
-        handler.checkAssertions();
+        });
     }
 
     @Test
@@ -618,7 +584,7 @@ public class IndexTest extends RobolectricTestCase {
         // Expect first successful search
         final long[] startEndTimeArray = new long[2];
         startEndTimeArray[0] = System.nanoTime();
-        AssertCompletionHandler handler = new AssertCompletionHandler() {
+        index.searchAsync(new Query("Francisco"), new AssertCompletionHandler() {
             @Override public void doRequestCompleted(JSONObject content, AlgoliaException error) {
                 if (error == null) {
                     assertEquals(1, content.optInt("nbHits"));
@@ -627,14 +593,13 @@ public class IndexTest extends RobolectricTestCase {
                     fail(error.getMessage());
                 }
             }
-        };
-        index.searchAsync(new Query("Francisco"), handler);
+        });
 
         final long firstDurationNanos = startEndTimeArray[1] - startEndTimeArray[0];
         for (int i = 0; i < nbTimes; i++) {
             startEndTimeArray[0] = System.nanoTime();
             final int finalIter = i;
-            AssertCompletionHandler iterationHandler = new AssertCompletionHandler() {
+            index.searchAsync(new Query("Francisco"), new AssertCompletionHandler() {
                 @Override
                 public void doRequestCompleted(JSONObject content, AlgoliaException error) {
                     if (error == null) {
@@ -649,11 +614,8 @@ public class IndexTest extends RobolectricTestCase {
                         fail(error.getMessage());
                     }
                 }
-            };
-            handler.addInnerHandler(iterationHandler);
-            index.searchAsync(new Query("Francisco"), iterationHandler);
+            });
         }
-        handler.checkAssertions();
     }
 
 
@@ -672,119 +634,101 @@ public class IndexTest extends RobolectricTestCase {
     @Test
     public void testBrowseAsync() throws Exception {
         addDummyObjects(1500);
-
         Query query = new Query().setHitsPerPage(1000);
-        final AssertCompletionHandler innerHandler = new AssertCompletionHandler() {
-            @Override
-            public void doRequestCompleted(JSONObject content, AlgoliaException error) {
-                if (error == null) {
-                    String cursor = content.optString("cursor", null);
-                    assertNull(cursor);
-                } else {
-                    fail(error.getMessage());
-                }
-            }
-        };
-
-        final AssertCompletionHandler handler = new AssertCompletionHandler() {
+        index.browseAsync(query, new AssertCompletionHandler() {
             @Override public void doRequestCompleted(JSONObject content, AlgoliaException error) {
                 if (error == null) {
                     String cursor = content.optString("cursor", null);
                     assertNotNull(cursor);
-                    index.browseFromAsync(cursor, innerHandler);
+                    index.browseFromAsync(cursor, new AssertCompletionHandler() {
+                        @Override
+                        public void doRequestCompleted(JSONObject content, AlgoliaException error) {
+                            if (error == null) {
+                                String cursor = content.optString("cursor", null);
+                                assertNull(cursor);
+                            } else {
+                                fail(error.getMessage());
+                            }
+                        }
+                    });
                 } else {
                     fail(error.getMessage());
                 }
             }
-        };
-        index.browseAsync(query, handler);
-        innerHandler.checkAssertions();
-        handler.checkAssertions();
+        });
     }
 
     @Test
     public void testClearIndexAsync() throws Exception {
-        final AssertCompletionHandler browseHandler = new AssertCompletionHandler() {
+        index.clearIndexAsync(new AssertCompletionHandler() {
             @Override
             public void doRequestCompleted(JSONObject content, AlgoliaException error) {
                 if (error == null) {
-                    assertEquals(content.optInt("nbHits"), 0);
+                    index.waitTaskAsync(content.optString("taskID"), new AssertCompletionHandler() {
+                        @Override
+                        public void doRequestCompleted(JSONObject content, AlgoliaException error) {
+                            if (error == null) {
+                                index.browseAsync(new Query(), new AssertCompletionHandler() {
+                                    @Override
+                                    public void doRequestCompleted(JSONObject content, AlgoliaException error) {
+                                        if (error == null) {
+                                            assertEquals(content.optInt("nbHits"), 0);
+                                        } else {
+                                            fail(error.getMessage());
+                                        }
+                                    }
+                                });
+                            } else {
+                                fail(error.getMessage());
+                            }
+                        }
+                    });
                 } else {
                     fail(error.getMessage());
                 }
             }
-        };
-        final AssertCompletionHandler waitTaskHandler = new AssertCompletionHandler() {
-            @Override
-            public void doRequestCompleted(JSONObject content, AlgoliaException error) {
-                if (error == null) {
-                    index.browseAsync(new Query(), browseHandler);
-                } else {
-                    fail(error.getMessage());
-                }
-            }
-        };
-        final AssertCompletionHandler clearIndexHandler = new AssertCompletionHandler() {
-            @Override
-            public void doRequestCompleted(JSONObject content, AlgoliaException error) {
-                if (error == null) {
-                    index.waitTaskAsync(content.optString("taskID"), waitTaskHandler);
-                } else {
-                    fail(error.getMessage());
-                }
-            }
-        };
-        index.clearIndexAsync(clearIndexHandler);
-        clearIndexHandler.checkAssertions();
-        waitTaskHandler.checkAssertions();
-        browseHandler.checkAssertions();
+        });
     }
 
     @Test
     public void testDeleteByQueryAsync() throws Exception {
         addDummyObjects(3000);
         final Query query = new Query().setNumericFilters(new JSONArray().put("dummy < 1500"));
-        final AssertCompletionHandler innerHandler = new AssertCompletionHandler() {
+        index.deleteByQueryAsync(query, new AssertCompletionHandler() {
             @Override
             public void doRequestCompleted(JSONObject content, AlgoliaException error) {
                 if (error == null) {
-                    // There should not remain any object matching the query.
-                    assertNotNull(content.optJSONArray("hits"));
-                    assertEquals(content.optJSONArray("hits").length(), 0);
-                    assertNull(content.optString("cursor", null));
+                    index.browseAsync(query, new AssertCompletionHandler() {
+                        @Override
+                        public void doRequestCompleted(JSONObject content, AlgoliaException error) {
+                            if (error == null) {
+                                // There should not remain any object matching the query.
+                                assertNotNull(content.optJSONArray("hits"));
+                                assertEquals(content.optJSONArray("hits").length(), 0);
+                                assertNull(content.optString("cursor", null));
+                            } else {
+                                fail(error.getMessage());
+                            }
+                        }
+                    });
                 } else {
                     fail(error.getMessage());
                 }
             }
-        };
-        AssertCompletionHandler handler = new AssertCompletionHandler() {
-            @Override
-            public void doRequestCompleted(JSONObject content, AlgoliaException error) {
-                if (error == null) {
-                    index.browseAsync(query, innerHandler);
-                } else {
-                    fail(error.getMessage());
-                }
-            }
-        };
-        index.deleteByQueryAsync(query, handler);
-        innerHandler.checkAssertions();
-        handler.checkAssertions();
+        });
     }
 
     @Test
     public void testError404() throws Exception {
         Index unknownIndex = client.initIndex("doesnotexist");
-        AssertCompletionHandler handler = new AssertCompletionHandler() {
+        unknownIndex.searchAsync(new Query(), new AssertCompletionHandler() {
             @Override
             public void doRequestCompleted(JSONObject content, AlgoliaException error) {
                 assertNotNull(error);
                 assertEquals(404, error.getStatusCode());
                 assertNotNull(error.getMessage());
             }
-        };
-        unknownIndex.searchAsync(new Query(), handler);
-        handler.checkAssertions();
+        });
     }
 
     @Test
@@ -853,7 +797,7 @@ public class IndexTest extends RobolectricTestCase {
                 new Query("francisco").setHitsPerPage(1),
                 new Query("jose")
         );
-        AssertCompletionHandler handler = new AssertCompletionHandler() {
+        index.multipleQueriesAsync(queries, Client.MultipleQueriesStrategy.STOP_IF_ENOUGH_MATCHES, new AssertCompletionHandler() {
             @Override
             public void doRequestCompleted(JSONObject content, AlgoliaException error) {
                 if (error != null) {
@@ -871,9 +815,7 @@ public class IndexTest extends RobolectricTestCase {
                     assertEquals(results2.optInt("nbHits"), 0);
                 }
             }
-        };
-        index.multipleQueriesAsync(queries, Client.MultipleQueriesStrategy.STOP_IF_ENOUGH_MATCHES, handler);
-        handler.checkAssertions();
+        });
     }
 
     @Test
