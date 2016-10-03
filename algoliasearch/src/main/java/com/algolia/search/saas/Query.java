@@ -371,7 +371,7 @@ public class Query {
     private static final String KEY_DISABLE_TYPO_TOLERANCE_ON_ATTRIBUTES = "disableTypoToleranceOnAttributes";
 
     /**
-     * List of attributes on which you want to disable typo tolerance (must be a subset of the attributesToIndex index setting).
+     * List of attributes on which you want to disable typo tolerance (must be a subset of the `searchableAttributes` index setting).
      */
     public @NonNull Query setDisableTypoToleranceOnAttributes(String... attributes) {
         return set(KEY_DISABLE_TYPO_TOLERANCE_ON_ATTRIBUTES, buildJSONArray(attributes));
@@ -907,11 +907,11 @@ public class Query {
 
     /**
      * List of object attributes you want to use for textual search (must be a
-     * subset of the attributesToIndex index setting). Attributes are separated
+     * subset of the `searchableAttributes` index setting). Attributes are separated
      * with a comma (for example @"name,address"). You can also use a JSON
      * string array encoding (for example
      * encodeURIComponent("[\"name\",\"address\"]")). By default, all attributes
-     * specified in attributesToIndex settings are used to search.
+     * specified in `searchableAttributes` settings are used to search.
      */
     public @NonNull Query setRestrictSearchableAttributes(String... attributes) {
         return set(KEY_RESTRICT_SEARCHABLE_ATTRIBUTES, buildJSONArray(attributes));
