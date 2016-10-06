@@ -106,4 +106,10 @@ public abstract class OfflineTestBase extends RobolectricTestCase {
         // Log the local directory used by Robolectric. Useful when debugging.
         Log.v(this.getClass().getName(), "Robolectric files dir: " + RuntimeEnvironment.application.getFilesDir().getAbsolutePath());
     }
+
+    @Override
+    public void tearDown() throws Exception {
+        super.tearDown();
+        AssertCompletionHandler.checkAllHandlers();
+    }
 }

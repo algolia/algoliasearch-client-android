@@ -28,7 +28,6 @@ import org.json.JSONObject;
 import org.junit.Test;
 
 import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.TimeUnit;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -46,9 +45,9 @@ public class OfflineClientTest extends OfflineTestBase  {
     public void testListIndexes() throws Exception {
         final CountDownLatch signal = new CountDownLatch(1);
         final OfflineIndex index = client.getOfflineIndex(Helpers.getMethodName());
-        client.listIndexesOfflineAsync(new CompletionHandler() {
+        client.listIndexesOfflineAsync(new AssertCompletionHandler() {
             @Override
-            public void requestCompleted(JSONObject content, AlgoliaException error) {
+            public void doRequestCompleted(JSONObject content, AlgoliaException error) {
                 // Check that response is valid.
                 assertNotNull(content);
                 JSONArray items = content.optJSONArray("items");
@@ -62,17 +61,17 @@ public class OfflineClientTest extends OfflineTestBase  {
                     assertNotEquals(index.getName(), name);
                 }
                 final OfflineIndex.WriteTransaction transaction = index.newTransaction();
-                transaction.saveObjectAsync(objects.get("snoopy"), new CompletionHandler() {
+                transaction.saveObjectAsync(objects.get("snoopy"), new AssertCompletionHandler() {
                     @Override
-                    public void requestCompleted(JSONObject content, AlgoliaException error) {
+                    public void doRequestCompleted(JSONObject content, AlgoliaException error) {
                         assertNull(error);
-                        transaction.commitAsync(new CompletionHandler() {
+                        transaction.commitAsync(new AssertCompletionHandler() {
                             @Override
-                            public void requestCompleted(JSONObject content, AlgoliaException error) {
+                            public void doRequestCompleted(JSONObject content, AlgoliaException error) {
                                 assertNull(error);
-                                client.listIndexesOfflineAsync(new CompletionHandler() {
+                                client.listIndexesOfflineAsync(new AssertCompletionHandler() {
                                     @Override
-                                    public void requestCompleted(JSONObject content, AlgoliaException error) {
+                                    public void doRequestCompleted(JSONObject content, AlgoliaException error) {
                                         // Check that response is valid.
                                         assertNotNull(content);
                                         JSONArray items = content.optJSONArray("items");
@@ -98,7 +97,6 @@ public class OfflineClientTest extends OfflineTestBase  {
                 });
             }
         });
-        assertTrue("No callback was called", signal.await(waitTimeout, TimeUnit.SECONDS));
     }
 
     @Test
@@ -106,18 +104,18 @@ public class OfflineClientTest extends OfflineTestBase  {
         final CountDownLatch signal = new CountDownLatch(1);
         final OfflineIndex index = client.getOfflineIndex(Helpers.getMethodName());
         final OfflineIndex.WriteTransaction transaction = index.newTransaction();
-        transaction.saveObjectsAsync(new JSONArray(objects.values()), new CompletionHandler() {
+        transaction.saveObjectsAsync(new JSONArray(objects.values()), new AssertCompletionHandler() {
             @Override
-            public void requestCompleted(JSONObject content, AlgoliaException error) {
+            public void doRequestCompleted(JSONObject content, AlgoliaException error) {
                 assertNull(error);
-                transaction.commitAsync(new CompletionHandler() {
+                transaction.commitAsync(new AssertCompletionHandler() {
                     @Override
-                    public void requestCompleted(JSONObject content, AlgoliaException error) {
+                    public void doRequestCompleted(JSONObject content, AlgoliaException error) {
                         assertNull(error);
                         assertTrue(client.hasOfflineData(index.getName()));
-                        client.deleteIndexOfflineAsync(index.getName(), new CompletionHandler() {
+                        client.deleteIndexOfflineAsync(index.getName(), new AssertCompletionHandler() {
                             @Override
-                            public void requestCompleted(JSONObject content, AlgoliaException error) {
+                            public void doRequestCompleted(JSONObject content, AlgoliaException error) {
                                 assertNotNull(content);
                                 assertNotNull(content.optString("deletedAt", null));
                                 assertFalse(client.hasOfflineData(index.getName()));
@@ -128,7 +126,6 @@ public class OfflineClientTest extends OfflineTestBase  {
                 });
             }
         });
-        assertTrue("No callback was called", signal.await(waitTimeout, TimeUnit.SECONDS));
     }
 
     @Test
@@ -137,26 +134,26 @@ public class OfflineClientTest extends OfflineTestBase  {
         final OfflineIndex srcIndex = client.getOfflineIndex(Helpers.getMethodName());
         final OfflineIndex dstIndex = client.getOfflineIndex(Helpers.getMethodName() + "_new");
         final OfflineIndex.WriteTransaction transaction = srcIndex.newTransaction();
-        transaction.saveObjectsAsync(new JSONArray(objects.values()), new CompletionHandler() {
+        transaction.saveObjectsAsync(new JSONArray(objects.values()), new AssertCompletionHandler() {
             @Override
-            public void requestCompleted(JSONObject content, AlgoliaException error) {
+            public void doRequestCompleted(JSONObject content, AlgoliaException error) {
                 assertNull(error);
-                transaction.commitAsync(new CompletionHandler() {
+                transaction.commitAsync(new AssertCompletionHandler() {
                     @Override
-                    public void requestCompleted(JSONObject content, AlgoliaException error) {
+                    public void doRequestCompleted(JSONObject content, AlgoliaException error) {
                         assertNull(error);
                         assertTrue(client.hasOfflineData(srcIndex.getName()));
                         assertFalse(client.hasOfflineData(dstIndex.getName()));
-                        client.moveIndexOfflineAsync(srcIndex.getName(), dstIndex.getName(), new CompletionHandler() {
+                        client.moveIndexOfflineAsync(srcIndex.getName(), dstIndex.getName(), new AssertCompletionHandler() {
                             @Override
-                            public void requestCompleted(JSONObject content, AlgoliaException error) {
+                            public void doRequestCompleted(JSONObject content, AlgoliaException error) {
                                 assertNotNull(content);
                                 assertNotNull(content.optString("updatedAt", null));
                                 assertFalse(client.hasOfflineData(srcIndex.getName()));
                                 assertTrue(client.hasOfflineData(dstIndex.getName()));
-                                dstIndex.searchAsync(new Query("woodstock"), new CompletionHandler() {
+                                dstIndex.searchAsync(new Query("woodstock"), new AssertCompletionHandler() {
                                     @Override
-                                    public void requestCompleted(JSONObject content, AlgoliaException error) {
+                                    public void doRequestCompleted(JSONObject content, AlgoliaException error) {
                                         assertNotNull(content);
                                         assertEquals(1, content.optInt("nbHits"));
                                         signal.countDown();
@@ -168,6 +165,5 @@ public class OfflineClientTest extends OfflineTestBase  {
                 });
             }
         });
-        assertTrue("No callback was called", signal.await(waitTimeout, TimeUnit.SECONDS));
     }
 }

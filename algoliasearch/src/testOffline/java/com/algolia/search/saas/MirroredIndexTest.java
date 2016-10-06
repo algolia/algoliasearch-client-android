@@ -41,7 +41,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 
@@ -106,26 +105,26 @@ public class MirroredIndexTest extends OfflineTestBase  {
 
     private void sync(final @NonNull MirroredIndex index, final @NonNull SyncCompletionHandler completionHandler) {
         // Delete the index.
-        client.deleteIndexAsync(index.getIndexName(), new CompletionHandler() {
+        client.deleteIndexAsync(index.getIndexName(), new AssertCompletionHandler() {
             @Override
-            public void requestCompleted(JSONObject content, AlgoliaException error) {
+            public void doRequestCompleted(JSONObject content, AlgoliaException error) {
                 assertNull(error);
                 int taskID = content.optInt("taskID", -1);
                 assertNotEquals(-1, taskID);
-                index.waitTaskAsync(Integer.toString(taskID), new CompletionHandler() {
+                index.waitTaskAsync(Integer.toString(taskID), new AssertCompletionHandler() {
                     @Override
-                    public void requestCompleted(JSONObject content, AlgoliaException error) {
+                    public void doRequestCompleted(JSONObject content, AlgoliaException error) {
                         assertNull(error);
                         // Populate the online index.
-                        index.addObjectsAsync(new JSONArray(moreObjects.values()), new CompletionHandler() {
+                        index.addObjectsAsync(new JSONArray(moreObjects.values()), new AssertCompletionHandler() {
                             @Override
-                            public void requestCompleted(JSONObject content, AlgoliaException error) {
+                            public void doRequestCompleted(JSONObject content, AlgoliaException error) {
                                 assertNull(error);
                                 int taskID = content.optInt("taskID", -1);
                                 assertNotEquals(-1, taskID);
-                                index.waitTaskAsync(Integer.toString(taskID), new CompletionHandler() {
+                                index.waitTaskAsync(Integer.toString(taskID), new AssertCompletionHandler() {
                                     @Override
-                                    public void requestCompleted(JSONObject content, AlgoliaException error) {
+                                    public void doRequestCompleted(JSONObject content, AlgoliaException error) {
                                         assertNull(error);
 
                                         // Sync the offline mirror.
@@ -214,7 +213,6 @@ public class MirroredIndexTest extends OfflineTestBase  {
                 }
             }
         });
-        assertTrue("No callback was called", signal.await(onlineTimeout * 2 + waitTimeout, TimeUnit.SECONDS));
     }
 
     @Test
@@ -229,9 +227,9 @@ public class MirroredIndexTest extends OfflineTestBase  {
                 assertNull(error);
 
                 // Query the online index explicitly.
-                index.searchOnlineAsync(new Query(), new CompletionHandler() {
+                index.searchOnlineAsync(new Query(), new AssertCompletionHandler() {
                     @Override
-                    public void requestCompleted(JSONObject content, AlgoliaException error) {
+                    public void doRequestCompleted(JSONObject content, AlgoliaException error) {
                         assertNull(error);
                         assertEquals(5, content.optInt("nbHits"));
                         assertEquals("remote", content.optString("origin"));
@@ -240,9 +238,9 @@ public class MirroredIndexTest extends OfflineTestBase  {
                 });
 
                 // Query the offline index explicitly.
-                index.searchOfflineAsync(new Query(), new CompletionHandler() {
+                index.searchOfflineAsync(new Query(), new AssertCompletionHandler() {
                     @Override
-                    public void requestCompleted(JSONObject content, AlgoliaException error) {
+                    public void doRequestCompleted(JSONObject content, AlgoliaException error) {
                         assertNull(error);
                         assertEquals(3, content.optInt("nbHits"));
                         assertEquals("local", content.optString("origin"));
@@ -251,7 +249,6 @@ public class MirroredIndexTest extends OfflineTestBase  {
                 });
             }
         });
-        assertTrue("No callback was called", signal.await(onlineTimeout, TimeUnit.SECONDS));
     }
 
     @Test
@@ -268,9 +265,9 @@ public class MirroredIndexTest extends OfflineTestBase  {
                 // Test offline fallback.
                 client.setReadHosts("unknown.algolia.com");
                 index.setRequestStrategy(MirroredIndex.Strategy.FALLBACK_ON_FAILURE);
-                index.searchAsync(new Query(), new CompletionHandler() {
+                index.searchAsync(new Query(), new AssertCompletionHandler() {
                     @Override
-                    public void requestCompleted(JSONObject content, AlgoliaException error) {
+                    public void doRequestCompleted(JSONObject content, AlgoliaException error) {
                         assertNull(error);
                         assertEquals(3, content.optInt("nbHits"));
                         assertEquals("local", content.optString("origin"));
@@ -279,7 +276,6 @@ public class MirroredIndexTest extends OfflineTestBase  {
                 });
             }
         });
-        assertTrue("No callback was called", signal.await(onlineTimeout, TimeUnit.SECONDS));
     }
 
     @Test
@@ -294,9 +290,9 @@ public class MirroredIndexTest extends OfflineTestBase  {
                 assertNull(error);
 
                 // Query the online index explicitly.
-                index.browseAsync(new Query(), new CompletionHandler() {
+                index.browseAsync(new Query(), new AssertCompletionHandler() {
                     @Override
-                    public void requestCompleted(JSONObject content, AlgoliaException error) {
+                    public void doRequestCompleted(JSONObject content, AlgoliaException error) {
                         assertNull(error);
                         assertEquals(5, content.optInt("nbHits"));
                         signal.countDown();
@@ -304,9 +300,9 @@ public class MirroredIndexTest extends OfflineTestBase  {
                 });
 
                 // Query the offline index explicitly.
-                index.browseMirrorAsync(new Query(), new CompletionHandler() {
+                index.browseMirrorAsync(new Query(), new AssertCompletionHandler() {
                     @Override
-                    public void requestCompleted(JSONObject content, AlgoliaException error) {
+                    public void doRequestCompleted(JSONObject content, AlgoliaException error) {
                         assertNull(error);
                         assertEquals(3, content.optInt("nbHits"));
                         signal.countDown();
@@ -314,7 +310,5 @@ public class MirroredIndexTest extends OfflineTestBase  {
                 });
             }
         });
-        assertTrue("No callback was called", signal.await(onlineTimeout, TimeUnit.SECONDS));
     }
-
 }
