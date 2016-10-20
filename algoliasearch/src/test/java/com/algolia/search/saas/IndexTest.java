@@ -203,7 +203,7 @@ public class IndexTest extends RobolectricTestCase {
     @Test
     public void testDisjunctiveFacetingAsync2() throws Exception {
         // Set index settings.
-        JSONObject setSettingsResult = index.setSettings(new JSONObject("{\"attributesForFaceting\":[\"city\", \"stars\", \"facilities\"]}"));
+        JSONObject setSettingsResult = index.setSettings(new JSONObject("{\"attributesForFacetting\":[\"city\", \"stars\", \"facilities\"]}"));
         index.waitTask(setSettingsResult.getString("taskID"));
 
         // Add objects.
@@ -1028,6 +1028,88 @@ public class IndexTest extends RobolectricTestCase {
                         });
                     }
                 });
+            }
+        });
+    }
+
+    @Test
+    public void searchInFacets() throws Exception {
+        final JSONObject setSettingsTask = index.setSettings(new JSONObject()
+                .put("attributesForFaceting", new JSONArray()
+                        .put("searchable(series)")
+                        .put("kind"))
+        );
+
+        final JSONObject addObjectsResult = index.addObjects(new JSONArray()
+                .put(new JSONObject()
+                        .put("objectID", "1")
+                        .put("name", "Snoopy")
+                        .put("kind", new JSONArray().put("dog").put("animal"))
+                        .put("born", 1950)
+                        .put("series", "Peanuts"))
+                .put(new JSONObject()
+                        .put("objectID", "2")
+                        .put("name", "Woodstock")
+                        .put("kind", new JSONArray().put("bird").put("animal"))
+                        .put("born", 1960)
+                        .put("series", "Peanuts"))
+                .put(new JSONObject()
+                        .put("objectID", "3")
+                        .put("name", "Charlie Brown")
+                        .put("kind", new JSONArray().put("human"))
+                        .put("born", 1950)
+                        .put("series", "Peanuts"))
+                .put(new JSONObject()
+                        .put("objectID", "4")
+                        .put("name", "Hobbes")
+                        .put("kind", new JSONArray().put("tiger").put("animal").put("teddy"))
+                        .put("born", 1985)
+                        .put("series", "Calvin & Hobbes"))
+                .put(new JSONObject()
+                        .put("objectID", "5")
+                        .put("name", "Calvin")
+                        .put("kind", new JSONArray().put("human"))
+                        .put("born", 1985)
+                        .put("series", "Calvin & Hobbes"))
+        );
+
+        index.waitTask(setSettingsTask.getString("taskID"));
+        index.waitTask(addObjectsResult.getString("taskID"));
+
+        index.searchFacet("series", "Hobb", null, new AssertCompletionHandler() {
+            @Override
+            public void doRequestCompleted(JSONObject content, AlgoliaException error) {
+                assertNull("There should be no error", error);
+                final JSONArray facetHits = content.optJSONArray("facetHits");
+                assertTrue("The response should have facetHits.", facetHits != null);
+                try {
+                    assertEquals("There should be one facet match.", 1, facetHits.length());
+                    JSONObject result = facetHits.getJSONObject(0);
+                    assertEquals("The serie should be Calvin & Hobbes.", "Calvin & Hobbes", result.getString("value"));
+                    assertEquals("Two results should have matched.", 2, result.getInt("count"));
+                } catch (JSONException e) {
+                    fail(e.toString());
+                }
+            }
+        });
+
+        Query query = new Query()
+                .setFacetFilters(new JSONArray().put("kind:animal"))
+                .setNumericFilters(new JSONArray().put("born >= 1955"));
+        index.searchFacet("series", "Peanutz", query, new AssertCompletionHandler() {
+            @Override
+            public void doRequestCompleted(JSONObject content, AlgoliaException error) {
+                assertNull("There should be no error", error);
+                final JSONArray facetHits = content.optJSONArray("facetHits");
+                assertTrue("The response should have facetHits.", facetHits != null);
+                try {
+                    assertEquals("There should be one facet match.", 1, facetHits.length());
+                    JSONObject result = facetHits.getJSONObject(0);
+                    assertEquals("The serie should be Peanuts.", "Peanuts", result.getString("value"));
+                    assertEquals("Two results should have matched.", 1, result.getInt("count"));
+                } catch (JSONException e) {
+                    fail(e.getMessage());
+                }
             }
         });
     }

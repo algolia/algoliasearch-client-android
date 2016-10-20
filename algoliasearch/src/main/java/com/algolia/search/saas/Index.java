@@ -182,6 +182,34 @@ public class Index {
     }
 
     /**
+     * Search for some text in a facet values, optionally restricting the returned values to those contained in objects matching other (regular) search criteria.
+     *
+     * @param facetName The name of the facet to search. It must have been declared in the index's `attributesForFaceting` setting with the `searchable()` modifier.
+     * @param text      The text to search for in the facet's values.
+     * @param query     An optional query to take extra search parameters into account. There parameters apply to index objects like in a regular search query. Only facet values contained in the matched objects will be returned
+     * @param handler   A Completion handler that will be notified of the request's outcome.
+     * @return A cancellable request.
+     */
+    public Request searchFacet(String facetName, String text, @Nullable Query query, @NonNull final CompletionHandler handler) throws AlgoliaException {
+        try {
+            final String path = "/1/indexes/" + getEncodedIndexName() + "/facets/" + URLEncoder.encode(facetName, "UTF-8") + "/query";
+            final Query params = (query != null ? new Query(query) : new Query()).set("facetQuery", text);
+            final JSONObject requestBody = new JSONObject().put("params", params.build());
+
+            final Client client = getClient();
+            return client.new AsyncTaskRequest(handler) {
+                @NonNull
+                @Override
+                JSONObject run() throws AlgoliaException {
+                    return client.postRequest(path, requestBody.toString(), true);
+                }
+            }.start();
+        } catch (UnsupportedEncodingException | JSONException e) {
+            throw new AlgoliaException(e.getMessage());
+        }
+    }
+
+    /**
      * Add an object to this index (asynchronously).
      * <p>
      * WARNING: For performance reasons, the arguments are not cloned. Since the method is executed in the background,
@@ -274,7 +302,7 @@ public class Index {
 
     /**
      * Partially update an object (asynchronously).
-     *
+     * <p>
      * **Note:** This method will create the object if it does not exist already. If you don't wish to, you can use
      * {@link #partialUpdateObjectAsync(JSONObject, String, boolean, CompletionHandler)} and specify `false` for the
      * `createIfNotExists` argument.
@@ -313,7 +341,7 @@ public class Index {
 
     /**
      * Partially update several objects (asynchronously).
-     *
+     * <p>
      * **Note:** This method will create the objects if they do not exist already. If you don't wish to, you can use
      * {@link #partialUpdateObjectsAsync(JSONArray, boolean, CompletionHandler)} and specify `false` for the
      * `createIfNotExists` argument.
@@ -500,7 +528,7 @@ public class Index {
 
     /**
      * Set this index's settings (asynchronously).
-     *
+     * <p>
      * Please refer to our <a href="https://www.algolia.com/doc/android#index-settings">API documentation</a> for the
      * list of supported settings.
      *
@@ -1029,7 +1057,7 @@ public class Index {
     /**
      * Set settings for this index.
      *
-     * @param settings        the settings object.
+     * @param settings          the settings object.
      * @param forwardToReplicas if true, the new settings will be forwarded to replica indices.
      * @throws AlgoliaException
      */
