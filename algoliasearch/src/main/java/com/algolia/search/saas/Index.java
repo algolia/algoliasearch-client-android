@@ -189,7 +189,7 @@ public class Index {
      * @param handler   A Completion handler that will be notified of the request's outcome.
      * @return A cancellable request.
      */
-    public Request searchFacet(String facetName, String text, @NonNull final CompletionHandler handler) throws AlgoliaException {
+    public Request searchFacet(@NonNull String facetName, @NonNull String text, @NonNull final CompletionHandler handler) throws AlgoliaException {
         return searchFacet(facetName, text, null, handler);
     }
 
@@ -197,15 +197,16 @@ public class Index {
      * Search for some text in a facet values, optionally restricting the returned values to those contained in objects matching other (regular) search criteria.
      *
      * @param facetName The name of the facet to search. It must have been declared in the index's `attributesForFaceting` setting with the `searchable()` modifier.
-     * @param text      The text to search for in the facet's values.
+     * @param facetText      The text to search for in the facet's values.
      * @param query     An optional query to take extra search parameters into account. There parameters apply to index objects like in a regular search query. Only facet values contained in the matched objects will be returned
      * @param handler   A Completion handler that will be notified of the request's outcome.
      * @return A cancellable request.
      */
-    public Request searchFacet(String facetName, String text, @Nullable Query query, @NonNull final CompletionHandler handler) throws AlgoliaException {
+    public Request searchFacet(@NonNull String facetName, @NonNull String facetText, @Nullable Query query, @NonNull final CompletionHandler handler) throws AlgoliaException {
         try {
             final String path = "/1/indexes/" + getEncodedIndexName() + "/facets/" + URLEncoder.encode(facetName, "UTF-8") + "/query";
-            final Query params = (query != null ? new Query(query) : new Query()).set("facetQuery", text);
+            final Query params = (query != null ? new Query(query) : new Query());
+            params.set("facetQuery", facetText);
             final JSONObject requestBody = new JSONObject().put("params", params.build());
 
             final Client client = getClient();
