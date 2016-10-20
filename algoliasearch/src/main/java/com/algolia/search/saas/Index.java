@@ -182,6 +182,18 @@ public class Index {
     }
 
     /**
+     * Search for some text in a facet values.
+     *
+     * @param facetName The name of the facet to search. It must have been declared in the index's `attributesForFaceting` setting with the `searchable()` modifier.
+     * @param text      The text to search for in the facet's values.
+     * @param handler   A Completion handler that will be notified of the request's outcome.
+     * @return A cancellable request.
+     */
+    public Request searchFacet(String facetName, String text, @NonNull final CompletionHandler handler) throws AlgoliaException {
+        return searchFacet(facetName, text, null, handler);
+    }
+
+    /**
      * Search for some text in a facet values, optionally restricting the returned values to those contained in objects matching other (regular) search criteria.
      *
      * @param facetName The name of the facet to search. It must have been declared in the index's `attributesForFaceting` setting with the `searchable()` modifier.
