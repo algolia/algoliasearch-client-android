@@ -799,9 +799,9 @@ index.setSettingsAsync(new JSONObject().append("customRanking", "desc(followers)
 
 Performance wise, it's better to do a `setSettingsAsync` before pushing the data
 
-#### Replica settings
+#### Slave settings
 
-You can forward all settings updates to the replicas of an index by using the `forwardToReplicas` option:
+You can forward all settings updates to the slaves of an index by using the `forwardToSlaves` option:
 
 ```android
 JSONObject settings = new JSONObject("{\"attributesToRetrieve\": [\"name\", \"birthdate\"]}");
@@ -815,10 +815,10 @@ index.waitTask(setSettingsResult.getString("taskID"));
 
 <!--PARAMETERS_LINK-->
 
-Here is the list of parameters you can use with the set settings method (`indexing` [scope](#scope))
+Here is the list of parameters you can use with the set settings method (`settings` [scope](#scope)).
 
 
-Parameters that can be overridden at search time also have the `search` [scope](#scope)
+Parameters that can be overridden at search time also have the `search` [scope](#scope).
 
 **Attributes**
 
@@ -831,7 +831,7 @@ Parameters that can be overridden at search time also have the `search` [scope](
 
 - [ranking](#ranking) `settings`
 - [customRanking](#customranking) `settings`
-- [replicas](#replicas) `settings`
+- [slaves](#slaves) `settings`
 
 **Filtering / Faceting**
 
@@ -917,7 +917,7 @@ They are three scopes:
 
 - [ranking](#ranking) `settings`
 - [customRanking](#customranking) `settings`
-- [replicas](#replicas) `settings`
+- [slaves](#slaves) `settings`
 
 **Filtering / Faceting**
 
@@ -1129,7 +1129,7 @@ For example, `"customRanking" => ["desc(population)", "asc(name)"]`.
 To get a full description of how the Custom Ranking works,
 you can have a look at our [Ranking guide](https://www.algolia.com/doc/guides/relevance/ranking).
 
-#### replicas
+#### slaves
 
 - scope: `settings`
 - type: `array of strings`
@@ -1144,7 +1144,7 @@ If you want to use different ranking configurations depending of the use case,
 you need to create one index per ranking configuration.
 
 This option enables you to perform write operations only on this index and automatically
-update replica indices with the same operations.
+update slave indices with the same operations.
 
 ### Filtering / Faceting
 
@@ -2149,6 +2149,7 @@ Everything that can be done using the REST API can be done using those clients.
 
 The REST API lets your interact directly with Algolia platforms from anything that can send an HTTP request
 [Go to the REST API doc](https://algolia.com/doc/rest)
+
 
 
 
