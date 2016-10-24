@@ -188,9 +188,9 @@ You can also configure the list of attributes you want to index by order of impo
 
 ```java
 JSONObject settings = new JSONObject()
-    .append("attributesToIndex", "lastname")
-    .append("attributesToIndex", "firstname")
-    .append("attributesToIndex", "company");
+    .append("searchableAttributes", "lastname")
+    .append("searchableAttributes", "firstname")
+    .append("searchableAttributes", "company");
 index.setSettingsAsync(settings, null);
 ```
 
@@ -391,7 +391,7 @@ When [`facets`](#facets) is non-empty, the following additional fields are retur
 
 <!--PARAMETERS_LINK-->
 Here is the list of parameters you can use with the search method (`search` [scope](#scope)):
-Parameters that can also be used in a setSettings also have the `indexing` [scope](#scope).
+Parameters that can also be used in a setSettings also have the `indexing` [scope](#scope)
 
 **Search**
 
@@ -822,7 +822,7 @@ Parameters that can be overridden at search time also have the `search` [scope](
 
 **Attributes**
 
-- [attributesToIndex](#attributestoindex) `settings`
+- [searchableAttributes](#searchableattributes) `settings`
 - [attributesForFaceting](#attributesforfaceting) `settings`
 - [attributesToRetrieve](#attributestoretrieve) `settings`, `search`
 - [unretrievableAttributes](#unretrievableattributes) `settings`
@@ -875,7 +875,7 @@ Parameters that can be overridden at search time also have the `search` [scope](
 
 - [attributeForDistinct](#attributefordistinct) `settings`
 - [distinct](#distinct) `settings`, `search`
-- [numericAttributesToIndex](#numericattributestoindex) `settings`
+- [numericAttributesForFiltering](#numericattributesforfiltering) `settings`
 - [allowCompressionOfIntegerArray](#allowcompressionofintegerarray) `settings`
 - [altCorrections](#altcorrections) `settings`
 - [placeholders](#placeholders) `settings`
@@ -907,7 +907,7 @@ They are three scopes:
 
 **Attributes**
 
-- [attributesToIndex](#attributestoindex) `settings`
+- [searchableAttributes](#searchableattributes) `settings`
 - [attributesForFaceting](#attributesforfaceting) `settings`
 - [unretrievableAttributes](#unretrievableattributes) `settings`
 - [attributesToRetrieve](#attributestoretrieve) `settings`, `search`
@@ -978,7 +978,7 @@ They are three scopes:
 - [attributeForDistinct](#attributefordistinct) `settings`
 - [distinct](#distinct) `settings`, `search`
 - [getRankingInfo](#getrankinginfo) `search`
-- [numericAttributesToIndex](#numericattributestoindex) `settings`
+- [numericAttributesForFiltering](#numericattributesforfiltering) `settings`
 - [allowCompressionOfIntegerArray](#allowcompressionofintegerarray) `settings`
 - [numericFilters (deprecated)](#numericfilters-deprecated) `search`
 - [tagFilters (deprecated)](#tagfilters-deprecated) `search`
@@ -1004,11 +1004,12 @@ The instant search query string, used to set the string you want to search in yo
 
 ### Attributes
 
-#### attributesToIndex
+#### searchableAttributes
 
 - scope: `settings`
 - type: `array of strings`
 - default: `*`
+- formerly known as: `attributesToIndex`
 
 
 The list of attributes you want index (i.e. to make searchable).
@@ -1020,7 +1021,7 @@ This parameter has two important uses:
 
 1. **Limit the attributes to index.** For example, if you store the URL of a picture, you want to store it and be able to retrieve it, but you probably don't want to search in the URL.
 
-2. **Control part of the ranking.** The contents of the `attributesToIndex` parameter impacts ranking in two complementary ways:
+2. **Control part of the ranking.** The contents of the `searchableAttributes` parameter impacts ranking in two complementary ways:
 
     First, the order in which attributes are listed defines their ranking priority: matches in attributes at the beginning of the list will be considered more important than matches in attributes further down the list. To assign the same priority to several attributes, pass them within the same string, separated by commas. For example, by specifying `["title,"alternative_title", "text"]`, `title` and `alternative_title` will have the same priority, but a higher priority than `text`.
 
@@ -1075,13 +1076,13 @@ You can also use `*` to retrieve all values when an **attributesToRetrieve** set
 
 - scope: `search`
 - type: `array of strings`
-- default: `attributesToIndex`
+- default: `searchableAttributes`
 
 
-List of attributes you want to use for textual search (must be a subset of the `attributesToIndex` index setting).
+List of attributes you want to use for textual search (must be a subset of the `searchableAttributes` index setting).
 Attributes are separated with a comma such as `"name,address"`.
 You can also use JSON string array encoding such as `encodeURIComponent("[\"name\",\"address\"]")`.
-By default, all attributes specified in the `attributesToIndex` settings are used to search.
+By default, all attributes specified in the `searchableAttributes` settings are used to search.
 
 
 ### Ranking
@@ -1101,7 +1102,7 @@ We have nine available criterion:
 * `geo`: Sort according to decreasing distance when performing a geo location based search.
 * `words`: Sort according to the number of query words matched by decreasing order. This parameter is useful when you use the `optionalWords` query parameter to have results with the most matched words first.
 * `proximity`: Sort according to the proximity of the query words in hits.
-* `attribute`: Sort according to the order of attributes defined by attributesToIndex.
+* `attribute`: Sort according to the order of attributes defined by searchableAttributes.
 * `exact`:
   * If the user query contains one word: sort objects having an attribute that is exactly the query word before others. For example, if you search for the TV show "V", you want to find it with the "V" query and avoid getting all popular TV shows starting by the letter V before it.
   * If the user query contains multiple words: sort according to the number of words that matched exactly (not as a prefix).
@@ -1134,6 +1135,7 @@ you can have a look at our [Ranking guide](https://www.algolia.com/doc/guides/re
 - scope: `settings`
 - type: `array of strings`
 - default: `[]`
+- formerly known as: `slaves`
 
 
 The list of indices on which you want to replicate all write operations.
@@ -1416,7 +1418,7 @@ If set to true, plural won't be considered as a typo. For example, car and cars,
 
 
 List of attributes on which you want to disable typo tolerance
-(must be a subset of the `attributesToIndex` index setting).
+(must be a subset of the `searchableAttributes` index setting).
 
 Attributes are separated with a comma such as `"name,address"`.
 You can also use JSON string array encoding such as `encodeURIComponent("[\"name\",\"address\"]")`.
@@ -1674,7 +1676,7 @@ For most use cases, it is better to not use this feature as people search by key
 
 
 List of attributes on which you want to disable prefix matching
-(must be a subset of the `attributesToIndex` index setting).
+(must be a subset of the `searchableAttributes` index setting).
 
 This setting is useful on attributes that contain string that should not be matched as a prefix
 (for example a product SKU).
@@ -1688,7 +1690,7 @@ This setting is useful on attributes that contain string that should not be matc
 
 
 List of attributes on which you want to disable the computation of `exact` criteria
-(must be a subset of the `attributesToIndex` index setting).
+(must be a subset of the `searchableAttributes` index setting).
 
 #### exactOnSingleWordQuery
 
@@ -1768,11 +1770,12 @@ you can have a look at our [guide on distinct](https://www.algolia.com/doc/searc
 If set to true,
 the result hits will contain ranking information in the **_rankingInfo** attribute.
 
-#### numericAttributesToIndex
+#### numericAttributesForFiltering
 
 - scope: `settings`
 - type: `array of strings`
 - default: ``
+- formerly known as: `numericAttributesToIndex`
 
 
 All numerical attributes are automatically indexed as numerical filters
@@ -2149,6 +2152,7 @@ Everything that can be done using the REST API can be done using those clients.
 
 The REST API lets your interact directly with Algolia platforms from anything that can send an HTTP request
 [Go to the REST API doc](https://algolia.com/doc/rest)
+
 
 
 
