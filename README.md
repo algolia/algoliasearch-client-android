@@ -391,7 +391,7 @@ When [`facets`](#facets) is non-empty, the following additional fields are retur
 
 <!--PARAMETERS_LINK-->
 Here is the list of parameters you can use with the search method (`search` [scope](#scope)):
-Parameters that can also be used in a setSettings also have the `indexing` [scope](#scope)
+Parameters that can also be used in a setSettings also have the `indexing` [scope](#scope).
 
 **Search**
 
@@ -815,10 +815,10 @@ index.waitTask(setSettingsResult.getString("taskID"));
 
 <!--PARAMETERS_LINK-->
 
-Here is the list of parameters you can use with the set settings method (`indexing` [scope](#scope))
+Here is the list of parameters you can use with the set settings method (`settings` [scope](#scope)).
 
 
-Parameters that can be overridden at search time also have the `search` [scope](#scope)
+Parameters that can be overridden at search time also have the `search` [scope](#scope).
 
 **Attributes**
 
