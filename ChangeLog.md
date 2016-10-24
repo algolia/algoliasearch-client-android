@@ -1,8 +1,13 @@
 Change Log
 ==========
 
-## 3.5 (2016-10-03)
+## Upcoming 
 
+### New features
+### Bug fixes
+### Other changes
+
+## 3.5.0 (2016-10-03)
 ### New features
 
 - Support the `createIfNoExists` parameter in partial updates
@@ -19,7 +24,6 @@ Change Log
 - Upgrade to Android API level 24. **Note:** As a consequence, the **minimum supported SDK version** is now 10 (was 7 previously).
 - Upgrade to Build Tools 24.0.3
 - Upgrade to Oracle JDK 8 in Travis
-
 
 ## 3.4.2 (2016-09-15)
 
