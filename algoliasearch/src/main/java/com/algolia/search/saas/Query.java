@@ -7,13 +7,8 @@ import android.text.TextUtils;
 import org.json.JSONArray;
 import org.json.JSONException;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URLDecoder;
-import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
 
 /*
  * Copyright (c) 2015 Algolia
@@ -48,7 +43,7 @@ import java.util.TreeMap;
  *    Use this approach if the parameter you wish to set is not supported by this class.
  *
  */
-public class Query {
+public class Query extends AbstractQuery {
     public enum QueryType {
         /** All query words are interpreted as prefixes. */
         PREFIX_ALL,
@@ -85,21 +80,6 @@ public class Query {
     }
 
     // ----------------------------------------------------------------------
-    // IMPLEMENTATION NOTES
-    // ----------------------------------------------------------------------
-    // The query parameters are stored as an untyped map of strings.
-    // This class provides:
-    // - low-level accessors to the untyped parameters;
-    // - higher-level, typed accessors.
-    // The latter simply serialize their values into the untyped map and parse
-    // them back from it.
-    // ----------------------------------------------------------------------
-
-    /** Query parameters, as an untyped key-value array. */
-    // NOTE: Using a tree map to have parameters sorted by key on output.
-    private Map<String, String> parameters = new TreeMap<>();
-
-    // ----------------------------------------------------------------------
     // Construction
     // ----------------------------------------------------------------------
 
@@ -122,34 +102,7 @@ public class Query {
      * @param other The query to be cloned.
      */
     public Query(@NonNull Query other) {
-        parameters = new TreeMap<>(other.parameters);
-    }
-
-    // ----------------------------------------------------------------------
-    // Equality
-    // ----------------------------------------------------------------------
-
-    @Override
-    public boolean equals(Object other) {
-        return other != null && other instanceof Query && this.parameters.equals(((Query)other).parameters);
-    }
-
-    @Override
-    public int hashCode() {
-        return parameters.hashCode();
-    }
-
-    // ----------------------------------------------------------------------
-    // Misc.
-    // ----------------------------------------------------------------------
-
-    /**
-     * Obtain a debug representation of this query.
-     * To get the raw query URL part, please see {@link #build()}.
-     * @return A debug representation of this query.
-     */
-    @Override public @NonNull String toString() {
-        return String.format("%s{%s}", this.getClass().getSimpleName(), this.build());
+        super(other);
     }
 
     // ----------------------------------------------------------------------
@@ -224,31 +177,6 @@ public class Query {
     private static final String KEY_AROUND_LAT_LNG = "aroundLatLng";
 
     /**
-     * A pair of (latitude, longitude).
-     * Used in geo-search.
-     */
-    public static final class LatLng {
-        public final double lat;
-        public final double lng;
-
-        public LatLng(double lat, double lng) {
-            this.lat = lat;
-            this.lng = lng;
-        }
-
-        @Override
-        public boolean equals(Object other) {
-            return other != null && other instanceof LatLng
-                && this.lat == ((LatLng)other).lat && this.lng == ((LatLng)other).lng;
-        }
-
-        @Override
-        public int hashCode() {
-            return (int)Math.round(lat * lng % Integer.MAX_VALUE);
-        }
-    }
-
-    /**
      * Search for entries around a given latitude/longitude.
      *
      */
@@ -261,7 +189,7 @@ public class Query {
     }
 
     public LatLng getAroundLatLng() {
-        return parseLatLng(get(KEY_AROUND_LAT_LNG));
+        return LatLng.parse(get(KEY_AROUND_LAT_LNG));
     }
 
     private static final String KEY_AROUND_LAT_LNG_VIA_IP = "aroundLatLngViaIP";
@@ -1108,134 +1036,14 @@ public class Query {
     // ----------------------------------------------------------------------
 
     /**
-     * Build the URL query parameter string representing this object.
-     * @return A string suitable for use inside the query part of a URL (i.e. after the question mark).
-     */
-    protected @NonNull String build() {
-        StringBuilder stringBuilder = new StringBuilder();
-        try {
-            for (Map.Entry<String, String> entry : parameters.entrySet()) {
-                String key = entry.getKey();
-                if (stringBuilder.length() > 0)
-                    stringBuilder.append('&');
-                stringBuilder.append(urlEncode(key));
-                String value = entry.getValue();
-                if (value != null) {
-                    stringBuilder.append('=');
-                    stringBuilder.append(urlEncode(value));
-                }
-            }
-        } catch (UnsupportedEncodingException e) {
-            throw new RuntimeException(e); // should never happen: UTF-8 is always supported
-        }
-        return stringBuilder.toString();
-    }
-
-    static private String urlEncode(String value) throws UnsupportedEncodingException {
-        // NOTE: We prefer to have space encoded as `%20` instead of `+`, so we patch `URLEncoder`'s behaviour.
-        // This works because `+` itself is percent-escaped (into `%2B`).
-        return URLEncoder.encode(value, "UTF-8").replace("+", "%20");
-    }
-
-    /**
      * Parse a query object from a URL query parameter string.
      * @param queryParameters URL query parameter string.
      * @return The parsed query object.
      */
     protected static @NonNull Query parse(@NonNull String queryParameters) {
-        try {
-            Query query = new Query();
-            String[] parameters = queryParameters.split("&");
-            for (String parameter : parameters) {
-                String[] components = parameter.split("=");
-                if (components.length < 1 || components.length > 2)
-                    continue; // ignore invalid values
-                String name = URLDecoder.decode(components[0], "UTF-8");
-                String value = components.length >= 2 ? URLDecoder.decode(components[1], "UTF-8") : null;
-                query.set(name, value);
-            } // for each parameter
-            return query;
-        } catch (UnsupportedEncodingException e) {
-            // Should never happen since UTF-8 is one of the default encodings.
-            throw new RuntimeException(e);
-        }
-    }
-
-    private static Boolean parseBoolean(String value) {
-        if (value == null) {
-            return null;
-        }
-        if (value.trim().toLowerCase().equals("true")) {
-            return true;
-        }
-        Integer intValue = parseInt(value);
-        return intValue != null && intValue != 0;
-    }
-
-    private static Integer parseInt(String value)  {
-        if (value == null) {
-            return null;
-        }
-        try {
-            return Integer.parseInt(value.trim());
-        } catch (NumberFormatException e) {
-            return null;
-        }
-    }
-
-    private static String buildJSONArray(String[] values) {
-        JSONArray array = new JSONArray();
-        for (String value : values) {
-            array.put(value);
-        }
-        return array.toString();
-    }
-
-    private static String[] parseArray(String string) {
-        if (string == null) {
-            return null;
-        }
-        // First try to parse JSON notation.
-        try {
-            JSONArray array = new JSONArray(string);
-            String[] result = new String[array.length()];
-            for (int i = 0; i < result.length; ++i) {
-                result[i] = array.optString(i);
-            }
-            return result;
-        }
-        // Otherwise parse as a comma-separated list.
-        catch (JSONException e) {
-            return string.split(",");
-        }
-    }
-
-    private static String buildCommaArray(String[] values) {
-        return TextUtils.join(",", values);
-    }
-
-    private static String[] parseCommaArray(String string) {
-        return string == null ? null : string.split(",");
-    }
-
-    /**
-     * Parse a LatLng from its String equivalent.
-     * @param value a String containing latitude/longitude.
-     * @return a LatLng object describing the given value.
-     */
-    @Nullable public static LatLng parseLatLng(String value) {
-        if (value == null) {
-            return null;
-        }
-        String[] components = value.split(",");
-        if (components.length != 2) {
-            return null;
-        }
-        try {
-            return new LatLng(Double.valueOf(components[0]), Double.valueOf(components[1]));
-        } catch (NumberFormatException e) {
-            return null;
-        }
+        Query query = new Query();
+        query.parseFrom(queryParameters);
+        return query;
     }
 
     // ----------------------------------------------------------------------
@@ -1250,21 +1058,8 @@ public class Query {
      *              It will first be converted to a String by the `toString()` method.
      * @return This instance (used to chain calls).
      */
+    @Override
     public @NonNull Query set(@NonNull String name, @Nullable Object value) {
-        if (value == null) {
-            parameters.remove(name);
-        } else {
-            parameters.put(name, value.toString());
-        }
-        return this;
-    }
-
-    /**
-     * Get a parameter in an untyped fashion.
-     * @param name The parameter's name.
-     * @return The parameter's value, or null if a parameter with the specified name does not exist.
-     */
-    public @Nullable String get(@NonNull String name) {
-        return parameters.get(name);
+        return (Query)super.set(name, value);
     }
 }

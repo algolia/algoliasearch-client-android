@@ -823,7 +823,7 @@ public class MirroredIndex extends Index
         return getClient().new AsyncTaskRequest(completionHandler) {
             @NonNull
             @Override
-            JSONObject run() throws AlgoliaException {
+            protected JSONObject run() throws AlgoliaException {
                 return searchOnline(queryCopy);
             }
         }.start();
@@ -856,7 +856,7 @@ public class MirroredIndex extends Index
         return getClient().new AsyncTaskRequest(completionHandler, getClient().localSearchExecutorService) {
             @NonNull
             @Override
-            JSONObject run() throws AlgoliaException {
+            protected JSONObject run() throws AlgoliaException {
                 return _searchOffline(queryCopy);
             }
         }.start();
@@ -917,7 +917,7 @@ public class MirroredIndex extends Index
         return getClient().new AsyncTaskRequest(completionHandler) {
             @NonNull
             @Override
-            JSONObject run() throws AlgoliaException {
+            protected JSONObject run() throws AlgoliaException {
                 return multipleQueriesOnline(queriesCopy, strategy == null ? null : strategy.toString());
             }
         }.start();
@@ -943,7 +943,7 @@ public class MirroredIndex extends Index
         return getClient().new AsyncTaskRequest(completionHandler, getClient().localSearchExecutorService) {
             @NonNull
             @Override
-            JSONObject run() throws AlgoliaException {
+            protected JSONObject run() throws AlgoliaException {
                 return _multipleQueriesOffline(queriesCopy, strategy == null ? null : strategy.toString());
             }
         }.start();
@@ -1024,7 +1024,7 @@ public class MirroredIndex extends Index
         return getClient().new AsyncTaskRequest(completionHandler, getClient().localSearchExecutorService) {
             @NonNull
             @Override
-            JSONObject run() throws AlgoliaException {
+            protected JSONObject run() throws AlgoliaException {
                 return _browseMirror(queryCopy);
             }
         }.start();
@@ -1047,7 +1047,7 @@ public class MirroredIndex extends Index
         return getClient().new AsyncTaskRequest(completionHandler, getClient().localSearchExecutorService) {
             @NonNull
             @Override
-            JSONObject run() throws AlgoliaException {
+            protected JSONObject run() throws AlgoliaException {
                 return _browseMirror(query);
             }
         }.start();

@@ -35,7 +35,7 @@ function usage
 
 PROJECT_ROOT=`cd "$SELF_ROOT/.." && pwd`
 FILE_BUILD_GRADLE="$PROJECT_ROOT/algoliasearch/common.gradle"
-FILE_API_CLIENT="$PROJECT_ROOT/algoliasearch/src/main/java/com/algolia/search/saas/Client.java"
+FILE_API_CLIENT="$PROJECT_ROOT/algoliasearch/src/main/java/com/algolia/search/saas/AbstractClient.java"
 
 if [ $# -ne 1 ]; then
     usage 1>&2

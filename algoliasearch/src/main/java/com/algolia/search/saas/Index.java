@@ -116,7 +116,7 @@ public class Index {
         final Query queryCopy = query != null ? new Query(query) : new Query();
         return getClient().new AsyncTaskRequest(completionHandler) {
             @NonNull
-            @Override JSONObject run() throws AlgoliaException {
+            @Override protected JSONObject run() throws AlgoliaException {
                 return search(queryCopy);
             }
         }.start();
@@ -148,7 +148,7 @@ public class Index {
         }
         return getClient().new AsyncTaskRequest(completionHandler) {
             @NonNull
-            @Override JSONObject run() throws AlgoliaException {
+            @Override protected JSONObject run() throws AlgoliaException {
                 return multipleQueries(queriesCopy, strategy == null ? null : strategy.toString());
             }
         }.start();
@@ -195,7 +195,7 @@ public class Index {
     public Request addObjectAsync(final @NonNull JSONObject object, CompletionHandler completionHandler) {
         return getClient().new AsyncTaskRequest(completionHandler) {
             @NonNull
-            @Override JSONObject run() throws AlgoliaException {
+            @Override protected JSONObject run() throws AlgoliaException {
                 return addObject(object);
             }
         }.start();
@@ -217,7 +217,7 @@ public class Index {
     public Request addObjectAsync(final @NonNull JSONObject object, final @NonNull String objectID, CompletionHandler completionHandler) {
         return getClient().new AsyncTaskRequest(completionHandler) {
             @NonNull
-            @Override JSONObject run() throws AlgoliaException {
+            @Override protected JSONObject run() throws AlgoliaException {
                 return addObject(object, objectID);
             }
         }.start();
@@ -233,7 +233,7 @@ public class Index {
     public Request addObjectsAsync(final @NonNull JSONArray objects, CompletionHandler completionHandler) {
         return getClient().new AsyncTaskRequest(completionHandler) {
             @NonNull
-            @Override JSONObject run() throws AlgoliaException {
+            @Override protected JSONObject run() throws AlgoliaException {
                 return addObjects(objects);
             }
         }.start();
@@ -250,7 +250,7 @@ public class Index {
     public Request saveObjectAsync(final @NonNull JSONObject object, final @NonNull String objectID, CompletionHandler completionHandler) {
         return getClient().new AsyncTaskRequest(completionHandler) {
             @NonNull
-            @Override JSONObject run() throws AlgoliaException {
+            @Override protected JSONObject run() throws AlgoliaException {
                 return saveObject(object, objectID);
             }
         }.start();
@@ -266,7 +266,7 @@ public class Index {
     public Request saveObjectsAsync(final @NonNull JSONArray objects, @NonNull CompletionHandler completionHandler) {
         return getClient().new AsyncTaskRequest(completionHandler) {
             @NonNull
-            @Override JSONObject run() throws AlgoliaException {
+            @Override protected JSONObject run() throws AlgoliaException {
                 return saveObjects(objects);
             }
         }.start();
@@ -287,7 +287,7 @@ public class Index {
     public Request partialUpdateObjectAsync(final @NonNull JSONObject partialObject, final @NonNull String objectID, CompletionHandler completionHandler) {
         return getClient().new AsyncTaskRequest(completionHandler) {
             @NonNull
-            @Override JSONObject run() throws AlgoliaException {
+            @Override protected JSONObject run() throws AlgoliaException {
                 return partialUpdateObject(partialObject, objectID, null);
             }
         }.start();
@@ -305,7 +305,7 @@ public class Index {
     public Request partialUpdateObjectAsync(final @NonNull JSONObject partialObject, final @NonNull String objectID, final boolean createIfNotExists, CompletionHandler completionHandler) {
         return getClient().new AsyncTaskRequest(completionHandler) {
             @NonNull
-            @Override JSONObject run() throws AlgoliaException {
+            @Override protected JSONObject run() throws AlgoliaException {
                 return partialUpdateObject(partialObject, objectID, createIfNotExists);
             }
         }.start();
@@ -326,7 +326,7 @@ public class Index {
     public Request partialUpdateObjectsAsync(final @NonNull JSONArray partialObjects, CompletionHandler completionHandler) {
         return getClient().new AsyncTaskRequest(completionHandler) {
             @NonNull
-            @Override JSONObject run() throws AlgoliaException {
+            @Override protected JSONObject run() throws AlgoliaException {
                 return partialUpdateObjects(partialObjects, true);
             }
         }.start();
@@ -344,7 +344,7 @@ public class Index {
     public Request partialUpdateObjectsAsync(final @NonNull JSONArray partialObjects, final boolean createIfNotExists, CompletionHandler completionHandler) {
         return getClient().new AsyncTaskRequest(completionHandler) {
             @NonNull
-            @Override JSONObject run() throws AlgoliaException {
+            @Override protected JSONObject run() throws AlgoliaException {
                 return partialUpdateObjects(partialObjects, createIfNotExists);
             }
         }.start();
@@ -360,7 +360,7 @@ public class Index {
     public Request getObjectAsync(final @NonNull String objectID, @NonNull CompletionHandler completionHandler) {
         return getClient().new AsyncTaskRequest(completionHandler) {
             @NonNull
-            @Override JSONObject run() throws AlgoliaException {
+            @Override protected JSONObject run() throws AlgoliaException {
                 return getObject(objectID);
             }
         }.start();
@@ -377,7 +377,7 @@ public class Index {
     public Request getObjectAsync(final @NonNull String objectID, final List<String> attributesToRetrieve, @NonNull CompletionHandler completionHandler) {
         return getClient().new AsyncTaskRequest(completionHandler) {
             @NonNull
-            @Override JSONObject run() throws AlgoliaException {
+            @Override protected JSONObject run() throws AlgoliaException {
                 return getObject(objectID, attributesToRetrieve);
             }
         }.start();
@@ -393,7 +393,7 @@ public class Index {
     public Request getObjectsAsync(final @NonNull List<String> objectIDs, @NonNull CompletionHandler completionHandler) {
         return getClient().new AsyncTaskRequest(completionHandler) {
             @NonNull
-            @Override JSONObject run() throws AlgoliaException {
+            @Override protected JSONObject run() throws AlgoliaException {
                 return getObjects(objectIDs);
             }
         }.start();
@@ -410,7 +410,7 @@ public class Index {
     public Request getObjectsAsync(final @NonNull List<String> objectIDs, final List<String> attributesToRetrieve, @NonNull CompletionHandler completionHandler) {
         return getClient().new AsyncTaskRequest(completionHandler) {
             @NonNull
-            @Override JSONObject run() throws AlgoliaException {
+            @Override protected JSONObject run() throws AlgoliaException {
                 return getObjects(objectIDs, attributesToRetrieve);
             }
         }.start();
@@ -427,7 +427,7 @@ public class Index {
     public Request waitTaskAsync(final @NonNull String taskID, @NonNull CompletionHandler completionHandler) {
         return getClient().new AsyncTaskRequest(completionHandler) {
             @NonNull
-            @Override JSONObject run() throws AlgoliaException {
+            @Override protected JSONObject run() throws AlgoliaException {
                 return waitTask(taskID);
             }
         }.start();
@@ -443,7 +443,7 @@ public class Index {
     public Request deleteObjectAsync(final @NonNull String objectID, CompletionHandler completionHandler) {
         return getClient().new AsyncTaskRequest(completionHandler) {
             @NonNull
-            @Override JSONObject run() throws AlgoliaException {
+            @Override protected JSONObject run() throws AlgoliaException {
                 return deleteObject(objectID);
             }
         }.start();
@@ -459,7 +459,7 @@ public class Index {
     public Request deleteObjectsAsync(final @NonNull List<String> objectIDs, CompletionHandler completionHandler) {
         return getClient().new AsyncTaskRequest(completionHandler) {
             @NonNull
-            @Override JSONObject run() throws AlgoliaException {
+            @Override protected JSONObject run() throws AlgoliaException {
                 return deleteObjects(objectIDs);
             }
         }.start();
@@ -476,7 +476,7 @@ public class Index {
         final Query queryCopy = new Query(query);
         return getClient().new AsyncTaskRequest(completionHandler) {
             @NonNull
-            @Override JSONObject run() throws AlgoliaException {
+            @Override protected JSONObject run() throws AlgoliaException {
                 deleteByQuery(queryCopy);
                 return new JSONObject();
             }
@@ -492,7 +492,7 @@ public class Index {
     public Request getSettingsAsync(@NonNull CompletionHandler completionHandler) {
         return getClient().new AsyncTaskRequest(completionHandler) {
             @NonNull
-            @Override JSONObject run() throws AlgoliaException {
+            @Override protected JSONObject run() throws AlgoliaException {
                 return getSettings(2);
             }
         }.start();
@@ -511,7 +511,7 @@ public class Index {
     public Request setSettingsAsync(final @NonNull JSONObject settings, CompletionHandler completionHandler) {
         return getClient().new AsyncTaskRequest(completionHandler) {
             @NonNull
-            @Override JSONObject run() throws AlgoliaException {
+            @Override protected JSONObject run() throws AlgoliaException {
                 return setSettings(settings);
             }
         }.start();
@@ -531,7 +531,7 @@ public class Index {
         final Query queryCopy = new Query(query);
         return getClient().new AsyncTaskRequest(completionHandler) {
             @NonNull
-            @Override JSONObject run() throws AlgoliaException {
+            @Override protected JSONObject run() throws AlgoliaException {
                 return browse(queryCopy);
             }
         }.start();
@@ -549,7 +549,7 @@ public class Index {
     public Request browseFromAsync(final @NonNull String cursor, @NonNull CompletionHandler completionHandler) {
         return getClient().new AsyncTaskRequest(completionHandler) {
             @NonNull
-            @Override JSONObject run() throws AlgoliaException {
+            @Override protected JSONObject run() throws AlgoliaException {
                 return browseFrom(cursor);
             }
         }.start();
@@ -564,7 +564,7 @@ public class Index {
     public Request clearIndexAsync(CompletionHandler completionHandler) {
         return getClient().new AsyncTaskRequest(completionHandler) {
             @NonNull
-            @Override JSONObject run() throws AlgoliaException {
+            @Override protected JSONObject run() throws AlgoliaException {
                 return clearIndex();
             }
         }.start();

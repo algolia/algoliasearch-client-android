@@ -196,7 +196,7 @@ public class OfflineIndex {
         return getClient().new AsyncTaskRequest(completionHandler) {
             @NonNull
             @Override
-            JSONObject run() throws AlgoliaException {
+            protected JSONObject run() throws AlgoliaException {
                 return searchSync(queryCopy);
             }
         }.start();
@@ -226,7 +226,7 @@ public class OfflineIndex {
         return getClient().new AsyncTaskRequest(completionHandler) {
             @NonNull
             @Override
-            JSONObject run() throws AlgoliaException {
+            protected JSONObject run() throws AlgoliaException {
                 return multipleQueriesSync(queriesCopy, strategy);
             }
         }.start();
@@ -264,7 +264,7 @@ public class OfflineIndex {
         return getClient().new AsyncTaskRequest(completionHandler) {
             @NonNull
             @Override
-            JSONObject run() throws AlgoliaException {
+            protected JSONObject run() throws AlgoliaException {
                 return getObjectSync(objectID, attributesToRetrieve);
             }
         }.start();
@@ -292,7 +292,7 @@ public class OfflineIndex {
         return getClient().new AsyncTaskRequest(completionHandler) {
             @NonNull
             @Override
-            JSONObject run() throws AlgoliaException {
+            protected JSONObject run() throws AlgoliaException {
                 return getObjectsSync(objectIDs, null);
             }
         }.start();
@@ -314,7 +314,7 @@ public class OfflineIndex {
         return getClient().new AsyncTaskRequest(completionHandler) {
             @NonNull
             @Override
-            JSONObject run() throws AlgoliaException {
+            protected JSONObject run() throws AlgoliaException {
                 return getSettingsSync();
             }
         }.start();
@@ -339,7 +339,7 @@ public class OfflineIndex {
         return getClient().new AsyncTaskRequest(completionHandler) {
             @NonNull
             @Override
-            JSONObject run() throws AlgoliaException {
+            protected JSONObject run() throws AlgoliaException {
                 return browseSync(queryCopy);
             }
         }.start();
@@ -362,7 +362,7 @@ public class OfflineIndex {
         return getClient().new AsyncTaskRequest(completionHandler) {
             @NonNull
             @Override
-            JSONObject run() throws AlgoliaException {
+            protected JSONObject run() throws AlgoliaException {
                 return browseFromSync(cursor);
             }
         }.start();
@@ -488,7 +488,7 @@ public class OfflineIndex {
             return getClient().new AsyncTaskRequest(completionHandler, getClient().transactionExecutorService) {
                 @NonNull
                 @Override
-                JSONObject run() throws AlgoliaException {
+                protected JSONObject run() throws AlgoliaException {
                     try {
                         String objectID = object.getString("objectID");
                         saveObjectSync(object);
@@ -527,7 +527,7 @@ public class OfflineIndex {
             return getClient().new AsyncTaskRequest(completionHandler, getClient().transactionExecutorService) {
                 @NonNull
                 @Override
-                JSONObject run() throws AlgoliaException {
+                protected JSONObject run() throws AlgoliaException {
                     try {
                         List<String> objectIDs = new ArrayList<>();
                         for (int i = 0; i < objects.length(); ++i) {
@@ -576,7 +576,7 @@ public class OfflineIndex {
             return getClient().new AsyncTaskRequest(completionHandler, getClient().transactionExecutorService) {
                 @NonNull
                 @Override
-                JSONObject run() throws AlgoliaException {
+                protected JSONObject run() throws AlgoliaException {
                     deleteObjectSync(objectID);
                     return new JSONObject();
                 }
@@ -607,7 +607,7 @@ public class OfflineIndex {
             return getClient().new AsyncTaskRequest(completionHandler, getClient().transactionExecutorService) {
                 @NonNull
                 @Override
-                JSONObject run() throws AlgoliaException {
+                protected JSONObject run() throws AlgoliaException {
                     try {
                         deleteObjectsSync(objectIDs);
                         return new JSONObject()
@@ -647,7 +647,7 @@ public class OfflineIndex {
             return getClient().new AsyncTaskRequest(completionHandler, getClient().transactionExecutorService) {
                 @NonNull
                 @Override
-                JSONObject run() throws AlgoliaException {
+                protected JSONObject run() throws AlgoliaException {
                     try {
                         setSettingsSync(settings);
                         return new JSONObject()
@@ -685,7 +685,7 @@ public class OfflineIndex {
             return getClient().new AsyncTaskRequest(completionHandler, getClient().transactionExecutorService) {
                 @NonNull
                 @Override
-                JSONObject run() throws AlgoliaException {
+                protected JSONObject run() throws AlgoliaException {
                     try {
                         clearIndexSync();
                         return new JSONObject()
@@ -726,7 +726,7 @@ public class OfflineIndex {
             return getClient().new AsyncTaskRequest(completionHandler, getClient().localBuildExecutorService) {
                 @NonNull
                 @Override
-                JSONObject run() throws AlgoliaException {
+                protected JSONObject run() throws AlgoliaException {
                     doCommit();
                     return new JSONObject();
                 }
@@ -775,7 +775,7 @@ public class OfflineIndex {
             return getClient().new AsyncTaskRequest(completionHandler, getClient().transactionExecutorService) {
                 @NonNull
                 @Override
-                JSONObject run() throws AlgoliaException {
+                protected JSONObject run() throws AlgoliaException {
                     rollbackSync();
                     return new JSONObject();
                 }
@@ -853,7 +853,7 @@ public class OfflineIndex {
         return getClient().new AsyncTaskRequest(completionHandler, getClient().transactionExecutorService) {
             @NonNull
             @Override
-            JSONObject run() throws AlgoliaException {
+            protected JSONObject run() throws AlgoliaException {
                 try {
                     Collection<String> deletedObjectIDs = deleteByQuerySync(queryCopy, transaction);
                     transaction.commitSync();

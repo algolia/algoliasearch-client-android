@@ -276,7 +276,7 @@ public class OfflineClient extends Client
         return new AsyncTaskRequest(completionHandler) {
             @NonNull
             @Override
-            JSONObject run() throws AlgoliaException {
+            protected JSONObject run() throws AlgoliaException {
                 return listIndexesOfflineSync();
             }
         }.start();
@@ -334,7 +334,7 @@ public class OfflineClient extends Client
         return new AsyncTaskRequest(completionHandler, localBuildExecutorService) {
             @NonNull
             @Override
-            JSONObject run() throws AlgoliaException {
+            protected JSONObject run() throws AlgoliaException {
                 return deleteIndexOfflineSync(indexName);
             }
         }.start();
@@ -375,7 +375,7 @@ public class OfflineClient extends Client
         return new AsyncTaskRequest(completionHandler, localBuildExecutorService) {
             @NonNull
             @Override
-            JSONObject run() throws AlgoliaException {
+            protected JSONObject run() throws AlgoliaException {
                 return moveIndexOfflineSync(srcIndexName, dstIndexName);
             }
         }.start();
