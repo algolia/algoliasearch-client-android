@@ -17,7 +17,7 @@
     catch(err) {
     }
 //-->
-var methods = {"i0":10,"i1":10,"i2":10,"i3":10,"i4":10,"i5":10,"i6":10,"i7":10,"i8":10,"i9":10,"i10":10,"i11":10,"i12":10,"i13":10,"i14":42,"i15":10,"i16":10,"i17":10,"i18":10,"i19":10,"i20":10,"i21":10,"i22":10,"i23":10,"i24":10,"i25":10};
+var methods = {"i0":10,"i1":10,"i2":10,"i3":10,"i4":10,"i5":42,"i6":10,"i7":10,"i8":10};
 var tabs = {65535:["t0","All Methods"],2:["t2","Instance Methods"],8:["t4","Concrete Methods"],32:["t6","Deprecated Methods"]};
 var altColor = "altColor";
 var rowColor = "rowColor";
@@ -48,7 +48,7 @@ var activeTableTab = "activeTableTab";
 <div class="subNav">
 <ul class="navList">
 <li><a href="../../../../com/algolia/search/saas/AlgoliaException.html" title="class in com.algolia.search.saas"><span class="typeNameLink">Prev&nbsp;Class</span></a></li>
-<li><a href="../../../../com/algolia/search/saas/Client.LibraryVersion.html" title="class in com.algolia.search.saas"><span class="typeNameLink">Next&nbsp;Class</span></a></li>
+<li><a href="../../../../com/algolia/search/saas/Client.MultipleQueriesStrategy.html" title="enum in com.algolia.search.saas"><span class="typeNameLink">Next&nbsp;Class</span></a></li>
 </ul>
 <ul class="navList">
 <li><a href="../../../../index.html?com/algolia/search/saas/Client.html" target="_top">Frames</a></li>
@@ -98,7 +98,12 @@ var activeTableTab = "activeTableTab";
 <li>Object</li>
 <li>
 <ul class="inheritance">
+<li><a href="../../../../com/algolia/search/saas/AbstractClient.html" title="class in com.algolia.search.saas">com.algolia.search.saas.AbstractClient</a></li>
+<li>
+<ul class="inheritance">
 <li>com.algolia.search.saas.Client</li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>
@@ -112,7 +117,7 @@ var activeTableTab = "activeTableTab";
 <hr>
 <br>
 <pre>public class <span class="typeNameLabel">Client</span>
-extends Object</pre>
+extends <a href="../../../../com/algolia/search/saas/AbstractClient.html" title="class in com.algolia.search.saas">AbstractClient</a></pre>
 <div class="block"><p>Entry point to the Android API. You must instantiate a <code>Client</code> object with your application ID and API key to start using Algolia Search API. <p> WARNING: For performance reasons, arguments to asynchronous methods are not cloned. Therefore, you should not modify mutable arguments after they have been passed (unless explicitly noted). </p></p></div>
 </li>
 </ul>
@@ -134,17 +139,18 @@ extends Object</pre>
 </tr>
 <tr class="altColor">
 <td class="colFirst"><code>static class&nbsp;</code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/algolia/search/saas/Client.LibraryVersion.html" title="class in com.algolia.search.saas">Client.LibraryVersion</a></span></code>
-<div class="block">A version of a software library.</div>
-</td>
-</tr>
-<tr class="rowColor">
-<td class="colFirst"><code>static class&nbsp;</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/algolia/search/saas/Client.MultipleQueriesStrategy.html" title="enum in com.algolia.search.saas">Client.MultipleQueriesStrategy</a></span></code>
 <div class="block">Strategy when running multiple queries.</div>
 </td>
 </tr>
 </table>
+<ul class="blockList">
+<li class="blockList"><a name="nested.classes.inherited.from.class.com.algolia.search.saas.AbstractClient">
+<!--   -->
+</a>
+<h3>Nested classes/interfaces inherited from class&nbsp;com.algolia.search.saas.<a href="../../../../com/algolia/search/saas/AbstractClient.html" title="class in com.algolia.search.saas">AbstractClient</a></h3>
+<code><a href="../../../../com/algolia/search/saas/AbstractClient.LibraryVersion.html" title="class in com.algolia.search.saas">AbstractClient.LibraryVersion</a></code></li>
+</ul>
 </li>
 </ul>
 <!-- ======== CONSTRUCTOR SUMMARY ======== -->
@@ -187,19 +193,13 @@ extends Object</pre>
 <th class="colLast" scope="col">Method and Description</th>
 </tr>
 <tr id="i0" class="altColor">
-<td class="colFirst"><code>void</code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/algolia/search/saas/Client.html#addUserAgent-com.algolia.search.saas.Client.LibraryVersion-">addUserAgent</a></span>(<a href="../../../../com/algolia/search/saas/Client.LibraryVersion.html" title="class in com.algolia.search.saas">Client.LibraryVersion</a>&nbsp;userAgent)</code>
-<div class="block">Add a software library to the list of user agents.</div>
-</td>
-</tr>
-<tr id="i1" class="rowColor">
 <td class="colFirst"><code><a href="../../../../com/algolia/search/saas/Request.html" title="interface in com.algolia.search.saas">Request</a></code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/algolia/search/saas/Client.html#batchAsync-org.json.JSONArray-com.algolia.search.saas.CompletionHandler-">batchAsync</a></span>(JSONArray&nbsp;operations,
           <a href="../../../../com/algolia/search/saas/CompletionHandler.html" title="interface in com.algolia.search.saas">CompletionHandler</a>&nbsp;completionHandler)</code>
 <div class="block">Batch operations.</div>
 </td>
 </tr>
-<tr id="i2" class="altColor">
+<tr id="i1" class="rowColor">
 <td class="colFirst"><code><a href="../../../../com/algolia/search/saas/Request.html" title="interface in com.algolia.search.saas">Request</a></code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/algolia/search/saas/Client.html#copyIndexAsync-java.lang.String-java.lang.String-com.algolia.search.saas.CompletionHandler-">copyIndexAsync</a></span>(String&nbsp;srcIndexName,
               String&nbsp;dstIndexName,
@@ -207,68 +207,24 @@ extends Object</pre>
 <div class="block">Copy an existing index.</div>
 </td>
 </tr>
-<tr id="i3" class="rowColor">
+<tr id="i2" class="altColor">
 <td class="colFirst"><code><a href="../../../../com/algolia/search/saas/Request.html" title="interface in com.algolia.search.saas">Request</a></code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/algolia/search/saas/Client.html#deleteIndexAsync-java.lang.String-com.algolia.search.saas.CompletionHandler-">deleteIndexAsync</a></span>(String&nbsp;indexName,
                 <a href="../../../../com/algolia/search/saas/CompletionHandler.html" title="interface in com.algolia.search.saas">CompletionHandler</a>&nbsp;completionHandler)</code>
 <div class="block">Delete an index.</div>
 </td>
 </tr>
-<tr id="i4" class="altColor">
+<tr id="i3" class="rowColor">
 <td class="colFirst"><code>String</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/algolia/search/saas/Client.html#getApplicationID--">getApplicationID</a></span>()</code>&nbsp;</td>
 </tr>
-<tr id="i5" class="rowColor">
-<td class="colFirst"><code>int</code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/algolia/search/saas/Client.html#getConnectTimeout--">getConnectTimeout</a></span>()</code>
-<div class="block">Get the connection timeout.</div>
-</td>
-</tr>
-<tr id="i6" class="altColor">
-<td class="colFirst"><code>String</code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/algolia/search/saas/Client.html#getHeader-java.lang.String-">getHeader</a></span>(String&nbsp;name)</code>
-<div class="block">Get an HTTP header.</div>
-</td>
-</tr>
-<tr id="i7" class="rowColor">
+<tr id="i4" class="altColor">
 <td class="colFirst"><code><a href="../../../../com/algolia/search/saas/Index.html" title="class in com.algolia.search.saas">Index</a></code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/algolia/search/saas/Client.html#getIndex-java.lang.String-">getIndex</a></span>(String&nbsp;indexName)</code>
 <div class="block">Obtain a proxy to an Algolia index (no server call required by this method).</div>
 </td>
 </tr>
-<tr id="i8" class="altColor">
-<td class="colFirst"><code>String[]</code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/algolia/search/saas/Client.html#getReadHosts--">getReadHosts</a></span>()</code>&nbsp;</td>
-</tr>
-<tr id="i9" class="rowColor">
-<td class="colFirst"><code>int</code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/algolia/search/saas/Client.html#getReadTimeout--">getReadTimeout</a></span>()</code>
-<div class="block">Get the default read timeout.</div>
-</td>
-</tr>
-<tr id="i10" class="altColor">
-<td class="colFirst"><code>int</code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/algolia/search/saas/Client.html#getSearchTimeout--">getSearchTimeout</a></span>()</code>
-<div class="block">Get the read timeout for search requests.</div>
-</td>
-</tr>
-<tr id="i11" class="rowColor">
-<td class="colFirst"><code><a href="../../../../com/algolia/search/saas/Client.LibraryVersion.html" title="class in com.algolia.search.saas">Client.LibraryVersion</a>[]</code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/algolia/search/saas/Client.html#getUserAgents--">getUserAgents</a></span>()</code>
-<div class="block">Retrieve the list of declared user agents.</div>
-</td>
-</tr>
-<tr id="i12" class="altColor">
-<td class="colFirst"><code>String[]</code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/algolia/search/saas/Client.html#getWriteHosts--">getWriteHosts</a></span>()</code>&nbsp;</td>
-</tr>
-<tr id="i13" class="rowColor">
-<td class="colFirst"><code>boolean</code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/algolia/search/saas/Client.html#hasUserAgent-com.algolia.search.saas.Client.LibraryVersion-">hasUserAgent</a></span>(<a href="../../../../com/algolia/search/saas/Client.LibraryVersion.html" title="class in com.algolia.search.saas">Client.LibraryVersion</a>&nbsp;userAgent)</code>
-<div class="block">Test whether a user agent is declared.</div>
-</td>
-</tr>
-<tr id="i14" class="altColor">
+<tr id="i5" class="rowColor">
 <td class="colFirst"><code><a href="../../../../com/algolia/search/saas/Index.html" title="class in com.algolia.search.saas">Index</a></code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/algolia/search/saas/Client.html#initIndex-java.lang.String-">initIndex</a></span>(String&nbsp;indexName)</code>
 <div class="block"><span class="deprecatedLabel">Deprecated.</span>&nbsp;
@@ -276,13 +232,13 @@ extends Object</pre>
 </div>
 </td>
 </tr>
-<tr id="i15" class="rowColor">
+<tr id="i6" class="altColor">
 <td class="colFirst"><code><a href="../../../../com/algolia/search/saas/Request.html" title="interface in com.algolia.search.saas">Request</a></code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/algolia/search/saas/Client.html#listIndexesAsync-com.algolia.search.saas.CompletionHandler-">listIndexesAsync</a></span>(<a href="../../../../com/algolia/search/saas/CompletionHandler.html" title="interface in com.algolia.search.saas">CompletionHandler</a>&nbsp;completionHandler)</code>
 <div class="block">List existing indexes.</div>
 </td>
 </tr>
-<tr id="i16" class="altColor">
+<tr id="i7" class="rowColor">
 <td class="colFirst"><code><a href="../../../../com/algolia/search/saas/Request.html" title="interface in com.algolia.search.saas">Request</a></code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/algolia/search/saas/Client.html#moveIndexAsync-java.lang.String-java.lang.String-com.algolia.search.saas.CompletionHandler-">moveIndexAsync</a></span>(String&nbsp;srcIndexName,
               String&nbsp;dstIndexName,
@@ -290,7 +246,7 @@ extends Object</pre>
 <div class="block">Move an existing index.</div>
 </td>
 </tr>
-<tr id="i17" class="rowColor">
+<tr id="i8" class="altColor">
 <td class="colFirst"><code><a href="../../../../com/algolia/search/saas/Request.html" title="interface in com.algolia.search.saas">Request</a></code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/algolia/search/saas/Client.html#multipleQueriesAsync-java.util.List-com.algolia.search.saas.Client.MultipleQueriesStrategy-com.algolia.search.saas.CompletionHandler-">multipleQueriesAsync</a></span>(List&lt;<a href="../../../../com/algolia/search/saas/IndexQuery.html" title="class in com.algolia.search.saas">IndexQuery</a>&gt;&nbsp;queries,
                     <a href="../../../../com/algolia/search/saas/Client.MultipleQueriesStrategy.html" title="enum in com.algolia.search.saas">Client.MultipleQueriesStrategy</a>&nbsp;strategy,
@@ -298,52 +254,14 @@ extends Object</pre>
 <div class="block">Run multiple queries, potentially targeting multiple indexes, with one API call.</div>
 </td>
 </tr>
-<tr id="i18" class="altColor">
-<td class="colFirst"><code>void</code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/algolia/search/saas/Client.html#removeUserAgent-com.algolia.search.saas.Client.LibraryVersion-">removeUserAgent</a></span>(<a href="../../../../com/algolia/search/saas/Client.LibraryVersion.html" title="class in com.algolia.search.saas">Client.LibraryVersion</a>&nbsp;userAgent)</code>
-<div class="block">Remove a software library from the list of user agents.</div>
-</td>
-</tr>
-<tr id="i19" class="rowColor">
-<td class="colFirst"><code>void</code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/algolia/search/saas/Client.html#setConnectTimeout-int-">setConnectTimeout</a></span>(int&nbsp;connectTimeout)</code>
-<div class="block">Set the connection timeout.</div>
-</td>
-</tr>
-<tr id="i20" class="altColor">
-<td class="colFirst"><code>void</code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/algolia/search/saas/Client.html#setHeader-java.lang.String-java.lang.String-">setHeader</a></span>(String&nbsp;name,
-         String&nbsp;value)</code>
-<div class="block">Set an HTTP header that will be sent with every request.</div>
-</td>
-</tr>
-<tr id="i21" class="rowColor">
-<td class="colFirst"><code>void</code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/algolia/search/saas/Client.html#setHosts-java.lang.String...-">setHosts</a></span>(String...&nbsp;hosts)</code>
-<div class="block">Set read and write hosts to the same value (convenience method).</div>
-</td>
-</tr>
-<tr id="i22" class="altColor">
-<td class="colFirst"><code>void</code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/algolia/search/saas/Client.html#setReadHosts-java.lang.String...-">setReadHosts</a></span>(String...&nbsp;hosts)</code>&nbsp;</td>
-</tr>
-<tr id="i23" class="rowColor">
-<td class="colFirst"><code>void</code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/algolia/search/saas/Client.html#setReadTimeout-int-">setReadTimeout</a></span>(int&nbsp;readTimeout)</code>
-<div class="block">Set the default read timeout.</div>
-</td>
-</tr>
-<tr id="i24" class="altColor">
-<td class="colFirst"><code>void</code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/algolia/search/saas/Client.html#setSearchTimeout-int-">setSearchTimeout</a></span>(int&nbsp;searchTimeout)</code>
-<div class="block">Set the read timeout for search requests.</div>
-</td>
-</tr>
-<tr id="i25" class="rowColor">
-<td class="colFirst"><code>void</code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/algolia/search/saas/Client.html#setWriteHosts-java.lang.String...-">setWriteHosts</a></span>(String...&nbsp;hosts)</code>&nbsp;</td>
-</tr>
 </table>
+<ul class="blockList">
+<li class="blockList"><a name="methods.inherited.from.class.com.algolia.search.saas.AbstractClient">
+<!--   -->
+</a>
+<h3>Methods inherited from class&nbsp;com.algolia.search.saas.<a href="../../../../com/algolia/search/saas/AbstractClient.html" title="class in com.algolia.search.saas">AbstractClient</a></h3>
+<code><a href="../../../../com/algolia/search/saas/AbstractClient.html#addUserAgent-com.algolia.search.saas.AbstractClient.LibraryVersion-">addUserAgent</a>, <a href="../../../../com/algolia/search/saas/AbstractClient.html#getConnectTimeout--">getConnectTimeout</a>, <a href="../../../../com/algolia/search/saas/AbstractClient.html#getHeader-java.lang.String-">getHeader</a>, <a href="../../../../com/algolia/search/saas/AbstractClient.html#getReadHosts--">getReadHosts</a>, <a href="../../../../com/algolia/search/saas/AbstractClient.html#getReadTimeout--">getReadTimeout</a>, <a href="../../../../com/algolia/search/saas/AbstractClient.html#getSearchTimeout--">getSearchTimeout</a>, <a href="../../../../com/algolia/search/saas/AbstractClient.html#getUserAgents--">getUserAgents</a>, <a href="../../../../com/algolia/search/saas/AbstractClient.html#getWriteHosts--">getWriteHosts</a>, <a href="../../../../com/algolia/search/saas/AbstractClient.html#hasUserAgent-com.algolia.search.saas.AbstractClient.LibraryVersion-">hasUserAgent</a>, <a href="../../../../com/algolia/search/saas/AbstractClient.html#removeUserAgent-com.algolia.search.saas.AbstractClient.LibraryVersion-">removeUserAgent</a>, <a href="../../../../com/algolia/search/saas/AbstractClient.html#setConnectTimeout-int-">setConnectTimeout</a>, <a href="../../../../com/algolia/search/saas/AbstractClient.html#setHeader-java.lang.String-java.lang.String-">setHeader</a>, <a href="../../../../com/algolia/search/saas/AbstractClient.html#setHosts-java.lang.String...-">setHosts</a>, <a href="../../../../com/algolia/search/saas/AbstractClient.html#setReadHosts-java.lang.String...-">setReadHosts</a>, <a href="../../../../com/algolia/search/saas/AbstractClient.html#setReadTimeout-int-">setReadTimeout</a>, <a href="../../../../com/algolia/search/saas/AbstractClient.html#setSearchTimeout-int-">setSearchTimeout</a>, <a href="../../../../com/algolia/search/saas/AbstractClient.html#setWriteHosts-java.lang.String...-">setWriteHosts</a></code></li>
+</ul>
 <ul class="blockList">
 <li class="blockList"><a name="methods.inherited.from.class.Object">
 <!--   -->
@@ -420,176 +338,11 @@ extends Object</pre>
 <ul class="blockList">
 <li class="blockList">
 <h4>getApplicationID</h4>
-<pre>public&nbsp;String&nbsp;getApplicationID()</pre>
-</li>
-</ul>
-<a name="setHeader-java.lang.String-java.lang.String-">
-<!--   -->
-</a>
-<ul class="blockList">
-<li class="blockList">
-<h4>setHeader</h4>
-<pre>public&nbsp;void&nbsp;setHeader(@NonNull
-                      String&nbsp;name,
-                      @Nullable
-                      String&nbsp;value)</pre>
-<div class="block"><p>Set an HTTP header that will be sent with every request.</p></div>
+<pre>@NonNull
+public&nbsp;String&nbsp;getApplicationID()</pre>
 <dl>
-<dt><span class="paramLabel">Parameters:</span></dt>
-<dd><code>name</code> - Header name.</dd>
-<dd><code>value</code> - Value for the header. If null, the header will be removed.</dd>
-</dl>
-</li>
-</ul>
-<a name="getHeader-java.lang.String-">
-<!--   -->
-</a>
-<ul class="blockList">
-<li class="blockList">
-<h4>getHeader</h4>
-<pre>public&nbsp;String&nbsp;getHeader(@NonNull
-                        String&nbsp;name)</pre>
-<div class="block"><p>Get an HTTP header.</p></div>
-<dl>
-<dt><span class="paramLabel">Parameters:</span></dt>
-<dd><code>name</code> - Header name.</dd>
-</dl>
-</li>
-</ul>
-<a name="getReadHosts--">
-<!--   -->
-</a>
-<ul class="blockList">
-<li class="blockList">
-<h4>getReadHosts</h4>
-<pre>public&nbsp;String[]&nbsp;getReadHosts()</pre>
-</li>
-</ul>
-<a name="setReadHosts-java.lang.String...-">
-<!--   -->
-</a>
-<ul class="blockList">
-<li class="blockList">
-<h4>setReadHosts</h4>
-<pre>public&nbsp;void&nbsp;setReadHosts(@NonNull
-                         String...&nbsp;hosts)</pre>
-</li>
-</ul>
-<a name="getWriteHosts--">
-<!--   -->
-</a>
-<ul class="blockList">
-<li class="blockList">
-<h4>getWriteHosts</h4>
-<pre>public&nbsp;String[]&nbsp;getWriteHosts()</pre>
-</li>
-</ul>
-<a name="setWriteHosts-java.lang.String...-">
-<!--   -->
-</a>
-<ul class="blockList">
-<li class="blockList">
-<h4>setWriteHosts</h4>
-<pre>public&nbsp;void&nbsp;setWriteHosts(@NonNull
-                          String...&nbsp;hosts)</pre>
-</li>
-</ul>
-<a name="setHosts-java.lang.String...-">
-<!--   -->
-</a>
-<ul class="blockList">
-<li class="blockList">
-<h4>setHosts</h4>
-<pre>public&nbsp;void&nbsp;setHosts(@NonNull
-                     String...&nbsp;hosts)</pre>
-<div class="block"><p>Set read and write hosts to the same value (convenience method).</p></div>
-<dl>
-<dt><span class="paramLabel">Parameters:</span></dt>
-<dd><code>hosts</code> - New hosts. Must not be empty.</dd>
-</dl>
-</li>
-</ul>
-<a name="getConnectTimeout--">
-<!--   -->
-</a>
-<ul class="blockList">
-<li class="blockList">
-<h4>getConnectTimeout</h4>
-<pre>public&nbsp;int&nbsp;getConnectTimeout()</pre>
-<div class="block"><p>Get the connection timeout.</p></div>
-<dl>
-<dt><span class="returnLabel">Returns:</span></dt>
-<dd>The connection timeout (ms).</dd>
-</dl>
-</li>
-</ul>
-<a name="setConnectTimeout-int-">
-<!--   -->
-</a>
-<ul class="blockList">
-<li class="blockList">
-<h4>setConnectTimeout</h4>
-<pre>public&nbsp;void&nbsp;setConnectTimeout(int&nbsp;connectTimeout)</pre>
-<div class="block"><p>Set the connection timeout.</p></div>
-<dl>
-<dt><span class="paramLabel">Parameters:</span></dt>
-<dd><code>connectTimeout</code> - The new connection timeout (ms).</dd>
-</dl>
-</li>
-</ul>
-<a name="getReadTimeout--">
-<!--   -->
-</a>
-<ul class="blockList">
-<li class="blockList">
-<h4>getReadTimeout</h4>
-<pre>public&nbsp;int&nbsp;getReadTimeout()</pre>
-<div class="block"><p>Get the default read timeout.</p></div>
-<dl>
-<dt><span class="returnLabel">Returns:</span></dt>
-<dd>The default read timeout (ms).</dd>
-</dl>
-</li>
-</ul>
-<a name="setReadTimeout-int-">
-<!--   -->
-</a>
-<ul class="blockList">
-<li class="blockList">
-<h4>setReadTimeout</h4>
-<pre>public&nbsp;void&nbsp;setReadTimeout(int&nbsp;readTimeout)</pre>
-<div class="block"><p>Set the default read timeout.</p></div>
-<dl>
-<dt><span class="paramLabel">Parameters:</span></dt>
-<dd><code>readTimeout</code> - The default read timeout (ms).</dd>
-</dl>
-</li>
-</ul>
-<a name="getSearchTimeout--">
-<!--   -->
-</a>
-<ul class="blockList">
-<li class="blockList">
-<h4>getSearchTimeout</h4>
-<pre>public&nbsp;int&nbsp;getSearchTimeout()</pre>
-<div class="block"><p>Get the read timeout for search requests.</p></div>
-<dl>
-<dt><span class="returnLabel">Returns:</span></dt>
-<dd>The read timeout for search requests (ms).</dd>
-</dl>
-</li>
-</ul>
-<a name="setSearchTimeout-int-">
-<!--   -->
-</a>
-<ul class="blockList">
-<li class="blockList">
-<h4>setSearchTimeout</h4>
-<pre>public&nbsp;void&nbsp;setSearchTimeout(int&nbsp;searchTimeout)</pre>
-<div class="block"><p>Set the read timeout for search requests.</p></div>
-<dl>
-<dt><span class="paramLabel">Parameters:</span></dt>
-<dd><code>searchTimeout</code> - The read timeout for search requests (ms).</dd>
+<dt><span class="overrideSpecifyLabel">Overrides:</span></dt>
+<dd><code><a href="../../../../com/algolia/search/saas/AbstractClient.html#getApplicationID--">getApplicationID</a></code>&nbsp;in class&nbsp;<code><a href="../../../../com/algolia/search/saas/AbstractClient.html" title="class in com.algolia.search.saas">AbstractClient</a></code></dd>
 </dl>
 </li>
 </ul>
@@ -626,68 +379,6 @@ public&nbsp;<a href="../../../../com/algolia/search/saas/Index.html" title="clas
 <dd><code>indexName</code> - The name of the index.</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>A proxy to the specified index.</dd>
-</dl>
-</li>
-</ul>
-<a name="addUserAgent-com.algolia.search.saas.Client.LibraryVersion-">
-<!--   -->
-</a>
-<ul class="blockList">
-<li class="blockList">
-<h4>addUserAgent</h4>
-<pre>public&nbsp;void&nbsp;addUserAgent(@NonNull
-                         <a href="../../../../com/algolia/search/saas/Client.LibraryVersion.html" title="class in com.algolia.search.saas">Client.LibraryVersion</a>&nbsp;userAgent)</pre>
-<div class="block"><p>Add a software library to the list of user agents.</p></div>
-<dl>
-<dt><span class="paramLabel">Parameters:</span></dt>
-<dd><code>userAgent</code> - The library to add.</dd>
-</dl>
-</li>
-</ul>
-<a name="removeUserAgent-com.algolia.search.saas.Client.LibraryVersion-">
-<!--   -->
-</a>
-<ul class="blockList">
-<li class="blockList">
-<h4>removeUserAgent</h4>
-<pre>public&nbsp;void&nbsp;removeUserAgent(@NonNull
-                            <a href="../../../../com/algolia/search/saas/Client.LibraryVersion.html" title="class in com.algolia.search.saas">Client.LibraryVersion</a>&nbsp;userAgent)</pre>
-<div class="block"><p>Remove a software library from the list of user agents.</p></div>
-<dl>
-<dt><span class="paramLabel">Parameters:</span></dt>
-<dd><code>userAgent</code> - The library to remove.</dd>
-</dl>
-</li>
-</ul>
-<a name="getUserAgents--">
-<!--   -->
-</a>
-<ul class="blockList">
-<li class="blockList">
-<h4>getUserAgents</h4>
-<pre>@NonNull
-public&nbsp;<a href="../../../../com/algolia/search/saas/Client.LibraryVersion.html" title="class in com.algolia.search.saas">Client.LibraryVersion</a>[]&nbsp;getUserAgents()</pre>
-<div class="block"><p>Retrieve the list of declared user agents.</p></div>
-<dl>
-<dt><span class="returnLabel">Returns:</span></dt>
-<dd>The declared user agents.</dd>
-</dl>
-</li>
-</ul>
-<a name="hasUserAgent-com.algolia.search.saas.Client.LibraryVersion-">
-<!--   -->
-</a>
-<ul class="blockList">
-<li class="blockList">
-<h4>hasUserAgent</h4>
-<pre>public&nbsp;boolean&nbsp;hasUserAgent(@NonNull
-                            <a href="../../../../com/algolia/search/saas/Client.LibraryVersion.html" title="class in com.algolia.search.saas">Client.LibraryVersion</a>&nbsp;userAgent)</pre>
-<div class="block"><p>Test whether a user agent is declared.</p></div>
-<dl>
-<dt><span class="paramLabel">Parameters:</span></dt>
-<dd><code>userAgent</code> - The user agent to look for.</dd>
-<dt><span class="returnLabel">Returns:</span></dt>
-<dd>true if it is declared on this client, false otherwise.</dd>
 </dl>
 </li>
 </ul>
@@ -844,7 +535,7 @@ hljs.initHighlightingOnLoad();
 <div class="subNav">
 <ul class="navList">
 <li><a href="../../../../com/algolia/search/saas/AlgoliaException.html" title="class in com.algolia.search.saas"><span class="typeNameLink">Prev&nbsp;Class</span></a></li>
-<li><a href="../../../../com/algolia/search/saas/Client.LibraryVersion.html" title="class in com.algolia.search.saas"><span class="typeNameLink">Next&nbsp;Class</span></a></li>
+<li><a href="../../../../com/algolia/search/saas/Client.MultipleQueriesStrategy.html" title="enum in com.algolia.search.saas"><span class="typeNameLink">Next&nbsp;Class</span></a></li>
 </ul>
 <ul class="navList">
 <li><a href="../../../../index.html?com/algolia/search/saas/Client.html" target="_top">Frames</a></li>

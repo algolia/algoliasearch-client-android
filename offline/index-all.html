@@ -72,6 +72,22 @@
 </a>
 <h2 class="title">A</h2>
 <dl>
+<dt><a href="com/algolia/search/saas/AbstractClient.html" title="class in com.algolia.search.saas"><span class="typeNameLink">AbstractClient</span></a> - Class in <a href="com/algolia/search/saas/package-summary.html">com.algolia.search.saas</a></dt>
+<dd>
+<div class="block">An abstract API client.</div>
+</dd>
+<dt><a href="com/algolia/search/saas/AbstractClient.LibraryVersion.html" title="class in com.algolia.search.saas"><span class="typeNameLink">AbstractClient.LibraryVersion</span></a> - Class in <a href="com/algolia/search/saas/package-summary.html">com.algolia.search.saas</a></dt>
+<dd>
+<div class="block">A version of a software library.</div>
+</dd>
+<dt><a href="com/algolia/search/saas/AbstractQuery.html" title="class in com.algolia.search.saas"><span class="typeNameLink">AbstractQuery</span></a> - Class in <a href="com/algolia/search/saas/package-summary.html">com.algolia.search.saas</a></dt>
+<dd>
+<div class="block">An abstract search query.</div>
+</dd>
+<dt><a href="com/algolia/search/saas/AbstractQuery.LatLng.html" title="class in com.algolia.search.saas"><span class="typeNameLink">AbstractQuery.LatLng</span></a> - Class in <a href="com/algolia/search/saas/package-summary.html">com.algolia.search.saas</a></dt>
+<dd>
+<div class="block">A pair of (latitude, longitude).</div>
+</dd>
 <dt><span class="memberNameLink"><a href="com/algolia/search/saas/MirroredIndex.html#addDataSelectionQuery-com.algolia.search.saas.MirroredIndex.DataSelectionQuery-">addDataSelectionQuery(MirroredIndex.DataSelectionQuery)</a></span> - Method in class com.algolia.search.saas.<a href="com/algolia/search/saas/MirroredIndex.html" title="class in com.algolia.search.saas">MirroredIndex</a></dt>
 <dd>
 <div class="block">Add a data selection query to this index.</div>
@@ -92,7 +108,7 @@
 <dd>
 <div class="block">Add a listener for sync events.</div>
 </dd>
-<dt><span class="memberNameLink"><a href="com/algolia/search/saas/Client.html#addUserAgent-com.algolia.search.saas.Client.LibraryVersion-">addUserAgent(Client.LibraryVersion)</a></span> - Method in class com.algolia.search.saas.<a href="com/algolia/search/saas/Client.html" title="class in com.algolia.search.saas">Client</a></dt>
+<dt><span class="memberNameLink"><a href="com/algolia/search/saas/AbstractClient.html#addUserAgent-com.algolia.search.saas.AbstractClient.LibraryVersion-">addUserAgent(AbstractClient.LibraryVersion)</a></span> - Method in class com.algolia.search.saas.<a href="com/algolia/search/saas/AbstractClient.html" title="class in com.algolia.search.saas">AbstractClient</a></dt>
 <dd>
 <div class="block">Add a software library to the list of user agents.</div>
 </dd>
@@ -152,6 +168,10 @@
 <dd>
 <div class="block">Browse the local mirror (subsequent calls).</div>
 </dd>
+<dt><span class="memberNameLink"><a href="com/algolia/search/saas/AbstractQuery.html#build--">build()</a></span> - Method in class com.algolia.search.saas.<a href="com/algolia/search/saas/AbstractQuery.html" title="class in com.algolia.search.saas">AbstractQuery</a></dt>
+<dd>
+<div class="block">Build the URL query parameter string representing this object.</div>
+</dd>
 </dl>
 <a name="I:C">
 <!--   -->
@@ -194,10 +214,6 @@
 <dd>
 <div class="block">Create a new Algolia Search client with explicit hosts to target.</div>
 </dd>
-<dt><a href="com/algolia/search/saas/Client.LibraryVersion.html" title="class in com.algolia.search.saas"><span class="typeNameLink">Client.LibraryVersion</span></a> - Class in <a href="com/algolia/search/saas/package-summary.html">com.algolia.search.saas</a></dt>
-<dd>
-<div class="block">A version of a software library.</div>
-</dd>
 <dt><a href="com/algolia/search/saas/Client.MultipleQueriesStrategy.html" title="enum in com.algolia.search.saas"><span class="typeNameLink">Client.MultipleQueriesStrategy</span></a> - Enum in <a href="com/algolia/search/saas/package-summary.html">com.algolia.search.saas</a></dt>
 <dd>
 <div class="block">Strategy when running multiple queries.</div>
@@ -205,6 +221,8 @@
 <dt><a href="com/algolia/search/saas/package-summary.html">com.algolia.search.saas</a> - package com.algolia.search.saas</dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/algolia/search/saas/helpers/package-summary.html">com.algolia.search.saas.helpers</a> - package com.algolia.search.saas.helpers</dt>
+<dd>&nbsp;</dd>
+<dt><a href="com/algolia/search/saas/places/package-summary.html">com.algolia.search.saas.places</a> - package com.algolia.search.saas.places</dt>
 <dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="com/algolia/search/saas/OfflineIndex.WriteTransaction.html#commitAsync-com.algolia.search.saas.CompletionHandler-">commitAsync(CompletionHandler)</a></span> - Method in class com.algolia.search.saas.<a href="com/algolia/search/saas/OfflineIndex.WriteTransaction.html" title="class in com.algolia.search.saas">OfflineIndex.WriteTransaction</a></dt>
 <dd>
@@ -306,15 +324,15 @@
 <dd>
 <div class="block">Enable search cache with custom parameters</div>
 </dd>
-<dt><span class="memberNameLink"><a href="com/algolia/search/saas/Client.LibraryVersion.html#equals-java.lang.Object-">equals(Object)</a></span> - Method in class com.algolia.search.saas.<a href="com/algolia/search/saas/Client.LibraryVersion.html" title="class in com.algolia.search.saas">Client.LibraryVersion</a></dt>
+<dt><span class="memberNameLink"><a href="com/algolia/search/saas/AbstractClient.LibraryVersion.html#equals-java.lang.Object-">equals(Object)</a></span> - Method in class com.algolia.search.saas.<a href="com/algolia/search/saas/AbstractClient.LibraryVersion.html" title="class in com.algolia.search.saas">AbstractClient.LibraryVersion</a></dt>
+<dd>&nbsp;</dd>
+<dt><span class="memberNameLink"><a href="com/algolia/search/saas/AbstractQuery.html#equals-java.lang.Object-">equals(Object)</a></span> - Method in class com.algolia.search.saas.<a href="com/algolia/search/saas/AbstractQuery.html" title="class in com.algolia.search.saas">AbstractQuery</a></dt>
+<dd>&nbsp;</dd>
+<dt><span class="memberNameLink"><a href="com/algolia/search/saas/AbstractQuery.LatLng.html#equals-java.lang.Object-">equals(Object)</a></span> - Method in class com.algolia.search.saas.<a href="com/algolia/search/saas/AbstractQuery.LatLng.html" title="class in com.algolia.search.saas">AbstractQuery.LatLng</a></dt>
 <dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="com/algolia/search/saas/MirroredIndex.DataSelectionQuery.html#equals-java.lang.Object-">equals(Object)</a></span> - Method in class com.algolia.search.saas.<a href="com/algolia/search/saas/MirroredIndex.DataSelectionQuery.html" title="class in com.algolia.search.saas">MirroredIndex.DataSelectionQuery</a></dt>
 <dd>&nbsp;</dd>
-<dt><span class="memberNameLink"><a href="com/algolia/search/saas/Query.html#equals-java.lang.Object-">equals(Object)</a></span> - Method in class com.algolia.search.saas.<a href="com/algolia/search/saas/Query.html" title="class in com.algolia.search.saas">Query</a></dt>
-<dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="com/algolia/search/saas/Query.GeoRect.html#equals-java.lang.Object-">equals(Object)</a></span> - Method in class com.algolia.search.saas.<a href="com/algolia/search/saas/Query.GeoRect.html" title="class in com.algolia.search.saas">Query.GeoRect</a></dt>
-<dd>&nbsp;</dd>
-<dt><span class="memberNameLink"><a href="com/algolia/search/saas/Query.LatLng.html#equals-java.lang.Object-">equals(Object)</a></span> - Method in class com.algolia.search.saas.<a href="com/algolia/search/saas/Query.LatLng.html" title="class in com.algolia.search.saas">Query.LatLng</a></dt>
 <dd>&nbsp;</dd>
 </dl>
 <a name="I:F">
@@ -330,9 +348,9 @@
 </a>
 <h2 class="title">G</h2>
 <dl>
-<dt><span class="memberNameLink"><a href="com/algolia/search/saas/Query.GeoRect.html#GeoRect-com.algolia.search.saas.Query.LatLng-com.algolia.search.saas.Query.LatLng-">GeoRect(Query.LatLng, Query.LatLng)</a></span> - Constructor for class com.algolia.search.saas.<a href="com/algolia/search/saas/Query.GeoRect.html" title="class in com.algolia.search.saas">Query.GeoRect</a></dt>
+<dt><span class="memberNameLink"><a href="com/algolia/search/saas/Query.GeoRect.html#GeoRect-com.algolia.search.saas.AbstractQuery.LatLng-com.algolia.search.saas.AbstractQuery.LatLng-">GeoRect(AbstractQuery.LatLng, AbstractQuery.LatLng)</a></span> - Constructor for class com.algolia.search.saas.<a href="com/algolia/search/saas/Query.GeoRect.html" title="class in com.algolia.search.saas">Query.GeoRect</a></dt>
 <dd>&nbsp;</dd>
-<dt><span class="memberNameLink"><a href="com/algolia/search/saas/Query.html#get-java.lang.String-">get(String)</a></span> - Method in class com.algolia.search.saas.<a href="com/algolia/search/saas/Query.html" title="class in com.algolia.search.saas">Query</a></dt>
+<dt><span class="memberNameLink"><a href="com/algolia/search/saas/AbstractQuery.html#get-java.lang.String-">get(String)</a></span> - Method in class com.algolia.search.saas.<a href="com/algolia/search/saas/AbstractQuery.html" title="class in com.algolia.search.saas">AbstractQuery</a></dt>
 <dd>
 <div class="block">Get a parameter in an untyped fashion.</div>
 </dd>
@@ -346,14 +364,24 @@
 <dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="com/algolia/search/saas/Query.html#getAnalyticsTags--">getAnalyticsTags()</a></span> - Method in class com.algolia.search.saas.<a href="com/algolia/search/saas/Query.html" title="class in com.algolia.search.saas">Query</a></dt>
 <dd>&nbsp;</dd>
+<dt><span class="memberNameLink"><a href="com/algolia/search/saas/AbstractClient.html#getApplicationID--">getApplicationID()</a></span> - Method in class com.algolia.search.saas.<a href="com/algolia/search/saas/AbstractClient.html" title="class in com.algolia.search.saas">AbstractClient</a></dt>
+<dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="com/algolia/search/saas/Client.html#getApplicationID--">getApplicationID()</a></span> - Method in class com.algolia.search.saas.<a href="com/algolia/search/saas/Client.html" title="class in com.algolia.search.saas">Client</a></dt>
 <dd>&nbsp;</dd>
+<dt><span class="memberNameLink"><a href="com/algolia/search/saas/places/PlacesQuery.html#getAroundLatLng--">getAroundLatLng()</a></span> - Method in class com.algolia.search.saas.places.<a href="com/algolia/search/saas/places/PlacesQuery.html" title="class in com.algolia.search.saas.places">PlacesQuery</a></dt>
+<dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="com/algolia/search/saas/Query.html#getAroundLatLng--">getAroundLatLng()</a></span> - Method in class com.algolia.search.saas.<a href="com/algolia/search/saas/Query.html" title="class in com.algolia.search.saas">Query</a></dt>
+<dd>&nbsp;</dd>
+<dt><span class="memberNameLink"><a href="com/algolia/search/saas/places/PlacesQuery.html#getAroundLatLngViaIP--">getAroundLatLngViaIP()</a></span> - Method in class com.algolia.search.saas.places.<a href="com/algolia/search/saas/places/PlacesQuery.html" title="class in com.algolia.search.saas.places">PlacesQuery</a></dt>
 <dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="com/algolia/search/saas/Query.html#getAroundLatLngViaIP--">getAroundLatLngViaIP()</a></span> - Method in class com.algolia.search.saas.<a href="com/algolia/search/saas/Query.html" title="class in com.algolia.search.saas">Query</a></dt>
 <dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="com/algolia/search/saas/Query.html#getAroundPrecision--">getAroundPrecision()</a></span> - Method in class com.algolia.search.saas.<a href="com/algolia/search/saas/Query.html" title="class in com.algolia.search.saas">Query</a></dt>
 <dd>&nbsp;</dd>
+<dt><span class="memberNameLink"><a href="com/algolia/search/saas/places/PlacesQuery.html#getAroundRadius--">getAroundRadius()</a></span> - Method in class com.algolia.search.saas.places.<a href="com/algolia/search/saas/places/PlacesQuery.html" title="class in com.algolia.search.saas.places">PlacesQuery</a></dt>
+<dd>
+<div class="block">Get the current radius for around latitude/longitude queries.</div>
+</dd>
 <dt><span class="memberNameLink"><a href="com/algolia/search/saas/Query.html#getAroundRadius--">getAroundRadius()</a></span> - Method in class com.algolia.search.saas.<a href="com/algolia/search/saas/Query.html" title="class in com.algolia.search.saas">Query</a></dt>
 <dd>
 <div class="block">Get the current radius for around latitude/longitude queries.</div>
@@ -374,11 +402,13 @@
 <dd>
 <div class="block">Get the client to which this index belongs.</div>
 </dd>
-<dt><span class="memberNameLink"><a href="com/algolia/search/saas/Client.html#getConnectTimeout--">getConnectTimeout()</a></span> - Method in class com.algolia.search.saas.<a href="com/algolia/search/saas/Client.html" title="class in com.algolia.search.saas">Client</a></dt>
+<dt><span class="memberNameLink"><a href="com/algolia/search/saas/AbstractClient.html#getConnectTimeout--">getConnectTimeout()</a></span> - Method in class com.algolia.search.saas.<a href="com/algolia/search/saas/AbstractClient.html" title="class in com.algolia.search.saas">AbstractClient</a></dt>
 <dd>
 <div class="block">Get the connection timeout.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="com/algolia/search/saas/OfflineClient.html#getContext--">getContext()</a></span> - Method in class com.algolia.search.saas.<a href="com/algolia/search/saas/OfflineClient.html" title="class in com.algolia.search.saas">OfflineClient</a></dt>
+<dd>&nbsp;</dd>
+<dt><span class="memberNameLink"><a href="com/algolia/search/saas/places/PlacesQuery.html#getCountries--">getCountries()</a></span> - Method in class com.algolia.search.saas.places.<a href="com/algolia/search/saas/places/PlacesQuery.html" title="class in com.algolia.search.saas.places">PlacesQuery</a></dt>
 <dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="com/algolia/search/saas/MirroredIndex.html#getDataSelectionQueries--">getDataSelectionQueries()</a></span> - Method in class com.algolia.search.saas.<a href="com/algolia/search/saas/MirroredIndex.html" title="class in com.algolia.search.saas">MirroredIndex</a></dt>
 <dd>&nbsp;</dd>
@@ -410,13 +440,19 @@
 <dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="com/algolia/search/saas/Query.html#getGetRankingInfo--">getGetRankingInfo()</a></span> - Method in class com.algolia.search.saas.<a href="com/algolia/search/saas/Query.html" title="class in com.algolia.search.saas">Query</a></dt>
 <dd>&nbsp;</dd>
-<dt><span class="memberNameLink"><a href="com/algolia/search/saas/Client.html#getHeader-java.lang.String-">getHeader(String)</a></span> - Method in class com.algolia.search.saas.<a href="com/algolia/search/saas/Client.html" title="class in com.algolia.search.saas">Client</a></dt>
+<dt><span class="memberNameLink"><a href="com/algolia/search/saas/AbstractClient.html#getHeader-java.lang.String-">getHeader(String)</a></span> - Method in class com.algolia.search.saas.<a href="com/algolia/search/saas/AbstractClient.html" title="class in com.algolia.search.saas">AbstractClient</a></dt>
 <dd>
 <div class="block">Get an HTTP header.</div>
 </dd>
+<dt><span class="memberNameLink"><a href="com/algolia/search/saas/places/PlacesQuery.html#getHighlightPostTag--">getHighlightPostTag()</a></span> - Method in class com.algolia.search.saas.places.<a href="com/algolia/search/saas/places/PlacesQuery.html" title="class in com.algolia.search.saas.places">PlacesQuery</a></dt>
+<dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="com/algolia/search/saas/Query.html#getHighlightPostTag--">getHighlightPostTag()</a></span> - Method in class com.algolia.search.saas.<a href="com/algolia/search/saas/Query.html" title="class in com.algolia.search.saas">Query</a></dt>
 <dd>&nbsp;</dd>
+<dt><span class="memberNameLink"><a href="com/algolia/search/saas/places/PlacesQuery.html#getHighlightPreTag--">getHighlightPreTag()</a></span> - Method in class com.algolia.search.saas.places.<a href="com/algolia/search/saas/places/PlacesQuery.html" title="class in com.algolia.search.saas.places">PlacesQuery</a></dt>
+<dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="com/algolia/search/saas/Query.html#getHighlightPreTag--">getHighlightPreTag()</a></span> - Method in class com.algolia.search.saas.<a href="com/algolia/search/saas/Query.html" title="class in com.algolia.search.saas">Query</a></dt>
+<dd>&nbsp;</dd>
+<dt><span class="memberNameLink"><a href="com/algolia/search/saas/places/PlacesQuery.html#getHitsPerPage--">getHitsPerPage()</a></span> - Method in class com.algolia.search.saas.places.<a href="com/algolia/search/saas/places/PlacesQuery.html" title="class in com.algolia.search.saas.places">PlacesQuery</a></dt>
 <dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="com/algolia/search/saas/Query.html#getHitsPerPage--">getHitsPerPage()</a></span> - Method in class com.algolia.search.saas.<a href="com/algolia/search/saas/Query.html" title="class in com.algolia.search.saas">Query</a></dt>
 <dd>&nbsp;</dd>
@@ -441,6 +477,8 @@
 <dt><span class="memberNameLink"><a href="com/algolia/search/saas/Query.html#getInsideBoundingBox--">getInsideBoundingBox()</a></span> - Method in class com.algolia.search.saas.<a href="com/algolia/search/saas/Query.html" title="class in com.algolia.search.saas">Query</a></dt>
 <dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="com/algolia/search/saas/Query.html#getInsidePolygon--">getInsidePolygon()</a></span> - Method in class com.algolia.search.saas.<a href="com/algolia/search/saas/Query.html" title="class in com.algolia.search.saas">Query</a></dt>
+<dd>&nbsp;</dd>
+<dt><span class="memberNameLink"><a href="com/algolia/search/saas/places/PlacesQuery.html#getLanguage--">getLanguage()</a></span> - Method in class com.algolia.search.saas.places.<a href="com/algolia/search/saas/places/PlacesQuery.html" title="class in com.algolia.search.saas.places">PlacesQuery</a></dt>
 <dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="com/algolia/search/saas/Query.html#getMaxValuesPerFacet--">getMaxValuesPerFacet()</a></span> - Method in class com.algolia.search.saas.<a href="com/algolia/search/saas/Query.html" title="class in com.algolia.search.saas">Query</a></dt>
 <dd>&nbsp;</dd>
@@ -500,13 +538,15 @@
 <dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="com/algolia/search/saas/IndexQuery.html#getQuery--">getQuery()</a></span> - Method in class com.algolia.search.saas.<a href="com/algolia/search/saas/IndexQuery.html" title="class in com.algolia.search.saas">IndexQuery</a></dt>
 <dd>&nbsp;</dd>
+<dt><span class="memberNameLink"><a href="com/algolia/search/saas/places/PlacesQuery.html#getQuery--">getQuery()</a></span> - Method in class com.algolia.search.saas.places.<a href="com/algolia/search/saas/places/PlacesQuery.html" title="class in com.algolia.search.saas.places">PlacesQuery</a></dt>
+<dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="com/algolia/search/saas/Query.html#getQuery--">getQuery()</a></span> - Method in class com.algolia.search.saas.<a href="com/algolia/search/saas/Query.html" title="class in com.algolia.search.saas">Query</a></dt>
 <dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="com/algolia/search/saas/Query.html#getQueryType--">getQueryType()</a></span> - Method in class com.algolia.search.saas.<a href="com/algolia/search/saas/Query.html" title="class in com.algolia.search.saas">Query</a></dt>
 <dd>&nbsp;</dd>
-<dt><span class="memberNameLink"><a href="com/algolia/search/saas/Client.html#getReadHosts--">getReadHosts()</a></span> - Method in class com.algolia.search.saas.<a href="com/algolia/search/saas/Client.html" title="class in com.algolia.search.saas">Client</a></dt>
+<dt><span class="memberNameLink"><a href="com/algolia/search/saas/AbstractClient.html#getReadHosts--">getReadHosts()</a></span> - Method in class com.algolia.search.saas.<a href="com/algolia/search/saas/AbstractClient.html" title="class in com.algolia.search.saas">AbstractClient</a></dt>
 <dd>&nbsp;</dd>
-<dt><span class="memberNameLink"><a href="com/algolia/search/saas/Client.html#getReadTimeout--">getReadTimeout()</a></span> - Method in class com.algolia.search.saas.<a href="com/algolia/search/saas/Client.html" title="class in com.algolia.search.saas">Client</a></dt>
+<dt><span class="memberNameLink"><a href="com/algolia/search/saas/AbstractClient.html#getReadTimeout--">getReadTimeout()</a></span> - Method in class com.algolia.search.saas.<a href="com/algolia/search/saas/AbstractClient.html" title="class in com.algolia.search.saas">AbstractClient</a></dt>
 <dd>
 <div class="block">Get the default read timeout.</div>
 </dd>
@@ -524,7 +564,7 @@
 <dd>
 <div class="block">Get the path to directory where the local data is stored.</div>
 </dd>
-<dt><span class="memberNameLink"><a href="com/algolia/search/saas/Client.html#getSearchTimeout--">getSearchTimeout()</a></span> - Method in class com.algolia.search.saas.<a href="com/algolia/search/saas/Client.html" title="class in com.algolia.search.saas">Client</a></dt>
+<dt><span class="memberNameLink"><a href="com/algolia/search/saas/AbstractClient.html#getSearchTimeout--">getSearchTimeout()</a></span> - Method in class com.algolia.search.saas.<a href="com/algolia/search/saas/AbstractClient.html" title="class in com.algolia.search.saas">AbstractClient</a></dt>
 <dd>
 <div class="block">Get the read timeout for search requests.</div>
 </dd>
@@ -548,13 +588,15 @@
 <dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="com/algolia/search/saas/MirroredIndex.SyncStats.html#getTotalTime--">getTotalTime()</a></span> - Method in class com.algolia.search.saas.<a href="com/algolia/search/saas/MirroredIndex.SyncStats.html" title="class in com.algolia.search.saas">MirroredIndex.SyncStats</a></dt>
 <dd>&nbsp;</dd>
+<dt><span class="memberNameLink"><a href="com/algolia/search/saas/places/PlacesQuery.html#getType--">getType()</a></span> - Method in class com.algolia.search.saas.places.<a href="com/algolia/search/saas/places/PlacesQuery.html" title="class in com.algolia.search.saas.places">PlacesQuery</a></dt>
+<dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="com/algolia/search/saas/Query.html#getTypoTolerance--">getTypoTolerance()</a></span> - Method in class com.algolia.search.saas.<a href="com/algolia/search/saas/Query.html" title="class in com.algolia.search.saas">Query</a></dt>
 <dd>&nbsp;</dd>
-<dt><span class="memberNameLink"><a href="com/algolia/search/saas/Client.html#getUserAgents--">getUserAgents()</a></span> - Method in class com.algolia.search.saas.<a href="com/algolia/search/saas/Client.html" title="class in com.algolia.search.saas">Client</a></dt>
+<dt><span class="memberNameLink"><a href="com/algolia/search/saas/AbstractClient.html#getUserAgents--">getUserAgents()</a></span> - Method in class com.algolia.search.saas.<a href="com/algolia/search/saas/AbstractClient.html" title="class in com.algolia.search.saas">AbstractClient</a></dt>
 <dd>
 <div class="block">Retrieve the list of declared user agents.</div>
 </dd>
-<dt><span class="memberNameLink"><a href="com/algolia/search/saas/Client.html#getWriteHosts--">getWriteHosts()</a></span> - Method in class com.algolia.search.saas.<a href="com/algolia/search/saas/Client.html" title="class in com.algolia.search.saas">Client</a></dt>
+<dt><span class="memberNameLink"><a href="com/algolia/search/saas/AbstractClient.html#getWriteHosts--">getWriteHosts()</a></span> - Method in class com.algolia.search.saas.<a href="com/algolia/search/saas/AbstractClient.html" title="class in com.algolia.search.saas">AbstractClient</a></dt>
 <dd>&nbsp;</dd>
 </dl>
 <a name="I:H">
@@ -566,15 +608,15 @@
 <dd>
 <div class="block">Called at each batch of results.</div>
 </dd>
-<dt><span class="memberNameLink"><a href="com/algolia/search/saas/Client.LibraryVersion.html#hashCode--">hashCode()</a></span> - Method in class com.algolia.search.saas.<a href="com/algolia/search/saas/Client.LibraryVersion.html" title="class in com.algolia.search.saas">Client.LibraryVersion</a></dt>
+<dt><span class="memberNameLink"><a href="com/algolia/search/saas/AbstractClient.LibraryVersion.html#hashCode--">hashCode()</a></span> - Method in class com.algolia.search.saas.<a href="com/algolia/search/saas/AbstractClient.LibraryVersion.html" title="class in com.algolia.search.saas">AbstractClient.LibraryVersion</a></dt>
+<dd>&nbsp;</dd>
+<dt><span class="memberNameLink"><a href="com/algolia/search/saas/AbstractQuery.html#hashCode--">hashCode()</a></span> - Method in class com.algolia.search.saas.<a href="com/algolia/search/saas/AbstractQuery.html" title="class in com.algolia.search.saas">AbstractQuery</a></dt>
+<dd>&nbsp;</dd>
+<dt><span class="memberNameLink"><a href="com/algolia/search/saas/AbstractQuery.LatLng.html#hashCode--">hashCode()</a></span> - Method in class com.algolia.search.saas.<a href="com/algolia/search/saas/AbstractQuery.LatLng.html" title="class in com.algolia.search.saas">AbstractQuery.LatLng</a></dt>
 <dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="com/algolia/search/saas/MirroredIndex.DataSelectionQuery.html#hashCode--">hashCode()</a></span> - Method in class com.algolia.search.saas.<a href="com/algolia/search/saas/MirroredIndex.DataSelectionQuery.html" title="class in com.algolia.search.saas">MirroredIndex.DataSelectionQuery</a></dt>
 <dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="com/algolia/search/saas/Query.GeoRect.html#hashCode--">hashCode()</a></span> - Method in class com.algolia.search.saas.<a href="com/algolia/search/saas/Query.GeoRect.html" title="class in com.algolia.search.saas">Query.GeoRect</a></dt>
-<dd>&nbsp;</dd>
-<dt><span class="memberNameLink"><a href="com/algolia/search/saas/Query.html#hashCode--">hashCode()</a></span> - Method in class com.algolia.search.saas.<a href="com/algolia/search/saas/Query.html" title="class in com.algolia.search.saas">Query</a></dt>
-<dd>&nbsp;</dd>
-<dt><span class="memberNameLink"><a href="com/algolia/search/saas/Query.LatLng.html#hashCode--">hashCode()</a></span> - Method in class com.algolia.search.saas.<a href="com/algolia/search/saas/Query.LatLng.html" title="class in com.algolia.search.saas">Query.LatLng</a></dt>
 <dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="com/algolia/search/saas/helpers/BrowseIterator.html#hasNext--">hasNext()</a></span> - Method in class com.algolia.search.saas.helpers.<a href="com/algolia/search/saas/helpers/BrowseIterator.html" title="class in com.algolia.search.saas.helpers">BrowseIterator</a></dt>
 <dd>
@@ -584,7 +626,7 @@
 <dd>
 <div class="block">Test if an index has offline data on disk.</div>
 </dd>
-<dt><span class="memberNameLink"><a href="com/algolia/search/saas/Client.html#hasUserAgent-com.algolia.search.saas.Client.LibraryVersion-">hasUserAgent(Client.LibraryVersion)</a></span> - Method in class com.algolia.search.saas.<a href="com/algolia/search/saas/Client.html" title="class in com.algolia.search.saas">Client</a></dt>
+<dt><span class="memberNameLink"><a href="com/algolia/search/saas/AbstractClient.html#hasUserAgent-com.algolia.search.saas.AbstractClient.LibraryVersion-">hasUserAgent(AbstractClient.LibraryVersion)</a></span> - Method in class com.algolia.search.saas.<a href="com/algolia/search/saas/AbstractClient.html" title="class in com.algolia.search.saas">AbstractClient</a></dt>
 <dd>
 <div class="block">Test whether a user agent is declared.</div>
 </dd>
@@ -660,11 +702,11 @@
 </a>
 <h2 class="title">L</h2>
 <dl>
-<dt><span class="memberNameLink"><a href="com/algolia/search/saas/Query.LatLng.html#lat">lat</a></span> - Variable in class com.algolia.search.saas.<a href="com/algolia/search/saas/Query.LatLng.html" title="class in com.algolia.search.saas">Query.LatLng</a></dt>
+<dt><span class="memberNameLink"><a href="com/algolia/search/saas/AbstractQuery.LatLng.html#lat">lat</a></span> - Variable in class com.algolia.search.saas.<a href="com/algolia/search/saas/AbstractQuery.LatLng.html" title="class in com.algolia.search.saas">AbstractQuery.LatLng</a></dt>
 <dd>&nbsp;</dd>
-<dt><span class="memberNameLink"><a href="com/algolia/search/saas/Query.LatLng.html#LatLng-double-double-">LatLng(double, double)</a></span> - Constructor for class com.algolia.search.saas.<a href="com/algolia/search/saas/Query.LatLng.html" title="class in com.algolia.search.saas">Query.LatLng</a></dt>
+<dt><span class="memberNameLink"><a href="com/algolia/search/saas/AbstractQuery.LatLng.html#LatLng-double-double-">LatLng(double, double)</a></span> - Constructor for class com.algolia.search.saas.<a href="com/algolia/search/saas/AbstractQuery.LatLng.html" title="class in com.algolia.search.saas">AbstractQuery.LatLng</a></dt>
 <dd>&nbsp;</dd>
-<dt><span class="memberNameLink"><a href="com/algolia/search/saas/Client.LibraryVersion.html#LibraryVersion-java.lang.String-java.lang.String-">LibraryVersion(String, String)</a></span> - Constructor for class com.algolia.search.saas.<a href="com/algolia/search/saas/Client.LibraryVersion.html" title="class in com.algolia.search.saas">Client.LibraryVersion</a></dt>
+<dt><span class="memberNameLink"><a href="com/algolia/search/saas/AbstractClient.LibraryVersion.html#LibraryVersion-java.lang.String-java.lang.String-">LibraryVersion(String, String)</a></span> - Constructor for class com.algolia.search.saas.<a href="com/algolia/search/saas/AbstractClient.LibraryVersion.html" title="class in com.algolia.search.saas">AbstractClient.LibraryVersion</a></dt>
 <dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="com/algolia/search/saas/Client.html#listIndexesAsync-com.algolia.search.saas.CompletionHandler-">listIndexesAsync(CompletionHandler)</a></span> - Method in class com.algolia.search.saas.<a href="com/algolia/search/saas/Client.html" title="class in com.algolia.search.saas">Client</a></dt>
 <dd>
@@ -674,7 +716,7 @@
 <dd>
 <div class="block">List existing offline indices.</div>
 </dd>
-<dt><span class="memberNameLink"><a href="com/algolia/search/saas/Query.LatLng.html#lng">lng</a></span> - Variable in class com.algolia.search.saas.<a href="com/algolia/search/saas/Query.LatLng.html" title="class in com.algolia.search.saas">Query.LatLng</a></dt>
+<dt><span class="memberNameLink"><a href="com/algolia/search/saas/AbstractQuery.LatLng.html#lng">lng</a></span> - Variable in class com.algolia.search.saas.<a href="com/algolia/search/saas/AbstractQuery.LatLng.html" title="class in com.algolia.search.saas">AbstractQuery.LatLng</a></dt>
 <dd>&nbsp;</dd>
 </dl>
 <a name="I:M">
@@ -738,7 +780,7 @@
 </a>
 <h2 class="title">N</h2>
 <dl>
-<dt><span class="memberNameLink"><a href="com/algolia/search/saas/Client.LibraryVersion.html#name">name</a></span> - Variable in class com.algolia.search.saas.<a href="com/algolia/search/saas/Client.LibraryVersion.html" title="class in com.algolia.search.saas">Client.LibraryVersion</a></dt>
+<dt><span class="memberNameLink"><a href="com/algolia/search/saas/AbstractClient.LibraryVersion.html#name">name</a></span> - Variable in class com.algolia.search.saas.<a href="com/algolia/search/saas/AbstractClient.LibraryVersion.html" title="class in com.algolia.search.saas">AbstractClient.LibraryVersion</a></dt>
 <dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="com/algolia/search/saas/OfflineIndex.html#newTransaction--">newTransaction()</a></span> - Method in class com.algolia.search.saas.<a href="com/algolia/search/saas/OfflineIndex.html" title="class in com.algolia.search.saas">OfflineIndex</a></dt>
 <dd>
@@ -784,9 +826,15 @@
 <dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="com/algolia/search/saas/Query.GeoRect.html#p2">p2</a></span> - Variable in class com.algolia.search.saas.<a href="com/algolia/search/saas/Query.GeoRect.html" title="class in com.algolia.search.saas">Query.GeoRect</a></dt>
 <dd>&nbsp;</dd>
-<dt><span class="memberNameLink"><a href="com/algolia/search/saas/Query.html#parseLatLng-java.lang.String-">parseLatLng(String)</a></span> - Static method in class com.algolia.search.saas.<a href="com/algolia/search/saas/Query.html" title="class in com.algolia.search.saas">Query</a></dt>
+<dt><span class="memberNameLink"><a href="com/algolia/search/saas/AbstractQuery.LatLng.html#parse-java.lang.String-">parse(String)</a></span> - Static method in class com.algolia.search.saas.<a href="com/algolia/search/saas/AbstractQuery.LatLng.html" title="class in com.algolia.search.saas">AbstractQuery.LatLng</a></dt>
 <dd>
-<div class="block">Parse a LatLng from its String equivalent.</div>
+<div class="block">Parse a <code>LatLng</code> from its string representation.</div>
+</dd>
+<dt><span class="memberNameLink"><a href="com/algolia/search/saas/AbstractQuery.html#parseLatLng-java.lang.String-">parseLatLng(String)</a></span> - Static method in class com.algolia.search.saas.<a href="com/algolia/search/saas/AbstractQuery.html" title="class in com.algolia.search.saas">AbstractQuery</a></dt>
+<dd>
+<div class="block"><span class="deprecatedLabel">Deprecated.</span>
+<div class="block"><span class="deprecationComment">Please use <a href="com/algolia/search/saas/AbstractQuery.LatLng.html#parse-java.lang.String-"><code>AbstractQuery.LatLng.parse(String)</code></a> instead.</span></div>
+</div>
 </dd>
 <dt><span class="memberNameLink"><a href="com/algolia/search/saas/Index.html#partialUpdateObjectAsync-org.json.JSONObject-java.lang.String-com.algolia.search.saas.CompletionHandler-">partialUpdateObjectAsync(JSONObject, String, CompletionHandler)</a></span> - Method in class com.algolia.search.saas.<a href="com/algolia/search/saas/Index.html" title="class in com.algolia.search.saas">Index</a></dt>
 <dd>
@@ -803,6 +851,38 @@
 <dt><span class="memberNameLink"><a href="com/algolia/search/saas/Index.html#partialUpdateObjectsAsync-org.json.JSONArray-boolean-com.algolia.search.saas.CompletionHandler-">partialUpdateObjectsAsync(JSONArray, boolean, CompletionHandler)</a></span> - Method in class com.algolia.search.saas.<a href="com/algolia/search/saas/Index.html" title="class in com.algolia.search.saas">Index</a></dt>
 <dd>
 <div class="block">Partially update several objects (asynchronously).</div>
+</dd>
+<dt><a href="com/algolia/search/saas/places/PlacesClient.html" title="class in com.algolia.search.saas.places"><span class="typeNameLink">PlacesClient</span></a> - Class in <a href="com/algolia/search/saas/places/package-summary.html">com.algolia.search.saas.places</a></dt>
+<dd>
+<div class="block">Client for <a href="https://community.algolia.com/places/">Algolia Places</a>.</div>
+</dd>
+<dt><span class="memberNameLink"><a href="com/algolia/search/saas/places/PlacesClient.html#PlacesClient-java.lang.String-java.lang.String-">PlacesClient(String, String)</a></span> - Constructor for class com.algolia.search.saas.places.<a href="com/algolia/search/saas/places/PlacesClient.html" title="class in com.algolia.search.saas.places">PlacesClient</a></dt>
+<dd>
+<div class="block">Create a new authenticated Algolia Places client.</div>
+</dd>
+<dt><span class="memberNameLink"><a href="com/algolia/search/saas/places/PlacesClient.html#PlacesClient--">PlacesClient()</a></span> - Constructor for class com.algolia.search.saas.places.<a href="com/algolia/search/saas/places/PlacesClient.html" title="class in com.algolia.search.saas.places">PlacesClient</a></dt>
+<dd>
+<div class="block">Create a new unauthenticated Algolia Places client.</div>
+</dd>
+<dt><a href="com/algolia/search/saas/places/PlacesQuery.html" title="class in com.algolia.search.saas.places"><span class="typeNameLink">PlacesQuery</span></a> - Class in <a href="com/algolia/search/saas/places/package-summary.html">com.algolia.search.saas.places</a></dt>
+<dd>
+<div class="block">Search parameters for Algolia Places.</div>
+</dd>
+<dt><span class="memberNameLink"><a href="com/algolia/search/saas/places/PlacesQuery.html#PlacesQuery--">PlacesQuery()</a></span> - Constructor for class com.algolia.search.saas.places.<a href="com/algolia/search/saas/places/PlacesQuery.html" title="class in com.algolia.search.saas.places">PlacesQuery</a></dt>
+<dd>
+<div class="block">Construct an empty query.</div>
+</dd>
+<dt><span class="memberNameLink"><a href="com/algolia/search/saas/places/PlacesQuery.html#PlacesQuery-java.lang.String-">PlacesQuery(String)</a></span> - Constructor for class com.algolia.search.saas.places.<a href="com/algolia/search/saas/places/PlacesQuery.html" title="class in com.algolia.search.saas.places">PlacesQuery</a></dt>
+<dd>
+<div class="block">Construct a query with the specified full text query.</div>
+</dd>
+<dt><span class="memberNameLink"><a href="com/algolia/search/saas/places/PlacesQuery.html#PlacesQuery-com.algolia.search.saas.places.PlacesQuery-">PlacesQuery(PlacesQuery)</a></span> - Constructor for class com.algolia.search.saas.places.<a href="com/algolia/search/saas/places/PlacesQuery.html" title="class in com.algolia.search.saas.places">PlacesQuery</a></dt>
+<dd>
+<div class="block">Clone an existing query.</div>
+</dd>
+<dt><a href="com/algolia/search/saas/places/PlacesQuery.Type.html" title="enum in com.algolia.search.saas.places"><span class="typeNameLink">PlacesQuery.Type</span></a> - Enum in <a href="com/algolia/search/saas/places/package-summary.html">com.algolia.search.saas.places</a></dt>
+<dd>
+<div class="block">Types of places that can be searched for.</div>
 </dd>
 </dl>
 <a name="I:Q">
@@ -838,10 +918,6 @@
 <dd>
 <div class="block">A rectangle in geo coordinates.</div>
 </dd>
-<dt><a href="com/algolia/search/saas/Query.LatLng.html" title="class in com.algolia.search.saas"><span class="typeNameLink">Query.LatLng</span></a> - Class in <a href="com/algolia/search/saas/package-summary.html">com.algolia.search.saas</a></dt>
-<dd>
-<div class="block">A pair of (latitude, longitude).</div>
-</dd>
 <dt><a href="com/algolia/search/saas/Query.QueryType.html" title="enum in com.algolia.search.saas"><span class="typeNameLink">Query.QueryType</span></a> - Enum in <a href="com/algolia/search/saas/package-summary.html">com.algolia.search.saas</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/algolia/search/saas/Query.RemoveWordsIfNoResults.html" title="enum in com.algolia.search.saas"><span class="typeNameLink">Query.RemoveWordsIfNoResults</span></a> - Enum in <a href="com/algolia/search/saas/package-summary.html">com.algolia.search.saas</a></dt>
@@ -854,13 +930,15 @@
 </a>
 <h2 class="title">R</h2>
 <dl>
+<dt><span class="memberNameLink"><a href="com/algolia/search/saas/places/PlacesQuery.html#RADIUS_ALL">RADIUS_ALL</a></span> - Static variable in class com.algolia.search.saas.places.<a href="com/algolia/search/saas/places/PlacesQuery.html" title="class in com.algolia.search.saas.places">PlacesQuery</a></dt>
+<dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="com/algolia/search/saas/Query.html#RADIUS_ALL">RADIUS_ALL</a></span> - Static variable in class com.algolia.search.saas.<a href="com/algolia/search/saas/Query.html" title="class in com.algolia.search.saas">Query</a></dt>
 <dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="com/algolia/search/saas/MirroredIndex.html#removeSyncListener-com.algolia.search.saas.SyncListener-">removeSyncListener(SyncListener)</a></span> - Method in class com.algolia.search.saas.<a href="com/algolia/search/saas/MirroredIndex.html" title="class in com.algolia.search.saas">MirroredIndex</a></dt>
 <dd>
 <div class="block">Remove a listener for sync events.</div>
 </dd>
-<dt><span class="memberNameLink"><a href="com/algolia/search/saas/Client.html#removeUserAgent-com.algolia.search.saas.Client.LibraryVersion-">removeUserAgent(Client.LibraryVersion)</a></span> - Method in class com.algolia.search.saas.<a href="com/algolia/search/saas/Client.html" title="class in com.algolia.search.saas">Client</a></dt>
+<dt><span class="memberNameLink"><a href="com/algolia/search/saas/AbstractClient.html#removeUserAgent-com.algolia.search.saas.AbstractClient.LibraryVersion-">removeUserAgent(AbstractClient.LibraryVersion)</a></span> - Method in class com.algolia.search.saas.<a href="com/algolia/search/saas/AbstractClient.html" title="class in com.algolia.search.saas">AbstractClient</a></dt>
 <dd>
 <div class="block">Remove a software library from the list of user agents.</div>
 </dd>
@@ -922,6 +1000,10 @@
 <dd>
 <div class="block">Search inside this index (asynchronously).</div>
 </dd>
+<dt><span class="memberNameLink"><a href="com/algolia/search/saas/places/PlacesClient.html#searchAsync-com.algolia.search.saas.places.PlacesQuery-com.algolia.search.saas.CompletionHandler-">searchAsync(PlacesQuery, CompletionHandler)</a></span> - Method in class com.algolia.search.saas.places.<a href="com/algolia/search/saas/places/PlacesClient.html" title="class in com.algolia.search.saas.places">PlacesClient</a></dt>
+<dd>
+<div class="block">Search for places.</div>
+</dd>
 <dt><span class="memberNameLink"><a href="com/algolia/search/saas/helpers/DisjunctiveFaceting.html#searchDisjunctiveFacetingAsync-com.algolia.search.saas.Query-java.util.List-java.util.Map-com.algolia.search.saas.CompletionHandler-">searchDisjunctiveFacetingAsync(Query, List&lt;String&gt;, Map&lt;String, List&lt;String&gt;&gt;, CompletionHandler)</a></span> - Method in class com.algolia.search.saas.helpers.<a href="com/algolia/search/saas/helpers/DisjunctiveFaceting.html" title="class in com.algolia.search.saas.helpers">DisjunctiveFaceting</a></dt>
 <dd>
 <div class="block">Perform a search with disjunctive facets, generating as many queries as number of disjunctive facets.</div>
@@ -946,6 +1028,14 @@
 <dd>
 <div class="block">Search inside this index (synchronously).</div>
 </dd>
+<dt><span class="memberNameLink"><a href="com/algolia/search/saas/AbstractQuery.html#set-java.lang.String-java.lang.Object-">set(String, Object)</a></span> - Method in class com.algolia.search.saas.<a href="com/algolia/search/saas/AbstractQuery.html" title="class in com.algolia.search.saas">AbstractQuery</a></dt>
+<dd>
+<div class="block">Set a parameter in an untyped fashion.</div>
+</dd>
+<dt><span class="memberNameLink"><a href="com/algolia/search/saas/places/PlacesQuery.html#set-java.lang.String-java.lang.Object-">set(String, Object)</a></span> - Method in class com.algolia.search.saas.places.<a href="com/algolia/search/saas/places/PlacesQuery.html" title="class in com.algolia.search.saas.places">PlacesQuery</a></dt>
+<dd>
+<div class="block">Set a parameter in an untyped fashion.</div>
+</dd>
 <dt><span class="memberNameLink"><a href="com/algolia/search/saas/Query.html#set-java.lang.String-java.lang.Object-">set(String, Object)</a></span> - Method in class com.algolia.search.saas.<a href="com/algolia/search/saas/Query.html" title="class in com.algolia.search.saas">Query</a></dt>
 <dd>
 <div class="block">Set a parameter in an untyped fashion.</div>
@@ -962,9 +1052,17 @@
 <dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="com/algolia/search/saas/Query.html#setAnalyticsTags-java.lang.String...-">setAnalyticsTags(String...)</a></span> - Method in class com.algolia.search.saas.<a href="com/algolia/search/saas/Query.html" title="class in com.algolia.search.saas">Query</a></dt>
 <dd>&nbsp;</dd>
-<dt><span class="memberNameLink"><a href="com/algolia/search/saas/Query.html#setAroundLatLng-com.algolia.search.saas.Query.LatLng-">setAroundLatLng(Query.LatLng)</a></span> - Method in class com.algolia.search.saas.<a href="com/algolia/search/saas/Query.html" title="class in com.algolia.search.saas">Query</a></dt>
+<dt><span class="memberNameLink"><a href="com/algolia/search/saas/places/PlacesQuery.html#setAroundLatLng-com.algolia.search.saas.AbstractQuery.LatLng-">setAroundLatLng(AbstractQuery.LatLng)</a></span> - Method in class com.algolia.search.saas.places.<a href="com/algolia/search/saas/places/PlacesQuery.html" title="class in com.algolia.search.saas.places">PlacesQuery</a></dt>
+<dd>
+<div class="block">Force to <em>first</em> search around a specific latitude/longitude.</div>
+</dd>
+<dt><span class="memberNameLink"><a href="com/algolia/search/saas/Query.html#setAroundLatLng-com.algolia.search.saas.AbstractQuery.LatLng-">setAroundLatLng(AbstractQuery.LatLng)</a></span> - Method in class com.algolia.search.saas.<a href="com/algolia/search/saas/Query.html" title="class in com.algolia.search.saas">Query</a></dt>
 <dd>
 <div class="block">Search for entries around a given latitude/longitude.</div>
+</dd>
+<dt><span class="memberNameLink"><a href="com/algolia/search/saas/places/PlacesQuery.html#setAroundLatLngViaIP-java.lang.Boolean-">setAroundLatLngViaIP(Boolean)</a></span> - Method in class com.algolia.search.saas.places.<a href="com/algolia/search/saas/places/PlacesQuery.html" title="class in com.algolia.search.saas.places">PlacesQuery</a></dt>
+<dd>
+<div class="block">Search <em>first</em> around the geolocation of the user found via his IP address.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="com/algolia/search/saas/Query.html#setAroundLatLngViaIP-java.lang.Boolean-">setAroundLatLngViaIP(Boolean)</a></span> - Method in class com.algolia.search.saas.<a href="com/algolia/search/saas/Query.html" title="class in com.algolia.search.saas">Query</a></dt>
 <dd>
@@ -973,6 +1071,10 @@
 <dt><span class="memberNameLink"><a href="com/algolia/search/saas/Query.html#setAroundPrecision-java.lang.Integer-">setAroundPrecision(Integer)</a></span> - Method in class com.algolia.search.saas.<a href="com/algolia/search/saas/Query.html" title="class in com.algolia.search.saas">Query</a></dt>
 <dd>
 <div class="block">Change the radius or around latitude/longitude query</div>
+</dd>
+<dt><span class="memberNameLink"><a href="com/algolia/search/saas/places/PlacesQuery.html#setAroundRadius-java.lang.Integer-">setAroundRadius(Integer)</a></span> - Method in class com.algolia.search.saas.places.<a href="com/algolia/search/saas/places/PlacesQuery.html" title="class in com.algolia.search.saas.places">PlacesQuery</a></dt>
+<dd>
+<div class="block">Change the radius for around latitude/longitude queries.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="com/algolia/search/saas/Query.html#setAroundRadius-java.lang.Integer-">setAroundRadius(Integer)</a></span> - Method in class com.algolia.search.saas.<a href="com/algolia/search/saas/Query.html" title="class in com.algolia.search.saas">Query</a></dt>
 <dd>
@@ -990,9 +1092,13 @@
 <dd>
 <div class="block">Specify the list of attribute names to Snippet alongside the number of words to return (syntax is &lsquo;attributeName:nbWords&rsquo;).</div>
 </dd>
-<dt><span class="memberNameLink"><a href="com/algolia/search/saas/Client.html#setConnectTimeout-int-">setConnectTimeout(int)</a></span> - Method in class com.algolia.search.saas.<a href="com/algolia/search/saas/Client.html" title="class in com.algolia.search.saas">Client</a></dt>
+<dt><span class="memberNameLink"><a href="com/algolia/search/saas/AbstractClient.html#setConnectTimeout-int-">setConnectTimeout(int)</a></span> - Method in class com.algolia.search.saas.<a href="com/algolia/search/saas/AbstractClient.html" title="class in com.algolia.search.saas">AbstractClient</a></dt>
 <dd>
 <div class="block">Set the connection timeout.</div>
+</dd>
+<dt><span class="memberNameLink"><a href="com/algolia/search/saas/places/PlacesQuery.html#setCountries-java.lang.String...-">setCountries(String...)</a></span> - Method in class com.algolia.search.saas.places.<a href="com/algolia/search/saas/places/PlacesQuery.html" title="class in com.algolia.search.saas.places">PlacesQuery</a></dt>
+<dd>
+<div class="block">Restrict the search results to a specific list of countries.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="com/algolia/search/saas/MirroredIndex.html#setDataSelectionQueries-com.algolia.search.saas.MirroredIndex.DataSelectionQuery...-">setDataSelectionQueries(MirroredIndex.DataSelectionQuery...)</a></span> - Method in class com.algolia.search.saas.<a href="com/algolia/search/saas/MirroredIndex.html" title="class in com.algolia.search.saas">MirroredIndex</a></dt>
 <dd>
@@ -1028,19 +1134,27 @@
 <dd>
 <div class="block">if set, the result hits will contain ranking information in _rankingInfo attribute.</div>
 </dd>
-<dt><span class="memberNameLink"><a href="com/algolia/search/saas/Client.html#setHeader-java.lang.String-java.lang.String-">setHeader(String, String)</a></span> - Method in class com.algolia.search.saas.<a href="com/algolia/search/saas/Client.html" title="class in com.algolia.search.saas">Client</a></dt>
+<dt><span class="memberNameLink"><a href="com/algolia/search/saas/AbstractClient.html#setHeader-java.lang.String-java.lang.String-">setHeader(String, String)</a></span> - Method in class com.algolia.search.saas.<a href="com/algolia/search/saas/AbstractClient.html" title="class in com.algolia.search.saas">AbstractClient</a></dt>
 <dd>
 <div class="block">Set an HTTP header that will be sent with every request.</div>
 </dd>
+<dt><span class="memberNameLink"><a href="com/algolia/search/saas/places/PlacesQuery.html#setHighlightPostTag-java.lang.String-">setHighlightPostTag(String)</a></span> - Method in class com.algolia.search.saas.places.<a href="com/algolia/search/saas/places/PlacesQuery.html" title="class in com.algolia.search.saas.places">PlacesQuery</a></dt>
+<dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="com/algolia/search/saas/Query.html#setHighlightPostTag-java.lang.String-">setHighlightPostTag(String)</a></span> - Method in class com.algolia.search.saas.<a href="com/algolia/search/saas/Query.html" title="class in com.algolia.search.saas">Query</a></dt>
+<dd>&nbsp;</dd>
+<dt><span class="memberNameLink"><a href="com/algolia/search/saas/places/PlacesQuery.html#setHighlightPreTag-java.lang.String-">setHighlightPreTag(String)</a></span> - Method in class com.algolia.search.saas.places.<a href="com/algolia/search/saas/places/PlacesQuery.html" title="class in com.algolia.search.saas.places">PlacesQuery</a></dt>
 <dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="com/algolia/search/saas/Query.html#setHighlightPreTag-java.lang.String-">setHighlightPreTag(String)</a></span> - Method in class com.algolia.search.saas.<a href="com/algolia/search/saas/Query.html" title="class in com.algolia.search.saas">Query</a></dt>
 <dd>&nbsp;</dd>
+<dt><span class="memberNameLink"><a href="com/algolia/search/saas/places/PlacesQuery.html#setHitsPerPage-java.lang.Integer-">setHitsPerPage(Integer)</a></span> - Method in class com.algolia.search.saas.places.<a href="com/algolia/search/saas/places/PlacesQuery.html" title="class in com.algolia.search.saas.places">PlacesQuery</a></dt>
+<dd>
+<div class="block">Set how many results you want to retrieve per search.</div>
+</dd>
 <dt><span class="memberNameLink"><a href="com/algolia/search/saas/Query.html#setHitsPerPage-java.lang.Integer-">setHitsPerPage(Integer)</a></span> - Method in class com.algolia.search.saas.<a href="com/algolia/search/saas/Query.html" title="class in com.algolia.search.saas">Query</a></dt>
 <dd>
 <div class="block">Set the number of hits per page.</div>
 </dd>
-<dt><span class="memberNameLink"><a href="com/algolia/search/saas/Client.html#setHosts-java.lang.String...-">setHosts(String...)</a></span> - Method in class com.algolia.search.saas.<a href="com/algolia/search/saas/Client.html" title="class in com.algolia.search.saas">Client</a></dt>
+<dt><span class="memberNameLink"><a href="com/algolia/search/saas/AbstractClient.html#setHosts-java.lang.String...-">setHosts(String...)</a></span> - Method in class com.algolia.search.saas.<a href="com/algolia/search/saas/AbstractClient.html" title="class in com.algolia.search.saas">AbstractClient</a></dt>
 <dd>
 <div class="block">Set read and write hosts to the same value (convenience method).</div>
 </dd>
@@ -1052,9 +1166,13 @@
 <dd>
 <div class="block">Search for entries inside a given area defined by the two extreme points of a rectangle.</div>
 </dd>
-<dt><span class="memberNameLink"><a href="com/algolia/search/saas/Query.html#setInsidePolygon-com.algolia.search.saas.Query.LatLng...-">setInsidePolygon(Query.LatLng...)</a></span> - Method in class com.algolia.search.saas.<a href="com/algolia/search/saas/Query.html" title="class in com.algolia.search.saas">Query</a></dt>
+<dt><span class="memberNameLink"><a href="com/algolia/search/saas/Query.html#setInsidePolygon-com.algolia.search.saas.AbstractQuery.LatLng...-">setInsidePolygon(AbstractQuery.LatLng...)</a></span> - Method in class com.algolia.search.saas.<a href="com/algolia/search/saas/Query.html" title="class in com.algolia.search.saas">Query</a></dt>
 <dd>
 <div class="block">Add a point to the polygon of geo-search (requires a minimum of three points to define a valid polygon) At indexing, you should specify geoloc of an object with the _geoloc attribute (in the form &quot;_geoloc&ldquo;:{&rdquo;lat&ldquo;:48.853409, &rdquo;lng&ldquo;:2.348800} or &rdquo;_geoloc&quot;:[{&ldquo;lat&rdquo;:48.853409, &ldquo;lng&rdquo;:2.348800},{&ldquo;lat&rdquo;:48.547456, &ldquo;lng&rdquo;:2.972075}] if you have several geo-locations in your record).</div>
+</dd>
+<dt><span class="memberNameLink"><a href="com/algolia/search/saas/places/PlacesQuery.html#setLanguage-java.lang.String-">setLanguage(String)</a></span> - Method in class com.algolia.search.saas.places.<a href="com/algolia/search/saas/places/PlacesQuery.html" title="class in com.algolia.search.saas.places">PlacesQuery</a></dt>
+<dd>
+<div class="block">Restrict the search results to a single language.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="com/algolia/search/saas/Query.html#setMaxValuesPerFacet-java.lang.Integer-">setMaxValuesPerFacet(Integer)</a></span> - Method in class com.algolia.search.saas.<a href="com/algolia/search/saas/Query.html" title="class in com.algolia.search.saas">Query</a></dt>
 <dd>
@@ -1092,6 +1210,10 @@
 <dd>
 <div class="block">Set the page to retrieve (zero base).</div>
 </dd>
+<dt><span class="memberNameLink"><a href="com/algolia/search/saas/places/PlacesQuery.html#setQuery-java.lang.String-">setQuery(String)</a></span> - Method in class com.algolia.search.saas.places.<a href="com/algolia/search/saas/places/PlacesQuery.html" title="class in com.algolia.search.saas.places">PlacesQuery</a></dt>
+<dd>
+<div class="block">Set the full text query.</div>
+</dd>
 <dt><span class="memberNameLink"><a href="com/algolia/search/saas/Query.html#setQuery-java.lang.String-">setQuery(String)</a></span> - Method in class com.algolia.search.saas.<a href="com/algolia/search/saas/Query.html" title="class in com.algolia.search.saas">Query</a></dt>
 <dd>
 <div class="block">Set the full text query</div>
@@ -1100,9 +1222,9 @@
 <dd>
 <div class="block">Select how the query words are interpreted:</div>
 </dd>
-<dt><span class="memberNameLink"><a href="com/algolia/search/saas/Client.html#setReadHosts-java.lang.String...-">setReadHosts(String...)</a></span> - Method in class com.algolia.search.saas.<a href="com/algolia/search/saas/Client.html" title="class in com.algolia.search.saas">Client</a></dt>
+<dt><span class="memberNameLink"><a href="com/algolia/search/saas/AbstractClient.html#setReadHosts-java.lang.String...-">setReadHosts(String...)</a></span> - Method in class com.algolia.search.saas.<a href="com/algolia/search/saas/AbstractClient.html" title="class in com.algolia.search.saas">AbstractClient</a></dt>
 <dd>&nbsp;</dd>
-<dt><span class="memberNameLink"><a href="com/algolia/search/saas/Client.html#setReadTimeout-int-">setReadTimeout(int)</a></span> - Method in class com.algolia.search.saas.<a href="com/algolia/search/saas/Client.html" title="class in com.algolia.search.saas">Client</a></dt>
+<dt><span class="memberNameLink"><a href="com/algolia/search/saas/AbstractClient.html#setReadTimeout-int-">setReadTimeout(int)</a></span> - Method in class com.algolia.search.saas.<a href="com/algolia/search/saas/AbstractClient.html" title="class in com.algolia.search.saas">AbstractClient</a></dt>
 <dd>
 <div class="block">Set the default read timeout.</div>
 </dd>
@@ -1122,7 +1244,7 @@
 <dd>
 <div class="block">List of object attributes you want to use for textual search (must be a subset of the <code>searchableAttributes</code> index setting).</div>
 </dd>
-<dt><span class="memberNameLink"><a href="com/algolia/search/saas/Client.html#setSearchTimeout-int-">setSearchTimeout(int)</a></span> - Method in class com.algolia.search.saas.<a href="com/algolia/search/saas/Client.html" title="class in com.algolia.search.saas">Client</a></dt>
+<dt><span class="memberNameLink"><a href="com/algolia/search/saas/AbstractClient.html#setSearchTimeout-int-">setSearchTimeout(int)</a></span> - Method in class com.algolia.search.saas.<a href="com/algolia/search/saas/AbstractClient.html" title="class in com.algolia.search.saas">AbstractClient</a></dt>
 <dd>
 <div class="block">Set the read timeout for search requests.</div>
 </dd>
@@ -1146,9 +1268,13 @@
 <dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="com/algolia/search/saas/Query.html#setTagFilters-org.json.JSONArray-">setTagFilters(JSONArray)</a></span> - Method in class com.algolia.search.saas.<a href="com/algolia/search/saas/Query.html" title="class in com.algolia.search.saas">Query</a></dt>
 <dd>&nbsp;</dd>
+<dt><span class="memberNameLink"><a href="com/algolia/search/saas/places/PlacesQuery.html#setType-com.algolia.search.saas.places.PlacesQuery.Type-">setType(PlacesQuery.Type)</a></span> - Method in class com.algolia.search.saas.places.<a href="com/algolia/search/saas/places/PlacesQuery.html" title="class in com.algolia.search.saas.places">PlacesQuery</a></dt>
+<dd>
+<div class="block">Set the type of place to search for.</div>
+</dd>
 <dt><span class="memberNameLink"><a href="com/algolia/search/saas/Query.html#setTypoTolerance-com.algolia.search.saas.Query.TypoTolerance-">setTypoTolerance(Query.TypoTolerance)</a></span> - Method in class com.algolia.search.saas.<a href="com/algolia/search/saas/Query.html" title="class in com.algolia.search.saas">Query</a></dt>
 <dd>&nbsp;</dd>
-<dt><span class="memberNameLink"><a href="com/algolia/search/saas/Client.html#setWriteHosts-java.lang.String...-">setWriteHosts(String...)</a></span> - Method in class com.algolia.search.saas.<a href="com/algolia/search/saas/Client.html" title="class in com.algolia.search.saas">Client</a></dt>
+<dt><span class="memberNameLink"><a href="com/algolia/search/saas/AbstractClient.html#setWriteHosts-java.lang.String...-">setWriteHosts(String...)</a></span> - Method in class com.algolia.search.saas.<a href="com/algolia/search/saas/AbstractClient.html" title="class in com.algolia.search.saas">AbstractClient</a></dt>
 <dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="com/algolia/search/saas/helpers/BrowseIterator.html#start--">start()</a></span> - Method in class com.algolia.search.saas.helpers.<a href="com/algolia/search/saas/helpers/BrowseIterator.html" title="class in com.algolia.search.saas.helpers">BrowseIterator</a></dt>
 <dd>
@@ -1182,6 +1308,10 @@
 </a>
 <h2 class="title">T</h2>
 <dl>
+<dt><span class="memberNameLink"><a href="com/algolia/search/saas/AbstractQuery.html#toString--">toString()</a></span> - Method in class com.algolia.search.saas.<a href="com/algolia/search/saas/AbstractQuery.html" title="class in com.algolia.search.saas">AbstractQuery</a></dt>
+<dd>
+<div class="block">Obtain a debug representation of this query.</div>
+</dd>
 <dt><span class="memberNameLink"><a href="com/algolia/search/saas/Client.MultipleQueriesStrategy.html#toString--">toString()</a></span> - Method in enum com.algolia.search.saas.<a href="com/algolia/search/saas/Client.MultipleQueriesStrategy.html" title="enum in com.algolia.search.saas">Client.MultipleQueriesStrategy</a></dt>
 <dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="com/algolia/search/saas/Index.html#toString--">toString()</a></span> - Method in class com.algolia.search.saas.<a href="com/algolia/search/saas/Index.html" title="class in com.algolia.search.saas">Index</a></dt>
@@ -1192,10 +1322,6 @@
 <dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="com/algolia/search/saas/OfflineIndex.WriteTransaction.html#toString--">toString()</a></span> - Method in class com.algolia.search.saas.<a href="com/algolia/search/saas/OfflineIndex.WriteTransaction.html" title="class in com.algolia.search.saas">OfflineIndex.WriteTransaction</a></dt>
 <dd>&nbsp;</dd>
-<dt><span class="memberNameLink"><a href="com/algolia/search/saas/Query.html#toString--">toString()</a></span> - Method in class com.algolia.search.saas.<a href="com/algolia/search/saas/Query.html" title="class in com.algolia.search.saas">Query</a></dt>
-<dd>
-<div class="block">Obtain a debug representation of this query.</div>
-</dd>
 </dl>
 <a name="I:V">
 <!--   -->
@@ -1207,6 +1333,10 @@
 <div class="block">Returns the enum constant of this type with the specified name.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="com/algolia/search/saas/MirroredIndex.Strategy.html#valueOf-java.lang.String-">valueOf(String)</a></span> - Static method in enum com.algolia.search.saas.<a href="com/algolia/search/saas/MirroredIndex.Strategy.html" title="enum in com.algolia.search.saas">MirroredIndex.Strategy</a></dt>
+<dd>
+<div class="block">Returns the enum constant of this type with the specified name.</div>
+</dd>
+<dt><span class="memberNameLink"><a href="com/algolia/search/saas/places/PlacesQuery.Type.html#valueOf-java.lang.String-">valueOf(String)</a></span> - Static method in enum com.algolia.search.saas.places.<a href="com/algolia/search/saas/places/PlacesQuery.Type.html" title="enum in com.algolia.search.saas.places">PlacesQuery.Type</a></dt>
 <dd>
 <div class="block">Returns the enum constant of this type with the specified name.</div>
 </dd>
@@ -1240,6 +1370,11 @@ the order they are declared.</div>
 <div class="block">Returns an array containing the constants of this enum type, in
 the order they are declared.</div>
 </dd>
+<dt><span class="memberNameLink"><a href="com/algolia/search/saas/places/PlacesQuery.Type.html#values--">values()</a></span> - Static method in enum com.algolia.search.saas.places.<a href="com/algolia/search/saas/places/PlacesQuery.Type.html" title="enum in com.algolia.search.saas.places">PlacesQuery.Type</a></dt>
+<dd>
+<div class="block">Returns an array containing the constants of this enum type, in
+the order they are declared.</div>
+</dd>
 <dt><span class="memberNameLink"><a href="com/algolia/search/saas/Query.AlternativesAsExact.html#values--">values()</a></span> - Static method in enum com.algolia.search.saas.<a href="com/algolia/search/saas/Query.AlternativesAsExact.html" title="enum in com.algolia.search.saas">Query.AlternativesAsExact</a></dt>
 <dd>
 <div class="block">Returns an array containing the constants of this enum type, in
@@ -1265,7 +1400,7 @@ the order they are declared.</div>
 <div class="block">Returns an array containing the constants of this enum type, in
 the order they are declared.</div>
 </dd>
-<dt><span class="memberNameLink"><a href="com/algolia/search/saas/Client.LibraryVersion.html#version">version</a></span> - Variable in class com.algolia.search.saas.<a href="com/algolia/search/saas/Client.LibraryVersion.html" title="class in com.algolia.search.saas">Client.LibraryVersion</a></dt>
+<dt><span class="memberNameLink"><a href="com/algolia/search/saas/AbstractClient.LibraryVersion.html#version">version</a></span> - Variable in class com.algolia.search.saas.<a href="com/algolia/search/saas/AbstractClient.LibraryVersion.html" title="class in com.algolia.search.saas">AbstractClient.LibraryVersion</a></dt>
 <dd>&nbsp;</dd>
 </dl>
 <a name="I:W">
