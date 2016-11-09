@@ -26,11 +26,13 @@ package com.algolia.search.saas;
 import android.support.annotation.NonNull;
 
 public class Helpers {
-    static String app_id = "APP_ID_REPLACE_ME";
-    static String api_key = "API_KEY_REPLACE_ME";
-    static String job_number = "JOB_NUMBER_REPLACE_ME";
+    public static String app_id = "%ALGOLIA_APPLICATION_ID%";
+    public static String api_key = "%ALGOLIA_API_KEY%";
+    public static String PLACES_APP_ID = "%PLACES_APPLICATION_ID%";
+    public static String PLACES_API_KEY = "%PLACES_API_KEY%";
+    public static String job_number = "%JOB_NUMBER%";
 
-    static int wait = 30;
+    public static int wait = 30;
 
     static String safeIndexName(String name) {
         if (job_number.matches("\\d+\\.\\d+")) {

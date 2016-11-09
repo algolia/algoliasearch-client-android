@@ -12,7 +12,7 @@ import static org.junit.Assert.fail;
  * As AssertionErrors are thrown silently when an assertion fails in a callback,
  * this class wraps a CompletionHandler to check if an assert failed and expose the error through {@link AssertCompletionHandler#checkAssertions()}.
  */
-abstract class AssertCompletionHandler implements CompletionHandler {
+abstract public class AssertCompletionHandler implements CompletionHandler {
     private AssertionError error;
     private int invocationCount = 0;
     private StackTraceElement[] creationStackTrace;
