@@ -1,13 +1,15 @@
 Change Log
 ==========
 
-## Upcoming 
+## 3.6.0 (2016-11-10)
 
 ### New features
-### Bug fixes
-### Other changes
+
+- (#175) Add support for [Algolia Places](https://community.algolia.com/places/)
+
 
 ## 3.5.0 (2016-10-03)
+
 ### New features
 
 - Support the `createIfNoExists` parameter in partial updates
