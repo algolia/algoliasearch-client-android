@@ -1033,7 +1033,7 @@ public class IndexTest extends RobolectricTestCase {
     }
 
     @Test
-    public void searchInFacets() throws Exception {
+    public void searchForFacFacetValues() throws Exception {
         final JSONObject setSettingsTask = index.setSettings(new JSONObject()
                 .put("attributesForFaceting", new JSONArray()
                         .put("searchable(series)")
@@ -1076,7 +1076,7 @@ public class IndexTest extends RobolectricTestCase {
         index.waitTask(setSettingsTask.getString("taskID"));
         index.waitTask(addObjectsResult.getString("taskID"));
 
-        index.searchFacet("series", "Hobb", null, new AssertCompletionHandler() {
+        index.searchForFacetValues("series", "Hobb", null, new AssertCompletionHandler() {
             @Override
             public void doRequestCompleted(JSONObject content, AlgoliaException error) {
                 assertNull("There should be no error", error);
@@ -1096,7 +1096,7 @@ public class IndexTest extends RobolectricTestCase {
         Query query = new Query()
                 .setFacetFilters(new JSONArray().put("kind:animal"))
                 .setNumericFilters(new JSONArray().put("born >= 1955"));
-        index.searchFacet("series", "Peanutz", query, new AssertCompletionHandler() {
+        index.searchForFacetValues("series", "Peanutz", query, new AssertCompletionHandler() {
             @Override
             public void doRequestCompleted(JSONObject content, AlgoliaException error) {
                 assertNull("There should be no error", error);

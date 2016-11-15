@@ -189,8 +189,8 @@ public class Index {
      * @param handler   A Completion handler that will be notified of the request's outcome.
      * @return A cancellable request.
      */
-    public Request searchFacet(@NonNull String facetName, @NonNull String text, @NonNull final CompletionHandler handler) throws AlgoliaException {
-        return searchFacet(facetName, text, null, handler);
+    public Request searchForFacetValues(@NonNull String facetName, @NonNull String text, @NonNull final CompletionHandler handler) throws AlgoliaException {
+        return searchForFacetValues(facetName, text, null, handler);
     }
 
     /**
@@ -202,7 +202,7 @@ public class Index {
      * @param handler   A Completion handler that will be notified of the request's outcome.
      * @return A cancellable request.
      */
-    public Request searchFacet(@NonNull String facetName, @NonNull String facetText, @Nullable Query query, @NonNull final CompletionHandler handler) throws AlgoliaException {
+    public Request searchForFacetValues(@NonNull String facetName, @NonNull String facetText, @Nullable Query query, @NonNull final CompletionHandler handler) throws AlgoliaException {
         try {
             final String path = "/1/indexes/" + getEncodedIndexName() + "/facets/" + URLEncoder.encode(facetName, "UTF-8") + "/query";
             final Query params = (query != null ? new Query(query) : new Query());
@@ -213,7 +213,7 @@ public class Index {
             return client.new AsyncTaskRequest(handler) {
                 @NonNull
                 @Override
-                JSONObject run() throws AlgoliaException {
+                protected JSONObject run() throws AlgoliaException {
                     return client.postRequest(path, requestBody.toString(), true);
                 }
             }.start();
