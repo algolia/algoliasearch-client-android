@@ -44,4 +44,4 @@ before_script:
 - adb shell input keyevent 82 &
 script:
 - set -o pipefail
-- bash run_test.sh
+- travis_wait bash run_test.sh
