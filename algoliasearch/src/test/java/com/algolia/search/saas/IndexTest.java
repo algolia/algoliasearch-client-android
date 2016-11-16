@@ -203,7 +203,7 @@ public class IndexTest extends RobolectricTestCase {
     @Test
     public void testDisjunctiveFacetingAsync2() throws Exception {
         // Set index settings.
-        JSONObject setSettingsResult = index.setSettings(new JSONObject("{\"attributesForFacetting\":[\"city\", \"stars\", \"facilities\"]}"));
+        JSONObject setSettingsResult = index.setSettings(new JSONObject("{\"attributesForFaceting\":[\"city\", \"stars\", \"facilities\"]}"));
         index.waitTask(setSettingsResult.getString("taskID"));
 
         // Add objects.
