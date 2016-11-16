@@ -8,6 +8,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /*
@@ -423,6 +424,125 @@ public class Query extends AbstractQuery {
     private static final String KEY_IGNORE_PLURALS = "ignorePlurals";
 
     /**
+     * A value of the {@code ignorePlurals} setting.
+     * Can represent either a boolean or a list of language codes, see https://www.algolia.com/doc/faq/searching/how-does-ignoreplurals-work.
+     */
+    public static final class IgnorePlurals {
+        /** Wether plurals are ignored. */
+        public final boolean enabled;
+
+        /** A list containing every active language's code. When {@code null}, all supported languages are be used. */
+        public final List<String> languageCodes;
+
+        /**
+         * Construct an IgnorePlurals object for a boolean value.
+         *
+         * @param b if {@code true}, the engine will ignore plurals in all supported languages.
+         */
+        public IgnorePlurals(Boolean b) {
+            this.enabled = b;
+            languageCodes = null;
+        }
+
+        /**
+         * Construct an IgnorePlurals object for a List of codes.
+         *
+         * @param codesList a list of language codes to ignore plurals from. if {@code null},
+         *                  the engine will ignore plurals in all supported languages.
+         */
+        public IgnorePlurals(List<String> codesList) {
+            if (isEmptyList(codesList)) {
+                this.enabled = false;
+            } else {
+                this.enabled = true;
+            }
+            languageCodes = codesList;
+        }
+
+        /**
+         * Construct an IgnorePlurals object for a String value.
+         *
+         * @param codesList a list of language codes to ignore plurals from, separated by commas.
+         *                  if {@code null}, the engine will ignore plurals in all supported languages.
+         */
+        public IgnorePlurals(String codesList) {
+            final IgnorePlurals parsed = parse(codesList);
+            enabled = parsed.enabled;
+            languageCodes = parsed.languageCodes;
+        }
+
+        private boolean isEmptyList(List<String> codesList) {
+            return codesList == null || codesList.size() == 0;
+        }
+
+        @Override
+        public String toString() {
+            if (!enabled) {
+                return "false";
+            } else {
+                if (isEmptyList(languageCodes)) {  // enabled without specific language
+                    return "true";
+                } else {
+                    return TextUtils.join(",", languageCodes);
+                }
+            }
+        }
+
+        static IgnorePlurals parse(String s) {
+            if (s == null || s.length() == 0 || s.equals("null")) {
+                return new IgnorePlurals(false);
+            } else if ("true".equals(s) || "false".equals(s)) {
+                return new IgnorePlurals(parseBoolean(s));
+            } else {
+                ArrayList<String> codesList = new ArrayList<>();
+                //ignorePlurals=["en","fi"]
+                try {
+                    JSONArray codesArray = new JSONArray(s);
+                    for (int i = 0; i < codesArray.length(); i++) {
+                        codesList.add(codesArray.getJSONObject(i).toString());
+                    }
+                    return new IgnorePlurals(codesList);
+                } catch (JSONException e) {
+                    // s was not a JSONArray of strings. Maybe it is a comma-separated list?
+                    final String[] split = TextUtils.split(s, ",");
+                    if (split != null && split.length != 0) {
+                        Collections.addAll(codesList, split);
+                        return new IgnorePlurals(codesList);
+                    } else {
+                        final String msg = "Error while parsing `" + s + "`: invalid ignorePlurals value.";
+                        throw new RuntimeException(msg);
+                    }
+                }
+            }
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) {
+                return true;
+            }
+            if (o == null || getClass() != o.getClass()) {
+                return false;
+            }
+
+            IgnorePlurals that = (IgnorePlurals) o;
+
+            if (enabled != that.enabled) {
+                return false;
+            }
+            return languageCodes != null ? languageCodes.equals(that.languageCodes) : that.languageCodes == null;
+
+        }
+
+        @Override
+        public int hashCode() {
+            int result = (enabled ? 1 : 0);
+            result = 31 * result + (languageCodes != null ? languageCodes.hashCode() : 0);
+            return result;
+        }
+    }
+
+    /**
      * If set to true, plural won't be considered as a typo (for example
      * car/cars will be considered as equals). Default to false.
      */
@@ -430,8 +550,28 @@ public class Query extends AbstractQuery {
         return set(KEY_IGNORE_PLURALS, enabled);
     }
 
-    public Boolean getIgnorePlurals() {
-        return parseBoolean(get(KEY_IGNORE_PLURALS));
+    /**
+     * A list of languages for which plural won't be considered as a typo (for example
+     * car/cars will be considered as equals). If empty or null, this disables the feature.
+     */
+    public
+    @NonNull
+    Query setIgnorePlurals(List<String> languageISOCodes) {
+        return set(KEY_IGNORE_PLURALS, new IgnorePlurals(languageISOCodes));
+    }
+
+    /**
+     * A comma-separated list of languages for which plural won't be considered as a typo (for example
+     * car/cars will be considered as equals). If empty or null, this disables the feature.
+     */
+    public
+    @NonNull
+    Query setIgnorePlurals(String languageISOCodes) {
+        return set(KEY_IGNORE_PLURALS, new IgnorePlurals(languageISOCodes));
+    }
+
+    public IgnorePlurals getIgnorePlurals() {
+        return IgnorePlurals.parse(get(KEY_IGNORE_PLURALS));
     }
 
     /**
