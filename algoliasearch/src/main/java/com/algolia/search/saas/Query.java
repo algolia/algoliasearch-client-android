@@ -546,7 +546,7 @@ public class Query extends AbstractQuery {
      * If set to true, plural won't be considered as a typo (for example
      * car/cars will be considered as equals). Default to false.
      */
-    public @NonNull Query setIgnorePlurals(Boolean enabled) {
+    public @NonNull Query setIgnorePlurals(boolean enabled) {
         return set(KEY_IGNORE_PLURALS, enabled);
     }
 
