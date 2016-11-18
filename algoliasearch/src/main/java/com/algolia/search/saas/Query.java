@@ -8,6 +8,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
@@ -445,18 +446,14 @@ public class Query extends AbstractQuery {
         }
 
         /**
-         * Construct an IgnorePlurals object for a List of codes.
+         * Construct an IgnorePlurals object for a {@link Collection} of language codes.
          *
-         * @param codesList a list of language codes to ignore plurals from. if {@code null},
-         *                  the engine will ignore plurals in all supported languages.
+         * @param codes a list of language codes to ignore plurals from. if {@code null},
+         *              the engine will ignore plurals in all supported languages.
          */
-        public IgnorePlurals(List<String> codesList) {
-            if (isEmptyList(codesList)) {
-                this.enabled = false;
-            } else {
-                this.enabled = true;
-            }
-            languageCodes = codesList;
+        public IgnorePlurals(Collection<String> codes) {
+            this.enabled = !isEmptyCollection(codes);
+            languageCodes = new ArrayList<>(codes);
         }
 
         /**
@@ -471,7 +468,7 @@ public class Query extends AbstractQuery {
             languageCodes = parsed.languageCodes;
         }
 
-        private boolean isEmptyList(List<String> codesList) {
+        private boolean isEmptyCollection(Collection<String> codesList) {
             return codesList == null || codesList.size() == 0;
         }
 
@@ -480,7 +477,7 @@ public class Query extends AbstractQuery {
             if (!enabled) {
                 return "false";
             } else {
-                if (isEmptyList(languageCodes)) {  // enabled without specific language
+                if (isEmptyCollection(languageCodes)) {  // enabled without specific language
                     return "true";
                 } else {
                     return TextUtils.join(",", languageCodes);
@@ -556,7 +553,7 @@ public class Query extends AbstractQuery {
      */
     public
     @NonNull
-    Query setIgnorePlurals(List<String> languageISOCodes) {
+    Query setIgnorePlurals(Collection<String> languageISOCodes) {
         return set(KEY_IGNORE_PLURALS, new IgnorePlurals(languageISOCodes));
     }
 
