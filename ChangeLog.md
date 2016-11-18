@@ -6,6 +6,8 @@ Change Log
 ### New features
 
 - (#163) Search in your facets values with `Index.searchForFacetValues`
+- (#178) Accept a list of language ISO codes for ignorePlurals. **Note**: this introduces backward-incompatible changes.
+
 
 ## 3.6.0 (2016-11-10)
 

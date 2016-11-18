@@ -27,6 +27,11 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.junit.Test;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import static junit.framework.Assert.assertFalse;
+import static junit.framework.Assert.assertNotNull;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
@@ -36,7 +41,7 @@ import static org.junit.Assert.fail;
 /**
  * Unit tests for the `Query` class.
  */
-public class QueryTest extends RobolectricTestCase  {
+public class QueryTest extends RobolectricTestCase {
 
     // ----------------------------------------------------------------------
     // Build & parse
@@ -152,17 +157,52 @@ public class QueryTest extends RobolectricTestCase  {
 
     @Test
     public void test_ignorePlurals() {
-        Query query1 = new Query();
-        assertNull(query1.getIgnorePlurals());
-        query1.setIgnorePlurals(true);
-        assertEquals(query1.getIgnorePlurals(), Boolean.TRUE);
-        Query query2 = Query.parse(query1.build());
-        assertEquals(query2.getIgnorePlurals(), query1.getIgnorePlurals());
+        // No value
+        Query query = new Query();
+        assertFalse("By default, ignorePlurals should be disabled.", query.getIgnorePlurals().enabled);
 
-        query1.setIgnorePlurals(false);
-        assertEquals(query1.getIgnorePlurals(), Boolean.FALSE);
-        Query query3 = Query.parse(query1.build());
-        assertEquals(query3.getIgnorePlurals(), query1.getIgnorePlurals());
+        // Boolean values
+        query.setIgnorePlurals(true);
+        assertEquals("A true boolean should enable ignorePlurals.", Boolean.TRUE, query.getIgnorePlurals().enabled);
+        assertEquals("A true boolean should be built and parsed successfully.", query.getIgnorePlurals(), Query.parse(query.build()).getIgnorePlurals());
+
+        query.setIgnorePlurals(false);
+        assertEquals("A false boolean should disable ignorePlurals.", Boolean.FALSE, query.getIgnorePlurals().enabled);
+        assertEquals("A false boolean should be built and parsed successfully.", query.getIgnorePlurals(), Query.parse(query.build()).getIgnorePlurals());
+
+        // List values
+        query.setIgnorePlurals((List<String>) null);
+        assertFalse("A null list value should disable ignorePlurals.", query.getIgnorePlurals().enabled);
+        assertEquals("A null list value should be built and parsed successfully.", query.getIgnorePlurals(), Query.parse(query.build()).getIgnorePlurals());
+
+        query.setIgnorePlurals(new ArrayList<String>());
+        assertFalse("Setting an empty list should disable ignorePlurals.", query.getIgnorePlurals().enabled);
+
+        ArrayList<String> languageCodes = new ArrayList<>(java.util.Arrays.asList("en", "fr"));
+        query.setIgnorePlurals(languageCodes);
+        assertTrue("Setting a non-empty list should enable ignorePlurals.", query.getIgnorePlurals().enabled);
+        assertNotNull("The language codes should not be null", query.getIgnorePlurals().languageCodes);
+        assertEquals("Two language codes should be in ignorePlurals.", 2, query.getIgnorePlurals().languageCodes.size());
+        assertTrue("The first language code should be in ignorePlurals", query.getIgnorePlurals().languageCodes.contains(languageCodes.get(0)));
+        assertTrue("The second language code should be in ignorePlurals", query.getIgnorePlurals().languageCodes.contains(languageCodes.get(1)));
+
+        // String[] values
+        query.setIgnorePlurals("");
+        assertFalse("An empty string should disable ignorePlurals.", query.getIgnorePlurals().enabled);
+        assertEquals("A empty string should be built and parsed successfully.", query.getIgnorePlurals(), Query.parse(query.build()).getIgnorePlurals());
+
+        query.setIgnorePlurals("en");
+        assertEquals("A single language code should enable ignorePlurals.", Boolean.TRUE, query.getIgnorePlurals().enabled);
+        assertEquals("A single language code should be built and parsed successfully.", query.getIgnorePlurals(), Query.parse(query.build()).getIgnorePlurals());
+        assertEquals("One language code should be in ignorePlurals.", 1, query.getIgnorePlurals().languageCodes.size());
+        assertTrue("The language code should be in ignorePlurals", query.getIgnorePlurals().languageCodes.contains("en"));
+
+        query.setIgnorePlurals("en", "fr");
+        assertEquals("Two language codes should enable ignorePlurals.", Boolean.TRUE, query.getIgnorePlurals().enabled);
+        assertEquals("Two language codes should be built and parsed successfully.", query.getIgnorePlurals(), Query.parse(query.build()).getIgnorePlurals());
+        assertEquals("Two language codes should be in ignorePlurals.", 2, query.getIgnorePlurals().languageCodes.size());
+        assertTrue("The first language code should be in ignorePlurals", query.getIgnorePlurals().languageCodes.contains("en"));
+        assertTrue("The second language code should be in ignorePlurals", query.getIgnorePlurals().languageCodes.contains("fr"));
     }
 
     @Test
