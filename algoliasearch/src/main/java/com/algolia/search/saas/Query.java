@@ -8,6 +8,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -459,13 +460,11 @@ public class Query extends AbstractQuery {
         /**
          * Construct an IgnorePlurals object for a String value.
          *
-         * @param codesList a list of language codes to ignore plurals from, separated by commas.
-         *                  if {@code null}, the engine will ignore plurals in all supported languages.
+         * @param codes one or several language codes to ignore plurals from.
+         *              if {@code null}, the engine will ignore plurals in all supported languages.
          */
-        public IgnorePlurals(String codesList) {
-            final IgnorePlurals parsed = parse(codesList);
-            enabled = parsed.enabled;
-            languageCodes = parsed.languageCodes;
+        public IgnorePlurals(@Nullable String... codes) {
+            this(codes == null ? null : Arrays.asList(codes));
         }
 
         private boolean isEmptyCollection(Collection<String> codesList) {
