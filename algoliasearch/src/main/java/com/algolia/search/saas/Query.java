@@ -452,9 +452,9 @@ public class Query extends AbstractQuery {
          * @param codes a list of language codes to ignore plurals from. if {@code null},
          *              the engine will ignore plurals in all supported languages.
          */
-        public IgnorePlurals(Collection<String> codes) {
+        public IgnorePlurals(@Nullable Collection<String> codes) {
             this.enabled = !isEmptyCollection(codes);
-            languageCodes = new ArrayList<>(codes);
+            languageCodes = codes != null ? new ArrayList<>(codes) : null;
         }
 
         /**
@@ -467,7 +467,7 @@ public class Query extends AbstractQuery {
             this(codes == null ? null : Arrays.asList(codes));
         }
 
-        private boolean isEmptyCollection(Collection<String> codesList) {
+        private boolean isEmptyCollection(@Nullable Collection<String> codesList) {
             return codesList == null || codesList.size() == 0;
         }
 
@@ -484,7 +484,7 @@ public class Query extends AbstractQuery {
             }
         }
 
-        static IgnorePlurals parse(String s) {
+        static @NonNull IgnorePlurals parse(String s) {
             if (s == null || s.length() == 0 || s.equals("null")) {
                 return new IgnorePlurals(false);
             } else if ("true".equals(s) || "false".equals(s)) {
@@ -542,7 +542,9 @@ public class Query extends AbstractQuery {
      * If set to true, plural won't be considered as a typo (for example
      * car/cars will be considered as equals). Default to false.
      */
-    public @NonNull Query setIgnorePlurals(boolean enabled) {
+    public
+    @NonNull
+    Query setIgnorePlurals(boolean enabled) {
         return set(KEY_IGNORE_PLURALS, enabled);
     }
 
@@ -552,7 +554,7 @@ public class Query extends AbstractQuery {
      */
     public
     @NonNull
-    Query setIgnorePlurals(Collection<String> languageISOCodes) {
+    Query setIgnorePlurals(@Nullable Collection<String> languageISOCodes) {
         return set(KEY_IGNORE_PLURALS, new IgnorePlurals(languageISOCodes));
     }
 
@@ -562,11 +564,11 @@ public class Query extends AbstractQuery {
      */
     public
     @NonNull
-    Query setIgnorePlurals(String languageISOCodes) {
+    Query setIgnorePlurals(@Nullable String... languageISOCodes) {
         return set(KEY_IGNORE_PLURALS, new IgnorePlurals(languageISOCodes));
     }
 
-    public IgnorePlurals getIgnorePlurals() {
+    public @NonNull IgnorePlurals getIgnorePlurals() {
         return IgnorePlurals.parse(get(KEY_IGNORE_PLURALS));
     }
 
