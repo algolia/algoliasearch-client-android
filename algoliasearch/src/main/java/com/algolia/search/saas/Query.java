@@ -458,7 +458,7 @@ public class Query extends AbstractQuery {
         }
 
         /**
-         * Construct an IgnorePlurals object for a String value.
+         * Construct an IgnorePlurals object for some language codes.
          *
          * @param codes one or several language codes to ignore plurals from.
          *              if {@code null}, the engine will ignore plurals in all supported languages.
@@ -547,7 +547,7 @@ public class Query extends AbstractQuery {
     }
 
     /**
-     * A list of languages for which plural won't be considered as a typo (for example
+     * A list of language codes for which plural won't be considered as a typo (for example
      * car/cars will be considered as equals). If empty or null, this disables the feature.
      */
     public
@@ -557,7 +557,7 @@ public class Query extends AbstractQuery {
     }
 
     /**
-     * A comma-separated list of languages for which plural won't be considered as a typo (for example
+     * One or several language codes for which plural won't be considered as a typo (for example
      * car/cars will be considered as equals). If empty or null, this disables the feature.
      */
     public
