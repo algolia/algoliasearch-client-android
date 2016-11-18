@@ -1,6 +1,12 @@
 Change Log
 ==========
 
+## Upcoming
+
+### New features
+
+- (#163) Search in your facets values with `Index.searchForFacetValues`
+
 ## 3.6.0 (2016-11-10)
 
 ### New features
