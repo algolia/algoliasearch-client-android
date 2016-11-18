@@ -441,7 +441,7 @@ public class Query extends AbstractQuery {
          *
          * @param b if {@code true}, the engine will ignore plurals in all supported languages.
          */
-        public IgnorePlurals(Boolean b) {
+        public IgnorePlurals(boolean b) {
             this.enabled = b;
             languageCodes = null;
         }
