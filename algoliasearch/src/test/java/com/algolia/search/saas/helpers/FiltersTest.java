@@ -119,13 +119,14 @@ public class FiltersTest extends RobolectricTestCase {
     @Test
     public void toTest() {
         String keyA = "a";
+        String valueA = "valueA";
         String keyB = "b";
-        mBuilder.addFilter(keyA);
+        mBuilder.addFilter(keyA, valueA);
         mBuilder.to();
         mBuilder.addFilter(keyB);
 
         assertTrue(mBuilder.build().getFilters().contains(Filters.Builder.TO));
-        assertEquals(keyA + Filters.Builder.EMPTY_SPACE + Filters.Builder.TO + Filters.Builder.EMPTY_SPACE + keyB, mBuilder.build().getFilters());
+        assertEquals(keyA + Filters.Builder.COLON + valueA + Filters.Builder.EMPTY_SPACE + Filters.Builder.TO + Filters.Builder.EMPTY_SPACE + keyB, mBuilder.build().getFilters());
     }
 
     @Test
