@@ -115,7 +115,7 @@ public class QueryTest extends RobolectricTestCase {
         Query query1 = new Query();
         assertNull(query1.getMinWordSizefor1Typo());
         query1.setMinWordSizefor1Typo(123);
-        assertEquals(new Integer(123), query1.getMinWordSizefor1Typo());
+        assertEquals(Integer.valueOf(123), query1.getMinWordSizefor1Typo());
         Query query2 = Query.parse(query1.build());
         assertEquals(query1.getMinWordSizefor1Typo(), query2.getMinWordSizefor1Typo());
     }
@@ -125,7 +125,7 @@ public class QueryTest extends RobolectricTestCase {
         Query query1 = new Query();
         assertNull(query1.getMinWordSizefor2Typos());
         query1.setMinWordSizefor2Typos(456);
-        assertEquals(new Integer(456), query1.getMinWordSizefor2Typos());
+        assertEquals(Integer.valueOf(456), query1.getMinWordSizefor2Typos());
         Query query2 = Query.parse(query1.build());
         assertEquals(query1.getMinWordSizefor2Typos(), query2.getMinWordSizefor2Typos());
     }
@@ -135,7 +135,7 @@ public class QueryTest extends RobolectricTestCase {
         Query query1 = new Query();
         assertNull(query1.getMinProximity());
         query1.setMinProximity(999);
-        assertEquals(new Integer(999), query1.getMinProximity());
+        assertEquals(Integer.valueOf(999), query1.getMinProximity());
         Query query2 = Query.parse(query1.build());
         assertEquals(query1.getMinProximity(), query2.getMinProximity());
     }
@@ -210,7 +210,7 @@ public class QueryTest extends RobolectricTestCase {
         Query query1 = new Query();
         assertNull(query1.getDistinct());
         query1.setDistinct(100);
-        assertEquals(new Integer(100), query1.getDistinct());
+        assertEquals(Integer.valueOf(100), query1.getDistinct());
         Query query2 = Query.parse(query1.build());
         assertEquals(query1.getDistinct(), query2.getDistinct());
     }
@@ -220,7 +220,7 @@ public class QueryTest extends RobolectricTestCase {
         Query query1 = new Query();
         assertNull(query1.getPage());
         query1.setPage(0);
-        assertEquals(new Integer(0), query1.getPage());
+        assertEquals(Integer.valueOf(0), query1.getPage());
         Query query2 = Query.parse(query1.build());
         assertEquals(query1.getPage(), query2.getPage());
     }
@@ -230,7 +230,7 @@ public class QueryTest extends RobolectricTestCase {
         Query query1 = new Query();
         assertNull(query1.getHitsPerPage());
         query1.setHitsPerPage(50);
-        assertEquals(new Integer(50), query1.getHitsPerPage());
+        assertEquals(Integer.valueOf(50), query1.getHitsPerPage());
         Query query2 = Query.parse(query1.build());
         assertEquals(query1.getHitsPerPage(), query2.getHitsPerPage());
     }
@@ -502,7 +502,7 @@ public class QueryTest extends RobolectricTestCase {
         Query query1 = new Query();
         assertNull(query1.getAroundPrecision());
         query1.setAroundPrecision(12345);
-        assertEquals(new Integer(12345), query1.getAroundPrecision());
+        assertEquals(Integer.valueOf(12345), query1.getAroundPrecision());
         assertEquals("12345", query1.get("aroundPrecision"));
         Query query2 = Query.parse(query1.build());
         assertEquals(query1.getAroundPrecision(), query2.getAroundPrecision());
@@ -513,7 +513,7 @@ public class QueryTest extends RobolectricTestCase {
         Query query1 = new Query();
         assertNull(query1.getAroundRadius());
         query1.setAroundRadius(987);
-        assertEquals(new Integer(987), query1.getAroundRadius());
+        assertEquals(Integer.valueOf(987), query1.getAroundRadius());
         assertEquals("987", query1.get("aroundRadius"));
         Query query2 = Query.parse(query1.build());
         assertEquals(query1.getAroundRadius(), query2.getAroundRadius());
@@ -649,7 +649,7 @@ public class QueryTest extends RobolectricTestCase {
         Query query1 = new Query();
         assertNull(query1.getMaxValuesPerFacet());
         query1.setMaxValuesPerFacet(456);
-        assertEquals(new Integer(456), query1.getMaxValuesPerFacet());
+        assertEquals(Integer.valueOf(456), query1.getMaxValuesPerFacet());
         assertEquals("456", query1.get("maxValuesPerFacet"));
         Query query2 = Query.parse(query1.build());
         assertEquals(query1.getMaxValuesPerFacet(), query2.getMaxValuesPerFacet());
@@ -660,7 +660,7 @@ public class QueryTest extends RobolectricTestCase {
         Query query1 = new Query();
         assertNull(query1.getMinimumAroundRadius());
         query1.setMinimumAroundRadius(1000);
-        assertEquals(new Integer(1000), query1.getMinimumAroundRadius());
+        assertEquals(Integer.valueOf(1000), query1.getMinimumAroundRadius());
         assertEquals("1000", query1.get("minimumAroundRadius"));
         Query query2 = Query.parse(query1.build());
         assertEquals(query1.getMinimumAroundRadius(), query2.getMinimumAroundRadius());
