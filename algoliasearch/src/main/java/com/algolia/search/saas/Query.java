@@ -349,10 +349,20 @@ public class Query extends AbstractQuery {
 
     private static final String KEY_FACET_FILTERS = "facetFilters";
 
+    /**
+     * Set the <b>deprecated</b> {@code facetFilters} parameter.
+     *
+     * @deprecated Use {@link Query#setFilters(String)} instead.
+     */
     public @NonNull Query setFacetFilters(JSONArray filters) {
         return set(KEY_FACET_FILTERS, filters);
     }
 
+    /**
+     * Get the value of <b>deprecated</b> {@code facetFilters} parameter.
+     *
+     * @deprecated Use {@link Query#getFilters()} instead.
+     */
     public JSONArray getFacetFilters() {
         try {
             String value = get(KEY_FACET_FILTERS);
