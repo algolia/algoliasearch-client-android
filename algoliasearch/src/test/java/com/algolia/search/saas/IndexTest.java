@@ -83,7 +83,7 @@ public class IndexTest extends RobolectricTestCase {
 
         client.deleteIndex(indexName);
 
-        objects = new ArrayList<JSONObject>();
+        objects = new ArrayList<>();
         objects.add(new JSONObject("{\"city\": \"San Francisco\"}"));
         objects.add(new JSONObject("{\"city\": \"San José\"}"));
 
@@ -91,7 +91,7 @@ public class IndexTest extends RobolectricTestCase {
         index.waitTask(task.getString("taskID"));
 
         JSONArray objectIDs = task.getJSONArray("objectIDs");
-        ids = new ArrayList<String>();
+        ids = new ArrayList<>();
         for (int i = 0; i < objectIDs.length(); ++i) {
             ids.add(objectIDs.getString(i));
         }
@@ -386,7 +386,7 @@ public class IndexTest extends RobolectricTestCase {
 
     @Test
     public void getObjectWithAttributesToRetrieveAsync() throws Exception {
-        List<String> attributesToRetrieve = new ArrayList<String>();
+        List<String> attributesToRetrieve = new ArrayList<>();
         attributesToRetrieve.add("objectID");
         index.getObjectAsync(ids.get(0), attributesToRetrieve, new AssertCompletionHandler() {
             @Override public void doRequestCompleted(JSONObject content, AlgoliaException error) {
@@ -621,7 +621,7 @@ public class IndexTest extends RobolectricTestCase {
 
     private void addDummyObjects(int objectCount) throws Exception {
         // Construct an array of dummy objects.
-        objects = new ArrayList<JSONObject>();
+        objects = new ArrayList<>();
         for (int i = 0; i < objectCount; ++i) {
             objects.add(new JSONObject(String.format("{\"dummy\": %d}", i)));
         }
