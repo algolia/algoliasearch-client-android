@@ -116,6 +116,7 @@ public class QueryTest extends RobolectricTestCase {
         assertNull(query1.getMinWordSizefor1Typo());
         query1.setMinWordSizefor1Typo(123);
         assertEquals(Integer.valueOf(123), query1.getMinWordSizefor1Typo());
+        assertEquals("123", query1.get("minWordSizefor1Typo"));
         Query query2 = Query.parse(query1.build());
         assertEquals(query1.getMinWordSizefor1Typo(), query2.getMinWordSizefor1Typo());
     }
@@ -126,6 +127,7 @@ public class QueryTest extends RobolectricTestCase {
         assertNull(query1.getMinWordSizefor2Typos());
         query1.setMinWordSizefor2Typos(456);
         assertEquals(Integer.valueOf(456), query1.getMinWordSizefor2Typos());
+        assertEquals("456", query1.get("minWordSizefor2Typos"));
         Query query2 = Query.parse(query1.build());
         assertEquals(query1.getMinWordSizefor2Typos(), query2.getMinWordSizefor2Typos());
     }
@@ -136,6 +138,7 @@ public class QueryTest extends RobolectricTestCase {
         assertNull(query1.getMinProximity());
         query1.setMinProximity(999);
         assertEquals(Integer.valueOf(999), query1.getMinProximity());
+        assertEquals("999", query1.get("minProximity"));
         Query query2 = Query.parse(query1.build());
         assertEquals(query1.getMinProximity(), query2.getMinProximity());
     }
@@ -146,11 +149,13 @@ public class QueryTest extends RobolectricTestCase {
         assertNull(query1.getGetRankingInfo());
         query1.setGetRankingInfo(true);
         assertEquals(Boolean.TRUE, query1.getGetRankingInfo());
+        assertEquals("true", query1.get("getRankingInfo"));
         Query query2 = Query.parse(query1.build());
         assertEquals(query1.getGetRankingInfo(), query2.getGetRankingInfo());
 
         query1.setGetRankingInfo(false);
         assertEquals(Boolean.FALSE, query1.getGetRankingInfo());
+        assertEquals("false", query1.get("getRankingInfo"));
         Query query3 = Query.parse(query1.build());
         assertEquals(query1.getGetRankingInfo(), query3.getGetRankingInfo());
     }
@@ -164,15 +169,18 @@ public class QueryTest extends RobolectricTestCase {
         // Boolean values
         query.setIgnorePlurals(true);
         assertEquals("A true boolean should enable ignorePlurals.", Boolean.TRUE, query.getIgnorePlurals().enabled);
+        assertEquals("A true boolean should be in ignorePlurals.", "true", query.get("ignorePlurals"));
         assertEquals("A true boolean should be built and parsed successfully.", query.getIgnorePlurals(), Query.parse(query.build()).getIgnorePlurals());
 
         query.setIgnorePlurals(false);
         assertEquals("A false boolean should disable ignorePlurals.", Boolean.FALSE, query.getIgnorePlurals().enabled);
+        assertEquals("A false boolean should should be in ignorePlurals.", "false", query.get("ignorePlurals"));
         assertEquals("A false boolean should be built and parsed successfully.", query.getIgnorePlurals(), Query.parse(query.build()).getIgnorePlurals());
 
         // List values
         query.setIgnorePlurals((List<String>) null);
         assertFalse("A null list value should disable ignorePlurals.", query.getIgnorePlurals().enabled);
+        assertEquals("A null list value should disable ignorePlurals.", "false", query.get("ignorePlurals"));
         assertEquals("A null list value should be built and parsed successfully.", query.getIgnorePlurals(), Query.parse(query.build()).getIgnorePlurals());
 
         query.setIgnorePlurals(new ArrayList<String>());
@@ -181,6 +189,7 @@ public class QueryTest extends RobolectricTestCase {
         ArrayList<String> languageCodes = new ArrayList<>(java.util.Arrays.asList("en", "fr"));
         query.setIgnorePlurals(languageCodes);
         assertTrue("Setting a non-empty list should enable ignorePlurals.", query.getIgnorePlurals().enabled);
+        assertEquals("Setting a non-empty list should be in ignorePlurals.", "en,fr", query.get("ignorePlurals"));
         assertNotNull("The language codes should not be null", query.getIgnorePlurals().languageCodes);
         assertEquals("Two language codes should be in ignorePlurals.", 2, query.getIgnorePlurals().languageCodes.size());
         assertTrue("The first language code should be in ignorePlurals", query.getIgnorePlurals().languageCodes.contains(languageCodes.get(0)));
@@ -189,16 +198,19 @@ public class QueryTest extends RobolectricTestCase {
         // String[] values
         query.setIgnorePlurals("");
         assertFalse("An empty string should disable ignorePlurals.", query.getIgnorePlurals().enabled);
+        assertEquals("An empty string should be in ignorePlurals.", "", query.get("ignorePlurals"));
         assertEquals("A empty string should be built and parsed successfully.", query.getIgnorePlurals(), Query.parse(query.build()).getIgnorePlurals());
 
         query.setIgnorePlurals("en");
         assertEquals("A single language code should enable ignorePlurals.", Boolean.TRUE, query.getIgnorePlurals().enabled);
+        assertEquals("A single language code should be in ignorePlurals.", "en", query.get("ignorePlurals"));
         assertEquals("A single language code should be built and parsed successfully.", query.getIgnorePlurals(), Query.parse(query.build()).getIgnorePlurals());
         assertEquals("One language code should be in ignorePlurals.", 1, query.getIgnorePlurals().languageCodes.size());
         assertTrue("The language code should be in ignorePlurals", query.getIgnorePlurals().languageCodes.contains("en"));
 
         query.setIgnorePlurals("en", "fr");
         assertEquals("Two language codes should enable ignorePlurals.", Boolean.TRUE, query.getIgnorePlurals().enabled);
+        assertEquals("Two language codes should be in ignorePlurals.", "en,fr", query.get("ignorePlurals"));
         assertEquals("Two language codes should be built and parsed successfully.", query.getIgnorePlurals(), Query.parse(query.build()).getIgnorePlurals());
         assertEquals("Two language codes should be in ignorePlurals.", 2, query.getIgnorePlurals().languageCodes.size());
         assertTrue("The first language code should be in ignorePlurals", query.getIgnorePlurals().languageCodes.contains("en"));
@@ -211,6 +223,7 @@ public class QueryTest extends RobolectricTestCase {
         assertNull(query1.getDistinct());
         query1.setDistinct(100);
         assertEquals(Integer.valueOf(100), query1.getDistinct());
+        assertEquals("100", query1.get("distinct"));
         Query query2 = Query.parse(query1.build());
         assertEquals(query1.getDistinct(), query2.getDistinct());
     }
@@ -221,6 +234,7 @@ public class QueryTest extends RobolectricTestCase {
         assertNull(query1.getPage());
         query1.setPage(0);
         assertEquals(Integer.valueOf(0), query1.getPage());
+        assertEquals("0", query1.get("page"));
         Query query2 = Query.parse(query1.build());
         assertEquals(query1.getPage(), query2.getPage());
     }
@@ -231,6 +245,7 @@ public class QueryTest extends RobolectricTestCase {
         assertNull(query1.getHitsPerPage());
         query1.setHitsPerPage(50);
         assertEquals(Integer.valueOf(50), query1.getHitsPerPage());
+        assertEquals("50", query1.get("hitsPerPage"));
         Query query2 = Query.parse(query1.build());
         assertEquals(query1.getHitsPerPage(), query2.getHitsPerPage());
     }
@@ -241,11 +256,13 @@ public class QueryTest extends RobolectricTestCase {
         assertNull(query1.getAllowTyposOnNumericTokens());
         query1.setAllowTyposOnNumericTokens(true);
         assertEquals(Boolean.TRUE, query1.getAllowTyposOnNumericTokens());
+        assertEquals("true", query1.get("allowTyposOnNumericTokens"));
         Query query2 = Query.parse(query1.build());
         assertEquals(query1.getAllowTyposOnNumericTokens(), query2.getAllowTyposOnNumericTokens());
 
         query1.setAllowTyposOnNumericTokens(false);
         assertEquals(Boolean.FALSE, query1.getAllowTyposOnNumericTokens());
+        assertEquals("false", query1.get("allowTyposOnNumericTokens"));
         Query query3 = Query.parse(query1.build());
         assertEquals(query1.getAllowTyposOnNumericTokens(), query3.getAllowTyposOnNumericTokens());
     }
@@ -256,6 +273,7 @@ public class QueryTest extends RobolectricTestCase {
         assertNull(query1.getAnalytics());
         query1.setAnalytics(true);
         assertEquals(Boolean.TRUE, query1.getAnalytics());
+        assertEquals("true", query1.get("analytics"));
         Query query2 = Query.parse(query1.build());
         assertEquals(query1.getAnalytics(), query2.getAnalytics());
     }
@@ -266,6 +284,7 @@ public class QueryTest extends RobolectricTestCase {
         assertNull(query1.getSynonyms());
         query1.setSynonyms(true);
         assertEquals(Boolean.TRUE, query1.getSynonyms());
+        assertEquals("true", query1.get("synonyms"));
         Query query2 = Query.parse(query1.build());
         assertEquals(query1.getSynonyms(), query2.getSynonyms());
     }
@@ -276,6 +295,7 @@ public class QueryTest extends RobolectricTestCase {
         assertNull(query1.getAttributesToHighlight());
         query1.setAttributesToHighlight("foo", "bar");
         assertArrayEquals(new String[]{ "foo", "bar" }, query1.getAttributesToHighlight());
+        assertEquals("[\"foo\",\"bar\"]", query1.get("attributesToHighlight"));
         Query query2 = Query.parse(query1.build());
         assertArrayEquals(query1.getAttributesToHighlight(), query2.getAttributesToHighlight());
     }
@@ -286,6 +306,7 @@ public class QueryTest extends RobolectricTestCase {
         assertNull(query1.getAttributesToRetrieve());
         query1.setAttributesToRetrieve("foo", "bar");
         assertArrayEquals(new String[]{ "foo", "bar" }, query1.getAttributesToRetrieve());
+        assertEquals("[\"foo\",\"bar\"]", query1.get("attributesToRetrieve"));
         Query query2 = Query.parse(query1.build());
         assertArrayEquals(query1.getAttributesToRetrieve(), query2.getAttributesToRetrieve());
     }
@@ -296,6 +317,7 @@ public class QueryTest extends RobolectricTestCase {
         assertNull(query1.getAttributesToSnippet());
         query1.setAttributesToSnippet("foo:3", "bar:7");
         assertArrayEquals(new String[]{ "foo:3", "bar:7" }, query1.getAttributesToSnippet());
+        assertEquals("[\"foo:3\",\"bar:7\"]", query1.get("attributesToSnippet"));
         Query query2 = Query.parse(query1.build());
         assertArrayEquals(query1.getAttributesToSnippet(), query2.getAttributesToSnippet());
     }
@@ -306,6 +328,7 @@ public class QueryTest extends RobolectricTestCase {
         assertNull(query1.getQuery());
         query1.setQuery("supercalifragilisticexpialidocious");
         assertEquals("supercalifragilisticexpialidocious", query1.getQuery());
+        assertEquals("supercalifragilisticexpialidocious", query1.get("query"));
         Query query2 = Query.parse(query1.build());
         assertEquals(query1.getQuery(), query2.getQuery());
     }
@@ -732,13 +755,15 @@ public class QueryTest extends RobolectricTestCase {
         assertNull("A new query should have a null aroundRadius.", query.getAroundRadius());
 
         query.setAroundRadius(VALUE);
-        assertEquals("After setting its aroundRadius to a given integer, we should return it from getAroundRadius.", VALUE, query.getAroundRadius());
+        assertEquals("After setting a query's aroundRadius to a given integer, we should return it from getAroundRadius.", VALUE, query.getAroundRadius());
+        assertEquals("After setting a query's aroundRadius to a given integer, it should be in aroundRadius.", String.valueOf(VALUE), query.get("aroundRadius"));
 
         String queryStr = query.build();
         assertTrue("The built query should contain 'aroundRadius=" + VALUE + "'.", queryStr.contains("aroundRadius=" + VALUE));
 
         query.setAroundRadius(Query.RADIUS_ALL);
-        assertEquals("After setting it to RADIUS_ALL, a query should have this aroundRadius value.", Integer.valueOf(Query.RADIUS_ALL), query.getAroundRadius());
+        assertEquals("After setting a query's aroundRadius to RADIUS_ALL, it should have this aroundRadius value.", Integer.valueOf(Query.RADIUS_ALL), query.getAroundRadius());
+        assertEquals("After setting a query's aroundRadius to RADIUS_ALL, its aroundRadius should be equal to \"all\".", "all", query.get("aroundRadius"));
 
         queryStr = query.build();
         assertTrue("The built query should contain 'aroundRadius=all', not _" + queryStr + "_.", queryStr.contains("aroundRadius=all"));
