@@ -79,7 +79,7 @@ public class IndexTest extends RobolectricTestCase {
         Whitebox.setInternalState(client, "searchExecutorService", new RoboExecutorService());
 
         indexName = Helpers.safeIndexName("àlgol?à-android");
-        index = client.initIndex(indexName);
+        index = client.getIndex(indexName);
 
         client.deleteIndex(indexName);
 
@@ -720,7 +720,7 @@ public class IndexTest extends RobolectricTestCase {
 
     @Test
     public void error404() throws Exception {
-        Index unknownIndex = client.initIndex("doesnotexist");
+        Index unknownIndex = client.getIndex("doesnotexist");
         unknownIndex.searchAsync(new Query(), new AssertCompletionHandler() {
             @Override
             public void doRequestCompleted(JSONObject content, AlgoliaException error) {
