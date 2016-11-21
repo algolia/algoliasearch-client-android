@@ -46,7 +46,7 @@ public class PlacesQueryTest extends RobolectricTestCase  {
         PlacesQuery query1 = new PlacesQuery();
         assertNull(query1.getHitsPerPage());
         query1.setHitsPerPage(50);
-        assertEquals(query1.getHitsPerPage(), new Integer(50));
+        assertEquals(query1.getHitsPerPage(), Integer.valueOf(50));
         PlacesQuery query2 = PlacesQuery.parse(query1.build());
         assertEquals(query2.getHitsPerPage(), query1.getHitsPerPage());
     }
@@ -89,7 +89,7 @@ public class PlacesQueryTest extends RobolectricTestCase  {
         PlacesQuery query1 = new PlacesQuery();
         assertNull(query1.getAroundRadius());
         query1.setAroundRadius(987);
-        assertEquals(query1.getAroundRadius(), new Integer(987));
+        assertEquals(query1.getAroundRadius(), Integer.valueOf(987));
         assertEquals(query1.get("aroundRadius"), "987");
         PlacesQuery query2 = PlacesQuery.parse(query1.build());
         assertEquals(query2.getAroundRadius(), query1.getAroundRadius());
