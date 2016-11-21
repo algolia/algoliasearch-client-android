@@ -177,10 +177,10 @@ public class IndexTest extends RobolectricTestCase {
         index.waitTask(task.getString("taskID"));
 
         final Query query = new Query("phone").setFacets("brand", "category", "stars");
-        final List<String> disjunctiveFacets = Arrays.asList("brand");
+        final List<String> disjunctiveFacets = Collections.singletonList("brand");
         final Map<String, List<String>> refinements = new HashMap<>();
         refinements.put("brand", Arrays.asList("Apple", "Samsung")); // disjunctive facet
-        refinements.put("category", Arrays.asList("device")); // conjunctive facet
+        refinements.put("category", Collections.singletonList("device")); // conjunctive facet
         index.searchDisjunctiveFacetingAsync(query, disjunctiveFacets, refinements, new AssertCompletionHandler() {
             @Override
             public void doRequestCompleted(JSONObject content, AlgoliaException error) {
@@ -229,7 +229,7 @@ public class IndexTest extends RobolectricTestCase {
             }
         });
 
-        refinements.put("stars", Arrays.asList("*"));
+        refinements.put("stars", Collections.singletonList("*"));
         index.searchDisjunctiveFacetingAsync(query, disjunctiveFacets, refinements, new AssertCompletionHandler() {
             @Override
             public void doRequestCompleted(JSONObject content, AlgoliaException error) {
@@ -242,7 +242,7 @@ public class IndexTest extends RobolectricTestCase {
             }
         });
 
-        refinements.put("city", Arrays.asList("Paris"));
+        refinements.put("city", Collections.singletonList("Paris"));
         index.searchDisjunctiveFacetingAsync(query, disjunctiveFacets, refinements, new AssertCompletionHandler() {
             @Override
             public void doRequestCompleted(JSONObject content, AlgoliaException error) {
