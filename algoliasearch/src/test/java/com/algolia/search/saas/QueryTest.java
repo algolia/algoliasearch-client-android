@@ -483,7 +483,7 @@ public class QueryTest extends RobolectricTestCase {
         assertArrayEquals(new String[]{ "foo", "bar" }, query1.getAnalyticsTags());
         assertEquals("[\"foo\",\"bar\"]", query1.get("analyticsTags"));
         Query query2 = Query.parse(query1.build());
-        assertArrayEquals(new String[]{ "foo", "bar" }, query2.getAnalyticsTags());
+        assertArrayEquals(query1.getAnalyticsTags(), query2.getAnalyticsTags());
     }
 
     @Test
