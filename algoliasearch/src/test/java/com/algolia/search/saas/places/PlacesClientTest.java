@@ -60,7 +60,7 @@ public class PlacesClientTest extends RobolectricTestCase {
     }
 
     @Test
-    public void testSearchAsync() throws Exception {
+    public void searchAsync() throws Exception {
         PlacesQuery query = new PlacesQuery();
         query.setQuery("Paris");
         query.setType(PlacesQuery.Type.CITY);
