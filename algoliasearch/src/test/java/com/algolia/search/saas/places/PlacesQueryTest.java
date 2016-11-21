@@ -42,7 +42,7 @@ public class PlacesQueryTest extends RobolectricTestCase  {
     // ----------------------------------------------------------------------
 
     @Test
-    public void test_hitsPerPage() {
+    public void hitsPerPage() {
         PlacesQuery query1 = new PlacesQuery();
         assertNull(query1.getHitsPerPage());
         query1.setHitsPerPage(50);
@@ -52,7 +52,7 @@ public class PlacesQueryTest extends RobolectricTestCase  {
     }
 
     @Test
-    public void test_query() {
+    public void query() {
         PlacesQuery query1 = new PlacesQuery();
         assertNull(query1.getQuery());
         query1.setQuery("San Francisco");
@@ -63,7 +63,7 @@ public class PlacesQueryTest extends RobolectricTestCase  {
     }
 
     @Test
-    public void test_highlightPreTag() {
+    public void highlightPreTag() {
         PlacesQuery query1 = new PlacesQuery();
         assertNull(query1.getHighlightPreTag());
         query1.setHighlightPreTag("<PRE[");
@@ -74,7 +74,7 @@ public class PlacesQueryTest extends RobolectricTestCase  {
     }
 
     @Test
-    public void test_highlightPostTag() {
+    public void highlightPostTag() {
         PlacesQuery query1 = new PlacesQuery();
         assertNull(query1.getHighlightPostTag());
         query1.setHighlightPostTag("]POST>");
@@ -85,7 +85,7 @@ public class PlacesQueryTest extends RobolectricTestCase  {
     }
 
     @Test
-    public void test_aroundRadius() {
+    public void aroundRadius() {
         PlacesQuery query1 = new PlacesQuery();
         assertNull(query1.getAroundRadius());
         query1.setAroundRadius(987);
@@ -96,7 +96,7 @@ public class PlacesQueryTest extends RobolectricTestCase  {
     }
 
     @Test
-    public void test_aroundRadius_all() {
+    public void aroundRadius_all() {
         final Integer VALUE = 3;
         PlacesQuery query = new PlacesQuery();
         assertNull("A new query should have a null aroundRadius.", query.getAroundRadius());
@@ -117,7 +117,7 @@ public class PlacesQueryTest extends RobolectricTestCase  {
     }
 
     @Test
-    public void test_aroundLatLngViaIP() {
+    public void aroundLatLngViaIP() {
         PlacesQuery query1 = new PlacesQuery();
         assertNull(query1.getAroundLatLngViaIP());
         query1.setAroundLatLngViaIP(true);
@@ -128,7 +128,7 @@ public class PlacesQueryTest extends RobolectricTestCase  {
     }
 
     @Test
-    public void test_aroundLatLng() {
+    public void aroundLatLng() {
         PlacesQuery query1 = new PlacesQuery();
         assertNull(query1.getAroundLatLng());
         query1.setAroundLatLng(new PlacesQuery.LatLng(89.76, -123.45));
@@ -139,7 +139,7 @@ public class PlacesQueryTest extends RobolectricTestCase  {
     }
 
     @Test
-    public void test_language() {
+    public void language() {
         PlacesQuery query1 = new PlacesQuery();
         assertNull(query1.getQuery());
         query1.setLanguage("en");
@@ -150,7 +150,7 @@ public class PlacesQueryTest extends RobolectricTestCase  {
     }
 
     @Test
-    public void test_countries() {
+    public void countries() {
         PlacesQuery query1 = new PlacesQuery();
         assertNull(query1.getCountries());
         query1.setCountries("de", "fr", "us");
@@ -161,7 +161,7 @@ public class PlacesQueryTest extends RobolectricTestCase  {
     }
 
     @Test
-    public void test_type() {
+    public void type() {
         PlacesQuery query1 = new PlacesQuery();
         assertNull(query1.getType());
         PlacesQuery query2;
