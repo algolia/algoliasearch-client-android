@@ -46,9 +46,9 @@ public class PlacesQueryTest extends RobolectricTestCase  {
         PlacesQuery query1 = new PlacesQuery();
         assertNull(query1.getHitsPerPage());
         query1.setHitsPerPage(50);
-        assertEquals(query1.getHitsPerPage(), Integer.valueOf(50));
+        assertEquals(Integer.valueOf(50), query1.getHitsPerPage());
         PlacesQuery query2 = PlacesQuery.parse(query1.build());
-        assertEquals(query2.getHitsPerPage(), query1.getHitsPerPage());
+        assertEquals(query1.getHitsPerPage(), query2.getHitsPerPage());
     }
 
     @Test
@@ -56,10 +56,10 @@ public class PlacesQueryTest extends RobolectricTestCase  {
         PlacesQuery query1 = new PlacesQuery();
         assertNull(query1.getQuery());
         query1.setQuery("San Francisco");
-        assertEquals(query1.getQuery(), "San Francisco");
-        assertEquals(query1.get("query"), "San Francisco");
+        assertEquals("San Francisco", query1.getQuery());
+        assertEquals("San Francisco", query1.get("query"));
         PlacesQuery query2 = PlacesQuery.parse(query1.build());
-        assertEquals(query2.getQuery(), query1.getQuery());
+        assertEquals(query1.getQuery(), query2.getQuery());
     }
 
     @Test
@@ -67,10 +67,10 @@ public class PlacesQueryTest extends RobolectricTestCase  {
         PlacesQuery query1 = new PlacesQuery();
         assertNull(query1.getHighlightPreTag());
         query1.setHighlightPreTag("<PRE[");
-        assertEquals(query1.getHighlightPreTag(), "<PRE[");
-        assertEquals(query1.get("highlightPreTag"), "<PRE[");
+        assertEquals("<PRE[", query1.getHighlightPreTag());
+        assertEquals("<PRE[", query1.get("highlightPreTag"));
         PlacesQuery query2 = PlacesQuery.parse(query1.build());
-        assertEquals(query2.getHighlightPreTag(), query1.getHighlightPreTag());
+        assertEquals(query1.getHighlightPreTag(), query2.getHighlightPreTag());
     }
 
     @Test
@@ -78,10 +78,10 @@ public class PlacesQueryTest extends RobolectricTestCase  {
         PlacesQuery query1 = new PlacesQuery();
         assertNull(query1.getHighlightPostTag());
         query1.setHighlightPostTag("]POST>");
-        assertEquals(query1.getHighlightPostTag(), "]POST>");
-        assertEquals(query1.get("highlightPostTag"), "]POST>");
+        assertEquals("]POST>", query1.getHighlightPostTag());
+        assertEquals("]POST>", query1.get("highlightPostTag"));
         PlacesQuery query2 = PlacesQuery.parse(query1.build());
-        assertEquals(query2.getHighlightPostTag(), query1.getHighlightPostTag());
+        assertEquals(query1.getHighlightPostTag(), query2.getHighlightPostTag());
     }
 
     @Test
@@ -89,10 +89,10 @@ public class PlacesQueryTest extends RobolectricTestCase  {
         PlacesQuery query1 = new PlacesQuery();
         assertNull(query1.getAroundRadius());
         query1.setAroundRadius(987);
-        assertEquals(query1.getAroundRadius(), Integer.valueOf(987));
-        assertEquals(query1.get("aroundRadius"), "987");
+        assertEquals(Integer.valueOf(987), query1.getAroundRadius());
+        assertEquals("987", query1.get("aroundRadius"));
         PlacesQuery query2 = PlacesQuery.parse(query1.build());
-        assertEquals(query2.getAroundRadius(), query1.getAroundRadius());
+        assertEquals(query1.getAroundRadius(), query2.getAroundRadius());
     }
 
     @Test
@@ -121,10 +121,10 @@ public class PlacesQueryTest extends RobolectricTestCase  {
         PlacesQuery query1 = new PlacesQuery();
         assertNull(query1.getAroundLatLngViaIP());
         query1.setAroundLatLngViaIP(true);
-        assertEquals(query1.getAroundLatLngViaIP(), Boolean.TRUE);
-        assertEquals(query1.get("aroundLatLngViaIP"), "true");
+        assertEquals(Boolean.TRUE, query1.getAroundLatLngViaIP());
+        assertEquals("true", query1.get("aroundLatLngViaIP"));
         PlacesQuery query2 = PlacesQuery.parse(query1.build());
-        assertEquals(query2.getAroundLatLngViaIP(), query1.getAroundLatLngViaIP());
+        assertEquals(query1.getAroundLatLngViaIP(), query2.getAroundLatLngViaIP());
     }
 
     @Test
@@ -132,10 +132,10 @@ public class PlacesQueryTest extends RobolectricTestCase  {
         PlacesQuery query1 = new PlacesQuery();
         assertNull(query1.getAroundLatLng());
         query1.setAroundLatLng(new PlacesQuery.LatLng(89.76, -123.45));
-        assertEquals(query1.getAroundLatLng(), new PlacesQuery.LatLng(89.76, -123.45));
-        assertEquals(query1.get("aroundLatLng"), "89.76,-123.45");
+        assertEquals(new PlacesQuery.LatLng(89.76, -123.45), query1.getAroundLatLng());
+        assertEquals("89.76,-123.45", query1.get("aroundLatLng"));
         PlacesQuery query2 = PlacesQuery.parse(query1.build());
-        assertEquals(query2.getAroundLatLng(), query1.getAroundLatLng());
+        assertEquals(query1.getAroundLatLng(), query2.getAroundLatLng());
     }
 
     @Test
@@ -143,10 +143,10 @@ public class PlacesQueryTest extends RobolectricTestCase  {
         PlacesQuery query1 = new PlacesQuery();
         assertNull(query1.getQuery());
         query1.setLanguage("en");
-        assertEquals(query1.getLanguage(), "en");
-        assertEquals(query1.get("language"), "en");
+        assertEquals("en", query1.getLanguage());
+        assertEquals("en", query1.get("language"));
         PlacesQuery query2 = PlacesQuery.parse(query1.build());
-        assertEquals(query2.getQuery(), query1.getQuery());
+        assertEquals(query1.getQuery(), query2.getQuery());
     }
 
     @Test
@@ -167,46 +167,46 @@ public class PlacesQueryTest extends RobolectricTestCase  {
         PlacesQuery query2;
 
         query1.setType(PlacesQuery.Type.CITY);
-        assertEquals(query1.getType(), PlacesQuery.Type.CITY);
-        assertEquals(query1.get("type"), "city");
+        assertEquals(PlacesQuery.Type.CITY, query1.getType());
+        assertEquals("city", query1.get("type"));
         query2 = PlacesQuery.parse(query1.build());
-        assertEquals(query2.getType(), query1.getType());
+        assertEquals(query1.getType(), query2.getType());
 
         query1.setType(PlacesQuery.Type.COUNTRY);
-        assertEquals(query1.getType(), PlacesQuery.Type.COUNTRY);
-        assertEquals(query1.get("type"), "country");
+        assertEquals(PlacesQuery.Type.COUNTRY, query1.getType());
+        assertEquals("country", query1.get("type"));
         query2 = PlacesQuery.parse(query1.build());
-        assertEquals(query2.getType(), query1.getType());
+        assertEquals(query1.getType(), query2.getType());
 
         query1.setType(PlacesQuery.Type.ADDRESS);
-        assertEquals(query1.getType(), PlacesQuery.Type.ADDRESS);
-        assertEquals(query1.get("type"), "address");
+        assertEquals(PlacesQuery.Type.ADDRESS, query1.getType());
+        assertEquals("address", query1.get("type"));
         query2 = PlacesQuery.parse(query1.build());
-        assertEquals(query2.getType(), query1.getType());
+        assertEquals(query1.getType(), query2.getType());
 
         query1.setType(PlacesQuery.Type.BUS_STOP);
-        assertEquals(query1.getType(), PlacesQuery.Type.BUS_STOP);
-        assertEquals(query1.get("type"), "busStop");
+        assertEquals(PlacesQuery.Type.BUS_STOP, query1.getType());
+        assertEquals("busStop", query1.get("type"));
         query2 = PlacesQuery.parse(query1.build());
-        assertEquals(query2.getType(), query1.getType());
+        assertEquals(query1.getType(), query2.getType());
 
         query1.setType(PlacesQuery.Type.TRAIN_STATION);
-        assertEquals(query1.getType(), PlacesQuery.Type.TRAIN_STATION);
-        assertEquals(query1.get("type"), "trainStation");
+        assertEquals(PlacesQuery.Type.TRAIN_STATION, query1.getType());
+        assertEquals("trainStation", query1.get("type"));
         query2 = PlacesQuery.parse(query1.build());
-        assertEquals(query2.getType(), query1.getType());
+        assertEquals(query1.getType(), query2.getType());
 
         query1.setType(PlacesQuery.Type.TOWN_HALL);
-        assertEquals(query1.getType(), PlacesQuery.Type.TOWN_HALL);
-        assertEquals(query1.get("type"), "townhall");
+        assertEquals(PlacesQuery.Type.TOWN_HALL, query1.getType());
+        assertEquals("townhall", query1.get("type"));
         query2 = PlacesQuery.parse(query1.build());
-        assertEquals(query2.getType(), query1.getType());
+        assertEquals(query1.getType(), query2.getType());
 
         query1.setType(PlacesQuery.Type.AIRPORT);
-        assertEquals(query1.getType(), PlacesQuery.Type.AIRPORT);
-        assertEquals(query1.get("type"), "airport");
+        assertEquals(PlacesQuery.Type.AIRPORT, query1.getType());
+        assertEquals("airport", query1.get("type"));
         query2 = PlacesQuery.parse(query1.build());
-        assertEquals(query2.getType(), query1.getType());
+        assertEquals(query1.getType(), query2.getType());
 
         query1.set("type", "invalid");
         assertNull(query1.getType());
