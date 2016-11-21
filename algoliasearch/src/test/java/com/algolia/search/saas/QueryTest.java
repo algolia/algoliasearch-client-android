@@ -49,7 +49,7 @@ public class QueryTest extends RobolectricTestCase {
 
     /** Test serializing a query into a URL query string. */
     @Test
-    public void testBuild() {
+    public void build() {
         Query query = new Query();
         query.set("c", "C");
         query.set("b", "B");
@@ -60,7 +60,7 @@ public class QueryTest extends RobolectricTestCase {
 
     /** Test parsing a query from a URL query string. */
     @Test
-    public void testParse() {
+    public void parse() {
         // Build the URL for a query.
         Query query1 = new Query();
         query1.set("foo", "bar");
@@ -74,7 +74,7 @@ public class QueryTest extends RobolectricTestCase {
 
     /** Test that non-ASCII and special characters are escaped. */
     @Test
-    public void testEscape() {
+    public void escape() {
         Query query1 = new Query();
         query1.set("accented", "éêèàôù");
         query1.set("escaped", " %&=#+");
@@ -92,7 +92,7 @@ public class QueryTest extends RobolectricTestCase {
 
     /** Test low-level accessors. */
     @Test
-    public void testGetSet() {
+    public void getSet() {
         Query query = new Query();
 
         // Test accessors.
@@ -111,7 +111,7 @@ public class QueryTest extends RobolectricTestCase {
     // ----------------------------------------------------------------------
 
     @Test
-    public void test_minWordSizefor1Typo() {
+    public void minWordSizefor1Typo() {
         Query query1 = new Query();
         assertNull(query1.getMinWordSizefor1Typo());
         query1.setMinWordSizefor1Typo(123);
@@ -121,7 +121,7 @@ public class QueryTest extends RobolectricTestCase {
     }
 
     @Test
-    public void test_minWordSizefor2Typos() {
+    public void minWordSizefor2Typos() {
         Query query1 = new Query();
         assertNull(query1.getMinWordSizefor2Typos());
         query1.setMinWordSizefor2Typos(456);
@@ -131,7 +131,7 @@ public class QueryTest extends RobolectricTestCase {
     }
 
     @Test
-    public void test_minProximity() {
+    public void minProximity() {
         Query query1 = new Query();
         assertNull(query1.getMinProximity());
         query1.setMinProximity(999);
@@ -141,7 +141,7 @@ public class QueryTest extends RobolectricTestCase {
     }
 
     @Test
-    public void test_getRankingInfo() {
+    public void getRankingInfo() {
         Query query1 = new Query();
         assertNull(query1.getGetRankingInfo());
         query1.setGetRankingInfo(true);
@@ -156,7 +156,7 @@ public class QueryTest extends RobolectricTestCase {
     }
 
     @Test
-    public void test_ignorePlurals() {
+    public void ignorePlurals() {
         // No value
         Query query = new Query();
         assertFalse("By default, ignorePlurals should be disabled.", query.getIgnorePlurals().enabled);
@@ -206,7 +206,7 @@ public class QueryTest extends RobolectricTestCase {
     }
 
     @Test
-    public void test_distinct() {
+    public void distinct() {
         Query query1 = new Query();
         assertNull(query1.getDistinct());
         query1.setDistinct(100);
@@ -216,7 +216,7 @@ public class QueryTest extends RobolectricTestCase {
     }
 
     @Test
-    public void test_page() {
+    public void page() {
         Query query1 = new Query();
         assertNull(query1.getPage());
         query1.setPage(0);
@@ -226,7 +226,7 @@ public class QueryTest extends RobolectricTestCase {
     }
 
     @Test
-    public void test_hitsPerPage() {
+    public void hitsPerPage() {
         Query query1 = new Query();
         assertNull(query1.getHitsPerPage());
         query1.setHitsPerPage(50);
@@ -236,7 +236,7 @@ public class QueryTest extends RobolectricTestCase {
     }
 
     @Test
-    public void test_allowTyposOnNumericTokens() {
+    public void allowTyposOnNumericTokens() {
         Query query1 = new Query();
         assertNull(query1.getAllowTyposOnNumericTokens());
         query1.setAllowTyposOnNumericTokens(true);
@@ -251,7 +251,7 @@ public class QueryTest extends RobolectricTestCase {
     }
 
     @Test
-    public void test_analytics() {
+    public void analytics() {
         Query query1 = new Query();
         assertNull(query1.getAnalytics());
         query1.setAnalytics(true);
@@ -261,7 +261,7 @@ public class QueryTest extends RobolectricTestCase {
     }
 
     @Test
-    public void test_synonyms() {
+    public void synonyms() {
         Query query1 = new Query();
         assertNull(query1.getSynonyms());
         query1.setSynonyms(true);
@@ -271,7 +271,7 @@ public class QueryTest extends RobolectricTestCase {
     }
 
     @Test
-    public void test_attributesToHighlight() {
+    public void attributesToHighlight() {
         Query query1 = new Query();
         assertNull(query1.getAttributesToHighlight());
         query1.setAttributesToHighlight("foo", "bar");
@@ -281,7 +281,7 @@ public class QueryTest extends RobolectricTestCase {
     }
 
     @Test
-    public void test_attributesToRetrieve() {
+    public void attributesToRetrieve() {
         Query query1 = new Query();
         assertNull(query1.getAttributesToRetrieve());
         query1.setAttributesToRetrieve("foo", "bar");
@@ -291,7 +291,7 @@ public class QueryTest extends RobolectricTestCase {
     }
 
     @Test
-    public void test_attributesToSnippet() {
+    public void attributesToSnippet() {
         Query query1 = new Query();
         assertNull(query1.getAttributesToSnippet());
         query1.setAttributesToSnippet("foo:3", "bar:7");
@@ -301,7 +301,7 @@ public class QueryTest extends RobolectricTestCase {
     }
 
     @Test
-    public void test_query() {
+    public void query() {
         Query query1 = new Query();
         assertNull(query1.getQuery());
         query1.setQuery("supercalifragilisticexpialidocious");
@@ -311,7 +311,7 @@ public class QueryTest extends RobolectricTestCase {
     }
 
     @Test
-    public void test_queryType() {
+    public void queryType() {
         Query query1 = new Query();
         assertNull(query1.getQueryType());
 
@@ -338,7 +338,7 @@ public class QueryTest extends RobolectricTestCase {
     }
 
     @Test
-    public void test_removeWordsIfNoResults() {
+    public void removeWordsIfNoResults() {
         Query query1 = new Query();
         assertNull(query1.getRemoveWordsIfNoResults());
 
@@ -374,7 +374,7 @@ public class QueryTest extends RobolectricTestCase {
     }
 
     @Test
-    public void test_typoTolerance() {
+    public void typoTolerance() {
         Query query1 = new Query();
         assertNull(query1.getTypoTolerance());
 
@@ -410,7 +410,7 @@ public class QueryTest extends RobolectricTestCase {
     }
 
     @Test
-    public void test_facets() {
+    public void facets() {
         Query query1 = new Query();
         assertNull(query1.getFacets());
         query1.setFacets("foo", "bar");
@@ -421,7 +421,7 @@ public class QueryTest extends RobolectricTestCase {
     }
 
     @Test
-    public void test_optionalWords() {
+    public void optionalWords() {
         Query query1 = new Query();
         assertNull(query1.getOptionalWords());
         query1.setOptionalWords("foo", "bar");
@@ -432,7 +432,7 @@ public class QueryTest extends RobolectricTestCase {
     }
 
     @Test
-    public void test_restrictSearchableAttributes() {
+    public void restrictSearchableAttributes() {
         Query query1 = new Query();
         assertNull(query1.getRestrictSearchableAttributes());
         query1.setRestrictSearchableAttributes("foo", "bar");
@@ -443,7 +443,7 @@ public class QueryTest extends RobolectricTestCase {
     }
 
     @Test
-    public void test_highlightPreTag() {
+    public void highlightPreTag() {
         Query query1 = new Query();
         assertNull(query1.getHighlightPreTag());
         query1.setHighlightPreTag("<PRE[");
@@ -454,7 +454,7 @@ public class QueryTest extends RobolectricTestCase {
     }
 
     @Test
-    public void test_highlightPostTag() {
+    public void highlightPostTag() {
         Query query1 = new Query();
         assertNull(query1.getHighlightPostTag());
         query1.setHighlightPostTag("]POST>");
@@ -465,7 +465,7 @@ public class QueryTest extends RobolectricTestCase {
     }
 
     @Test
-    public void test_snippetEllipsisText() {
+    public void snippetEllipsisText() {
         Query query1 = new Query();
         assertNull(query1.getSnippetEllipsisText());
         query1.setSnippetEllipsisText("…");
@@ -476,7 +476,7 @@ public class QueryTest extends RobolectricTestCase {
     }
 
     @Test
-    public void test_analyticsTags() {
+    public void analyticsTags() {
         Query query1 = new Query();
         assertNull(query1.getAnalyticsTags());
         query1.setAnalyticsTags("foo", "bar");
@@ -487,7 +487,7 @@ public class QueryTest extends RobolectricTestCase {
     }
 
     @Test
-    public void test_disableTypoToleranceOnAttributes() {
+    public void disableTypoToleranceOnAttributes() {
         Query query1 = new Query();
         assertNull(query1.getDisableTypoToleranceOnAttributes());
         query1.setDisableTypoToleranceOnAttributes("foo", "bar");
@@ -498,7 +498,7 @@ public class QueryTest extends RobolectricTestCase {
     }
 
     @Test
-    public void test_aroundPrecision() {
+    public void aroundPrecision() {
         Query query1 = new Query();
         assertNull(query1.getAroundPrecision());
         query1.setAroundPrecision(12345);
@@ -509,7 +509,7 @@ public class QueryTest extends RobolectricTestCase {
     }
 
     @Test
-    public void test_aroundRadius() {
+    public void aroundRadius() {
         Query query1 = new Query();
         assertNull(query1.getAroundRadius());
         query1.setAroundRadius(987);
@@ -520,7 +520,7 @@ public class QueryTest extends RobolectricTestCase {
     }
 
     @Test
-    public void test_aroundLatLngViaIP() {
+    public void aroundLatLngViaIP() {
         Query query1 = new Query();
         assertNull(query1.getAroundLatLngViaIP());
         query1.setAroundLatLngViaIP(true);
@@ -531,7 +531,7 @@ public class QueryTest extends RobolectricTestCase {
     }
 
     @Test
-    public void test_aroundLatLng() {
+    public void aroundLatLng() {
         Query query1 = new Query();
         assertNull(query1.getAroundLatLng());
         query1.setAroundLatLng(new Query.LatLng(89.76, -123.45));
@@ -542,7 +542,7 @@ public class QueryTest extends RobolectricTestCase {
     }
 
     @Test
-    public void test_insideBoundingBox() {
+    public void insideBoundingBox() {
         Query query1 = new Query();
         assertNull(query1.getInsideBoundingBox());
         final Query.GeoRect box1 = new Query.GeoRect(new Query.LatLng(11.111111, 22.222222), new Query.LatLng(33.333333, 44.444444));
@@ -562,7 +562,7 @@ public class QueryTest extends RobolectricTestCase {
     }
 
     @Test
-    public void test_insidePolygon() {
+    public void insidePolygon() {
         Query query1 = new Query();
         assertNull(query1.getInsidePolygon());
         final Query.LatLng[] box = { new Query.LatLng(11.111111, 22.222222), new Query.LatLng(33.333333, 44.444444), new Query.LatLng(-55.555555, -66.666666) };
@@ -574,7 +574,7 @@ public class QueryTest extends RobolectricTestCase {
     }
 
     @Test
-    public void test_tagFilters() throws JSONException {
+    public void tagFilters() throws JSONException {
         final JSONArray VALUE = new JSONArray("[\"tag1\", [\"tag2\", \"tag3\"]]");
         Query query1 = new Query();
         assertNull(query1.getTagFilters());
@@ -586,7 +586,7 @@ public class QueryTest extends RobolectricTestCase {
     }
 
     @Test
-    public void test_facetFilters() throws JSONException {
+    public void facetFilters() throws JSONException {
         final JSONArray VALUE = new JSONArray("[[\"category:Book\", \"category:Movie\"], \"author:John Doe\"]");
         Query query1 = new Query();
         assertNull(query1.getFacetFilters());
@@ -598,7 +598,7 @@ public class QueryTest extends RobolectricTestCase {
     }
 
     @Test
-    public void test_advancedSyntax() {
+    public void advancedSyntax() {
         Query query1 = new Query();
         assertNull(query1.getAdvancedSyntax());
         query1.setAdvancedSyntax(true);
@@ -609,7 +609,7 @@ public class QueryTest extends RobolectricTestCase {
     }
 
     @Test
-    public void test_removeStopWordsBoolean() throws Exception {
+    public void removeStopWordsBoolean() throws Exception {
         Query query1 = new Query();
         assertNull(query1.getRemoveStopWords());
         query1.setRemoveStopWords(true);
@@ -620,7 +620,7 @@ public class QueryTest extends RobolectricTestCase {
     }
 
     @Test
-    public void test_removeStopWordsString() throws Exception {
+    public void removeStopWordsString() throws Exception {
         Query query1 = new Query();
         assertNull(query1.getRemoveStopWords());
 
@@ -634,7 +634,7 @@ public class QueryTest extends RobolectricTestCase {
     }
 
     @Test
-    public void test_removeStopWordsInvalidClass() throws Exception {
+    public void removeStopWordsInvalidClass() throws Exception {
         Query query1 = new Query();
         try {
             query1.setRemoveStopWords(42);
@@ -645,7 +645,7 @@ public class QueryTest extends RobolectricTestCase {
     }
 
     @Test
-    public void test_maxValuesPerFacet() {
+    public void maxValuesPerFacet() {
         Query query1 = new Query();
         assertNull(query1.getMaxValuesPerFacet());
         query1.setMaxValuesPerFacet(456);
@@ -656,7 +656,7 @@ public class QueryTest extends RobolectricTestCase {
     }
 
     @Test
-    public void test_minimumAroundRadius() {
+    public void minimumAroundRadius() {
         Query query1 = new Query();
         assertNull(query1.getMinimumAroundRadius());
         query1.setMinimumAroundRadius(1000);
@@ -667,7 +667,7 @@ public class QueryTest extends RobolectricTestCase {
     }
 
     @Test
-    public void test_numericFilters() throws JSONException {
+    public void numericFilters() throws JSONException {
         final JSONArray VALUE = new JSONArray("[\"code=1\", [\"price:0 to 10\", \"price:1000 to 2000\"]]");
         Query query1 = new Query();
         assertNull(query1.getNumericFilters());
@@ -679,7 +679,7 @@ public class QueryTest extends RobolectricTestCase {
     }
 
     @Test
-    public void test_filters() {
+    public void filters() {
         final String VALUE = "available=1 AND (category:Book OR NOT category:Ebook) AND publication_date: 1441745506 TO 1441755506 AND inStock > 0 AND author:\"John Doe\"";
         Query query1 = new Query();
         assertNull(query1.getFilters());
@@ -691,7 +691,7 @@ public class QueryTest extends RobolectricTestCase {
     }
 
     @Test
-    public void test_exactOnSingleWordQuery() {
+    public void exactOnSingleWordQuery() {
         Query.ExactOnSingleWordQuery VALUE = Query.ExactOnSingleWordQuery.ATTRIBUTE;
         Query query = new Query();
         assertNull(query.getExactOnSingleWordQuery());
@@ -704,7 +704,7 @@ public class QueryTest extends RobolectricTestCase {
     }
 
     @Test
-    public void test_alternativesAsExact() {
+    public void alternativesAsExact() {
         Query.AlternativesAsExact VALUE1 = Query.AlternativesAsExact.IGNORE_PLURALS;
         Query.AlternativesAsExact VALUE2 = Query.AlternativesAsExact.MULTI_WORDS_SYNONYM;
         final Query.AlternativesAsExact[] VALUES = new Query.AlternativesAsExact[]{VALUE1, VALUE2};
@@ -726,7 +726,7 @@ public class QueryTest extends RobolectricTestCase {
     }
 
     @Test
-    public void test_aroundRadius_all() {
+    public void aroundRadius_all() {
         final Integer VALUE = 3;
         Query query = new Query();
         assertNull("A new query should have a null aroundRadius.", query.getAroundRadius());
