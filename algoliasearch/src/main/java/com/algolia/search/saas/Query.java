@@ -378,10 +378,23 @@ public class Query extends AbstractQuery {
 
     private static final String KEY_FILTERS = "filters";
 
+    /**
+     * Filter the query with numeric, facet or/and tag filters.
+     * <p>
+     * The syntax is a SQL like syntax, you can use the OR and AND keywords. The syntax for the underlying numeric, facet and tag filters is the same than in the other filters:
+     * {@code available=1 AND (category:Book OR NOT category:Ebook) AND _tags:public date: 1441745506 TO 1441755506 AND inStock > 0 AND author:"John Doe"}
+     *
+     * @param filters a string following the given syntax.
+     * @return the {@link Query} for chaining.
+     */
     public @NonNull Query setFilters(String filters) {
         return set(KEY_FILTERS, filters);
     }
 
+    /**
+     * Get the numeric, facet or/and tag filters for this Query.
+     * @return a String with this query's filters.
+     */
     public String getFilters() {
         return get(KEY_FILTERS);
     }
