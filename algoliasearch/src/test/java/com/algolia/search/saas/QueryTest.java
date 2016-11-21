@@ -27,6 +27,8 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.junit.Test;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -744,5 +746,28 @@ public class QueryTest extends RobolectricTestCase {
         assertTrue("The built query should contain 'aroundRadius=all', not _" + queryStr + "_.", queryStr.matches("aroundRadius=all"));
         Query query2 = Query.parse(query.build());
         assertEquals(query2.getAroundRadius(), query.getAroundRadius());
+    }
+
+    @Test
+    public void responseFields() throws UnsupportedEncodingException {
+        Query query = new Query();
+        assertNull("A new query should have a null responseFields.", query.getResponseFields());
+        String queryStr = query.build();
+        assertFalse("The built query should not contain responseFields: \"" + queryStr + "\".", queryStr.contains("responseFields"));
+
+        query.setResponseFields("*");
+        assertEquals("After setting its responseFields to \"*\", getResponseFields should contain one element.", 1, query.getResponseFields().length);
+        assertEquals("After setting its responseFields to \"*\", getResponseFields should contain \"*\".", "*", query.getResponseFields()[0]);
+        queryStr = query.build();
+        String expected = "responseFields=" + URLEncoder.encode("[\"*\"]", "UTF-8");
+        assertTrue("The built query should contain \"" + expected + "\", but contains _" + queryStr + "_.", queryStr.contains(expected));
+
+        query.setResponseFields("hits", "page");
+        assertEquals("After setting its responseFields to [\"hits\",\"page\"], getResponseFields should contain two elements.", 2, query.getResponseFields().length);
+        assertEquals("After setting its responseFields to [\"hits\",\"page\"], getResponseFields should contain \"hits\".", "hits", query.getResponseFields()[0]);
+        assertEquals("After setting its responseFields to [\"hits\",\"page\"], getResponseFields should contain \"page\".", "page", query.getResponseFields()[1]);
+        queryStr = query.build();
+        expected = "responseFields=" + URLEncoder.encode("[\"hits\",\"page\"]", "UTF-8");
+        assertTrue("The built query should contain \"" + expected + "\", but contains _" + queryStr + "_.", queryStr.contains(expected));
     }
 }
