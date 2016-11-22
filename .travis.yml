@@ -14,10 +14,10 @@ env:
     - secure: HBdvSvplPEJWEu7aij7cA+ZiQt2qmb9+Q8WsUGOJJ1uYIOt/MVHSo0bYYLfk90eFlnJecN+oBi92LCM9PUT3mKIHm9apRsK9os+W/6wIezD+rKVYPfOLZ4uINaFRDjXUJqKB46fzVR54vc4N2QO0+spn7Sv7sXaytYEPwrO6tmo=
     - ANDROID_ABI=armeabi-v7a
   matrix:
-    - ANDROID_TARGET=android-15
     - ANDROID_TARGET=android-16
     - ANDROID_TARGET=android-19
-    - ANDROID_TARGET=android-21
+    - ANDROID_TARGET=android-22
+    - ANDROID_TARGET=android-23
     - ANDROID_TARGET=android-24
 matrix:
   fast_finish: true
@@ -25,7 +25,6 @@ android:
   components:
     - tools
     - build-tools-24.0.3
-    - android-15
     - android-24
     - extra-android-support
     - extra-android-m2repository
