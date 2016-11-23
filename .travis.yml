@@ -23,6 +23,7 @@ matrix:
   fast_finish: true
 android:
   components:
+    - platform-tools
     - tools
     - build-tools-24.0.3
     - $ANDROID_TARGET
