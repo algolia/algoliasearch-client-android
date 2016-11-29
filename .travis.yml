@@ -27,10 +27,18 @@ android:
     - platform-tools
     - tools # Fix SDK Tools https://github.com/travis-ci/travis-ci/issues/6122
     - build-tools-24.0.3
-    - $ANDROID_TARGET
+    - android-16
+    - android-19
+    - android-22
+    - android-23
+    - android-24
     - extra-android-support
     - extra-android-m2repository
-    - sys-img-$ANDROID_ABI-$ANDROID_TARGET
+    - sys-img-$ANDROID_ABI-android-16
+    - sys-img-$ANDROID_ABI-android-19
+    - sys-img-$ANDROID_ABI-android-22
+    - sys-img-$ANDROID_ABI-android-23
+    - sys-img-$ANDROID_ABI-android-24
 cache:
   directories:
     - $HOME/.gradle/caches/
