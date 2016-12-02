@@ -48,8 +48,6 @@ cache:
 before_script:
 # Avoid useless reupload of cache after every build, see https://docs.travis-ci.com/user/languages/android
 - rm -f $HOME/.gradle/caches/modules-2/modules-2.lock
-# Update Android SDK, accepting all licences with expect TODO: Useless as components are required before, remove
-- bash update_sdk.sh
 # Create Android Virtual Device with current config, saying no to custom build
 - echo no | android create avd --force -n test -t $ANDROID_TARGET --abi $ANDROID_ABI
 # Run emulator and wait until it is ready, then send KEYCODE_MENU to unlock the phone
