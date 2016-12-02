@@ -50,8 +50,6 @@ before_script:
 - rm -f $HOME/.gradle/caches/modules-2/modules-2.lock
 # Update Android SDK, accepting all licences with expect TODO: Useless as components are required before, remove
 - bash update_sdk.sh
-# List available sdk components for debug TODO: REMOVE
-- android list sdk --no-ui --all --extended
 # Create Android Virtual Device with current config, saying no to custom build
 - echo no | android create avd --force -n test -t $ANDROID_TARGET --abi $ANDROID_ABI
 # Run emulator and wait until it is ready, then send KEYCODE_MENU to unlock the phone
