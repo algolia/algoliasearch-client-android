@@ -1,7 +1,10 @@
 branches:
   only:
     - master
-sudo: false # Explicitely choose container-based infrastructure, see https://docs.travis-ci.com/user/ci-environment/
+
+sudo: required
+dist: precise # require Precise infrastructure: fully virtualized, 7.5GB RAM
+
 language: android
 jdk:
   - oraclejdk8
@@ -11,20 +14,31 @@ env:
     - secure: HBdvSvplPEJWEu7aij7cA+ZiQt2qmb9+Q8WsUGOJJ1uYIOt/MVHSo0bYYLfk90eFlnJecN+oBi92LCM9PUT3mKIHm9apRsK9os+W/6wIezD+rKVYPfOLZ4uINaFRDjXUJqKB46fzVR54vc4N2QO0+spn7Sv7sXaytYEPwrO6tmo=
     - ANDROID_ABI=armeabi-v7a
   matrix:
-    - ANDROID_TARGET=android-15
     - ANDROID_TARGET=android-16
+    - ANDROID_TARGET=android-17
     - ANDROID_TARGET=android-19
-    - ANDROID_TARGET=android-21
+    - ANDROID_TARGET=android-22
     - ANDROID_TARGET=android-24
 matrix:
   fast_finish: true
 android:
   components:
     - tools
+    - platform-tools
+    - tools # Fix SDK Tools https://github.com/travis-ci/travis-ci/issues/6122
     - build-tools-24.0.3
+    - android-16
+    - android-17
+    - android-19
+    - android-22
     - android-24
     - extra-android-support
     - extra-android-m2repository
+    - sys-img-armeabi-v7a-android-16
+    - sys-img-armeabi-v7a-android-17
+    - sys-img-armeabi-v7a-android-19
+    - sys-img-armeabi-v7a-android-22
+    - sys-img-armeabi-v7a-android-24
 cache:
   directories:
     - $HOME/.gradle/caches/
@@ -34,12 +48,10 @@ cache:
 before_script:
 # Avoid useless reupload of cache after every build, see https://docs.travis-ci.com/user/languages/android
 - rm -f $HOME/.gradle/caches/modules-2/modules-2.lock
-# Update Android SDK, accepting all licences with expect
-- bash update_sdk.sh
 # Create Android Virtual Device with current config, saying no to custom build
 - echo no | android create avd --force -n test -t $ANDROID_TARGET --abi $ANDROID_ABI
 # Run emulator and wait until it is ready, then send KEYCODE_MENU to unlock the phone
-- emulator -avd test -no-skin -no-audio -no-window &
+- emulator -avd test -no-skin -no-window &
 - android-wait-for-emulator
 - adb shell input keyevent 82 &
 script:

@@ -1,13 +1,18 @@
 Change Log
 ==========
 
-## Upcoming
+## 3.7.0 (2016-11-29)
+
+**This release includes backward-incompatible changes and requires the following updates**:
+- (#178) `getIgnorePlurals()` should be replaced by `getIgnorePlurals().enabled`
 
 ### New features
-
 - (#163) Search in your facets values with `Index.searchForFacetValues`
-- (#178) Accept a list of language ISO codes for ignorePlurals. **Note**: this introduces backward-incompatible changes.
+- (#178) Ignore plurals _only for some languages_: `Query.setIgnorePlurals` can take a list of language ISO codes for ignorePlurals.
+- (#183) Whitelist the fields returned in the response for a search query with `Query.setResponseFields`
 
+### Other changes
+- (#182) Deprecate `setFacetFilters`: you should use `setFilters` instead.
 
 ## 3.6.0 (2016-11-10)
 
