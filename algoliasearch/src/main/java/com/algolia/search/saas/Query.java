@@ -8,6 +8,9 @@ import org.json.JSONArray;
 import org.json.JSONException;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 /*
@@ -346,10 +349,20 @@ public class Query extends AbstractQuery {
 
     private static final String KEY_FACET_FILTERS = "facetFilters";
 
+    /**
+     * Set the <b>deprecated</b> {@code facetFilters} parameter.
+     *
+     * @deprecated Use {@link Query#setFilters(String)} instead.
+     */
     public @NonNull Query setFacetFilters(JSONArray filters) {
         return set(KEY_FACET_FILTERS, filters);
     }
 
+    /**
+     * Get the value of <b>deprecated</b> {@code facetFilters} parameter.
+     *
+     * @deprecated Use {@link Query#getFilters()} instead.
+     */
     public JSONArray getFacetFilters() {
         try {
             String value = get(KEY_FACET_FILTERS);
@@ -365,10 +378,23 @@ public class Query extends AbstractQuery {
 
     private static final String KEY_FILTERS = "filters";
 
+    /**
+     * Filter the query with numeric, facet or/and tag filters.
+     * <p>
+     * The syntax is a SQL like syntax, you can use the OR and AND keywords. The syntax for the underlying numeric, facet and tag filters is the same than in the other filters:
+     * {@code available=1 AND (category:Book OR NOT category:Ebook) AND _tags:public date: 1441745506 TO 1441755506 AND inStock > 0 AND author:"John Doe"}
+     *
+     * @param filters a string following the given syntax.
+     * @return the {@link Query} for chaining.
+     */
     public @NonNull Query setFilters(String filters) {
         return set(KEY_FILTERS, filters);
     }
 
+    /**
+     * Get the numeric, facet or/and tag filters for this Query.
+     * @return a String with this query's filters.
+     */
     public String getFilters() {
         return get(KEY_FILTERS);
     }
@@ -423,15 +449,150 @@ public class Query extends AbstractQuery {
     private static final String KEY_IGNORE_PLURALS = "ignorePlurals";
 
     /**
+     * A value of the {@code ignorePlurals} setting.
+     * Can represent either a boolean or a list of language codes, see https://www.algolia.com/doc/faq/searching/how-does-ignoreplurals-work.
+     */
+    public static final class IgnorePlurals {
+        /** Wether plurals are ignored. */
+        public final boolean enabled;
+
+        /** A list containing every active language's code. When {@code null}, all supported languages are be used. */
+        public final List<String> languageCodes;
+
+        /**
+         * Construct an IgnorePlurals object for a boolean value.
+         *
+         * @param b if {@code true}, the engine will ignore plurals in all supported languages.
+         */
+        public IgnorePlurals(boolean b) {
+            this.enabled = b;
+            languageCodes = null;
+        }
+
+        /**
+         * Construct an IgnorePlurals object for a {@link Collection} of language codes.
+         *
+         * @param codes a list of language codes to ignore plurals from. if {@code null},
+         *              the engine will ignore plurals in all supported languages.
+         */
+        public IgnorePlurals(@Nullable Collection<String> codes) {
+            this.enabled = !isEmptyCollection(codes);
+            languageCodes = codes != null ? new ArrayList<>(codes) : null;
+        }
+
+        /**
+         * Construct an IgnorePlurals object for some language codes.
+         *
+         * @param codes one or several language codes to ignore plurals from.
+         *              if {@code null}, the engine will ignore plurals in all supported languages.
+         */
+        public IgnorePlurals(@Nullable String... codes) {
+            this(codes == null ? null : Arrays.asList(codes));
+        }
+
+        private boolean isEmptyCollection(@Nullable Collection<String> codesList) {
+            return codesList == null || codesList.size() == 0;
+        }
+
+        @Override
+        public String toString() {
+            if (!enabled) {
+                return "false";
+            } else {
+                if (isEmptyCollection(languageCodes)) {  // enabled without specific language
+                    return "true";
+                } else {
+                    return TextUtils.join(",", languageCodes);
+                }
+            }
+        }
+
+        static @NonNull IgnorePlurals parse(String s) {
+            if (s == null || s.length() == 0 || s.equals("null")) {
+                return new IgnorePlurals(false);
+            } else if ("true".equals(s) || "false".equals(s)) {
+                return new IgnorePlurals(parseBoolean(s));
+            } else {
+                ArrayList<String> codesList = new ArrayList<>();
+                //ignorePlurals=["en","fi"]
+                try {
+                    JSONArray codesArray = new JSONArray(s);
+                    for (int i = 0; i < codesArray.length(); i++) {
+                        codesList.add(codesArray.getJSONObject(i).toString());
+                    }
+                    return new IgnorePlurals(codesList);
+                } catch (JSONException e) {
+                    // s was not a JSONArray of strings. Maybe it is a comma-separated list?
+                    final String[] split = TextUtils.split(s, ",");
+                    if (split != null && split.length != 0) {
+                        Collections.addAll(codesList, split);
+                        return new IgnorePlurals(codesList);
+                    } else {
+                        final String msg = "Error while parsing `" + s + "`: invalid ignorePlurals value.";
+                        throw new RuntimeException(msg);
+                    }
+                }
+            }
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) {
+                return true;
+            }
+            if (o == null || getClass() != o.getClass()) {
+                return false;
+            }
+
+            IgnorePlurals that = (IgnorePlurals) o;
+
+            if (enabled != that.enabled) {
+                return false;
+            }
+            return languageCodes != null ? languageCodes.equals(that.languageCodes) : that.languageCodes == null;
+
+        }
+
+        @Override
+        public int hashCode() {
+            int result = (enabled ? 1 : 0);
+            result = 31 * result + (languageCodes != null ? languageCodes.hashCode() : 0);
+            return result;
+        }
+    }
+
+    /**
      * If set to true, plural won't be considered as a typo (for example
      * car/cars will be considered as equals). Default to false.
      */
-    public @NonNull Query setIgnorePlurals(Boolean enabled) {
+    public
+    @NonNull
+    Query setIgnorePlurals(boolean enabled) {
         return set(KEY_IGNORE_PLURALS, enabled);
     }
 
-    public Boolean getIgnorePlurals() {
-        return parseBoolean(get(KEY_IGNORE_PLURALS));
+    /**
+     * A list of language codes for which plural won't be considered as a typo (for example
+     * car/cars will be considered as equals). If empty or null, this disables the feature.
+     */
+    public
+    @NonNull
+    Query setIgnorePlurals(@Nullable Collection<String> languageISOCodes) {
+        return set(KEY_IGNORE_PLURALS, new IgnorePlurals(languageISOCodes));
+    }
+
+    /**
+     * One or several language codes for which plural won't be considered as a typo (for example
+     * car/cars will be considered as equals). If empty or null, this disables the feature.
+     */
+    public
+    @NonNull
+    Query setIgnorePlurals(@Nullable String... languageISOCodes) {
+        return set(KEY_IGNORE_PLURALS, new IgnorePlurals(languageISOCodes));
+    }
+
+    public @NonNull IgnorePlurals getIgnorePlurals() {
+        return IgnorePlurals.parse(get(KEY_IGNORE_PLURALS));
     }
 
     /**
@@ -1030,7 +1191,25 @@ public class Query extends AbstractQuery {
         return alternatives;
     }
 
+    private static final String KEY_RESPONSE_FIELDS = "responseFields";
 
+    /**
+     * Choose which fields the response will contain. Applies to search and browse queries.
+     * <p>
+     * By default, all fields are returned. If this parameter is specified, only the fields explicitly listed will be returned, unless * is used, in which case all fields are returned. Specifying an empty list or unknown field names is an error.
+     */
+    public
+    @NonNull
+    Query setResponseFields(String... attributes) {
+        return set(KEY_RESPONSE_FIELDS, buildJSONArray(attributes));
+    }
+
+    /**
+     * Get the fields the response will contain. If unspecified, all fields are returned.
+     */
+    public String[] getResponseFields() {
+        return parseArray(get(KEY_RESPONSE_FIELDS));
+    }
     // ----------------------------------------------------------------------
     // Parsing/serialization
     // ----------------------------------------------------------------------
