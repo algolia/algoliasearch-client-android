@@ -440,7 +440,7 @@ public class IndexTest extends RobolectricTestCase {
 
     @Test
     public void DNSTimeout() throws Exception {
-        // On Travis, the imposed DNS timeout prevents us from testing this feature.
+        // On Travis, the reported run duration is not reliable.
         if ("true".equals(System.getenv("TRAVIS"))) {
             return;
         }
