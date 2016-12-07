@@ -51,41 +51,39 @@ public class QueryTest extends RobolectricTestCase {
 
     /** Test serializing a query into a URL query string. */
     @Test
-    public void testBuild() {
+    public void build() {
         Query query = new Query();
         query.set("c", "C");
         query.set("b", "B");
         query.set("a", "A");
         String queryString = query.build();
-        assertEquals(queryString, "a=A&b=B&c=C");
+        assertEquals("a=A&b=B&c=C", queryString);
     }
 
     /** Test parsing a query from a URL query string. */
     @Test
-    public void testParse() {
+    public void parse() {
         // Build the URL for a query.
-        Query query1 = new Query();
-        query1.set("foo", "bar");
-        query1.set("abc", "xyz");
-        String queryString = query1.build();
+        Query query = new Query();
+        query.set("foo", "bar");
+        query.set("abc", "xyz");
+        String queryString = query.build();
 
         // Parse the URL into another query.
-        Query query2 = Query.parse(queryString);
-        assertEquals(query1, query2);
+        assertEquals(query, Query.parse(queryString));
     }
 
     /** Test that non-ASCII and special characters are escaped. */
     @Test
-    public void testEscape() {
-        Query query1 = new Query();
-        query1.set("accented", "éêèàôù");
-        query1.set("escaped", " %&=#+");
-        String queryString = query1.build();
-        assertEquals(queryString, "accented=%C3%A9%C3%AA%C3%A8%C3%A0%C3%B4%C3%B9&escaped=%20%25%26%3D%23%2B");
+    public void escape() {
+        Query query = new Query();
+        query.set("accented", "éêèàôù");
+        query.set("escaped", " %&=#+");
+        String queryString = query.build();
+        assertEquals("accented=%C3%A9%C3%AA%C3%A8%C3%A0%C3%B4%C3%B9&escaped=%20%25%26%3D%23%2B", queryString);
 
         // Test parsing of escaped characters.
-        Query query2 = Query.parse(queryString);
-        assertEquals(query1, query2);
+        assertEquals(query, Query.parse(queryString));
     }
 
     // ----------------------------------------------------------------------
@@ -94,12 +92,12 @@ public class QueryTest extends RobolectricTestCase {
 
     /** Test low-level accessors. */
     @Test
-    public void testGetSet() {
+    public void getSet() {
         Query query = new Query();
 
         // Test accessors.
         query.set("a", "A");
-        assertEquals(query.get("a"), "A");
+        assertEquals("A", query.get("a"));
 
         // Test setting null.
         query.set("a", null);
@@ -113,52 +111,52 @@ public class QueryTest extends RobolectricTestCase {
     // ----------------------------------------------------------------------
 
     @Test
-    public void test_minWordSizefor1Typo() {
-        Query query1 = new Query();
-        assertNull(query1.getMinWordSizefor1Typo());
-        query1.setMinWordSizefor1Typo(123);
-        assertEquals(query1.getMinWordSizefor1Typo(), new Integer(123));
-        Query query2 = Query.parse(query1.build());
-        assertEquals(query2.getMinWordSizefor1Typo(), query1.getMinWordSizefor1Typo());
+    public void minWordSizefor1Typo() {
+        Query query = new Query();
+        assertNull(query.getMinWordSizefor1Typo());
+        query.setMinWordSizefor1Typo(123);
+        assertEquals(Integer.valueOf(123), query.getMinWordSizefor1Typo());
+        assertEquals("123", query.get("minWordSizefor1Typo"));
+        assertEquals(query.getMinWordSizefor1Typo(), Query.parse(query.build()).getMinWordSizefor1Typo());
     }
 
     @Test
-    public void test_minWordSizefor2Typos() {
-        Query query1 = new Query();
-        assertNull(query1.getMinWordSizefor2Typos());
-        query1.setMinWordSizefor2Typos(456);
-        assertEquals(query1.getMinWordSizefor2Typos(), new Integer(456));
-        Query query2 = Query.parse(query1.build());
-        assertEquals(query2.getMinWordSizefor2Typos(), query1.getMinWordSizefor2Typos());
+    public void minWordSizefor2Typos() {
+        Query query = new Query();
+        assertNull(query.getMinWordSizefor2Typos());
+        query.setMinWordSizefor2Typos(456);
+        assertEquals(Integer.valueOf(456), query.getMinWordSizefor2Typos());
+        assertEquals("456", query.get("minWordSizefor2Typos"));
+        assertEquals(query.getMinWordSizefor2Typos(), Query.parse(query.build()).getMinWordSizefor2Typos());
     }
 
     @Test
-    public void test_minProximity() {
-        Query query1 = new Query();
-        assertNull(query1.getMinProximity());
-        query1.setMinProximity(999);
-        assertEquals(query1.getMinProximity(), new Integer(999));
-        Query query2 = Query.parse(query1.build());
-        assertEquals(query2.getMinProximity(), query1.getMinProximity());
+    public void minProximity() {
+        Query query = new Query();
+        assertNull(query.getMinProximity());
+        query.setMinProximity(999);
+        assertEquals(Integer.valueOf(999), query.getMinProximity());
+        assertEquals("999", query.get("minProximity"));
+        assertEquals(query.getMinProximity(), Query.parse(query.build()).getMinProximity());
     }
 
     @Test
-    public void test_getRankingInfo() {
-        Query query1 = new Query();
-        assertNull(query1.getGetRankingInfo());
-        query1.setGetRankingInfo(true);
-        assertEquals(query1.getGetRankingInfo(), Boolean.TRUE);
-        Query query2 = Query.parse(query1.build());
-        assertEquals(query2.getGetRankingInfo(), query1.getGetRankingInfo());
+    public void getRankingInfo() {
+        Query query = new Query();
+        assertNull(query.getGetRankingInfo());
+        query.setGetRankingInfo(true);
+        assertEquals(Boolean.TRUE, query.getGetRankingInfo());
+        assertEquals("true", query.get("getRankingInfo"));
+        assertEquals(query.getGetRankingInfo(), Query.parse(query.build()).getGetRankingInfo());
 
-        query1.setGetRankingInfo(false);
-        assertEquals(query1.getGetRankingInfo(), Boolean.FALSE);
-        Query query3 = Query.parse(query1.build());
-        assertEquals(query3.getGetRankingInfo(), query1.getGetRankingInfo());
+        query.setGetRankingInfo(false);
+        assertEquals(Boolean.FALSE, query.getGetRankingInfo());
+        assertEquals("false", query.get("getRankingInfo"));
+        assertEquals(query.getGetRankingInfo(), Query.parse(query.build()).getGetRankingInfo());
     }
 
     @Test
-    public void test_ignorePlurals() {
+    public void ignorePlurals() {
         // No value
         Query query = new Query();
         assertFalse("By default, ignorePlurals should be disabled.", query.getIgnorePlurals().enabled);
@@ -166,15 +164,18 @@ public class QueryTest extends RobolectricTestCase {
         // Boolean values
         query.setIgnorePlurals(true);
         assertEquals("A true boolean should enable ignorePlurals.", Boolean.TRUE, query.getIgnorePlurals().enabled);
+        assertEquals("A true boolean should be in ignorePlurals.", "true", query.get("ignorePlurals"));
         assertEquals("A true boolean should be built and parsed successfully.", query.getIgnorePlurals(), Query.parse(query.build()).getIgnorePlurals());
 
         query.setIgnorePlurals(false);
         assertEquals("A false boolean should disable ignorePlurals.", Boolean.FALSE, query.getIgnorePlurals().enabled);
+        assertEquals("A false boolean should should be in ignorePlurals.", "false", query.get("ignorePlurals"));
         assertEquals("A false boolean should be built and parsed successfully.", query.getIgnorePlurals(), Query.parse(query.build()).getIgnorePlurals());
 
         // List values
         query.setIgnorePlurals((List<String>) null);
         assertFalse("A null list value should disable ignorePlurals.", query.getIgnorePlurals().enabled);
+        assertEquals("A null list value should disable ignorePlurals.", "false", query.get("ignorePlurals"));
         assertEquals("A null list value should be built and parsed successfully.", query.getIgnorePlurals(), Query.parse(query.build()).getIgnorePlurals());
 
         query.setIgnorePlurals(new ArrayList<String>());
@@ -183,6 +184,7 @@ public class QueryTest extends RobolectricTestCase {
         ArrayList<String> languageCodes = new ArrayList<>(java.util.Arrays.asList("en", "fr"));
         query.setIgnorePlurals(languageCodes);
         assertTrue("Setting a non-empty list should enable ignorePlurals.", query.getIgnorePlurals().enabled);
+        assertEquals("Setting a non-empty list should be in ignorePlurals.", "en,fr", query.get("ignorePlurals"));
         assertNotNull("The language codes should not be null", query.getIgnorePlurals().languageCodes);
         assertEquals("Two language codes should be in ignorePlurals.", 2, query.getIgnorePlurals().languageCodes.size());
         assertTrue("The first language code should be in ignorePlurals", query.getIgnorePlurals().languageCodes.contains(languageCodes.get(0)));
@@ -191,16 +193,19 @@ public class QueryTest extends RobolectricTestCase {
         // String[] values
         query.setIgnorePlurals("");
         assertFalse("An empty string should disable ignorePlurals.", query.getIgnorePlurals().enabled);
+        assertEquals("An empty string should be in ignorePlurals.", "", query.get("ignorePlurals"));
         assertEquals("A empty string should be built and parsed successfully.", query.getIgnorePlurals(), Query.parse(query.build()).getIgnorePlurals());
 
         query.setIgnorePlurals("en");
         assertEquals("A single language code should enable ignorePlurals.", Boolean.TRUE, query.getIgnorePlurals().enabled);
+        assertEquals("A single language code should be in ignorePlurals.", "en", query.get("ignorePlurals"));
         assertEquals("A single language code should be built and parsed successfully.", query.getIgnorePlurals(), Query.parse(query.build()).getIgnorePlurals());
         assertEquals("One language code should be in ignorePlurals.", 1, query.getIgnorePlurals().languageCodes.size());
         assertTrue("The language code should be in ignorePlurals", query.getIgnorePlurals().languageCodes.contains("en"));
 
         query.setIgnorePlurals("en", "fr");
         assertEquals("Two language codes should enable ignorePlurals.", Boolean.TRUE, query.getIgnorePlurals().enabled);
+        assertEquals("Two language codes should be in ignorePlurals.", "en,fr", query.get("ignorePlurals"));
         assertEquals("Two language codes should be built and parsed successfully.", query.getIgnorePlurals(), Query.parse(query.build()).getIgnorePlurals());
         assertEquals("Two language codes should be in ignorePlurals.", 2, query.getIgnorePlurals().languageCodes.size());
         assertTrue("The first language code should be in ignorePlurals", query.getIgnorePlurals().languageCodes.contains("en"));
@@ -208,438 +213,413 @@ public class QueryTest extends RobolectricTestCase {
     }
 
     @Test
-    public void test_distinct() {
-        Query query1 = new Query();
-        assertNull(query1.getDistinct());
-        query1.setDistinct(100);
-        assertEquals(query1.getDistinct(), new Integer(100));
-        Query query2 = Query.parse(query1.build());
-        assertEquals(query2.getDistinct(), query1.getDistinct());
+    public void distinct() {
+        Query query = new Query();
+        assertNull(query.getDistinct());
+        query.setDistinct(100);
+        assertEquals(Integer.valueOf(100), query.getDistinct());
+        assertEquals("100", query.get("distinct"));
+        assertEquals(query.getDistinct(), Query.parse(query.build()).getDistinct());
     }
 
     @Test
-    public void test_page() {
-        Query query1 = new Query();
-        assertNull(query1.getPage());
-        query1.setPage(0);
-        assertEquals(query1.getPage(), new Integer(0));
-        Query query2 = Query.parse(query1.build());
-        assertEquals(query2.getPage(), query1.getPage());
+    public void page() {
+        Query query = new Query();
+        assertNull(query.getPage());
+        query.setPage(0);
+        assertEquals(Integer.valueOf(0), query.getPage());
+        assertEquals("0", query.get("page"));
+        assertEquals(query.getPage(), Query.parse(query.build()).getPage());
     }
 
     @Test
-    public void test_hitsPerPage() {
-        Query query1 = new Query();
-        assertNull(query1.getHitsPerPage());
-        query1.setHitsPerPage(50);
-        assertEquals(query1.getHitsPerPage(), new Integer(50));
-        Query query2 = Query.parse(query1.build());
-        assertEquals(query2.getHitsPerPage(), query1.getHitsPerPage());
+    public void hitsPerPage() {
+        Query query = new Query();
+        assertNull(query.getHitsPerPage());
+        query.setHitsPerPage(50);
+        assertEquals(Integer.valueOf(50), query.getHitsPerPage());
+        assertEquals("50", query.get("hitsPerPage"));
+        assertEquals(query.getHitsPerPage(), Query.parse(query.build()).getHitsPerPage());
     }
 
     @Test
-    public void test_allowTyposOnNumericTokens() {
-        Query query1 = new Query();
-        assertNull(query1.getAllowTyposOnNumericTokens());
-        query1.setAllowTyposOnNumericTokens(true);
-        assertEquals(query1.getAllowTyposOnNumericTokens(), Boolean.TRUE);
-        Query query2 = Query.parse(query1.build());
-        assertEquals(query2.getAllowTyposOnNumericTokens(), query1.getAllowTyposOnNumericTokens());
+    public void allowTyposOnNumericTokens() {
+        Query query = new Query();
+        assertNull(query.getAllowTyposOnNumericTokens());
+        query.setAllowTyposOnNumericTokens(true);
+        assertEquals(Boolean.TRUE, query.getAllowTyposOnNumericTokens());
+        assertEquals("true", query.get("allowTyposOnNumericTokens"));
+        assertEquals(query.getAllowTyposOnNumericTokens(), Query.parse(query.build()).getAllowTyposOnNumericTokens());
 
-        query1.setAllowTyposOnNumericTokens(false);
-        assertEquals(query1.getAllowTyposOnNumericTokens(), Boolean.FALSE);
-        Query query3 = Query.parse(query1.build());
-        assertEquals(query3.getAllowTyposOnNumericTokens(), query1.getAllowTyposOnNumericTokens());
+        query.setAllowTyposOnNumericTokens(false);
+        assertEquals(Boolean.FALSE, query.getAllowTyposOnNumericTokens());
+        assertEquals("false", query.get("allowTyposOnNumericTokens"));
+        assertEquals(query.getAllowTyposOnNumericTokens(), Query.parse(query.build()).getAllowTyposOnNumericTokens());
     }
 
     @Test
-    public void test_analytics() {
-        Query query1 = new Query();
-        assertNull(query1.getAnalytics());
-        query1.setAnalytics(true);
-        assertEquals(query1.getAnalytics(), Boolean.TRUE);
-        Query query2 = Query.parse(query1.build());
-        assertEquals(query2.getAnalytics(), query1.getAnalytics());
+    public void analytics() {
+        Query query = new Query();
+        assertNull(query.getAnalytics());
+        query.setAnalytics(true);
+        assertEquals(Boolean.TRUE, query.getAnalytics());
+        assertEquals("true", query.get("analytics"));
+        assertEquals(query.getAnalytics(), Query.parse(query.build()).getAnalytics());
     }
 
     @Test
-    public void test_synonyms() {
-        Query query1 = new Query();
-        assertNull(query1.getSynonyms());
-        query1.setSynonyms(true);
-        assertEquals(query1.getSynonyms(), Boolean.TRUE);
-        Query query2 = Query.parse(query1.build());
-        assertEquals(query2.getSynonyms(), query1.getSynonyms());
+    public void synonyms() {
+        Query query = new Query();
+        assertNull(query.getSynonyms());
+        query.setSynonyms(true);
+        assertEquals(Boolean.TRUE, query.getSynonyms());
+        assertEquals("true", query.get("synonyms"));
+        assertEquals(query.getSynonyms(), Query.parse(query.build()).getSynonyms());
     }
 
     @Test
-    public void test_attributesToHighlight() {
-        Query query1 = new Query();
-        assertNull(query1.getAttributesToHighlight());
-        query1.setAttributesToHighlight("foo", "bar");
-        assertArrayEquals(query1.getAttributesToHighlight(), new String[]{ "foo", "bar" });
-        Query query2 = Query.parse(query1.build());
-        assertArrayEquals(query2.getAttributesToHighlight(), query1.getAttributesToHighlight());
+    public void attributesToHighlight() {
+        Query query = new Query();
+        assertNull(query.getAttributesToHighlight());
+        query.setAttributesToHighlight("foo", "bar");
+        assertArrayEquals(new String[]{ "foo", "bar" }, query.getAttributesToHighlight());
+        assertEquals("[\"foo\",\"bar\"]", query.get("attributesToHighlight"));
+        assertArrayEquals(query.getAttributesToHighlight(), Query.parse(query.build()).getAttributesToHighlight());
     }
 
     @Test
-    public void test_attributesToRetrieve() {
-        Query query1 = new Query();
-        assertNull(query1.getAttributesToRetrieve());
-        query1.setAttributesToRetrieve("foo", "bar");
-        assertArrayEquals(query1.getAttributesToRetrieve(), new String[]{ "foo", "bar" });
-        Query query2 = Query.parse(query1.build());
-        assertArrayEquals(query2.getAttributesToRetrieve(), query1.getAttributesToRetrieve());
+    public void attributesToRetrieve() {
+        Query query = new Query();
+        assertNull(query.getAttributesToRetrieve());
+        query.setAttributesToRetrieve("foo", "bar");
+        assertArrayEquals(new String[]{ "foo", "bar" }, query.getAttributesToRetrieve());
+        assertEquals("[\"foo\",\"bar\"]", query.get("attributesToRetrieve"));
+        assertArrayEquals(query.getAttributesToRetrieve(), Query.parse(query.build()).getAttributesToRetrieve());
     }
 
     @Test
-    public void test_attributesToSnippet() {
-        Query query1 = new Query();
-        assertNull(query1.getAttributesToSnippet());
-        query1.setAttributesToSnippet("foo:3", "bar:7");
-        assertArrayEquals(query1.getAttributesToSnippet(), new String[]{ "foo:3", "bar:7" });
-        Query query2 = Query.parse(query1.build());
-        assertArrayEquals(query2.getAttributesToSnippet(), query1.getAttributesToSnippet());
+    public void attributesToSnippet() {
+        Query query = new Query();
+        assertNull(query.getAttributesToSnippet());
+        query.setAttributesToSnippet("foo:3", "bar:7");
+        assertArrayEquals(new String[]{ "foo:3", "bar:7" }, query.getAttributesToSnippet());
+        assertEquals("[\"foo:3\",\"bar:7\"]", query.get("attributesToSnippet"));
+        assertArrayEquals(query.getAttributesToSnippet(), Query.parse(query.build()).getAttributesToSnippet());
     }
 
     @Test
-    public void test_query() {
-        Query query1 = new Query();
-        assertNull(query1.getQuery());
-        query1.setQuery("supercalifragilisticexpialidocious");
-        assertEquals(query1.getQuery(), "supercalifragilisticexpialidocious");
-        Query query2 = Query.parse(query1.build());
-        assertEquals(query2.getQuery(), query1.getQuery());
+    public void query() {
+        Query query = new Query();
+        assertNull(query.getQuery());
+        query.setQuery("supercalifragilisticexpialidocious");
+        assertEquals("supercalifragilisticexpialidocious", query.getQuery());
+        assertEquals("supercalifragilisticexpialidocious", query.get("query"));
+        assertEquals(query.getQuery(), Query.parse(query.build()).getQuery());
     }
 
     @Test
-    public void test_queryType() {
-        Query query1 = new Query();
-        assertNull(query1.getQueryType());
+    public void queryType() {
+        Query query = new Query();
+        assertNull(query.getQueryType());
 
-        query1.setQueryType(Query.QueryType.PREFIX_ALL);
-        assertEquals(query1.getQueryType(), Query.QueryType.PREFIX_ALL);
-        assertEquals(query1.get("queryType"), "prefixAll");
-        Query query2 = Query.parse(query1.build());
-        assertEquals(query2.getQueryType(), query1.getQueryType());
+        query.setQueryType(Query.QueryType.PREFIX_ALL);
+        assertEquals(Query.QueryType.PREFIX_ALL, query.getQueryType());
+        assertEquals("prefixAll", query.get("queryType"));
+        assertEquals(query.getQueryType(), Query.parse(query.build()).getQueryType());
 
-        query1.setQueryType(Query.QueryType.PREFIX_LAST);
-        assertEquals(query1.getQueryType(), Query.QueryType.PREFIX_LAST);
-        assertEquals(query1.get("queryType"), "prefixLast");
-        query2 = Query.parse(query1.build());
-        assertEquals(query2.getQueryType(), query1.getQueryType());
+        query.setQueryType(Query.QueryType.PREFIX_LAST);
+        assertEquals(Query.QueryType.PREFIX_LAST, query.getQueryType());
+        assertEquals("prefixLast", query.get("queryType"));
+        assertEquals(query.getQueryType(), Query.parse(query.build()).getQueryType());
 
-        query1.setQueryType(Query.QueryType.PREFIX_NONE);
-        assertEquals(query1.getQueryType(), Query.QueryType.PREFIX_NONE);
-        assertEquals(query1.get("queryType"), "prefixNone");
-        query2 = Query.parse(query1.build());
-        assertEquals(query2.getQueryType(), query1.getQueryType());
+        query.setQueryType(Query.QueryType.PREFIX_NONE);
+        assertEquals(query.getQueryType(), Query.QueryType.PREFIX_NONE);
+        assertEquals(query.get("queryType"), "prefixNone");
+        assertEquals(query.getQueryType(), Query.parse(query.build()).getQueryType());
 
-        query1.set("queryType", "invalid");
-        assertNull(query1.getQueryType());
+        query.set("queryType", "invalid");
+        assertNull(query.getQueryType());
     }
 
     @Test
-    public void test_removeWordsIfNoResults() {
-        Query query1 = new Query();
-        assertNull(query1.getRemoveWordsIfNoResults());
+    public void removeWordsIfNoResults() {
+        Query query = new Query();
+        assertNull(query.getRemoveWordsIfNoResults());
 
-        query1.setRemoveWordsIfNoResults(Query.RemoveWordsIfNoResults.ALL_OPTIONAL);
-        assertEquals(query1.getRemoveWordsIfNoResults(), Query.RemoveWordsIfNoResults.ALL_OPTIONAL);
-        assertEquals(query1.get("removeWordsIfNoResults"), "allOptional");
-        Query query2 = Query.parse(query1.build());
-        assertEquals(query2.getRemoveWordsIfNoResults(), query1.getRemoveWordsIfNoResults());
+        query.setRemoveWordsIfNoResults(Query.RemoveWordsIfNoResults.ALL_OPTIONAL);
+        assertEquals(Query.RemoveWordsIfNoResults.ALL_OPTIONAL, query.getRemoveWordsIfNoResults());
+        assertEquals("allOptional", query.get("removeWordsIfNoResults"));
+        assertEquals(query.getRemoveWordsIfNoResults(), Query.parse(query.build()).getRemoveWordsIfNoResults());
 
-        query1.setRemoveWordsIfNoResults(Query.RemoveWordsIfNoResults.FIRST_WORDS);
-        assertEquals(query1.getRemoveWordsIfNoResults(), Query.RemoveWordsIfNoResults.FIRST_WORDS);
-        assertEquals(query1.get("removeWordsIfNoResults"), "firstWords");
-        query2 = Query.parse(query1.build());
-        assertEquals(query2.getRemoveWordsIfNoResults(), query1.getRemoveWordsIfNoResults());
+        query.setRemoveWordsIfNoResults(Query.RemoveWordsIfNoResults.FIRST_WORDS);
+        assertEquals(Query.RemoveWordsIfNoResults.FIRST_WORDS, query.getRemoveWordsIfNoResults());
+        assertEquals("firstWords", query.get("removeWordsIfNoResults"));
+        assertEquals(query.getRemoveWordsIfNoResults(), Query.parse(query.build()).getRemoveWordsIfNoResults());
 
-        query1.setRemoveWordsIfNoResults(Query.RemoveWordsIfNoResults.LAST_WORDS);
-        assertEquals(query1.getRemoveWordsIfNoResults(), Query.RemoveWordsIfNoResults.LAST_WORDS);
-        assertEquals(query1.get("removeWordsIfNoResults"), "lastWords");
-        query2 = Query.parse(query1.build());
-        assertEquals(query2.getRemoveWordsIfNoResults(), query1.getRemoveWordsIfNoResults());
+        query.setRemoveWordsIfNoResults(Query.RemoveWordsIfNoResults.LAST_WORDS);
+        assertEquals(Query.RemoveWordsIfNoResults.LAST_WORDS, query.getRemoveWordsIfNoResults());
+        assertEquals("lastWords", query.get("removeWordsIfNoResults"));
+        assertEquals(query.getRemoveWordsIfNoResults(), Query.parse(query.build()).getRemoveWordsIfNoResults());
 
-        query1.setRemoveWordsIfNoResults(Query.RemoveWordsIfNoResults.NONE);
-        assertEquals(query1.getRemoveWordsIfNoResults(), Query.RemoveWordsIfNoResults.NONE);
-        assertEquals(query1.get("removeWordsIfNoResults"), "none");
-        query2 = Query.parse(query1.build());
-        assertEquals(query2.getRemoveWordsIfNoResults(), query1.getRemoveWordsIfNoResults());
+        query.setRemoveWordsIfNoResults(Query.RemoveWordsIfNoResults.NONE);
+        assertEquals(Query.RemoveWordsIfNoResults.NONE, query.getRemoveWordsIfNoResults());
+        assertEquals("none", query.get("removeWordsIfNoResults"));
+        assertEquals(query.getRemoveWordsIfNoResults(), Query.parse(query.build()).getRemoveWordsIfNoResults());
 
-        query1.set("removeWordsIfNoResults", "invalid");
-        assertNull(query1.getRemoveWordsIfNoResults());
+        query.set("removeWordsIfNoResults", "invalid");
+        assertNull(query.getRemoveWordsIfNoResults());
 
-        query1.set("removeWordsIfNoResults", "allOptional");
-        assertEquals(query1.getRemoveWordsIfNoResults(), Query.RemoveWordsIfNoResults.ALL_OPTIONAL);
+        query.set("removeWordsIfNoResults", "allOptional");
+        assertEquals(Query.RemoveWordsIfNoResults.ALL_OPTIONAL, query.getRemoveWordsIfNoResults());
     }
 
     @Test
-    public void test_typoTolerance() {
-        Query query1 = new Query();
-        assertNull(query1.getTypoTolerance());
+    public void typoTolerance() {
+        Query query = new Query();
+        assertNull(query.getTypoTolerance());
 
-        query1.setTypoTolerance(Query.TypoTolerance.TRUE);
-        assertEquals(query1.getTypoTolerance(), Query.TypoTolerance.TRUE);
-        assertEquals(query1.get("typoTolerance"), "true");
-        Query query2 = Query.parse(query1.build());
-        assertEquals(query2.getTypoTolerance(), query1.getTypoTolerance());
+        query.setTypoTolerance(Query.TypoTolerance.TRUE);
+        assertEquals(Query.TypoTolerance.TRUE, query.getTypoTolerance());
+        assertEquals("true", query.get("typoTolerance"));
+        assertEquals(query.getTypoTolerance(), Query.parse(query.build()).getTypoTolerance());
 
-        query1.setTypoTolerance(Query.TypoTolerance.FALSE);
-        assertEquals(query1.getTypoTolerance(), Query.TypoTolerance.FALSE);
-        assertEquals(query1.get("typoTolerance"), "false");
-        query2 = Query.parse(query1.build());
-        assertEquals(query2.getTypoTolerance(), query1.getTypoTolerance());
+        query.setTypoTolerance(Query.TypoTolerance.FALSE);
+        assertEquals(Query.TypoTolerance.FALSE, query.getTypoTolerance());
+        assertEquals("false", query.get("typoTolerance"));
+        assertEquals(query.getTypoTolerance(), Query.parse(query.build()).getTypoTolerance());
 
-        query1.setTypoTolerance(Query.TypoTolerance.MIN);
-        assertEquals(query1.getTypoTolerance(), Query.TypoTolerance.MIN);
-        assertEquals(query1.get("typoTolerance"), "min");
-        query2 = Query.parse(query1.build());
-        assertEquals(query2.getTypoTolerance(), query1.getTypoTolerance());
+        query.setTypoTolerance(Query.TypoTolerance.MIN);
+        assertEquals(Query.TypoTolerance.MIN, query.getTypoTolerance());
+        assertEquals("min", query.get("typoTolerance"));
+        assertEquals(query.getTypoTolerance(), Query.parse(query.build()).getTypoTolerance());
 
-        query1.setTypoTolerance(Query.TypoTolerance.STRICT);
-        assertEquals(query1.getTypoTolerance(), Query.TypoTolerance.STRICT);
-        assertEquals(query1.get("typoTolerance"), "strict");
-        query2 = Query.parse(query1.build());
-        assertEquals(query2.getTypoTolerance(), query1.getTypoTolerance());
+        query.setTypoTolerance(Query.TypoTolerance.STRICT);
+        assertEquals(Query.TypoTolerance.STRICT, query.getTypoTolerance());
+        assertEquals("strict", query.get("typoTolerance"));
+        assertEquals(query.getTypoTolerance(), Query.parse(query.build()).getTypoTolerance());
 
-        query1.set("typoTolerance", "invalid");
-        assertNull(query1.getTypoTolerance());
+        query.set("typoTolerance", "invalid");
+        assertNull(query.getTypoTolerance());
 
-        query1.set("typoTolerance", "true");
-        assertEquals(query1.getTypoTolerance(), Query.TypoTolerance.TRUE);
+        query.set("typoTolerance", "true");
+        assertEquals(Query.TypoTolerance.TRUE, query.getTypoTolerance());
     }
 
     @Test
-    public void test_facets() {
-        Query query1 = new Query();
-        assertNull(query1.getFacets());
-        query1.setFacets("foo", "bar");
-        assertArrayEquals(query1.getFacets(), new String[]{ "foo", "bar" });
-        assertEquals(query1.get("facets"), "[\"foo\",\"bar\"]");
-        Query query2 = Query.parse(query1.build());
-        assertArrayEquals(query2.getFacets(), query1.getFacets());
+    public void facets() {
+        Query query = new Query();
+        assertNull(query.getFacets());
+        query.setFacets("foo", "bar");
+        assertArrayEquals(new String[]{ "foo", "bar" }, query.getFacets());
+        assertEquals("[\"foo\",\"bar\"]", query.get("facets"));
+        Query query2 = Query.parse(query.build());
+        assertArrayEquals(query.getFacets(), query2.getFacets());
     }
 
     @Test
-    public void test_optionalWords() {
-        Query query1 = new Query();
-        assertNull(query1.getOptionalWords());
-        query1.setOptionalWords("foo", "bar");
-        assertArrayEquals(query1.getOptionalWords(), new String[]{ "foo", "bar" });
-        assertEquals(query1.get("optionalWords"), "[\"foo\",\"bar\"]");
-        Query query2 = Query.parse(query1.build());
-        assertArrayEquals(query2.getOptionalWords(), query1.getOptionalWords());
+    public void optionalWords() {
+        Query query = new Query();
+        assertNull(query.getOptionalWords());
+        query.setOptionalWords("foo", "bar");
+        assertArrayEquals(new String[]{ "foo", "bar" }, query.getOptionalWords());
+        assertEquals("[\"foo\",\"bar\"]", query.get("optionalWords"));
+        assertArrayEquals(query.getOptionalWords(), Query.parse(query.build()).getOptionalWords());
     }
 
     @Test
-    public void test_restrictSearchableAttributes() {
-        Query query1 = new Query();
-        assertNull(query1.getRestrictSearchableAttributes());
-        query1.setRestrictSearchableAttributes("foo", "bar");
-        assertArrayEquals(query1.getRestrictSearchableAttributes(), new String[]{ "foo", "bar" });
-        assertEquals(query1.get("restrictSearchableAttributes"), "[\"foo\",\"bar\"]");
-        Query query2 = Query.parse(query1.build());
-        assertArrayEquals(query2.getRestrictSearchableAttributes(), query1.getRestrictSearchableAttributes());
+    public void restrictSearchableAttributes() {
+        Query query = new Query();
+        assertNull(query.getRestrictSearchableAttributes());
+        query.setRestrictSearchableAttributes("foo", "bar");
+        assertArrayEquals(new String[]{ "foo", "bar" }, query.getRestrictSearchableAttributes());
+        assertEquals("[\"foo\",\"bar\"]", query.get("restrictSearchableAttributes"));
+        assertArrayEquals(query.getRestrictSearchableAttributes(), Query.parse(query.build()).getRestrictSearchableAttributes());
     }
 
     @Test
-    public void test_highlightPreTag() {
-        Query query1 = new Query();
-        assertNull(query1.getHighlightPreTag());
-        query1.setHighlightPreTag("<PRE[");
-        assertEquals(query1.getHighlightPreTag(), "<PRE[");
-        assertEquals(query1.get("highlightPreTag"), "<PRE[");
-        Query query2 = Query.parse(query1.build());
-        assertEquals(query2.getHighlightPreTag(), query1.getHighlightPreTag());
+    public void highlightPreTag() {
+        Query query = new Query();
+        assertNull(query.getHighlightPreTag());
+        query.setHighlightPreTag("<PRE[");
+        assertEquals("<PRE[", query.getHighlightPreTag());
+        assertEquals("<PRE[", query.get("highlightPreTag"));
+        assertEquals(query.getHighlightPreTag(), Query.parse(query.build()).getHighlightPreTag());
     }
 
     @Test
-    public void test_highlightPostTag() {
-        Query query1 = new Query();
-        assertNull(query1.getHighlightPostTag());
-        query1.setHighlightPostTag("]POST>");
-        assertEquals(query1.getHighlightPostTag(), "]POST>");
-        assertEquals(query1.get("highlightPostTag"), "]POST>");
-        Query query2 = Query.parse(query1.build());
-        assertEquals(query2.getHighlightPostTag(), query1.getHighlightPostTag());
+    public void highlightPostTag() {
+        Query query = new Query();
+        assertNull(query.getHighlightPostTag());
+        query.setHighlightPostTag("]POST>");
+        assertEquals("]POST>", query.getHighlightPostTag());
+        assertEquals("]POST>", query.get("highlightPostTag"));
+        assertEquals(query.getHighlightPostTag(), Query.parse(query.build()).getHighlightPostTag());
     }
 
     @Test
-    public void test_snippetEllipsisText() {
-        Query query1 = new Query();
-        assertNull(query1.getSnippetEllipsisText());
-        query1.setSnippetEllipsisText("…");
-        assertEquals(query1.getSnippetEllipsisText(), "…");
-        assertEquals(query1.get("snippetEllipsisText"), "…");
-        Query query2 = Query.parse(query1.build());
-        assertEquals(query2.getSnippetEllipsisText(), query1.getSnippetEllipsisText());
+    public void snippetEllipsisText() {
+        Query query = new Query();
+        assertNull(query.getSnippetEllipsisText());
+        query.setSnippetEllipsisText("…");
+        assertEquals("…", query.getSnippetEllipsisText());
+        assertEquals("…", query.get("snippetEllipsisText"));
+        Query query2 = Query.parse(query.build());
+        assertEquals(query.getSnippetEllipsisText(), query2.getSnippetEllipsisText());
     }
 
     @Test
-    public void test_analyticsTags() {
-        Query query1 = new Query();
-        assertNull(query1.getAnalyticsTags());
-        query1.setAnalyticsTags("foo", "bar");
-        assertArrayEquals(query1.getAnalyticsTags(), new String[]{ "foo", "bar" });
-        assertEquals(query1.get("analyticsTags"), "[\"foo\",\"bar\"]");
-        Query query2 = Query.parse(query1.build());
-        assertArrayEquals(query2.getAnalyticsTags(), new String[]{ "foo", "bar" });
+    public void analyticsTags() {
+        Query query = new Query();
+        assertNull(query.getAnalyticsTags());
+        query.setAnalyticsTags("foo", "bar");
+        assertArrayEquals(new String[]{ "foo", "bar" }, query.getAnalyticsTags());
+        assertEquals("[\"foo\",\"bar\"]", query.get("analyticsTags"));
+        Query query2 = Query.parse(query.build());
+        assertArrayEquals(query.getAnalyticsTags(), query2.getAnalyticsTags());
     }
 
     @Test
-    public void test_disableTypoToleranceOnAttributes() {
-        Query query1 = new Query();
-        assertNull(query1.getDisableTypoToleranceOnAttributes());
-        query1.setDisableTypoToleranceOnAttributes("foo", "bar");
-        assertArrayEquals(query1.getDisableTypoToleranceOnAttributes(), new String[]{ "foo", "bar" });
-        assertEquals(query1.get("disableTypoToleranceOnAttributes"), "[\"foo\",\"bar\"]");
-        Query query2 = Query.parse(query1.build());
-        assertArrayEquals(query2.getDisableTypoToleranceOnAttributes(), query1.getDisableTypoToleranceOnAttributes());
+    public void disableTypoToleranceOnAttributes() {
+        Query query = new Query();
+        assertNull(query.getDisableTypoToleranceOnAttributes());
+        query.setDisableTypoToleranceOnAttributes("foo", "bar");
+        assertArrayEquals(new String[]{ "foo", "bar" }, query.getDisableTypoToleranceOnAttributes());
+        assertEquals("[\"foo\",\"bar\"]", query.get("disableTypoToleranceOnAttributes"));
+        Query query2 = Query.parse(query.build());
+        assertArrayEquals(query.getDisableTypoToleranceOnAttributes(), query2.getDisableTypoToleranceOnAttributes());
     }
 
     @Test
-    public void test_aroundPrecision() {
-        Query query1 = new Query();
-        assertNull(query1.getAroundPrecision());
-        query1.setAroundPrecision(12345);
-        assertEquals(query1.getAroundPrecision(), new Integer(12345));
-        assertEquals(query1.get("aroundPrecision"), "12345");
-        Query query2 = Query.parse(query1.build());
-        assertEquals(query2.getAroundPrecision(), query1.getAroundPrecision());
+    public void aroundPrecision() {
+        Query query = new Query();
+        assertNull(query.getAroundPrecision());
+        query.setAroundPrecision(12345);
+        assertEquals(Integer.valueOf(12345), query.getAroundPrecision());
+        assertEquals("12345", query.get("aroundPrecision"));
+        Query query2 = Query.parse(query.build());
+        assertEquals(query.getAroundPrecision(), query2.getAroundPrecision());
     }
 
     @Test
-    public void test_aroundRadius() {
-        Query query1 = new Query();
-        assertNull(query1.getAroundRadius());
-        query1.setAroundRadius(987);
-        assertEquals(query1.getAroundRadius(), new Integer(987));
-        assertEquals(query1.get("aroundRadius"), "987");
-        Query query2 = Query.parse(query1.build());
-        assertEquals(query2.getAroundRadius(), query1.getAroundRadius());
+    public void aroundRadius() {
+        Query query = new Query();
+        assertNull(query.getAroundRadius());
+        query.setAroundRadius(987);
+        assertEquals(Integer.valueOf(987), query.getAroundRadius());
+        assertEquals("987", query.get("aroundRadius"));
+        Query query2 = Query.parse(query.build());
+        assertEquals(query.getAroundRadius(), query2.getAroundRadius());
     }
 
     @Test
-    public void test_aroundLatLngViaIP() {
-        Query query1 = new Query();
-        assertNull(query1.getAroundLatLngViaIP());
-        query1.setAroundLatLngViaIP(true);
-        assertEquals(query1.getAroundLatLngViaIP(), Boolean.TRUE);
-        assertEquals(query1.get("aroundLatLngViaIP"), "true");
-        Query query2 = Query.parse(query1.build());
-        assertEquals(query2.getAroundLatLngViaIP(), query1.getAroundLatLngViaIP());
+    public void aroundLatLngViaIP() {
+        Query query = new Query();
+        assertNull(query.getAroundLatLngViaIP());
+        query.setAroundLatLngViaIP(true);
+        assertEquals(Boolean.TRUE, query.getAroundLatLngViaIP());
+        assertEquals("true", query.get("aroundLatLngViaIP"));
+        assertEquals(query.getAroundLatLngViaIP(), Query.parse(query.build()).getAroundLatLngViaIP());
     }
 
     @Test
-    public void test_aroundLatLng() {
-        Query query1 = new Query();
-        assertNull(query1.getAroundLatLng());
-        query1.setAroundLatLng(new Query.LatLng(89.76, -123.45));
-        assertEquals(query1.getAroundLatLng(), new Query.LatLng(89.76, -123.45));
-        assertEquals(query1.get("aroundLatLng"), "89.76,-123.45");
-        Query query2 = Query.parse(query1.build());
-        assertEquals(query2.getAroundLatLng(), query1.getAroundLatLng());
+    public void aroundLatLng() {
+        Query query = new Query();
+        assertNull(query.getAroundLatLng());
+        query.setAroundLatLng(new Query.LatLng(89.76, -123.45));
+        assertEquals(new Query.LatLng(89.76, -123.45), query.getAroundLatLng());
+        assertEquals("89.76,-123.45", query.get("aroundLatLng"));
+        assertEquals(query.getAroundLatLng(), Query.parse(query.build()).getAroundLatLng());
     }
 
     @Test
-    public void test_insideBoundingBox() {
-        Query query1 = new Query();
-        assertNull(query1.getInsideBoundingBox());
+    public void insideBoundingBox() {
+        Query query = new Query();
+        assertNull(query.getInsideBoundingBox());
         final Query.GeoRect box1 = new Query.GeoRect(new Query.LatLng(11.111111, 22.222222), new Query.LatLng(33.333333, 44.444444));
-        query1.setInsideBoundingBox(box1);
-        assertArrayEquals(query1.getInsideBoundingBox(), new Query.GeoRect[]{ box1 });
-        assertEquals(query1.get("insideBoundingBox"), "11.111111,22.222222,33.333333,44.444444");
-        Query query2 = Query.parse(query1.build());
-        assertArrayEquals(query2.getInsideBoundingBox(), query1.getInsideBoundingBox());
+        query.setInsideBoundingBox(box1);
+        assertArrayEquals(new Query.GeoRect[]{ box1 }, query.getInsideBoundingBox());
+        assertEquals("11.111111,22.222222,33.333333,44.444444", query.get("insideBoundingBox"));
+        assertArrayEquals(query.getInsideBoundingBox(), Query.parse(query.build()).getInsideBoundingBox());
 
         final Query.GeoRect box2 = new Query.GeoRect(new Query.LatLng(-55.555555, -66.666666), new Query.LatLng(-77.777777, -88.888888));
         final Query.GeoRect[] boxes = { box1, box2 };
-        query1.setInsideBoundingBox(boxes);
-        assertArrayEquals(query1.getInsideBoundingBox(), boxes);
-        assertEquals(query1.get("insideBoundingBox"), "11.111111,22.222222,33.333333,44.444444,-55.555555,-66.666666,-77.777777,-88.888888");
-        query2 = Query.parse(query1.build());
-        assertArrayEquals(query2.getInsideBoundingBox(), query1.getInsideBoundingBox());
+        query.setInsideBoundingBox(boxes);
+        assertArrayEquals(boxes, query.getInsideBoundingBox());
+        assertEquals("11.111111,22.222222,33.333333,44.444444,-55.555555,-66.666666,-77.777777,-88.888888", query.get("insideBoundingBox"));
+        assertArrayEquals(query.getInsideBoundingBox(), Query.parse(query.build()).getInsideBoundingBox());
     }
 
     @Test
-    public void test_insidePolygon() {
-        Query query1 = new Query();
-        assertNull(query1.getInsidePolygon());
+    public void insidePolygon() {
+        Query query = new Query();
+        assertNull(query.getInsidePolygon());
         final Query.LatLng[] box = { new Query.LatLng(11.111111, 22.222222), new Query.LatLng(33.333333, 44.444444), new Query.LatLng(-55.555555, -66.666666) };
-        query1.setInsidePolygon(box);
-        assertArrayEquals(query1.getInsidePolygon(), box);
-        assertEquals(query1.get("insidePolygon"), "11.111111,22.222222,33.333333,44.444444,-55.555555,-66.666666");
-        Query query2 = Query.parse(query1.build());
-        assertArrayEquals(query2.getInsidePolygon(), query1.getInsidePolygon());
+        query.setInsidePolygon(box);
+        assertArrayEquals(box, query.getInsidePolygon());
+        assertEquals("11.111111,22.222222,33.333333,44.444444,-55.555555,-66.666666", query.get("insidePolygon"));
+        assertArrayEquals(query.getInsidePolygon(), Query.parse(query.build()).getInsidePolygon());
     }
 
     @Test
-    public void test_tagFilters() throws JSONException {
+    public void tagFilters() throws JSONException {
         final JSONArray VALUE = new JSONArray("[\"tag1\", [\"tag2\", \"tag3\"]]");
-        Query query1 = new Query();
-        assertNull(query1.getTagFilters());
-        query1.setTagFilters(VALUE);
-        assertEquals(query1.getTagFilters(), VALUE);
-        assertEquals(query1.get("tagFilters"), "[\"tag1\",[\"tag2\",\"tag3\"]]");
-        Query query2 = Query.parse(query1.build());
-        assertEquals(query2.getTagFilters(), query1.getTagFilters());
+        Query query = new Query();
+        assertNull(query.getTagFilters());
+        query.setTagFilters(VALUE);
+        assertEquals(VALUE, query.getTagFilters());
+        assertEquals("[\"tag1\",[\"tag2\",\"tag3\"]]", query.get("tagFilters"));
+        assertEquals(query.getTagFilters(), Query.parse(query.build()).getTagFilters());
     }
 
     @Test
-    public void test_facetFilters() throws JSONException {
+    public void facetFilters() throws JSONException {
         final JSONArray VALUE = new JSONArray("[[\"category:Book\", \"category:Movie\"], \"author:John Doe\"]");
-        Query query1 = new Query();
-        assertNull(query1.getFacetFilters());
-        query1.setFacetFilters(VALUE);
-        assertEquals(query1.getFacetFilters(), VALUE);
-        assertEquals(query1.get("facetFilters"), "[[\"category:Book\",\"category:Movie\"],\"author:John Doe\"]");
-        Query query2 = Query.parse(query1.build());
-        assertEquals(query2.getFacetFilters(), query1.getFacetFilters());
+        Query query = new Query();
+        assertNull(query.getFacetFilters());
+        query.setFacetFilters(VALUE);
+        assertEquals(VALUE, query.getFacetFilters());
+        assertEquals("[[\"category:Book\",\"category:Movie\"],\"author:John Doe\"]", query.get("facetFilters"));
+        assertEquals(query.getFacetFilters(), Query.parse(query.build()).getFacetFilters());
     }
 
     @Test
-    public void test_advancedSyntax() {
-        Query query1 = new Query();
-        assertNull(query1.getAdvancedSyntax());
-        query1.setAdvancedSyntax(true);
-        assertEquals(query1.getAdvancedSyntax(), Boolean.TRUE);
-        assertEquals(query1.get("advancedSyntax"), "true");
-        Query query2 = Query.parse(query1.build());
-        assertEquals(query2.getAdvancedSyntax(), query1.getAdvancedSyntax());
+    public void advancedSyntax() {
+        Query query = new Query();
+        assertNull(query.getAdvancedSyntax());
+        query.setAdvancedSyntax(true);
+        assertEquals(Boolean.TRUE, query.getAdvancedSyntax());
+        assertEquals("true", query.get("advancedSyntax"));
+        assertEquals(query.getAdvancedSyntax(), Query.parse(query.build()).getAdvancedSyntax());
     }
 
     @Test
-    public void test_removeStopWordsBoolean() throws Exception {
-        Query query1 = new Query();
-        assertNull(query1.getRemoveStopWords());
-        query1.setRemoveStopWords(true);
-        assertEquals(Boolean.TRUE, query1.getRemoveStopWords());
-        assertEquals("true", query1.get("removeStopWords"));
-        Query query2 = Query.parse(query1.build());
-        assertEquals(query1.getRemoveStopWords(), query2.getRemoveStopWords());
+    public void removeStopWordsBoolean() throws Exception {
+        Query query = new Query();
+        assertNull(query.getRemoveStopWords());
+        query.setRemoveStopWords(true);
+        assertEquals(Boolean.TRUE, query.getRemoveStopWords());
+        assertEquals("true", query.get("removeStopWords"));
+        assertEquals(query.getRemoveStopWords(), Query.parse(query.build()).getRemoveStopWords());
     }
 
     @Test
-    public void test_removeStopWordsString() throws Exception {
-        Query query1 = new Query();
-        assertNull(query1.getRemoveStopWords());
+    public void removeStopWordsString() throws Exception {
+        Query query = new Query();
+        assertNull(query.getRemoveStopWords());
 
-        query1.setRemoveStopWords("fr,en");
-        final Object[] removeStopWords = (Object[]) query1.getRemoveStopWords();
+        query.setRemoveStopWords("fr,en");
+        final Object[] removeStopWords = (Object[]) query.getRemoveStopWords();
         assertArrayEquals(new String[]{"fr", "en"}, removeStopWords);
-        assertEquals("fr,en", query1.get("removeStopWords"));
+        assertEquals("fr,en", query.get("removeStopWords"));
 
-        Query query2 = Query.parse(query1.build());
-        assertArrayEquals((Object[]) query1.getRemoveStopWords(), (Object[]) query2.getRemoveStopWords());
+        assertArrayEquals((Object[]) query.getRemoveStopWords(), (Object[]) Query.parse(query.build()).getRemoveStopWords());
     }
 
     @Test
-    public void test_removeStopWordsInvalidClass() throws Exception {
-        Query query1 = new Query();
+    public void removeStopWordsInvalidClass() throws Exception {
+        Query query = new Query();
         try {
-            query1.setRemoveStopWords(42);
+            query.setRemoveStopWords(42);
         } catch (AlgoliaException ignored) {
             return; //pass
         }
@@ -647,66 +627,61 @@ public class QueryTest extends RobolectricTestCase {
     }
 
     @Test
-    public void test_maxValuesPerFacet() {
-        Query query1 = new Query();
-        assertNull(query1.getMaxValuesPerFacet());
-        query1.setMaxValuesPerFacet(456);
-        assertEquals(query1.getMaxValuesPerFacet(), new Integer(456));
-        assertEquals(query1.get("maxValuesPerFacet"), "456");
-        Query query2 = Query.parse(query1.build());
-        assertEquals(query2.getMaxValuesPerFacet(), query1.getMaxValuesPerFacet());
+    public void maxValuesPerFacet() {
+        Query query = new Query();
+        assertNull(query.getMaxValuesPerFacet());
+        query.setMaxValuesPerFacet(456);
+        assertEquals(Integer.valueOf(456), query.getMaxValuesPerFacet());
+        assertEquals("456", query.get("maxValuesPerFacet"));
+        assertEquals(query.getMaxValuesPerFacet(), Query.parse(query.build()).getMaxValuesPerFacet());
     }
 
     @Test
-    public void test_minimumAroundRadius() {
-        Query query1 = new Query();
-        assertNull(query1.getMinimumAroundRadius());
-        query1.setMinimumAroundRadius(1000);
-        assertEquals(query1.getMinimumAroundRadius(), new Integer(1000));
-        assertEquals(query1.get("minimumAroundRadius"), "1000");
-        Query query2 = Query.parse(query1.build());
-        assertEquals(query2.getMinimumAroundRadius(), query1.getMinimumAroundRadius());
+    public void minimumAroundRadius() {
+        Query query = new Query();
+        assertNull(query.getMinimumAroundRadius());
+        query.setMinimumAroundRadius(1000);
+        assertEquals(Integer.valueOf(1000), query.getMinimumAroundRadius());
+        assertEquals("1000", query.get("minimumAroundRadius"));
+        assertEquals(query.getMinimumAroundRadius(), Query.parse(query.build()).getMinimumAroundRadius());
     }
 
     @Test
-    public void test_numericFilters() throws JSONException {
+    public void numericFilters() throws JSONException {
         final JSONArray VALUE = new JSONArray("[\"code=1\", [\"price:0 to 10\", \"price:1000 to 2000\"]]");
-        Query query1 = new Query();
-        assertNull(query1.getNumericFilters());
-        query1.setNumericFilters(VALUE);
-        assertEquals(query1.getNumericFilters(), VALUE);
-        assertEquals(query1.get("numericFilters"), "[\"code=1\",[\"price:0 to 10\",\"price:1000 to 2000\"]]");
-        Query query2 = Query.parse(query1.build());
-        assertEquals(query2.getNumericFilters(), query1.getNumericFilters());
+        Query query = new Query();
+        assertNull(query.getNumericFilters());
+        query.setNumericFilters(VALUE);
+        assertEquals(VALUE, query.getNumericFilters());
+        assertEquals("[\"code=1\",[\"price:0 to 10\",\"price:1000 to 2000\"]]", query.get("numericFilters"));
+        assertEquals(query.getNumericFilters(), Query.parse(query.build()).getNumericFilters());
     }
 
     @Test
-    public void test_filters() {
+    public void filters() {
         final String VALUE = "available=1 AND (category:Book OR NOT category:Ebook) AND publication_date: 1441745506 TO 1441755506 AND inStock > 0 AND author:\"John Doe\"";
-        Query query1 = new Query();
-        assertNull(query1.getFilters());
-        query1.setFilters(VALUE);
-        assertEquals(query1.getFilters(), VALUE);
-        assertEquals(query1.get("filters"), VALUE);
-        Query query2 = Query.parse(query1.build());
-        assertEquals(query2.getFilters(), query1.getFilters());
+        Query query = new Query();
+        assertNull(query.getFilters());
+        query.setFilters(VALUE);
+        assertEquals(VALUE, query.getFilters());
+        assertEquals(VALUE, query.get("filters"));
+        assertEquals(query.getFilters(), Query.parse(query.build()).getFilters());
     }
 
     @Test
-    public void test_exactOnSingleWordQuery() {
+    public void exactOnSingleWordQuery() {
         Query.ExactOnSingleWordQuery VALUE = Query.ExactOnSingleWordQuery.ATTRIBUTE;
         Query query = new Query();
         assertNull(query.getExactOnSingleWordQuery());
 
         query.setExactOnSingleWordQuery(VALUE);
-        assertEquals(query.getExactOnSingleWordQuery(), VALUE);
-        assertEquals(query.get("exactOnSingleWordQuery"), "attribute");
-        Query query2 = Query.parse(query.build());
-        assertEquals(query2.getExactOnSingleWordQuery(), query.getExactOnSingleWordQuery());
+        assertEquals(VALUE, query.getExactOnSingleWordQuery());
+        assertEquals("attribute", query.get("exactOnSingleWordQuery"));
+        assertEquals(query.getExactOnSingleWordQuery(), Query.parse(query.build()).getExactOnSingleWordQuery());
     }
 
     @Test
-    public void test_alternativesAsExact() {
+    public void alternativesAsExact() {
         Query.AlternativesAsExact VALUE1 = Query.AlternativesAsExact.IGNORE_PLURALS;
         Query.AlternativesAsExact VALUE2 = Query.AlternativesAsExact.MULTI_WORDS_SYNONYM;
         final Query.AlternativesAsExact[] VALUES = new Query.AlternativesAsExact[]{VALUE1, VALUE2};
@@ -716,36 +691,36 @@ public class QueryTest extends RobolectricTestCase {
 
         final Query.AlternativesAsExact[] array = {};
         query.setAlternativesAsExact(array);
-        assertArrayEquals(query.getAlternativesAsExact(), array);
+        assertArrayEquals(array, query.getAlternativesAsExact());
 
         query.setAlternativesAsExact(VALUES);
         assertArrayEquals(VALUES, query.getAlternativesAsExact());
 
         assertEquals("ignorePlurals,multiWordsSynonym", query.get("alternativesAsExact"));
 
-        Query query2 = Query.parse(query.build());
-        assertEquals(query.getExactOnSingleWordQuery(), query2.getExactOnSingleWordQuery());
+        assertEquals(query.getExactOnSingleWordQuery(), Query.parse(query.build()).getExactOnSingleWordQuery());
     }
 
     @Test
-    public void test_aroundRadius_all() {
+    public void aroundRadius_all() {
         final Integer VALUE = 3;
         Query query = new Query();
         assertNull("A new query should have a null aroundRadius.", query.getAroundRadius());
 
         query.setAroundRadius(VALUE);
-        assertEquals("After setting its aroundRadius to a given integer, we should return it from getAroundRadius.", VALUE, query.getAroundRadius());
+        assertEquals("After setting a query's aroundRadius to a given integer, we should return it from getAroundRadius.", VALUE, query.getAroundRadius());
+        assertEquals("After setting a query's aroundRadius to a given integer, it should be in aroundRadius.", String.valueOf(VALUE), query.get("aroundRadius"));
 
         String queryStr = query.build();
-        assertTrue("The built query should contain 'aroundRadius=" + VALUE + "'.", queryStr.matches("aroundRadius=" + VALUE));
+        assertTrue("The built query should contain 'aroundRadius=" + VALUE + "'.", queryStr.contains("aroundRadius=" + VALUE));
 
         query.setAroundRadius(Query.RADIUS_ALL);
-        assertEquals("After setting it to RADIUS_ALL, a query should have this aroundRadius value.", Integer.valueOf(Query.RADIUS_ALL), query.getAroundRadius());
+        assertEquals("After setting a query's aroundRadius to RADIUS_ALL, it should have this aroundRadius value.", Integer.valueOf(Query.RADIUS_ALL), query.getAroundRadius());
+        assertEquals("After setting a query's aroundRadius to RADIUS_ALL, its aroundRadius should be equal to \"all\".", "all", query.get("aroundRadius"));
 
         queryStr = query.build();
-        assertTrue("The built query should contain 'aroundRadius=all', not _" + queryStr + "_.", queryStr.matches("aroundRadius=all"));
-        Query query2 = Query.parse(query.build());
-        assertEquals(query2.getAroundRadius(), query.getAroundRadius());
+        assertTrue("The built query should contain 'aroundRadius=all', not _" + queryStr + "_.", queryStr.contains("aroundRadius=all"));
+        assertEquals("The built query should be parsed and built successfully.", query.getAroundRadius(), Query.parse(query.build()).getAroundRadius());
     }
 
     @Test

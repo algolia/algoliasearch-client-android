@@ -79,11 +79,11 @@ public class IndexTest extends RobolectricTestCase {
         Whitebox.setInternalState(client, "searchExecutorService", new RoboExecutorService());
 
         indexName = Helpers.safeIndexName("àlgol?à-android");
-        index = client.initIndex(indexName);
+        index = client.getIndex(indexName);
 
         client.deleteIndex(indexName);
 
-        objects = new ArrayList<JSONObject>();
+        objects = new ArrayList<>();
         objects.add(new JSONObject("{\"city\": \"San Francisco\"}"));
         objects.add(new JSONObject("{\"city\": \"San José\"}"));
 
@@ -91,7 +91,7 @@ public class IndexTest extends RobolectricTestCase {
         index.waitTask(task.getString("taskID"));
 
         JSONArray objectIDs = task.getJSONArray("objectIDs");
-        ids = new ArrayList<String>();
+        ids = new ArrayList<>();
         for (int i = 0; i < objectIDs.length(); ++i) {
             ids.add(objectIDs.getString(i));
         }
@@ -109,11 +109,11 @@ public class IndexTest extends RobolectricTestCase {
     }
 
     @Test
-    public void testSearchAsync() throws Exception {
-        testSearchAsync(Helpers.wait);
+    public void searchAsync() throws Exception {
+        searchAsync(Helpers.wait);
     }
 
-    public void testSearchAsync(int waitTimeoutSeconds) throws Exception {
+    public void searchAsync(int waitTimeoutSeconds) throws Exception {
         final long begin = System.nanoTime();
         // Empty search.
         index.searchAsync(new Query(), new AssertCompletionHandler() {
@@ -143,7 +143,7 @@ public class IndexTest extends RobolectricTestCase {
     }
 
     @Test
-    public void testSearchDisjunctiveFacetingAsync() throws Exception {
+    public void searchDisjunctiveFacetingAsync() throws Exception {
         // Set index settings.
         JSONObject setSettingsResult = index.setSettings(new JSONObject("{\"attributesForFaceting\": [\"brand\", \"category\"]}"));
         index.waitTask(setSettingsResult.getString("taskID"));
@@ -177,10 +177,10 @@ public class IndexTest extends RobolectricTestCase {
         index.waitTask(task.getString("taskID"));
 
         final Query query = new Query("phone").setFacets("brand", "category", "stars");
-        final List<String> disjunctiveFacets = Arrays.asList("brand");
+        final List<String> disjunctiveFacets = Collections.singletonList("brand");
         final Map<String, List<String>> refinements = new HashMap<>();
         refinements.put("brand", Arrays.asList("Apple", "Samsung")); // disjunctive facet
-        refinements.put("category", Arrays.asList("device")); // conjunctive facet
+        refinements.put("category", Collections.singletonList("device")); // conjunctive facet
         index.searchDisjunctiveFacetingAsync(query, disjunctiveFacets, refinements, new AssertCompletionHandler() {
             @Override
             public void doRequestCompleted(JSONObject content, AlgoliaException error) {
@@ -201,7 +201,7 @@ public class IndexTest extends RobolectricTestCase {
     }
 
     @Test
-    public void testDisjunctiveFacetingAsync2() throws Exception {
+    public void disjunctiveFacetingAsync2() throws Exception {
         // Set index settings.
         JSONObject setSettingsResult = index.setSettings(new JSONObject("{\"attributesForFaceting\":[\"city\", \"stars\", \"facilities\"]}"));
         index.waitTask(setSettingsResult.getString("taskID"));
@@ -229,7 +229,7 @@ public class IndexTest extends RobolectricTestCase {
             }
         });
 
-        refinements.put("stars", Arrays.asList("*"));
+        refinements.put("stars", Collections.singletonList("*"));
         index.searchDisjunctiveFacetingAsync(query, disjunctiveFacets, refinements, new AssertCompletionHandler() {
             @Override
             public void doRequestCompleted(JSONObject content, AlgoliaException error) {
@@ -242,7 +242,7 @@ public class IndexTest extends RobolectricTestCase {
             }
         });
 
-        refinements.put("city", Arrays.asList("Paris"));
+        refinements.put("city", Collections.singletonList("Paris"));
         index.searchDisjunctiveFacetingAsync(query, disjunctiveFacets, refinements, new AssertCompletionHandler() {
             @Override
             public void doRequestCompleted(JSONObject content, AlgoliaException error) {
@@ -269,7 +269,7 @@ public class IndexTest extends RobolectricTestCase {
     }
 
     @Test
-    public void testAggregateResultsPropagatesNonExhaustiveCount() throws Exception {
+    public void aggregateResultsPropagatesNonExhaustiveCount() throws Exception {
         try {
             List<String> disjunctiveFacets = new ArrayList<>();
             Map<String, List<String>> refinements = new HashMap<>();
@@ -304,7 +304,7 @@ public class IndexTest extends RobolectricTestCase {
     }
 
     @Test
-    public void testAddObjectAsync() throws Exception {
+    public void addObjectAsync() throws Exception {
         index.addObjectAsync(new JSONObject("{\"city\": \"New York\"}"), new AssertCompletionHandler() {
             @Override public void doRequestCompleted(JSONObject content, AlgoliaException error) {
                 if (error == null) {
@@ -317,7 +317,7 @@ public class IndexTest extends RobolectricTestCase {
     }
 
     @Test
-    public void testAddObjectWithObjectIDAsync() throws Exception {
+    public void addObjectWithObjectIDAsync() throws Exception {
         index.addObjectAsync(new JSONObject("{\"city\": \"New York\"}"), "a1b2c3", new AssertCompletionHandler() {
             @Override public void doRequestCompleted(JSONObject content, AlgoliaException error) {
                 if (error == null) {
@@ -330,7 +330,7 @@ public class IndexTest extends RobolectricTestCase {
     }
 
     @Test
-    public void testAddObjectsAsync() throws Exception {
+    public void addObjectsAsync() throws Exception {
         index.addObjectsAsync(new JSONArray("[{\"city\": \"New York\"}, {\"city\": \"Paris\"}]"), new AssertCompletionHandler() {
             @Override public void doRequestCompleted(JSONObject content, AlgoliaException error) {
                 if (error == null) {
@@ -343,7 +343,7 @@ public class IndexTest extends RobolectricTestCase {
     }
 
     @Test
-    public void testSaveObjectAsync() throws Exception {
+    public void saveObjectAsync() throws Exception {
         index.saveObjectAsync(new JSONObject("{\"city\": \"New York\"}"), "a1b2c3", new AssertCompletionHandler() {
             @Override public void doRequestCompleted(JSONObject content, AlgoliaException error) {
                 if (error == null) {
@@ -356,7 +356,7 @@ public class IndexTest extends RobolectricTestCase {
     }
 
     @Test
-    public void testSaveObjectsAsync() throws Exception {
+    public void saveObjectsAsync() throws Exception {
         index.saveObjectsAsync(new JSONArray("[{\"city\": \"New York\", \"objectID\": 123}, {\"city\": \"Paris\", \"objectID\": 456}]"), new AssertCompletionHandler() {
             @Override public void doRequestCompleted(JSONObject content, AlgoliaException error) {
                 if (error == null) {
@@ -371,7 +371,7 @@ public class IndexTest extends RobolectricTestCase {
     }
 
     @Test
-    public void testGetObjectAsync() throws Exception {
+    public void getObjectAsync() throws Exception {
         index.getObjectAsync(ids.get(0), new AssertCompletionHandler() {
             @Override public void doRequestCompleted(JSONObject content, AlgoliaException error) {
                 if (error == null) {
@@ -385,8 +385,8 @@ public class IndexTest extends RobolectricTestCase {
     }
 
     @Test
-    public void testGetObjectWithAttributesToRetrieveAsync() throws Exception {
-        List<String> attributesToRetrieve = new ArrayList<String>();
+    public void getObjectWithAttributesToRetrieveAsync() throws Exception {
+        List<String> attributesToRetrieve = new ArrayList<>();
         attributesToRetrieve.add("objectID");
         index.getObjectAsync(ids.get(0), attributesToRetrieve, new AssertCompletionHandler() {
             @Override public void doRequestCompleted(JSONObject content, AlgoliaException error) {
@@ -401,7 +401,7 @@ public class IndexTest extends RobolectricTestCase {
     }
 
     @Test
-    public void testGetObjectsAsync() throws Exception {
+    public void getObjectsAsync() throws Exception {
         index.getObjectsAsync(ids, new AssertCompletionHandler() {
             @Override public void doRequestCompleted(JSONObject content, AlgoliaException error) {
                 if (error == null) {
@@ -417,7 +417,7 @@ public class IndexTest extends RobolectricTestCase {
     }
 
     @Test
-    public void testWaitTaskAsync() throws Exception {
+    public void waitTaskAsync() throws Exception {
         index.addObjectAsync(new JSONObject("{\"city\": \"New York\"}"), new AssertCompletionHandler() {
             @Override public void doRequestCompleted(JSONObject content, AlgoliaException error) {
                 if (error == null) {
@@ -439,18 +439,18 @@ public class IndexTest extends RobolectricTestCase {
     }
 
     @Test
-    public void testHostSwitch() throws Exception {
+    public void hostSwitch() throws Exception {
         // Given first host as an unreachable domain
         List<String> hostsArray = (List<String>) Whitebox.getInternalState(client, "readHosts");
         hostsArray.set(0, "thissentenceshouldbeuniqueenoughtoguaranteeinexistentdomain.com");
         Whitebox.setInternalState(client, "readHosts", hostsArray);
 
         // Expect a switch to the next URL and successful search
-        testSearchAsync();
+        searchAsync();
     }
 
     @Test
-    public void testDNSTimeout() throws Exception {
+    public void DNSTimeout() throws Exception {
         // On Travis, the imposed DNS timeout prevents us from testing this feature.
         if ("true".equals(System.getenv("TRAVIS"))) {
             return;
@@ -470,7 +470,7 @@ public class IndexTest extends RobolectricTestCase {
 
         // Expect successful search within 5 seconds
         long startTime = System.nanoTime();
-        testSearchAsync(5);
+        searchAsync(5);
         final long duration = (System.nanoTime() - startTime) / 1000000;
 
         // Which should take at least 2 seconds, as per Client.connectTimeout
@@ -478,16 +478,16 @@ public class IndexTest extends RobolectricTestCase {
     }
 
     @Test
-    public void testConnectTimeout() throws AlgoliaException {
-        testConnectTimeout(1);
+    public void connectTimeout() throws AlgoliaException {
+        connectTimeout(1);
     }
 
     @Test
-    public void testMultipleConnectTimeout() throws AlgoliaException {
-        testConnectTimeout(2);
+    public void multipleConnectTimeout() throws AlgoliaException {
+        connectTimeout(2);
     }
 
-    private void testConnectTimeout(int nbHosts) throws AlgoliaException {
+    private void connectTimeout(int nbHosts) throws AlgoliaException {
         // On Travis, the reported run duration is not reliable.
         if ("true".equals(System.getenv("TRAVIS"))) {
             return;
@@ -514,7 +514,7 @@ public class IndexTest extends RobolectricTestCase {
 
 
     @Test
-    public void testConnectionResetException() throws IOException, AlgoliaException {
+    public void connectionResetException() throws IOException, AlgoliaException {
         Thread runnable = new Thread() {
             @Override
             public void run() {
@@ -545,7 +545,7 @@ public class IndexTest extends RobolectricTestCase {
     }
 
     @Test
-    public void testSNI() throws Exception {
+    public void SNI() throws Exception {
         // Given all hosts using SNI
         String appId = (String) Whitebox.getInternalState(client, "applicationID");
         List<String> hostsArray = (List<String>) Whitebox.getInternalState(client, "readHosts");
@@ -556,11 +556,11 @@ public class IndexTest extends RobolectricTestCase {
         Whitebox.setInternalState(client, "readHosts", hostsArray);
 
         // Expect correct certificate handling and successful search
-        testSearchAsync();
+        searchAsync();
     }
 
     @Test
-    public void testKeepAlive() throws Exception {
+    public void keepAlive() throws Exception {
         // On Travis, the reported run duration is not reliable.
         if ("true".equals(System.getenv("TRAVIS"))) {
             return;
@@ -621,7 +621,7 @@ public class IndexTest extends RobolectricTestCase {
 
     private void addDummyObjects(int objectCount) throws Exception {
         // Construct an array of dummy objects.
-        objects = new ArrayList<JSONObject>();
+        objects = new ArrayList<>();
         for (int i = 0; i < objectCount; ++i) {
             objects.add(new JSONObject(String.format("{\"dummy\": %d}", i)));
         }
@@ -632,7 +632,7 @@ public class IndexTest extends RobolectricTestCase {
     }
 
     @Test
-    public void testBrowseAsync() throws Exception {
+    public void browseAsync() throws Exception {
         addDummyObjects(1500);
         Query query = new Query().setHitsPerPage(1000);
         index.browseAsync(query, new AssertCompletionHandler() {
@@ -659,7 +659,7 @@ public class IndexTest extends RobolectricTestCase {
     }
 
     @Test
-    public void testClearIndexAsync() throws Exception {
+    public void clearIndexAsync() throws Exception {
         index.clearIndexAsync(new AssertCompletionHandler() {
             @Override
             public void doRequestCompleted(JSONObject content, AlgoliaException error) {
@@ -691,7 +691,7 @@ public class IndexTest extends RobolectricTestCase {
     }
 
     @Test
-    public void testDeleteByQueryAsync() throws Exception {
+    public void deleteByQueryAsync() throws Exception {
         addDummyObjects(3000);
         final Query query = new Query().setNumericFilters(new JSONArray().put("dummy < 1500"));
         index.deleteByQueryAsync(query, new AssertCompletionHandler() {
@@ -719,8 +719,8 @@ public class IndexTest extends RobolectricTestCase {
     }
 
     @Test
-    public void testError404() throws Exception {
-        Index unknownIndex = client.initIndex("doesnotexist");
+    public void error404() throws Exception {
+        Index unknownIndex = client.getIndex("doesnotexist");
         unknownIndex.searchAsync(new Query(), new AssertCompletionHandler() {
             @Override
             public void doRequestCompleted(JSONObject content, AlgoliaException error) {
@@ -732,24 +732,24 @@ public class IndexTest extends RobolectricTestCase {
     }
 
     @Test
-    public void testCacheUseIfEnabled() throws Exception {
+    public void cacheUseIfEnabled() throws Exception {
         index.enableSearchCache();
         verifySearchTwiceCalls(1);
     }
 
     @Test
-    public void testCacheDontUseByDefault() throws Exception {
+    public void cacheDontUseByDefault() throws Exception {
         verifySearchTwiceCalls(2);
     }
 
     @Test
-    public void testCacheDontUseIfDisabled() throws Exception {
+    public void cacheDontUseIfDisabled() throws Exception {
         index.disableSearchCache();
         verifySearchTwiceCalls(2);
     }
 
     @Test
-    public void testCacheTimeout() throws Exception {
+    public void cacheTimeout() throws Exception {
         index.enableSearchCache(1, ExpiringCache.defaultMaxSize);
         verifySearchTwiceCalls(2, 2);
     }
@@ -786,13 +786,13 @@ public class IndexTest extends RobolectricTestCase {
     }
 
     @Test
-    public void testNullCompletionHandler() throws Exception {
+    public void nullCompletionHandler() throws Exception {
         // Check that the code does not crash when no completion handler is specified.
         index.addObjectAsync(new JSONObject("{\"city\": \"New York\"}"), null);
     }
 
     @Test
-    public void testMultipleQueries() throws Exception {
+    public void multipleQueries() throws Exception {
         final List<Query> queries = Arrays.asList(
                 new Query("francisco").setHitsPerPage(1),
                 new Query("jose")
@@ -819,7 +819,7 @@ public class IndexTest extends RobolectricTestCase {
     }
 
     @Test
-    public void testUserAgent() throws Exception {
+    public void userAgent() throws Exception {
         // Test the default value.
         String userAgent = (String) Whitebox.getInternalState(client, "userAgentRaw");
         assertTrue(userAgent.matches("^Algolia for Android \\([0-9.]+\\); Android \\(([0-9.]+(_r[0-9]+)?|unknown)\\)$"));
@@ -833,7 +833,7 @@ public class IndexTest extends RobolectricTestCase {
     }
 
     @Test
-    public void testGetObjectAttributes() throws AlgoliaException {
+    public void getObjectAttributes() throws AlgoliaException {
         for (String id : ids) {
             JSONObject object = index.getObject(id);
             assertEquals("The retrieved object should have two attributes.", 2, object.names().length());
@@ -844,7 +844,7 @@ public class IndexTest extends RobolectricTestCase {
     }
 
     @Test
-    public void testGetObjectsAttributes() throws AlgoliaException {
+    public void getObjectsAttributes() throws AlgoliaException {
         try {
             JSONArray results = index.getObjects(ids).getJSONArray("results");
             for (int i = 0; i < results.length(); i++) {
@@ -863,7 +863,7 @@ public class IndexTest extends RobolectricTestCase {
     }
 
     @Test
-    public void testPartialUpdateObject() throws Exception {
+    public void partialUpdateObject() throws Exception {
         JSONObject partialObject = new JSONObject().put("city", "Paris");
         index.partialUpdateObjectAsync(partialObject, ids.get(0), new AssertCompletionHandler() {
             @Override
@@ -888,7 +888,7 @@ public class IndexTest extends RobolectricTestCase {
     }
 
     @Test
-    public void testPartialUpdateObjectNoCreate() throws Exception {
+    public void partialUpdateObjectNoCreate() throws Exception {
         final String objectID = "unknown";
         final JSONObject partialObject = new JSONObject().put("city", "Paris");
 
@@ -938,7 +938,7 @@ public class IndexTest extends RobolectricTestCase {
     }
 
     @Test
-    public void testPartialUpdateObjects() throws Exception {
+    public void partialUpdateObjects() throws Exception {
         final JSONArray partialObjects = new JSONArray()
                 .put(new JSONObject().put("objectID", ids.get(0)).put("city", "Paris"))
                 .put(new JSONObject().put("objectID", ids.get(1)).put("city", "Berlin"));
@@ -972,7 +972,7 @@ public class IndexTest extends RobolectricTestCase {
     }
 
     @Test
-    public void testPartialUpdateObjectsNoCreate() throws Exception {
+    public void partialUpdateObjectsNoCreate() throws Exception {
         final List<String> newIds = Arrays.asList("unknown", "none");
         final JSONArray partialObjects = new JSONArray()
             .put(new JSONObject().put("objectID", newIds.get(0)).put("city", "Paris"))
