@@ -235,8 +235,7 @@ public abstract class AbstractClient {
      * @param connectTimeout The new connection timeout (ms).
      */
     public void setConnectTimeout(int connectTimeout) {
-        if (connectTimeout <= 0)
-            throw new IllegalArgumentException();
+        checkTimeout(connectTimeout);
         this.connectTimeout = connectTimeout;
     }
 
@@ -255,8 +254,7 @@ public abstract class AbstractClient {
      * @param readTimeout The default read timeout (ms).
      */
     public void setReadTimeout(int readTimeout) {
-        if (readTimeout <= 0)
-            throw new IllegalArgumentException();
+        checkTimeout(readTimeout);
         this.readTimeout = readTimeout;
     }
 
@@ -596,6 +594,12 @@ public abstract class AbstractClient {
             connection.disconnect();
         } catch (IOException e) {
             // no inputStream to close
+        }
+    }
+
+    private void checkTimeout(int connectTimeout) {
+        if (connectTimeout <= 0) {
+            throw new IllegalArgumentException();
         }
     }
 
