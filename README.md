@@ -9,6 +9,7 @@ _Note: If you were using **version 2.x** of our Android client, read the [migrat
 
 Our Android client lets you easily use the [Algolia Search API](https://www.algolia.com/doc/rest) from your Android application. It wraps the [Algolia Search REST API](https://www.algolia.com/doc/rest).
 
+This project is open-source under the [MIT License](./LICENSE). [Your contributions](https://github.com/algolia/algoliasearch-client-android/pull/new) are welcome! Please use our [formatting configuration](https://github.com/algolia/CodingStyle#android) to keep the coding style consistent.
 
 ## Table of Contents
 
