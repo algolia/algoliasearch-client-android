@@ -115,17 +115,6 @@ public class IndexTest extends RobolectricTestCase {
 
     public void searchAsync(int waitTimeoutSeconds) throws Exception {
         final long begin = System.nanoTime();
-        // Empty search.
-        index.searchAsync(new Query(), new AssertCompletionHandler() {
-            @Override public void doRequestCompleted(JSONObject content, AlgoliaException error) {
-                if (error == null) {
-                    assertEquals("Result length does not match nbHits", objects.size(), content.optInt("nbHits"));
-                } else {
-                    fail(error.getMessage());
-                }
-            }
-        });
-
         // Search with query.
         index.searchAsync(new Query("Francisco"), new AssertCompletionHandler() {
             @Override public void doRequestCompleted(JSONObject content, AlgoliaException error) {
