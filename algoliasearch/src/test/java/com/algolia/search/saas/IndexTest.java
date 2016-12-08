@@ -1153,14 +1153,10 @@ public class IndexTest extends RobolectricTestCase {
         // Expect success after a failing host
         testSearchAsync();
 
-        // Expect
+        // Expect host to be up again after the delay has passed
         Thread.sleep(delay);
         assertTrue("A host that has failed should be considered up once the delay is over.", client.isUpOrCouldBeRetried(randomHostName));
     }
-
-
-    // Should not reconnect before delay to the same host twice if it fails
-    // Should reconnect after delay to the same host twice if it fails
 
     private String getRandomString() {
         String randomAppId;
