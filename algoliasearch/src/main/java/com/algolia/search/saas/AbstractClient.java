@@ -88,21 +88,13 @@ public abstract class AbstractClient {
         }
     }
 
-    static class HostStatus {
-        public boolean isUp = true;
-        public long lastTryTimestamp;
-
-        HostStatus() {
-            lastTryTimestamp = new Date().getTime();
-        }
+    private static class HostStatus {
+        boolean isUp = true;
+        long lastTryTimestamp;
 
         HostStatus(boolean isUp) {
             this.isUp = isUp;
             lastTryTimestamp = new Date().getTime();
-        }
-
-        void updateState(boolean isUp) {
-            this.isUp = isUp;
         }
     }
 
