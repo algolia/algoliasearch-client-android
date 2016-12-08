@@ -1,6 +1,10 @@
 Change Log
 ==========
 
+## 3.7.1 (2016-12-08)
+
+- Improved retry logic in case of down host
+
 ## 3.7.0 (2016-11-29)
 
 **This release includes backward-incompatible changes and requires the following updates**:
