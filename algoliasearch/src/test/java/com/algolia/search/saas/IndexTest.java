@@ -37,14 +37,13 @@ import org.robolectric.util.concurrent.RoboExecutorService;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Random;
+import java.util.UUID;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -1159,10 +1158,6 @@ public class IndexTest extends RobolectricTestCase {
     }
 
     private String getRandomString() {
-        String randomAppId;
-        byte[] array = new byte[7]; // length is bounded by 7
-        new Random().nextBytes(array);
-        randomAppId = new String(array, Charset.forName("UTF-8"));
-        return randomAppId;
+        return UUID.randomUUID().toString();
     }
 }
