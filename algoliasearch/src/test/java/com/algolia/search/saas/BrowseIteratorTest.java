@@ -76,7 +76,7 @@ public class BrowseIteratorTest extends RobolectricTestCase {
     }
 
     @Test
-    public void testNominal() throws Exception {
+    public void nominal() throws Exception {
         Query query = new Query();
         AssertBrowseHandler handler = new AssertBrowseHandler() {
             @Override
@@ -93,7 +93,7 @@ public class BrowseIteratorTest extends RobolectricTestCase {
     }
 
     @Test
-    public void testCancel() throws Exception {
+    public void cancel() throws Exception {
         Query query = new Query();
         AssertBrowseHandler handler = new AssertBrowseHandler() {
             @Override
