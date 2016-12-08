@@ -1133,7 +1133,7 @@ public class IndexTest extends RobolectricTestCase {
         assertTrue("Hosts should be considered up before first connection.", client.isUpOrCouldBeRetried(nextHostName));
 
         // Expect success after a failing host
-        testSearchAsync();
+        searchAsync();
 
         // Expect down host after failed connection, up host after successful connection
         assertFalse("A host that has failed recently should be considered down.", client.isUpOrCouldBeRetried(randomHostName));
@@ -1149,7 +1149,7 @@ public class IndexTest extends RobolectricTestCase {
         Whitebox.setInternalState(client, "readHosts", hostsArray);
 
         // Expect success after a failing host
-        testSearchAsync();
+        searchAsync();
 
         // Expect host to be up again after the delay has passed
         Thread.sleep(delay);
