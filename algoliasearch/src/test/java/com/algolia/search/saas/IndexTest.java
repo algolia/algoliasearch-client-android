@@ -115,17 +115,6 @@ public class IndexTest extends RobolectricTestCase {
 
     public void searchAsync(int waitTimeoutSeconds) throws Exception {
         final long begin = System.nanoTime();
-        // Empty search.
-        index.searchAsync(new Query(), new AssertCompletionHandler() {
-            @Override public void doRequestCompleted(JSONObject content, AlgoliaException error) {
-                if (error == null) {
-                    assertEquals("Result length does not match nbHits", objects.size(), content.optInt("nbHits"));
-                } else {
-                    fail(error.getMessage());
-                }
-            }
-        });
-
         // Search with query.
         index.searchAsync(new Query("Francisco"), new AssertCompletionHandler() {
             @Override public void doRequestCompleted(JSONObject content, AlgoliaException error) {
@@ -451,30 +440,42 @@ public class IndexTest extends RobolectricTestCase {
 
     @Test
     public void DNSTimeout() throws Exception {
-        // On Travis, the imposed DNS timeout prevents us from testing this feature.
+        // On Travis, the reported run duration is not reliable.
         if ("true".equals(System.getenv("TRAVIS"))) {
             return;
         }
 
-        // Given first host resulting in a DNS Timeout
+        // Given all hosts resulting in a DNS Timeout
         String appId = (String) Whitebox.getInternalState(client, "applicationID");
         List<String> hostsArray = (List<String>) Whitebox.getInternalState(client, "readHosts");
-        hostsArray.set(0, appId + "-dsn.algolia.biz");
+        final String hostName = appId + "-dsn.algolia.biz"; //TODO: Random host name to avoid system DNS cache
+        hostsArray.set(0, hostName);
+        hostsArray.set(1, hostName);
+        hostsArray.set(2, hostName);
+        hostsArray.set(3, hostName);
         Whitebox.setInternalState(client, "readHosts", hostsArray);
 
-        client.setConnectTimeout(2000);
+        //A connect timeout of 500 ms
+        final int timeout = 500;
+        client.setConnectTimeout(timeout);
 
         //And an index that does not cache search queries
         index.disableSearchCache();
 
 
-        // Expect successful search within 5 seconds
-        long startTime = System.nanoTime();
-        searchAsync(5);
-        final long duration = (System.nanoTime() - startTime) / 1000000;
-
-        // Which should take at least 2 seconds, as per Client.connectTimeout
-        assertTrue("We should first timeout before successfully searching, but test took only " + duration + " ms.", duration > 2000);
+        // Expect failed search after timeout
+        final long startTime = System.nanoTime();
+        index.searchAsync(new Query(), new AssertCompletionHandler() {
+            @Override
+            public void doRequestCompleted(JSONObject content, AlgoliaException error) {
+                if (error != null) {
+                    final long duration = (System.nanoTime() - startTime) / 1000000;
+                    assertTrue("We should hit 4 times the timeout before failing, but test took only " + duration + " ms.", duration > timeout * 4);
+                } else {
+                    fail("Searching with failing hosts should result in an error.");
+                }
+            }
+        });
     }
 
     @Test
