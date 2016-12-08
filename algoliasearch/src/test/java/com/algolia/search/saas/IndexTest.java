@@ -63,6 +63,14 @@ import static org.mockito.Mockito.when;
 
 @SuppressLint("DefaultLocale") //We use format for logging errors, locale issues are irrelevant
 public class IndexTest extends RobolectricTestCase {
+    private static final int COUNT_TEST_INDICES = 50; //TODO: Count test methods with reflection?
+
+    private static String originalIndexName = Helpers.safeIndexName("àlgol?à-android");
+    private static List<String> originalIds;
+    private static List<JSONObject> originalObjects;
+    private static int countIndices;
+    private static boolean didInitIndices = false;
+
     Client client;
     Index index;
     String indexName;
@@ -78,23 +86,37 @@ public class IndexTest extends RobolectricTestCase {
         // executor with a Robolectric-compliant one.
         Whitebox.setInternalState(client, "searchExecutorService", new RoboExecutorService());
 
-        indexName = Helpers.safeIndexName("àlgol?à-android");
-        index = client.getIndex(indexName);
+        if (!didInitIndices) {
+            Index originalIndex = client.getIndex(originalIndexName);
+            client.deleteIndex(originalIndexName);
 
-        client.deleteIndex(indexName);
+            originalObjects = new ArrayList<>();
+            originalObjects.add(new JSONObject("{\"city\": \"San Francisco\"}"));
+            originalObjects.add(new JSONObject("{\"city\": \"San José\"}"));
 
-        objects = new ArrayList<>();
-        objects.add(new JSONObject("{\"city\": \"San Francisco\"}"));
-        objects.add(new JSONObject("{\"city\": \"San José\"}"));
+            JSONObject task = originalIndex.addObjects(new JSONArray(originalObjects));
+            originalIndex.waitTask(task.getString("taskID"));
 
-        JSONObject task = index.addObjects(new JSONArray(objects));
-        index.waitTask(task.getString("taskID"));
+            JSONArray objectIDs = task.getJSONArray("objectIDs");
+            originalIds = new ArrayList<>();
+            for (int i = 0; i < objectIDs.length(); ++i) {
+                originalIds.add(objectIDs.getString(i));
+            }
 
-        JSONArray objectIDs = task.getJSONArray("objectIDs");
-        ids = new ArrayList<>();
-        for (int i = 0; i < objectIDs.length(); ++i) {
-            ids.add(objectIDs.getString(i));
+            didInitIndices = true;
+
+            for (int i = 0; i < COUNT_TEST_INDICES; i++) {
+                final String iterIndexName = originalIndexName + i;
+                client.deleteIndex(iterIndexName);
+                task = client.copyIndex(originalIndexName, iterIndexName);
+            }
+            originalIndex.waitTask(task.getString("taskID"));
         }
+
+        ids = new ArrayList<>(originalIds);
+        objects = new ArrayList<>(originalObjects);
+        indexName = originalIndexName + countIndices++;
+        index = client.getIndex(indexName);
     }
 
     @Override
