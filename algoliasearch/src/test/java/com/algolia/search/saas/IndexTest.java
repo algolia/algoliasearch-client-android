@@ -43,6 +43,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -61,6 +62,7 @@ import static org.mockito.Mockito.when;
  * <a href="http://d.android.com/tools/testing/testing_android.html">Testing Fundamentals</a>
  */
 
+@SuppressWarnings("unchecked") //Whitebox requires casts from Object
 @SuppressLint("DefaultLocale") //We use format for logging errors, locale issues are irrelevant
 public class IndexTest extends RobolectricTestCase {
     Client client;
@@ -1113,5 +1115,48 @@ public class IndexTest extends RobolectricTestCase {
                 }
             }
         });
+    }
+
+    @Test
+    public void retryUsingHostStatus() throws Exception {
+        List<String> hostsArray = (List<String>) Whitebox.getInternalState(client, "readHosts");
+        String randomHostName = getRandomString() + "-dsn.algolia.biz";
+        final String nextHostName = hostsArray.get(1);
+
+        // Given a first host that timeouts, randomized to ensure no system caching
+        hostsArray.set(0, randomHostName);
+        Whitebox.setInternalState(client, "readHosts", hostsArray);
+
+
+        // Expect reachable hosts before any connection
+        assertTrue("Hosts should be considered up before first connection.", client.isUpOrCouldBeRetried(randomHostName));
+        assertTrue("Hosts should be considered up before first connection.", client.isUpOrCouldBeRetried(nextHostName));
+
+        // Expect success after a failing host
+        searchAsync();
+
+        // Expect down host after failed connection, up host after successful connection
+        assertFalse("A host that has failed recently should be considered down.", client.isUpOrCouldBeRetried(randomHostName));
+        assertTrue("A host that has succeeded recently should be considered up.", client.isUpOrCouldBeRetried(nextHostName));
+
+        hostsArray = (List<String>) Whitebox.getInternalState(client, "readHosts");
+        randomHostName = getRandomString() + "-dsn.algolia.biz";
+
+        // Given a short host delay and a first host that timeouts
+        final int delay = 100;
+        client.setHostDownDelay(delay);
+        hostsArray.set(0, randomHostName);
+        Whitebox.setInternalState(client, "readHosts", hostsArray);
+
+        // Expect success after a failing host
+        searchAsync();
+
+        // Expect host to be up again after the delay has passed
+        Thread.sleep(delay);
+        assertTrue("A host that has failed should be considered up once the delay is over.", client.isUpOrCouldBeRetried(randomHostName));
+    }
+
+    private String getRandomString() {
+        return UUID.randomUUID().toString();
     }
 }
