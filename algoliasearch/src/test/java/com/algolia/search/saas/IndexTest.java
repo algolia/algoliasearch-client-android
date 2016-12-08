@@ -1117,7 +1117,7 @@ public class IndexTest extends RobolectricTestCase {
     }
 
     @Test
-    public void hostStatusDefaultIsUnknown() throws Exception {
+    public void retryUsingHostStatus() throws Exception {
         List<String> hostsArray = (List<String>) Whitebox.getInternalState(client, "readHosts");
         String randomHostName = getRandomString() + "-dsn.algolia.biz";
         final String nextHostName = hostsArray.get(1);
