@@ -1134,8 +1134,6 @@ public class IndexTest extends RobolectricTestCase {
         // Expect success after a failing host
         testSearchAsync();
 
-        HashMap<String, AbstractClient.HostStatus> statuses = (HashMap<String, AbstractClient.HostStatus>) Whitebox.getInternalState(client, "hostStatuses");
-
         // Expect down host after failed connection, up host after successful connection
         assertFalse("A host that has failed recently should be considered down.", client.isUpOrCouldBeRetried(randomHostName));
         assertTrue("A host that has succeeded recently should be considered up.", client.isUpOrCouldBeRetried(nextHostName));
