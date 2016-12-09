@@ -45,6 +45,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -87,12 +88,22 @@ public abstract class AbstractClient {
         }
     }
 
+    private static class HostStatus {
+        boolean isUp = true;
+        long lastTryTimestamp;
+
+        HostStatus(boolean isUp) {
+            this.isUp = isUp;
+            lastTryTimestamp = new Date().getTime();
+        }
+    }
+
     // ----------------------------------------------------------------------
     // Constants
     // ----------------------------------------------------------------------
 
     /** This library's version. */
-    private final static String version = "3.7.0";
+    private final static String version = "3.7.1";
 
     // ----------------------------------------------------------------------
     // Fields
@@ -116,10 +127,14 @@ public abstract class AbstractClient {
     /** Read timeout for search requests (ms). */
     private int searchTimeout = 5000;
 
+    /** Delay to wait when a host is down before retrying it (ms). */
+    private int hostDownDelay = 5000;
+
     private final String applicationID;
     private final String apiKey;
     private List<String> readHosts;
     private List<String> writeHosts;
+    private HashMap<String, HostStatus> hostStatuses = new HashMap<>();
 
     /**
      * HTTP headers that will be sent with every request.
@@ -235,8 +250,7 @@ public abstract class AbstractClient {
      * @param connectTimeout The new connection timeout (ms).
      */
     public void setConnectTimeout(int connectTimeout) {
-        if (connectTimeout <= 0)
-            throw new IllegalArgumentException();
+        checkTimeout(connectTimeout);
         this.connectTimeout = connectTimeout;
     }
 
@@ -255,8 +269,7 @@ public abstract class AbstractClient {
      * @param readTimeout The default read timeout (ms).
      */
     public void setReadTimeout(int readTimeout) {
-        if (readTimeout <= 0)
-            throw new IllegalArgumentException();
+        checkTimeout(readTimeout);
         this.readTimeout = readTimeout;
     }
 
@@ -275,9 +288,27 @@ public abstract class AbstractClient {
      * @param searchTimeout The read timeout for search requests (ms).
      */
     public void setSearchTimeout(int searchTimeout) {
-        if (searchTimeout <= 0)
-            throw  new IllegalArgumentException();
+        checkTimeout(searchTimeout);
         this.searchTimeout = searchTimeout;
+    }
+
+    /**
+     * Get the timeout for retrying connection to a down host.
+     *
+     * @return The delay before connecting again to a down host (ms).
+     */
+    public int getHostDownDelay() {
+        return hostDownDelay;
+    }
+
+    /**
+     * Set the timeout for retrying connection to a down host.
+     *
+     * @param hostDownDelay The delay before connecting again to a down host (ms).
+     */
+    public void setHostDownDelay(int hostDownDelay) {
+        checkTimeout(hostDownDelay);
+        this.hostDownDelay = hostDownDelay;
     }
 
     /**
@@ -333,6 +364,14 @@ public abstract class AbstractClient {
         userAgentRaw = s.toString();
     }
 
+    private List<String> getReadHostsThatAreUp() {
+        return hostsThatAreUp(readHosts);
+    }
+
+    private List<String> getWriteHostsThatAreUp() {
+        return hostsThatAreUp(writeHosts);
+    }
+
     // ----------------------------------------------------------------------
     // Utilities
     // ----------------------------------------------------------------------
@@ -345,27 +384,27 @@ public abstract class AbstractClient {
     }
 
     protected byte[] getRequestRaw(String url, boolean search) throws AlgoliaException {
-        return _requestRaw(Method.GET, url, null, readHosts, connectTimeout, search ? searchTimeout : readTimeout);
+        return _requestRaw(Method.GET, url, null, getReadHostsThatAreUp(), connectTimeout, search ? searchTimeout : readTimeout);
     }
 
     protected JSONObject getRequest(String url, boolean search) throws AlgoliaException {
-        return _request(Method.GET, url, null, readHosts, connectTimeout, search ? searchTimeout : readTimeout);
+        return _request(Method.GET, url, null, getReadHostsThatAreUp(), connectTimeout, search ? searchTimeout : readTimeout);
     }
 
     protected JSONObject deleteRequest(String url) throws AlgoliaException {
-        return _request(Method.DELETE, url, null, writeHosts, connectTimeout, readTimeout);
+        return _request(Method.DELETE, url, null, getWriteHostsThatAreUp(), connectTimeout, readTimeout);
     }
 
     protected JSONObject postRequest(String url, String obj, boolean readOperation) throws AlgoliaException {
-        return _request(Method.POST, url, obj, (readOperation ? readHosts : writeHosts), connectTimeout, (readOperation ? searchTimeout : readTimeout));
+        return _request(Method.POST, url, obj, (readOperation ? getReadHostsThatAreUp() : getWriteHostsThatAreUp()), connectTimeout, (readOperation ? searchTimeout : readTimeout));
     }
 
     protected byte[] postRequestRaw(String url, String obj, boolean readOperation) throws AlgoliaException {
-        return _requestRaw(Method.POST, url, obj, (readOperation ? readHosts : writeHosts), connectTimeout, (readOperation ? searchTimeout : readTimeout));
+        return _requestRaw(Method.POST, url, obj, (readOperation ? getReadHostsThatAreUp() : getWriteHostsThatAreUp()), connectTimeout, (readOperation ? searchTimeout : readTimeout));
     }
 
     protected JSONObject putRequest(String url, String obj) throws AlgoliaException {
-        return _request(Method.PUT, url, obj, writeHosts, connectTimeout, readTimeout);
+        return _request(Method.PUT, url, obj, getWriteHostsThatAreUp(), connectTimeout, readTimeout);
     }
 
     /**
@@ -526,6 +565,7 @@ public abstract class AbstractClient {
                 if (stream == null) {
                     throw new IOException(String.format("Null stream when reading connection (status %d)", code));
                 }
+                hostStatuses.put(host, new HostStatus(true));
 
                 final byte[] rawResponse;
                 String encoding = hostConnection.getContentEncoding();
@@ -556,8 +596,8 @@ public abstract class AbstractClient {
             catch (UnsupportedEncodingException e) { // fatal
                 consumeQuietly(hostConnection);
                 throw new AlgoliaException("Invalid encoding returned by server", e);
-            }
-            catch (IOException e) { // host error, continue on the next host
+            } catch (IOException e) { // host error, continue on the next host
+                hostStatuses.put(host, new HostStatus(false));
                 consumeQuietly(hostConnection);
                 errors.add(e);
             } finally {
@@ -597,6 +637,32 @@ public abstract class AbstractClient {
         } catch (IOException e) {
             // no inputStream to close
         }
+    }
+
+    private void checkTimeout(int connectTimeout) {
+        if (connectTimeout <= 0) {
+            throw new IllegalArgumentException();
+        }
+    }
+
+    /**
+     * Get the hosts that are not considered down in a given list.
+     * @param hosts a list of hosts whose {@link HostStatus} will be checked.
+     * @return the hosts considered up, or all hosts if none is known to be reachable.
+     */
+    private List<String> hostsThatAreUp(List<String> hosts) {
+        List<String> upHosts = new ArrayList<>();
+        for (String host : hosts) {
+            if (isUpOrCouldBeRetried(host)) {
+                upHosts.add(host);
+            }
+        }
+        return upHosts.isEmpty() ? hosts : upHosts;
+    }
+
+    boolean isUpOrCouldBeRetried(String host) {
+        HostStatus status = hostStatuses.get(host);
+        return status == null || status.isUp || new Date().getTime() - status.lastTryTimestamp >= hostDownDelay;
     }
 
     // ----------------------------------------------------------------------
