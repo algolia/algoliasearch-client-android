@@ -26,6 +26,9 @@ package com.algolia.search.saas;
 import android.support.annotation.NonNull;
 
 import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 
 /**
  * Various filesystem-related utilities.
@@ -48,5 +51,27 @@ class FileUtils
         }
         ok = ok && item.delete();
         return ok;
+    }
+
+    /**
+     * Write a stream of bytes to a file.
+     *
+     * @param destinationFile The file to be written to. The parent directory must exist. If the file already exists,
+     *                        it will be overwritten.
+     * @param content The bytes to write.
+     * @throws IOException if anything goes wrong.
+     */
+    public static void writeFile(@NonNull File destinationFile, @NonNull InputStream content) throws IOException {
+        byte[] buffer = new byte[64 * 1024]; // 64 kB buffer
+        FileOutputStream outputStream = new FileOutputStream(destinationFile);
+        try {
+            int bytesRead;
+            while ((bytesRead = content.read(buffer)) >= 0) {
+                outputStream.write(buffer, 0, bytesRead);
+            }
+        } finally {
+            content.close();
+            outputStream.close();
+        }
     }
 }

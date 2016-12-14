@@ -23,7 +23,9 @@
 
 package com.algolia.search.saas;
 
+import android.content.res.Resources;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.util.Log;
 
 import com.algolia.search.offline.core.LocalIndex;
@@ -35,6 +37,7 @@ import org.json.JSONObject;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.UnsupportedEncodingException;
 import java.io.Writer;
@@ -83,6 +86,53 @@ import java.util.concurrent.TimeUnit;
  * NOTE: The strategy applies both to {@link #searchAsync(Query, CompletionHandler)} and
  * {@link #searchDisjunctiveFacetingAsync(Query, List, Map, CompletionHandler)}.
  *
+ *
+ * ## Bootstrapping
+ *
+ * Before the first sync has successfully completed, a mirrored index is not available offline, because it has simply
+ * no data to search in yet. In most cases, this is not a problem: the app will sync as soon as possible, so unless
+ * the device is offline when the app is started for the first time, or unless search is required right after the
+ * first launch, the user should not notice anything.
+ *
+ * However, in some cases, you might need to have offline data available as soon as possible. To achieve that,
+ * `MirroredIndex` provides a **bootstrapping** feature.
+ *
+ * Bootstrapping consists in prepackaging with your app the data necessary to build your index, in JSON format;
+ * namely:
+ *
+ * - settings (one file)
+ * - objects (as many files as needed, each containing an array of objects)
+ *
+ * Then, upon application startup, call one of the `bootstrap*` methods. This will check if data already exists for the
+ * mirror and, if not, populate the mirror with the provided data. It also guarantees that a sync will not be started
+ * in the meantime, thus avoiding race conditions.
+ *
+ * ### Discussion
+ *
+ * **Warning:** We strongly advise against prepackaging index files. While it may work in some cases, Algolia Offline
+ * makes no guarantee whatsoever that the index file format will remain backward-compatible forever, nor that it
+ * is independent of the hardware architecture (e.g. 32 bits vs 64 bits, or Little Endian vs Big Endian). Instead,
+ * always use the official bootstrapping feature.
+ *
+ * While bootstrapping involves building the offline index on the device, and therefore incurs a small delay before
+ * the mirror is actually usable, using plain JSON offers a few advantages compared to prepackaging the index file
+ * itself:
+ *
+ * - You only need to ship the raw object data, which is smaller than shipping an entire index file, which contains
+ *   both the raw data *and* indexing metadata.
+ *
+ * - Plain JSON compresses well with standard compression techniques like GZip, whereas an index file has a binary
+ *   format which doesn't compress very efficiently.
+ *
+ * - Build automation is facilitated: you can easily extract the required data from your back-end, whereas building
+ *   an index would involve running the app on each mobile platform as part of your build process and capturing the
+ *   filesystem.
+ *
+ * Also, the build process is purposedly single-threaded across all indices, which means that on most modern devices
+ * with multi-core CPUs, the impact of bootstrapping on the app's performance will be very moderate, especially
+ * regarding UI responsiveness.
+ *
+ *
  * ## Limitations
  *
  * Algolia's core features are fully supported offline, including (but not limited to): **ranking**,
@@ -119,6 +169,7 @@ public class MirroredIndex extends Index
     private SyncStats stats;
 
     private Set<SyncListener> syncListeners = new HashSet<>();
+    private Set<BootstrapListener> bootstrapListeners = new HashSet<>();
 
     // ----------------------------------------------------------------------
     // Constants
@@ -558,6 +609,107 @@ public class MirroredIndex extends Index
                 }
             });
         }
+    }
+
+    // ----------------------------------------------------------------------
+    // Bootstrapping
+    // ----------------------------------------------------------------------
+
+    /**
+     * Bootstrap the local mirror with local data stored on the filesystem.
+     *
+     * **Note:** This method will do nothing if offline data is already available, making it safe to call at every
+     * application launch.
+     *
+     * @param settingsFile Absolute path to the file containing the index settings, in JSON format.
+     * @param objectFiles Absolute path(s) to the file(s) containing the objects. Each file must contain an array of
+     *                    objects, in JSON format.
+     */
+    public void bootstrapFromFiles(@NonNull final File settingsFile, @NonNull final File... objectFiles) {
+        getClient().localBuildExecutorService.submit(new Runnable() {
+            @Override
+            public void run() {
+                // Abort immediately if data already exists.
+                if (localIndex.exists()) {
+                    return;
+                }
+                _bootstrap(settingsFile, objectFiles);
+            }
+        });
+    }
+
+    /**
+     * Bootstrap the local mirror with local data stored in raw Android resources.
+     *
+     * **Note:** This method will do nothing if offline data is already available, making it safe to call at every
+     * application launch.
+     *
+     * @param resources A {@link Resources} instance to read resources from.
+     * @param settingsResId Resource identifier of the index settings, in JSON format.
+     * @param objectsResIds Resource identifiers of the various objects files. Each file must contain an array of
+     *                    objects, in JSON format.
+     */
+    public void bootstrapFromRawResources(@NonNull final Resources resources, @NonNull final int settingsResId, @NonNull final int... objectsResIds) {
+        getClient().localBuildExecutorService.submit(new Runnable() {
+            @Override
+            public void run() {
+                // Abort immediately if data already exists.
+                if (localIndex.exists()) {
+                    return;
+                }
+                // Save resources to independent files on disk.
+                // TODO: See if we can have the Offline Core read directly from resources or assets.
+                File tmpDir = new File(getClient().getTempDir(), UUID.randomUUID().toString());
+                try {
+                    tmpDir.mkdirs();
+                    // Settings.
+                    File settingsFile = new File(tmpDir, "settings.json");
+                    FileUtils.writeFile(settingsFile, resources.openRawResource(settingsResId));
+                    // Objects.
+                    File[] objectFiles = new File[objectsResIds.length];
+                    for (int i = 0; i < objectsResIds.length; ++i) {
+                        objectFiles[i] = new File(tmpDir, "objects#" + Integer.toString(objectsResIds[i]) + ".json");
+                        FileUtils.writeFile(objectFiles[i], resources.openRawResource(objectsResIds[i]));
+                    }
+                    // Build the index.
+                    _bootstrap(settingsFile, objectFiles);
+                } catch (IOException e) {
+                    Log.e(MirroredIndex.class.getSimpleName(), "Failed to write bootstrap resources to disk", e);
+                } finally {
+                    // Delete temporary files.
+                    FileUtils.deleteRecursive(tmpDir);
+                }
+            }
+        });
+    }
+
+    private void _bootstrap(@NonNull File settingsFile, @NonNull File... objectFiles) {
+        // Notify listeners.
+        getClient().mainHandler.post(new Runnable() {
+            @Override
+            public void run() {
+                fireBootstrapDidStart();
+            }
+        });
+
+        // Build the index.
+        String[] objectFilePaths = new String[objectFiles.length];
+        for (int i = 0; i < objectFiles.length; ++i) {
+            objectFilePaths[i] = objectFiles[i].getAbsolutePath();
+        }
+        final int status = localIndex.build(settingsFile.getAbsolutePath(), objectFilePaths, true /* clearIndex */, null /* deletedObjectIDs */);
+
+        // Notify listeners.
+        getClient().mainHandler.post(new Runnable() {
+            @Override
+            public void run() {
+                Throwable error = null;
+                if (status != 200) {
+                    error = new AlgoliaException(String.format("Failed to bootstrap index \"%s\"", MirroredIndex.this.getIndexName()), status);
+                }
+                fireBootstrapDidFinish(error);
+            }
+        });
     }
 
     // ----------------------------------------------------------------------
@@ -1076,6 +1228,8 @@ public class MirroredIndex extends Index
     // Listeners
     // ----------------------------------------------------------------------
 
+    // SyncListener
+
     /**
      * Add a listener for sync events.
      * @param listener The listener to add.
@@ -1105,6 +1259,36 @@ public class MirroredIndex extends Index
     {
         for (SyncListener listener : syncListeners) {
             listener.syncDidFinish(this, error, stats);
+        }
+    }
+
+    // BootstrapListener
+
+    /**
+     * Add a listener for bootstrapping events.
+     * @param listener The listener to add.
+     */
+    public void addBootstrapListener(@NonNull BootstrapListener listener) {
+        bootstrapListeners.add(listener);
+    }
+
+    /**
+     * Remove a listener for bootstrapping events.
+     * @param listener The listener to remove.
+     */
+    public void removeBootstrapListener(@NonNull BootstrapListener listener) {
+        bootstrapListeners.remove(listener);
+    }
+
+    private void fireBootstrapDidStart() {
+        for (BootstrapListener listener : bootstrapListeners) {
+            listener.bootstrapDidStart(this);
+        }
+    }
+
+    private void fireBootstrapDidFinish(@Nullable Throwable error) {
+        for (BootstrapListener listener : bootstrapListeners) {
+            listener.bootstrapDidFinish(this, error);
         }
     }
 }
