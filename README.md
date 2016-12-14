@@ -1,120 +1,95 @@
-<!--NO_HTML-->
-
 # Algolia Search API Client for Android
-
-Note: If you were using **version 2.x** of our Android client, read the [migration guide to version 3.x](https://github.com/algolia/algoliasearch-client-android/wiki/Migration-guide-to-version-3.x).
-
-
-
-
-
 
 [Algolia Search](https://www.algolia.com) is a hosted full-text, numerical, and faceted search engine capable of delivering realtime results from the first keystroke.
 
+[![Build Status](https://travis-ci.org/algolia/algoliasearch-client-android.svg?branch=master)](https://travis-ci.org/algolia/algoliasearch-client-android) [![GitHub version](https://badge.fury.io/gh/algolia%2Falgoliasearch-client-android.svg)](http://badge.fury.io/gh/algolia%2Falgoliasearch-client-android)
+_Note: If you were using **version 2.x** of our Android client, read the [migration guide to version 3.x](https://github.com/algolia/algoliasearch-client-android/wiki/Migration-guide-to-version-3.x)._
 
 Our Android client lets you easily use the [Algolia Search API](https://www.algolia.com/doc/rest) from your Android application. It wraps the [Algolia Search REST API](https://www.algolia.com/doc/rest).
+This project is open-source under the [MIT License](./LICENSE). [Your contributions](https://github.com/algolia/algoliasearch-client-android/pull/new) are welcome! Please use our [formatting configuration](https://github.com/algolia/CodingStyle#android) to keep the coding style consistent.
 
 
+# Table of Contents
 
-[![Build Status](https://travis-ci.org/algolia/algoliasearch-client-android.svg?branch=master)](https://travis-ci.org/algolia/algoliasearch-client-android) [![GitHub version](https://badge.fury.io/gh/algolia%2Falgoliasearch-client-android.svg)](http://badge.fury.io/gh/algolia%2Falgoliasearch-client-android)
-
-
-
-
-
-
-
-## Table of Contents
 
 **Getting Started**
 
-1. [Getting started](#getting-started)
-1. [Quick Start](#quick-start)
-1. [Guides & Tutorials](#guides--tutorials)
-
-
-**Commands Reference**
-
-Getting started
-
 1. [Install](#install)
-1. [Init index](#init-index---initindex)
+1. [Init index - `initIndex`](#init-index)
+1. [Quick Start](#quick-start)
 
-Search
+**Search**
 
-1. [Search in an index](#search-in-an-index---searchasync)
-1. [Find by IDs](#find-by-ids---getobjectsasync)
+1. [Search in an index - `searchAsync`](#search-in-an-index)
+1. [Search Response Format](#search-response-format)
+1. [Search Parameters](#search-parameters)
+1. [Search in indices - `multipleQueriesAsync`](#search-in-indices)
+1. [Get Objects - `getObjectsAsync`](#get-objects)
 1. [Search cache](#search-cache)
 
-Indexing
+**Indexing**
 
-1. [Add objects](#add-objects---addobjectsasync)
-1. [Update objects](#update-objects---saveobjectsasync)
-1. [Partial update objects](#partial-update-objects---partialupdateobjectsasync)
-1. [Delete objects](#delete-objects---deleteobjectsasync)
+1. [Add Objects - `addObjectsAsync`](#add-objects)
+1. [Update objects - `saveObjectsAsync`](#update-objects)
+1. [Partial update objects - `partialUpdateObjectsAsync`](#partial-update-objects)
+1. [Delete objects - `deleteObjectsAsync`](#delete-objects)
+1. [Delete by query - `deleteByQueryAsync`](#delete-by-query)
+1. [Wait for operations - `waitTaskAsync`](#wait-for-operations)
 
-Settings
+**Settings**
 
-1. [Get settings](#get-settings---getsettingsasync)
-1. [Set settings](#set-settings---setsettingsasync)
+1. [Get settings - `getSettingsAsync`](#get-settings)
+1. [Set settings - `setSettingsAsync`](#set-settings)
+1. [Index settings parameters](#index-settings-parameters)
 
-Manage Indices
+**Parameters**
 
-1. [List indices](#list-indices---listindexesasync)
-1. [Delete index](#delete-index---deleteindexasync)
-1. [Clear index](#clear-index---clearindexasync)
-1. [Copy index](#copy-index---copyindexasync)
-1. [Move index](#move-index---moveindexasync)
+1. [Overview](#overview)
+1. [Search](#search)
+1. [Attributes](#attributes)
+1. [Ranking](#ranking)
+1. [Filtering / Faceting](#filtering--faceting)
+1. [Highlighting / Snippeting](#highlighting--snippeting)
+1. [Pagination](#pagination)
+1. [Typos](#typos)
+1. [Geo-Search](#geo-search)
+1. [Query Strategy](#query-strategy)
+1. [Advanced](#advanced)
+
+**Manage Indices**
+
+1. [Create an index](#create-an-index)
+1. [List indices - `listIndexesAsync`](#list-indices)
+
+**Advanced**
+
+1. [Custom batch - `batchAsync`](#custom-batch)
+1. [Backup / Export an index - `browseAsync`](#backup--export-an-index)
 
 
-
-
-Advanced
-
-1. [Custom batch](#custom-batch---batchasync)
-1. [Wait for operations](#wait-for-operations---waittaskasync)
-1. [Multiple queries](#multiple-queries---multiplequeriesasync)
-1. [Delete by query](#delete-by-query---deletebyqueryasync)
-1. [Backup / Export an index](#backup--export-an-index---browseasync)
-
-
-
-## Guides & Tutorials
+# Guides & Tutorials
 
 Check our [online guides](https://www.algolia.com/doc):
 
- * [Data Formatting](https://www.algolia.com/doc/indexing/formatting-your-data)
- * [Import and Synchronize data](https://www.algolia.com/doc/indexing/import-synchronize-data/android)
- * [Autocomplete](https://www.algolia.com/doc/search/auto-complete)
- * [Instant search page](https://www.algolia.com/doc/search/instant-search)
- * [Filtering and Faceting](https://www.algolia.com/doc/search/filtering-faceting)
- * [Sorting](https://www.algolia.com/doc/relevance/sorting)
- * [Ranking Formula](https://www.algolia.com/doc/relevance/ranking)
- * [Typo-Tolerance](https://www.algolia.com/doc/relevance/typo-tolerance)
- * [Geo-Search](https://www.algolia.com/doc/geo-search/geo-search-overview)
- * [Security](https://www.algolia.com/doc/security/best-security-practices)
- * [API-Keys](https://www.algolia.com/doc/security/api-keys)
- * [REST API](https://www.algolia.com/doc/rest)
+* [Data Formatting](https://www.algolia.com/doc/indexing/formatting-your-data)
+* [Import and Synchronize data](https://www.algolia.com/doc/indexing/import-synchronize-data/php)
+* [Autocomplete](https://www.algolia.com/doc/search/auto-complete)
+* [Instant search page](https://www.algolia.com/doc/search/instant-search)
+* [Filtering and Faceting](https://www.algolia.com/doc/search/filtering-faceting)
+* [Sorting](https://www.algolia.com/doc/relevance/sorting)
+* [Ranking Formula](https://www.algolia.com/doc/relevance/ranking)
+* [Typo-Tolerance](https://www.algolia.com/doc/relevance/typo-tolerance)
+* [Geo-Search](https://www.algolia.com/doc/geo-search/geo-search-overview)
+* [Security](https://www.algolia.com/doc/security/best-security-practices)
+* [API-Keys](https://www.algolia.com/doc/security/api-keys)
+* [REST API](https://www.algolia.com/doc/rest)
+
+
+# Getting Started
 
 
 
-
-
-
-
-
-
-<!--/NO_HTML-->
-
-
-
-
-## Getting Started
-
-### Install
-
-
-
+## Install
 
 Add the following dependency to your Gradle build file:
 
@@ -125,20 +100,21 @@ dependencies {
 }
 ```
 
-
-### Init index - `initIndex`
+## Init index - `initIndex` 
 
 To initialize the client, you need your **Application ID** and **API Key**. You can find both of them on [your Algolia account](https://www.algolia.com/api-keys).
 
 ```java
 Client client = new Client("YOUR_APP_ID", "YOUR_API_KEY");
+``````csharp
+using Algolia.Search;
+
+AlgoliaClient client = new AlgoliaClient("YourApplicationID", "YourAPIKey");
 ```
 
+**Note**: If you're using Algolia in an ASP.NET project you might experience some deadlocks while using our asynchronous API. You can fix it by calling the following method:
 
-
-### Quick Start
-
-
+## Quick Start
 
 In 30 seconds, this quick start tutorial will show you how to index and search objects.
 
@@ -212,18 +188,11 @@ index.searchAsync(new Query("jim"), new CompletionHandler() {
 ```
 
 
+# Search
 
 
 
-
-
-
-
-## Search
-
-### Search in an index - `searchAsync`
-
-
+## Search in an index - `searchAsync` 
 
 To perform a search, you only need to initialize the index and perform a call to the search function.
 
@@ -240,12 +209,11 @@ index.searchAsync(query, new CompletionHandler() {
         // [...]
     }
 });
-
 ```
 
-### Search Response Format
+## Search Response Format
 
-#### Sample
+### Sample
 
 The server response will look like:
 
@@ -282,7 +250,7 @@ The server response will look like:
 }
 ```
 
-#### Fields
+### Fields
 
 - `hits` (array): The hits returned by the search, sorted according to the ranking formula.
 
@@ -348,9 +316,7 @@ The server response will look like:
 
 - `message` (string, optional): Used to return warnings about the query.
 
-
 - `aroundLatLng` (string, optional): *Note: Only returned when [aroundLatLngViaIP](#aroundlatlngviaip) is set.* The computed geo location. **Warning: for legacy reasons, this parameter is a string and not an object.** Format: `${lat},${lng}`, where the latitude and longitude are expressed as decimal floating point numbers.
-
 
 - `automaticRadius` (integer, optional): *Note: Only returned for geo queries without an explicitly specified radius (see `aroundRadius`).* The automatically computed radius. **Warning: for legacy reasons, this parameter is a string and not an integer.**
 
@@ -388,7 +354,7 @@ When [facets](#facets) is non-empty, the following additional fields are returne
 
 - `exhaustiveFacetsCount` (boolean): Whether the counts are exhaustive (`true`) or approximate (`false`). *Note: When using [distinct](#distinct), the facet counts cannot be exhaustive.*
 
-### Search Parameters
+## Search Parameters
 
 Here is the list of parameters you can use with the search method (`search` [scope](#scope)):
 Parameters that can also be used in a setSettings also have the `indexing` [scope](#scope)
@@ -445,30 +411,27 @@ Parameters that can also be used in a setSettings also have the `indexing` [scop
 
 **Query Strategy**
 
-- [queryType](#querytype) `settings`, `search`
 - [removeWordsIfNoResults](#removewordsifnoresults) `settings`, `search`
 - [advancedSyntax](#advancedsyntax) `settings`, `search`
 - [optionalWords](#optionalwords) `settings`, `search`
 - [removeStopWords](#removestopwords) `settings`, `search`
-- [disableExactOnAttributes](#disableexactonattributes) `settings`, `search`
 - [exactOnSingleWordQuery](#exactonsinglewordquery) `settings`, `search`
-- [alternativesAsExact](#alternativesasexact) `settings`, `search`
+- [alternativesAsExact](#alternativesasexact) `setting`, `search`
 
 **Advanced**
 
+- [synonyms](#synonyms) `search`
+- [replaceSynonymsInHighlight](#replacesynonymsinhighlight) `settings`, `search`
+- [minProximity](#minproximity) `settings`, `search`
+- [responseFields](#responsefields) `settings`, `search`
 - [distinct](#distinct) `settings`, `search`
 - [getRankingInfo](#getrankinginfo) `search`
 - [numericFilters (deprecated)](#numericfilters-deprecated) `search`
-- [tagFilters (deprecated)](#tagfilters-deprecated) `search`
 - [facetFilters (deprecated)](#facetfilters-deprecated) `search`
 - [analytics](#analytics) `search`
 - [analyticsTags](#analyticstags) `search`
-- [synonyms](#synonyms) `search`
-- [replaceSynonymsInHighlight](#replacesynonymsinhighlight) `search`, `settings`
-- [minProximity](#minproximity) `search`, `settings`
-- [responseFields](#responsefields) `search`, `settings`
 
-### Multiple queries - `multipleQueriesAsync`
+## Search in indices - `multipleQueriesAsync` 
 
 You can send multiple queries with a single API call using a batch of queries:
 
@@ -496,11 +459,11 @@ You can specify a `strategy` parameter to optimize your multiple queries:
 - `none`: Execute the sequence of queries until the end.
 - `stopIfEnoughMatches`: Execute the sequence of queries until the number of hits is reached by the sum of hits.
 
-#### Response
+### Response
 
 The resulting JSON contains the following fields:
 
-- `results` (array): The results for each request, in the order they were submitted. The contents are the same as in [Search in an index](#search-in-an-index---searchasync).
+- `results` (array): The results for each request, in the order they were submitted. The contents are the same as in [Search in an index](/doc/api-client/android/search#search-in-an-index).
 
     Each result also includes the following additional fields:
 
@@ -508,9 +471,7 @@ The resulting JSON contains the following fields:
 
     - `processed` (boolean, optional): *Note: Only returned when `strategy` is `stopIfEnoughmatches`.* Whether the query was processed.
 
-
-
-### Find by IDs - `getObjectsAsync`
+## Get Objects - `getObjectsAsync` 
 
 You can easily retrieve an object using its `objectID` and optionally specify a comma separated list of attributes you want:
 
@@ -542,9 +503,7 @@ index.getObjectsAsync(Arrays.asList("myID1", "myID2"), new CompletionHandler() {
 });
 ```
 
-
-
-### Search cache
+## Search cache
 
 You can easily cache the results of the search queries by enabling the search cache.
 The results will be cached during a defined amount of time (default: 2 min).
@@ -565,14 +524,11 @@ index.enableSearchCache(300, 20);
 ```
 
 
+# Indexing
 
 
-## Indexing
 
-*Note: In most use cases, updating indices is better done from your back-end. Methods in this section are documented for the sake of completeness.*
-
-
-### Add objects - `addObjectsAsync`
+## Add Objects - `addObjectsAsync` 
 
 Each entry in an index has a unique identifier called `objectID`. There are two ways to add an entry to the index:
 
@@ -600,7 +556,7 @@ array.add(new JSONObject().put("objectID", "2").put("firstname", "Warren").put("
 index.addObjectsAsync(new JSONArray(array), null);
 ```
 
-To add a single object, use the `[Add object](#add-object---addobjectasync)` method:
+To add a single object, use the `[Add Objects](/doc/api-client/android/indexing#add-objects)` method:
 
 ```java
 JSONObject object = new JSONObject()
@@ -609,7 +565,7 @@ JSONObject object = new JSONObject()
 index.addObjectAsync(object, "myID", null);
 ```
 
-### Update objects - `saveObjectsAsync`
+## Update objects - `saveObjectsAsync` 
 
 You have three options when updating an existing object:
 
@@ -626,7 +582,7 @@ array.add(new JSONObject().put("firstname", "Warren").put("lastname", "Speach").
 index.saveObjectsAsync(new JSONArray(array), null);
 ```
 
-To update a single object, you can use the `saveObjectAsync` method:
+To update a single object, you can use the following method:
 
 ```java
 JSONObject object = new JSONObject()
@@ -636,8 +592,7 @@ JSONObject object = new JSONObject()
 index.saveObjectAsync(object, "myID", null);
 ```
 
-
-### Partial update objects - `partialUpdateObjectsAsync`
+## Partial update objects - `partialUpdateObjectsAsync` 
 
 You have many ways to update an object's attributes:
 
@@ -690,7 +645,7 @@ index.partialUpdateObjectAsync(new JSONObject("{\"price\": {\"value\": 42, \"_op
 Note: Here we are decrementing the value by `42`. To decrement just by one, put
 `value:1`.
 
-To partial update multiple objects using one API call, you can use the `[Partial update objects](#partial-update-objects---partialupdateobjectsasync)` method:
+To partial update multiple objects using one API call, you can use the `[Partial update objects](/doc/api-client/android/indexing#partial-update-objects)` method:
 
 ```java
 List<JSONObject> array = new ArrayList<JSONObject>();
@@ -699,8 +654,7 @@ array.add(new JSONObject().put("firstname", "Warren").put("objectID", "LA"));
 index.partialUpdateObjectsAsync(new JSONArray(array), null);
 ```
 
-
-### Delete objects - `deleteObjectsAsync`
+## Delete objects - `deleteObjectsAsync` 
 
 You can delete objects using their `objectID`:
 
@@ -708,16 +662,15 @@ You can delete objects using their `objectID`:
 index.deleteObjectsAsync(Arrays.asList("myID1", "myID2"), null);
 ```
 
-To delete a single object, you can use the `[Delete object](#delete-object---deleteobjectasync)` method:
+To delete a single object, you can use the `[Delete objects](/doc/api-client/android/indexing#delete-objects)` method:
 
 ```java
 index.deleteObjectAsync("myID", null);
 ```
 
-### Delete by query - `deleteByQueryAsync`
+## Delete by query - `deleteByQueryAsync` 
 
 You can delete all objects matching a single query with the following code. Internally, the API client performs the query, deletes all matching hits, and waits until the deletions have been applied.
-
 
 Take your precautions when using this method. Calling it with an empty query will result in cleaning the index of all its records.
 
@@ -726,7 +679,7 @@ Query query = /* [ ... ] */;
 index.deleteByQueryAsync(query, null);
 ```
 
-### Wait for operations - `waitTaskAsync`
+## Wait for operations - `waitTaskAsync` 
 
 All write operations in Algolia are asynchronous by design.
 
@@ -770,12 +723,11 @@ If you want to ensure multiple objects have been indexed, you only need to check
 the biggest `taskID`.
 
 
-## Settings
-
-*Note: In most use cases, updating indices is better done from your back-end. Methods in this section are documented for the sake of completeness.*
+# Settings
 
 
-### Get settings - `getSettingsAsync`
+
+## Get settings - `getSettingsAsync` 
 
 You can retrieve settings:
 
@@ -788,7 +740,7 @@ index.getSettingsAsync(new CompletionHandler() {
 });
 ```
 
-### Set settings - `setSettingsAsync`
+## Set settings - `setSettingsAsync` 
 
 ```java
 index.setSettingsAsync(new JSONObject().append("customRanking", "desc(followers)"), null);
@@ -798,7 +750,7 @@ index.setSettingsAsync(new JSONObject().append("customRanking", "desc(followers)
 
 Performance wise, it's better to do a `setSettingsAsync` before pushing the data
 
-#### Replica settings
+### Replica settings
 
 You can forward all settings updates to the replicas of an index by using the `forwardToReplicas` option:
 
@@ -808,12 +760,9 @@ JSONObject setSettingsResult = index.setSettings(settings, true);
 index.waitTask(setSettingsResult.getString("taskID"));
 ```
 
-
-
-### Index settings parameters
+## Index settings parameters
 
 Here is the list of parameters you can use with the set settings method (`settings` [scope](#scope)).
-
 
 Parameters that can be overridden at search time also have the `search` [scope](#scope).
 
@@ -821,8 +770,8 @@ Parameters that can be overridden at search time also have the `search` [scope](
 
 - [searchableAttributes](#searchableattributes) `settings`
 - [attributesForFaceting](#attributesforfaceting) `settings`
-- [attributesToRetrieve](#attributestoretrieve) `settings`, `search`
 - [unretrievableAttributes](#unretrievableattributes) `settings`
+- [attributesToRetrieve](#attributestoretrieve) `settings`, `search`
 
 **Ranking**
 
@@ -841,10 +790,12 @@ Parameters that can be overridden at search time also have the `search` [scope](
 - [highlightPreTag](#highlightpretag) `settings`, `search`
 - [highlightPostTag](#highlightposttag) `settings`, `search`
 - [snippetEllipsisText](#snippetellipsistext) `settings`, `search`
+- [restrictHighlightAndSnippetArrays](#restricthighlightandsnippetarrays) `settings`, `search`
 
 **Pagination**
 
 - [hitsPerPage](#hitsperpage) `settings`, `search`
+- [paginationLimitedTo](#paginationlimitedto) `settings`
 
 **Typos**
 
@@ -858,30 +809,33 @@ Parameters that can be overridden at search time also have the `search` [scope](
 
 **Query Strategy**
 
-- [queryType](#querytype) `settings`, `search`
+- [queryType](#querytype) `settings`
 - [removeWordsIfNoResults](#removewordsifnoresults) `settings`, `search`
 - [advancedSyntax](#advancedsyntax) `settings`, `search`
 - [optionalWords](#optionalwords) `settings`, `search`
 - [removeStopWords](#removestopwords) `settings`, `search`
-- [disablePrefixOnAttributes](#disableprefixonattributes) `settings`
-- [disableExactOnAttributes](#disableexactonattributes) `settings`, `search`
+- [disableExactOnAttributes](#disableexactonattributes) `settings`
 - [exactOnSingleWordQuery](#exactonsinglewordquery) `settings`, `search`
-- [alternativesAsExact](#alternativesasexact) `settings`, `search`
 
 **Advanced**
 
 - [attributeForDistinct](#attributefordistinct) `settings`
+- [replaceSynonymsInHighlight](#replacesynonymsinhighlight) `settings`, `search`
+- [placeholders](#placeholders) `settings`
+- [altCorrections](#altcorrections) `settings`
+- [minProximity](#minproximity) `settings`, `search`
+- [responseFields](#responsefields) `settings`, `search`
 - [distinct](#distinct) `settings`, `search`
 - [numericAttributesForFiltering](#numericattributesforfiltering) `settings`
 - [allowCompressionOfIntegerArray](#allowcompressionofintegerarray) `settings`
-- [altCorrections](#altcorrections) `settings`
-- [placeholders](#placeholders) `settings`
 
-## Parameters
+# Parameters
 
-### Overview
 
-#### Scope
+
+## Overview
+
+### Scope
 
 Each parameter in this page has a scope. Depending on the scope, you can use the parameter within the `setSettings`
 and/or the `search` method
@@ -892,8 +846,7 @@ They are three scopes:
 - `search`: The setting can only be used in the `search` method
 - `settings` `search`: The setting can be used in the `setSettings` method and be override in the`search` method
 
-
-#### Parameters List
+### Parameters List
 
 **Search**
 
@@ -934,6 +887,7 @@ They are three scopes:
 - [hitsPerPage](#hitsperpage) `settings`, `search`
 - [offset](#offset) `search`
 - [length](#length) `search`
+- [paginationLimitedTo](#paginationlimitedto) `settings`
 
 **Typos**
 
@@ -957,55 +911,59 @@ They are three scopes:
 
 **Query Strategy**
 
-- [queryType](#querytype) `settings`, `search`
+- [queryType](#querytype) `settings`
 - [removeWordsIfNoResults](#removewordsifnoresults) `settings`, `search`
 - [advancedSyntax](#advancedsyntax) `settings`, `search`
 - [optionalWords](#optionalwords) `settings`, `search`
 - [removeStopWords](#removestopwords) `settings`, `search`
-- [disablePrefixOnAttributes](#disableprefixonattributes) `settings`
-- [disableExactOnAttributes](#disableexactonattributes) `settings`, `search`
+- [disablePrefixOnAttributes](#disableprefixonattributes) `seetings`
+- [disableExactOnAttributes](#disableexactonattributes) `settings`
 - [exactOnSingleWordQuery](#exactonsinglewordquery) `settings`, `search`
-- [alternativesAsExact](#alternativesasexact) `settings`, `search`
+- [alternativesAsExact](#alternativesasexact) `setting`, `search`
 
 **Advanced**
 
 - [attributeForDistinct](#attributefordistinct) `settings`
+- [synonyms](#synonyms) `search`
+- [replaceSynonymsInHighlight](#replacesynonymsinhighlight) `settings`, `search`
+- [placeholders](#placeholders) `settings`
+- [altCorrections](#altcorrections) `settings`
+- [minProximity](#minproximity) `settings`, `search`
+- [responseFields](#responsefields) `settings`, `search`
 - [distinct](#distinct) `settings`, `search`
 - [getRankingInfo](#getrankinginfo) `search`
 - [numericAttributesForFiltering](#numericattributesforfiltering) `settings`
 - [allowCompressionOfIntegerArray](#allowcompressionofintegerarray) `settings`
 - [numericFilters (deprecated)](#numericfilters-deprecated) `search`
-- [tagFilters (deprecated)](#tagfilters-deprecated) `search`
 - [facetFilters (deprecated)](#facetfilters-deprecated) `search`
 - [analytics](#analytics) `search`
 - [analyticsTags](#analyticstags) `search`
-- [synonyms](#synonyms) `search`
-- [replaceSynonymsInHighlight](#replacesynonymsinhighlight) `search`, `settings`
-- [placeholders](#placeholders) `settings`
-- [altCorrections](#altcorrections) `settings`
-- [minProximity](#minproximity) `search`, `settings`
-- [responseFields](#responsefields) `search`, `settings`
 
-### Search
+## Search
 
-#### query
+<div class='api-client-parameter'>
+
+### query
 
 - scope: `search`
 - type: `string`
-- default: `""`
+- default: ""
 
+The instant search query string, used to set the string you want to search in your index.
+If no query parameter is set, the textual search will match with all the objects.
 
-The instant search query string, used to set the string you want to search in your index. If no query parameter is set, the textual search will match with all the objects.
+</div>
 
-### Attributes
+## Attributes
 
-#### searchableAttributes
+<div class='api-client-parameter'>
+
+### searchableAttributes
 
 - scope: `settings`
 - type: `array of strings`
-- default: `*`
+- default: *
 - formerly known as: `attributesToIndex`
-
 
 The list of attributes you want index (i.e. to make searchable).
 
@@ -1022,40 +980,43 @@ This parameter has two important uses:
 
     Then, within the same attribute, matches near the beginning of the text will be considered more important than matches near the end. You can disable this behavior by wrapping your attribute name inside an `unordered()` modifier. For example, `["title", "unordered(text)"]` will consider all positions inside the `text` attribute as equal, but positions inside the `title` attribute will still matter.
 
-**Note:** To get a full description of how the ranking works, you can have a look at our [Ranking guide](https://www.algolia.com/doc/guides/relevance/ranking).
+To get a full description of how the ranking works, you can have a look at our [Ranking guide](https://www.algolia.com/doc/guides/relevance/ranking).
 
+</div>
 
-#### attributesForFaceting
+<div class='api-client-parameter'>
+
+### attributesForFaceting
 
 - scope: `settings`
 - type: `array of strings`
-- default: `null`
-
 
 The list of attributes you want to use for faceting.
 All strings within these attributes will be extracted and added as facets.
 If set to `null`, no attribute is used for faceting.
 
+</div>
 
-#### unretrievableAttributes
+<div class='api-client-parameter'>
+
+### unretrievableAttributes
 
 - scope: `settings`
 - type: `array of strings`
-- default: `null`
-
 
 The list of attributes that cannot be retrieved at query time.
 This feature allows you to have attributes that are used for indexing
 and/or ranking but cannot be retrieved.
 
-**Warning**: For testing purposes, this setting is ignored when you're using the **admin** API key.
+</div>
 
-#### attributesToRetrieve
+<div class='api-client-parameter'>
 
-- scope: `settings`, `search`
+### attributesToRetrieve
+
+- scope: `settings` `search`
 - type: `array of strings`
-- default: `*`
-
+- default: *
 
 A string that contains the list of attributes you want to retrieve in order to minimize the size of the JSON answer.
 
@@ -1066,28 +1027,32 @@ You can also use `*` to retrieve all values when an **attributesToRetrieve** set
 
 **Note:** `objectID` is always retrieved, even when not specified.
 
+</div>
 
-#### restrictSearchableAttributes
+<div class='api-client-parameter'>
+
+### restrictSearchableAttributes
 
 - scope: `search`
 - type: `array of strings`
-- default: `searchableAttributes`
-
+- default: searchableAttributes
 
 List of attributes you want to use for textual search (must be a subset of the `searchableAttributes` index setting).
 Attributes are separated with a comma such as `"name,address"`.
 You can also use JSON string array encoding such as `encodeURIComponent("[\"name\",\"address\"]")`.
 By default, all attributes specified in the `searchableAttributes` settings are used to search.
 
+</div>
 
-### Ranking
+## Ranking
 
-#### ranking
+<div class='api-client-parameter'>
+
+### ranking
 
 - scope: `settings`
 - type: `array of strings`
-- default: `['typo', 'geo', 'words', 'filters', 'proximity', 'attribute', 'exact', 'custom']`
-
+- default: ['typo', 'geo', 'words', 'filters', 'proximity', 'attribute', 'exact', 'custom']
 
 Controls the way results are sorted.
 
@@ -1105,15 +1070,17 @@ We have nine available criterion:
 * `asc(attributeName)`: Sort according to a numeric attribute using ascending order. `attributeName` can be the name of any numeric attribute in your records (integer, double or boolean).
 * `desc(attributeName)`: Sort according to a numeric attribute using descending order. `attributeName` can be the name of any numeric attribute in your records (integer, double or boolean).
 
-To get a full description of how the Ranking works,
-you can have a look at our [Ranking guide](https://www.algolia.com/doc/guides/relevance/ranking).
+To get a full description of how the Ranking works, you can have a look at our [Ranking guide](https://www.algolia.com/doc/guides/relevance/ranking).
 
-#### customRanking
+</div>
+
+<div class='api-client-parameter'>
+
+### customRanking
 
 - scope: `settings`
 - type: `array of strings`
-- default: `[]`
-
+- default: []
 
 Lets you specify part of the ranking.
 
@@ -1125,13 +1092,16 @@ For example, `"customRanking" => ["desc(population)", "asc(name)"]`.
 To get a full description of how the Custom Ranking works,
 you can have a look at our [Ranking guide](https://www.algolia.com/doc/guides/relevance/ranking).
 
-#### replicas
+</div>
+
+<div class='api-client-parameter'>
+
+### replicas
 
 - scope: `settings`
 - type: `array of strings`
-- default: `[]`
+- default: []
 - formerly known as: `slaves`
-
 
 The list of indices on which you want to replicate all write operations.
 
@@ -1143,14 +1113,17 @@ you need to create one index per ranking configuration.
 This option enables you to perform write operations only on this index and automatically
 update replica indices with the same operations.
 
-### Filtering / Faceting
+</div>
 
-#### filters
+## Filtering / Faceting
+
+<div class='api-client-parameter'>
+
+### filters
 
 - scope: `search`
 - type: `string`
-- default: `""`
-
+- default: ""
 
 Filter the query with numeric, facet or/and tag filters.
 
@@ -1165,28 +1138,15 @@ the filter applies to `_tags`.
 
 For example: `public OR user_42` will translate to `_tags:public OR _tags:user_42`.
 
-The list of keywords is:
+</div>
 
-* `OR`: create a disjunctive filter between two filters.
-* `AND`: create a conjunctive filter between two filters.
-* `TO`: used to specify a range for a numeric filter.
-* `NOT`: used to negate a filter. The syntax with the `-` isn’t allowed.
+<div class='api-client-parameter'>
 
-**Note:** To specify a value with spaces or with a value equal to a keyword, it's possible to add quotes.
-
-**Warnings:**
-
-* Like for the other filters (for performance reasons), it's not possible to have `FILTER1 OR (FILTER2 AND FILTER3)`.
-* It is not possible to mix different categories of filters inside an OR like: `num=3 OR tag1 OR facet:value`.
-* It is not possible to negate a group; only individual filters can be negated:  `NOT(FILTER1 OR (FILTER2))` is not allowed.
-
-
-#### facets
+### facets
 
 - scope: `search`
 - type: `string`
-- default: `""`
-
+- default: ""
 
 You can use [facets](#facets) to retrieve only a part of your attributes declared in
 **[attributesForFaceting](#attributesforfaceting)** attributes.
@@ -1216,29 +1176,33 @@ You can also use `*` to perform faceting on all attributes specified in `attribu
 If the number of results is important, the count can be approximate,
 the attribute `exhaustiveFacetsCount` in the response is true when the count is exact.
 
-#### maxValuesPerFacet
+</div>
 
-- scope: `settings`, `search`
+<div class='api-client-parameter'>
+
+### maxValuesPerFacet
+
+- scope: `settings` `search`
 - type: `integer`
-- default: `""`
-
+- default: 100
 
 Limit the number of facet values returned for each facet.
 
 For example, `maxValuesPerFacet=10` will retrieve a maximum of 10 values per facet.
 
 **Warnings**
-
 - The engine has a hard limit on the `maxValuesPerFacet` of `1000`. Any value above that will be interpreted by the engine as being `1000`.
 
-### Highlighting / Snippeting
+</div>
 
-#### attributesToHighlight
+## Highlighting / Snippeting
 
-- scope: `settings`, `search`
-- type: `array of strings`
-- default: `null`
+<div class='api-client-parameter'>
 
+### attributesToHighlight
+
+- scope: `settings` `search`
+- type: `array of string`
 
 Default list of attributes to highlight.
 If set to null, all indexed attributes are highlighted.
@@ -1256,128 +1220,173 @@ A matchLevel is returned for each highlighted attribute and can contain:
 * `partial`: If only some of the query terms were found.
 * `none`: If none of the query terms were found.
 
-#### attributesToSnippet
+</div>
 
-- scope: `settings`, `search`
+<div class='api-client-parameter'>
+
+### attributesToSnippet
+
+- scope: `settings` `search`
 - type: `array of strings`
-- default: `null`
-
 
 Default list of attributes to snippet alongside the number of words to return (syntax is `attributeName:nbWords`).
 If set to null, no snippet is computed.
 
-#### highlightPreTag
+</div>
 
-- scope: `settings`, `search`
+<div class='api-client-parameter'>
+
+### highlightPreTag
+
+- scope: `settings` `search`
 - type: `string`
-- default: `<em>`
-
+- default: <em>
 
 Specify the string that is inserted before the highlighted parts in the query result (defaults to `<em>`).
 
+</div>
 
+<div class='api-client-parameter'>
 
-#### highlightPostTag
+### highlightPostTag
 
-- scope: `settings`, `search`
+- scope: `settings` `search`
 - type: `string`
-- default: `</em>`
-
+- default: </em>
 
 Specify the string that is inserted after the highlighted parts in the query result (defaults to `</em>`).
 
+</div>
 
+<div class='api-client-parameter'>
 
-#### snippetEllipsisText
+### snippetEllipsisText
 
-- scope: `settings`, `search`
+- scope: `settings` `search`
 - type: `string`
-- default: `…`
-
+- default: ...
 
 String used as an ellipsis indicator when a snippet is truncated.
 
-**Note:** Defaults to an empty string for all accounts created before 10/2/2016, and to `…` (U+2026) for accounts created after that date.
+Defaults to an empty string for all accounts created before 10/2/2016, and to `…` (U+2026) for accounts created after that date.
 
-#### restrictHighlightAndSnippetArrays
+</div>
 
-- scope: `settings`, `search`
+<div class='api-client-parameter'>
+
+### restrictHighlightAndSnippetArrays
+
+- scope: `settings` `search`
 - type: `boolean`
-- default: `false`
-
+- default: false
 
 If set to true, restrict arrays in highlights and snippets to items that matched the query at least partially else return all array items in highlights and snippets.
 
-### Pagination
+</div>
 
-#### page
+## Pagination
+
+<div class='api-client-parameter'>
+
+### page
 
 - scope: `search`
 - type: `integer`
-- default: `0`
-
+- default: 0
 
 Pagination parameter used to select the page to retrieve.
 
 **Warning:** Page is zero based. Thus, to retrieve the 10th page, you need to set `page=9`.
 
-#### hitsPerPage
+</div>
 
-- scope: `settings`, `search`
+<div class='api-client-parameter'>
+
+### hitsPerPage
+
+- scope: `settings` `search`
 - type: `integer`
-- default: `20`
-
+- default: 20
 
 Pagination parameter used to select the number of hits per page.
 
-#### offset
+</div>
+
+<div class='api-client-parameter'>
+
+### offset
 
 - scope: `search`
 - type: `integer`
-- default: `null`
-
 
 Offset of the first hit to return (zero-based).
 
 **Warning:** In most cases, `page`/`hitsPerPage` is the recommended method for pagination; `offset`/`length` is reserved for advanced use.
 
-#### length
+</div>
+
+<div class='api-client-parameter'>
+
+### length
 
 - scope: `search`
 - type: `integer`
-- default: `null`
 
-
-Number of hits to return.
+Offset of the first hit to return (zero-based).
 
 **Warning:** In most cases, `page`/`hitsPerPage` is the recommended method for pagination; `offset`/`length` is reserved for advanced use.
 
-### Typos
+</div>
 
-#### minWordSizefor1Typo
+<div class='api-client-parameter'>
 
-- scope: `settings`, `search`
+### paginationLimitedTo
+
+- scope: `settings`
 - type: `integer`
-- default: `4`
+- default: 1000
 
+Allows to control the maximum number of hits accessible via pagination. By default, this parameter is limited to 1000 to guarantee good performance.
+
+**Warning:** We recommend to keep the default value to guarantee excellent performance.
+Increasing this limit will have a direct impact on the performance of search.
+A big value will also make it very easy for anyone to download all your dataset.
+
+</div>
+
+## Typos
+
+<div class='api-client-parameter'>
+
+### minWordSizefor1Typo
+
+- scope: `settings` `search`
+- type: `integer`
+- default: 4
 
 The minimum number of characters needed to accept one typo.
 
-#### minWordSizefor2Typos
+</div>
 
-- scope: `settings`, `search`
+<div class='api-client-parameter'>
+
+### minWordSizefor2Typos
+
+- scope: `settings` `search`
 - type: `integer`
-- default: `8`
-
+- default: 8
 
 The minimum number of characters needed to accept two typos.
 
-#### typoTolerance
+</div>
 
-- scope: `settings`, `search`
+<div class='api-client-parameter'>
+
+### typoTolerance
+
+- scope: `settings` `search`
 - type: `boolean`
-- default: `true`
-
+- default: true
 
 This option allows you to control the number of typos allowed in the result set:
 
@@ -1386,22 +1395,27 @@ This option allows you to control the number of typos allowed in the result set:
 * `TYPO_MIN`: Only keep results with the minimum number of typos. For example, if one result matches without typos, then all results with typos will be hidden.
 * `TYPO_STRICT`: Hits matching with 2 typos are not retrieved if there are some matching without typos.
 
+</div>
 
-#### allowTyposOnNumericTokens
+<div class='api-client-parameter'>
 
-- scope: `settings`, `search`
+### allowTyposOnNumericTokens
+
+- scope: `settings` `search`
 - type: `boolean`
-- default: `true`
-
+- default: true
 
 If set to false, disables typo tolerance on numeric tokens (numbers).
 
-#### ignorePlurals
+</div>
 
-- scope: `settings`, `search`
-- type: `boolean`, `array of strings`
-- default: `false`
+<div class='api-client-parameter'>
 
+### ignorePlurals
+
+- scope: `settings` `search`
+- type: `boolean` `array of strings`
+- default: true
 
 Consider singular and plurals forms a match without typo. For example, car and
 cars, or foot and feet will be considered equivalent. This parameter can be:
@@ -1422,14 +1436,16 @@ Maltese=`mt`, Norwegian=`nb`, Dutch=`nl`, Northern Sotho=`ns`, Polish=`pl`,
 Pashto=`ps`, Portuguese=`pt`, Quechua=`qu`, Romanian=`ro`, Russian=`ru`,
 Slovak=`sk`, Albanian=`sq`, Swedish=`sv`, Swahili=`sw`, Tamil=`ta`,
 Telugu=`te`, Tagalog=`tl`, Tswana=`tn`, Turkish=`tr`, Tatar=`tt`,
-Ukrainian=`uk`, Urdu=`ur`, Uzbek=`uz`, Chinese=`zh`
 
-#### disableTypoToleranceOnAttributes
+</div>
 
-- scope: `settings`, `search`
+<div class='api-client-parameter'>
+
+### disableTypoToleranceOnAttributes
+
+- scope: `settings` `search`
 - type: `string`
-- default: `""`
-
+- default: ""
 
 List of attributes on which you want to disable typo tolerance
 (must be a subset of the `searchableAttributes` index setting).
@@ -1437,12 +1453,15 @@ List of attributes on which you want to disable typo tolerance
 Attributes are separated with a comma such as `"name,address"`.
 You can also use JSON string array encoding such as `encodeURIComponent("[\"name\",\"address\"]")`.
 
-#### separatorsToIndex
+</div>
+
+<div class='api-client-parameter'>
+
+### separatorsToIndex
 
 - scope: `settings`
 - type: `string`
-- default: `""`
-
+- default: ""
 
 Specify the separators (punctuation characters) to index.
 
@@ -1450,9 +1469,9 @@ By default, separators are not indexed.
 
 **Example:** Use `+#` to be able to search for "Google+" or "C#".
 
+</div>
 
-
-### Geo-Search
+## Geo-Search
 
 Geo search requires that you provide at least one geo location in each record at indexing time, under the `_geoloc` attribute. Each location must be an object with two numeric `lat` and `lng` attributes. You may specify either one location:
 
@@ -1482,39 +1501,33 @@ Geo search requires that you provide at least one geo location in each record at
 }
 ```
 
+<div class='api-client-parameter'>
 
-
-
-#### aroundLatLng
+### aroundLatLng
 
 - scope: `search`
 - type: `string`
-- default: ``
-
+- default: ""
 
 Search for entries around a given location (specified as two floats separated by a comma).
 
 For example, `aroundLatLng=47.316669,5.016670`.
 
 - By default the maximum distance is automatically guessed based on the density of the area
-but you can specify it manually in meters with the **aroundRadius** parameter.
-The precision for ranking can be set with **aroundPrecision** parameter.
+  but you can specify it manually in meters with the **aroundRadius** parameter.
+  The precision for ranking can be set with **aroundPrecision** parameter.
 - If you set aroundPrecision=100, the distances will be considered by ranges of 100m.
 - For example all distances 0 and 100m will be considered as identical for the "geo" ranking parameter.
 
-When `aroundRadius` is not set, the radius is computed automatically using the density of the area; you can retrieve the computed value in the `automaticRadius` attribute of the response.
-You can also use the `minimumAroundRadius` query parameter to specify a minimum radius in meters for the automatic computation of `aroundRadius`.
+</div>
 
+<div class='api-client-parameter'>
 
-
-
-
-#### aroundLatLngViaIP
+### aroundLatLngViaIP
 
 - scope: `search`
-- type: `string`
-- default: `false`
-
+- type: `boolean`
+- default: false
 
 Search for entries around a given latitude/longitude automatically computed from user IP address.
 
@@ -1528,89 +1541,118 @@ For example:
 two objects that are in the range 0-99m
 will be considered as identical in the ranking for the "geo" ranking parameter (same for 100-199, 200-299, ... ranges).
 
+</div>
 
+<div class='api-client-parameter'>
 
-#### aroundRadius
+### aroundRadius
 
 - scope: `search`
-- type: `integer`, `"all"`
-- default: `null`
-
+- type: `integer` `string`
 
 Control the radius associated with a geo search. Defined in meters.
 
-If not set, the radius is computed automatically using the density of the area. You can retrieve the computed radius in the `automaticRadius` attribute of the response. You can also specify a minimum value for the automatic radius by using the `minimumAroundRadius` query parameter. You can specify `aroundRadius=all` if you want to compute the geo distance without filtering in a geo area; this option will be faster than specifying a big integer value.
+If not set, the radius is computed automatically using the density of the area.
+You can retrieve the computed radius in the `automaticRadius` attribute of the response.
+You can also specify a minimum value for the automatic radius by using the `minimumAroundRadius` query parameter.
 
-#### aroundPrecision
+You can specify `aroundRadius=all` if you want to compute the geo distance without filtering in a geo area;
+this option will be faster than specifying a big integer value.
+
+</div>
+
+<div class='api-client-parameter'>
+
+### aroundPrecision
 
 - scope: `search`
 - type: `integer`
-- default: `null`
 
+Control the precision of a geo search.
+Defined in meters.
 
-Control the precision of a geo search. Defined in meters. For example, if you set `aroundPrecision=100`, two objects that are in the range 0-99m will be considered as identical in the ranking for the `geo` ranking parameter (same for 100-199, 200-299, … ranges).
+For example, if you set `aroundPrecision=100`, two objects that are in the range 0-99m will be considered as
+identical in the ranking for the `geo` ranking parameter (same for 100-199, 200-299, … ranges).
 
-#### minimumAroundRadius
+</div>
+
+<div class='api-client-parameter'>
+
+### minimumAroundRadius
 
 - scope: `search`
 - type: `integer`
-- default: `null`
 
+Define the minimum radius used for a geo search when `aroundRadius` is not set.
+The radius is computed automatically using the density of the area.
+You can retrieve the computed radius in the `automaticRadius` attribute of the answer.
 
-Define the minimum radius used for a geo search when `aroundRadius` is not set. The radius is computed automatically using the density of the area. You can retrieve the computed radius in the `automaticRadius` attribute of the answer.
+</div>
 
-#### insideBoundingBox
+<div class='api-client-parameter'>
+
+### insideBoundingBox
 
 - scope: `search`
 - type: `string`
-- default: `null`
-
 
 Search entries inside a given area defined by the two extreme points of a rectangle
 (defined by 4 floats: p1Lat,p1Lng,p2Lat,p2Lng).
+
 For example:
+
 - `insideBoundingBox=47.3165,4.9665,47.3424,5.0201`
 
 You can use several bounding boxes (OR) by passing more than 4 values.
 For example: instead of having 4 values you can pass 8 to search inside the UNION of two bounding boxes.
 
-#### insidePolygon
+</div>
+
+<div class='api-client-parameter'>
+
+### insidePolygon
 
 - scope: `search`
 - type: `string`
-- default: ``
-
+- default: ""
 
 Search entries inside a given area defined by a set of points
-(defined by a minimum of 6 floats: p1Lat,p1Lng,p2Lat,p2Lng,p3Lat,p3Long).
+  (defined by a minimum of 6 floats: p1Lat,p1Lng,p2Lat,p2Lng,p3Lat,p3Long).
 
-For example:
-`InsidePolygon=47.3165,4.9665,47.3424,5.0201,47.32,4.98`).
+  For example:
+  
+  - `InsidePolygon=47.3165,4.9665,47.3424,5.0201,47.32,4.98`
+  
 
+</div>
 
-### Query Strategy
+## Query Strategy
 
-#### queryType
+<div class='api-client-parameter'>
 
-- scope: `settings`, `search`
-- type: `enum`
-- default: `'prefixLast'`
+### queryType
 
+- scope: `settings`
+- type: `string`
+- default: prefixLast
 
 Selects how the query words are interpreted. It can be one of the following values:
 * `PREFIX_ALL`:
 All query words are interpreted as prefixes. This option is not recommended.
-* `PREFIX_ALL`:
+* `PREFIX_LAST`:
 Only the last word is interpreted as a prefix (default behavior).
 * `PREFIX_NONE`:
 No query word is interpreted as a prefix. This option is not recommended.
 
-#### removeWordsIfNoResults
+</div>
 
-- scope: `settings`, `search`
+<div class='api-client-parameter'>
+
+### removeWordsIfNoResults
+
+- scope: `settings` `search`
 - type: `string`
-- default: `'none'`
-
+- default: none
 
 This option is used to select a strategy in order to avoid having an empty result page.
 There are four different options:
@@ -1627,37 +1669,46 @@ This is equivalent to transforming the AND operand between query terms to an OR 
 - `REMOVE_NONE`:
 No specific processing is done when a query does not return any results (default behavior).
 
+</div>
 
-#### advancedSyntax
+<div class='api-client-parameter'>
 
-- scope: `settings`, `search`
+### advancedSyntax
+
+- scope: `settings` `search`
 - type: `boolean`
-- default: `false`
-
+- default: false
 
 Enables the advanced query syntax.
 
 This syntax allow to do two things:
 
-* **Phrase query**: A phrase query defines a particular sequence of terms. A phrase query is built by Algolia's query parser for words surrounded by `"`. For example, `"search engine"` will retrieve records having `search` next to `engine` only. Typo tolerance is _disabled_ on phrase queries.
-* **Prohibit operator**: The prohibit operator excludes records that contain the term after the `-` symbol. For example, `search -engine` will retrieve records containing `search` but not `engine`.
+* **Phrase query**: A phrase query defines a particular sequence of terms. A phrase query is built by Algolia's query parser for words surrounded by `"`.
+  For example, `"search engine"` will retrieve records having `search` next to `engine` only. Typo tolerance is _disabled_ on phrase queries.
+* **Prohibit operator**: The prohibit operator excludes records that contain the term after the `-` symbol.
+For example, `search -engine` will retrieve records containing `search` but not `engine`.
 
+</div>
 
-#### optionalWords
+<div class='api-client-parameter'>
 
-- scope: `settings`, `search`
+### optionalWords
+
+- scope: `settings` `search`
 - type: `array of strings`
-- default: `[]`
-
+- default: []
 
 A string that contains the comma separated list of words that should be considered as optional when found in the query.
 
-#### removeStopWords
+</div>
 
-- scope: `settings`, `search`
-- type: `boolean`, `array of strings`
-- default: `false`
+<div class='api-client-parameter'>
 
+### removeStopWords
+
+- scope: `settings` `search`
+- type: `boolean` `array of strings`
+- default: false
 
 Remove stop words from the query **before** executing it. It can be:
 
@@ -1679,15 +1730,15 @@ In this case, before executing the query, we will remove “what”, “is” an
 This removal will remove false positive because of stop words, especially when combined with optional words.
 For most use cases, it is better to not use this feature as people search by keywords on search engines.
 
+</div>
 
+<div class='api-client-parameter'>
 
+### disablePrefixOnAttributes
 
-#### disablePrefixOnAttributes
-
-- scope: `settings`
+- scope: `seetings`
 - type: `array of strings`
-- default: `[]`
-
+- default: []
 
 List of attributes on which you want to disable prefix matching
 (must be a subset of the `searchableAttributes` index setting).
@@ -1695,23 +1746,28 @@ List of attributes on which you want to disable prefix matching
 This setting is useful on attributes that contain string that should not be matched as a prefix
 (for example a product SKU).
 
+</div>
 
-#### disableExactOnAttributes
+<div class='api-client-parameter'>
 
-- scope: `settings`, `search`
-- type: `array of strings`
-- default: `[]`
+### disableExactOnAttributes
 
+- scope: `settings`
+- type: `search`
+- default: []
 
 List of attributes on which you want to disable the computation of `exact` criteria
 (must be a subset of the `searchableAttributes` index setting).
 
-#### exactOnSingleWordQuery
+</div>
 
-- scope: `settings`, `search`
+<div class='api-client-parameter'>
+
+### exactOnSingleWordQuery
+
+- scope: `settings` `search`
 - type: `string`
-- default: `attribute`
-
+- default: attribute
 
 This parameter control how the `exact` ranking criterion is computed when the query contains one word. There are three different values:
 
@@ -1719,12 +1775,15 @@ This parameter control how the `exact` ranking criterion is computed when the qu
 * `word`: exact set to 1 if the query word is found in the record. The query word needs to have at least 3 chars and not be part of our stop words dictionary
 * `attribute` (default): exact set to 1 if there is an attribute containing a string equals to the query
 
-#### alternativesAsExact
+</div>
 
-- scope: `settings`, `search`
+<div class='api-client-parameter'>
+
+### alternativesAsExact
+
+- scope: `setting` `search`
 - type: `string`
-- default: `['ignorePlurals', 'singleWordSynonym']`
-
+- default: ['ignorePlurals', 'singleWordSynonym']
 
 Specify the list of approximation that should be considered as an exact match in the ranking formula:
 
@@ -1732,14 +1791,16 @@ Specify the list of approximation that should be considered as an exact match in
 * `singleWordSynonym`: single-word synonym (For example "NY" = "NYC")
 * `multiWordsSynonym`: multiple-words synonym (For example "NY" = "New York")
 
-### Advanced
+</div>
 
-#### attributeForDistinct
+## Advanced
+
+<div class='api-client-parameter'>
+
+### attributeForDistinct
 
 - scope: `settings`
 - type: `string`
-- default: `null`
-
 
 The name of the attribute used for the `Distinct` feature.
 
@@ -1753,14 +1814,135 @@ then only the first one is kept and the others are removed from the results.
 To get a full understanding of how `Distinct` works,
 you can have a look at our [guide on distinct](https://www.algolia.com/doc/search/distinct).
 
-#### distinct
+</div>
 
-- scope: `settings`, `search`
+<div class='api-client-parameter'>
+
+### synonyms
+
+- scope: `search`
+- type: `boolean`
+- default: true
+
+If set to `false`, the search will not use the synonyms defined for the targeted index.
+
+</div>
+
+<div class='api-client-parameter'>
+
+### replaceSynonymsInHighlight
+
+- scope: `settings` `search`
+- type: `boolean`
+- default: true
+
+If set to `false`, words matched via synonym expansion will not be replaced by the matched synonym in the highlighted result.
+
+</div>
+
+<div class='api-client-parameter'>
+
+### placeholders
+
+- scope: `settings`
+- type: `hash of array of words`
+- default: ""
+
+This is an advanced use-case to define a token substitutable by a list of words
+without having the original token searchable.
+
+It is defined by a hash associating placeholders to lists of substitutable words.
+
+For example, `"placeholders": { "<streetnumber>": ["1", "2", "3", ..., "9999"]}`
+would allow it to be able to match all street numbers. We use the `< >` tag syntax
+to define placeholders in an attribute.
+
+For example:
+
+* Push a record with the placeholder:
+`{ "name" : "Apple Store", "address" : "&lt;streetnumber&gt; Opera street, Paris" }`.
+* Configure the placeholder in your index settings:
+`"placeholders": { "<streetnumber>" : ["1", "2", "3", "4", "5", ... ], ... }`.
+
+</div>
+
+<div class='api-client-parameter'>
+
+### altCorrections
+
+- scope: `settings`
+- type: `array of objects`
+- default: []
+
+Specify alternative corrections that you want to consider.
+
+Each alternative correction is described by an object containing three attributes:
+
+* `word` (string): The word to correct.
+* `correction` (string): The corrected word.
+* `nbTypos` (integer): The number of typos (1 or 2) that will be considered for the ranking algorithm (1 typo is better than 2 typos).
+
+For example:
+
+```
+"altCorrections": [
+  { "word" : "foot", "correction": "feet", "nbTypos": 1 },
+  { "word": "feet", "correction": "foot", "nbTypos": 1 }
+]
+```
+
+</div>
+
+<div class='api-client-parameter'>
+
+### minProximity
+
+- scope: `settings` `search`
 - type: `integer`
-- default: `0`
+- default: 1
 
+Configure the precision of the `proximity` ranking criterion.
+By default, the minimum (and best) proximity value distance between 2 matching words is 1.
+Setting it to 2 (or 3) would allow 1 (or 2) words to be found between the matching words without degrading the proximity ranking value.
 
-If set to true,
+Considering the query *“javascript framework”*, if you set `minProximity=2`, the records *“JavaScript framework”* and *“JavaScript charting framework”*
+will get the same proximity score, even if the second contains a word between the two matching words.
+
+**Note:** the maximum `minProximity` that can be set is 7. Any higher value will disable the `proximity` criterion from the ranking formula.
+
+</div>
+
+<div class='api-client-parameter'>
+
+### responseFields
+
+- scope: `settings` `search`
+- type: `array of strings`
+- default: ["*"]
+
+Choose which fields the response will contain. Applies to search and browse queries.
+
+By default, all fields are returned. If this parameter is specified, only the fields explicitly listed will be returned, unless `*` is used, in which case all fields are returned. Specifying an empty list or unknown field names is an error.
+
+This parameter is mainly intended to limit the response size. For example, for complex queries, echoing of request parameters in the response's `params` field can be undesirable.
+
+Some fields cannot be filtered out:
+
+- warning `message`
+- `cursor` in browse queries
+- fields triggered explicitly via [getRankingInfo](#getrankinginfo)
+
+</div>
+
+<div class='api-client-parameter'>
+
+### distinct
+
+- scope: `settings` `search`
+- type: `integer`
+- default: 0
+
+If set to YES,
 enables the distinct feature, disabled by default, if the `attributeForDistinct` index setting is set.
 
 This feature is similar to the SQL "distinct" keyword.
@@ -1773,24 +1955,28 @@ then only the best one is kept and the others are removed.
 To get a full understanding of how `Distinct` works,
 you can have a look at our [guide on distinct](https://www.algolia.com/doc/search/distinct).
 
+</div>
 
-#### getRankingInfo
+<div class='api-client-parameter'>
+
+### getRankingInfo
 
 - scope: `search`
 - type: `boolean`
-- default: `false`
+- default: false
 
-
-If set to true,
+If set to YES,
 the result hits will contain ranking information in the **_rankingInfo** attribute.
 
-#### numericAttributesForFiltering
+</div>
+
+<div class='api-client-parameter'>
+
+### numericAttributesForFiltering
 
 - scope: `settings`
 - type: `array of strings`
-- default: ``
-- formerly known as: `numericAttributesToIndex`
-
+- default: []
 
 All numerical attributes are automatically indexed as numerical filters
 (allowing filtering operations like `<` and `<=`).
@@ -1801,12 +1987,15 @@ If you only need to filter on a numeric value with the `=` operator,
 you can speed up the indexing by specifying the attribute with `equalOnly(AttributeName)`.
 The other operators will be disabled.
 
-#### allowCompressionOfIntegerArray
+</div>
+
+<div class='api-client-parameter'>
+
+### allowCompressionOfIntegerArray
 
 - scope: `settings`
 - type: `boolean`
-- default: `false`
-
+- default: false
 
 Allows compression of big integer arrays.
 
@@ -1814,12 +2003,15 @@ In data-intensive use-cases,
 we recommended enabling this feature and then storing the list of user IDs or rights as an integer array.
 When enabled, the integer array is reordered to reach a better compression ratio.
 
-#### numericFilters (deprecated)
+</div>
+
+<div class='api-client-parameter'>
+
+### numericFilters (deprecated)
 
 - scope: `search`
 - type: `array of strings`
-- default: `[]`
-
+- default: []
 
 *This parameter is deprecated. Please use [filters](#filters) instead.*
 
@@ -1840,40 +2032,15 @@ translates to `encodeURIComponent("code=1,(price:0 to 100,price:1000 to 2000)")`
 
 You can also use a string array encoding (for example `numericFilters: ["price>100","price<1000"]`).
 
-#### tagFilters (deprecated)
+</div>
+
+<div class='api-client-parameter'>
+
+### facetFilters (deprecated)
 
 - scope: `search`
 - type: `string`
-- default: `""`
-
-
-*This parameter is deprecated. Please use [filters](#filters) instead.*
-
-Filter the query by a set of tags.
-
-You can AND tags by separating them with commas.
-To OR tags, you must add parentheses.
-
-For example, `tagFilters=tag1,(tag2,tag3)` means *tag1 AND (tag2 OR tag3)*.
-
-You can also use a string array encoding.
-
-For example, `tagFilters: ["tag1",["tag2","tag3"]]` means *tag1 AND (tag2 OR tag3)*.
-
-Negations are supported via the `-` operator, prefixing the value.
-
-For example: `tagFilters=tag1,-tag2`.
-
-At indexing, tags should be added in the **_tags** attribute of objects.
-
-For example `{"_tags":["tag1","tag2"]}`.
-
-#### facetFilters (deprecated)
-
-- scope: `search`
-- type: `string`
-- default: `""`
-
+- default: ""
 
 *This parameter is deprecated. Please use [filters](#filters) instead.*
 
@@ -1886,136 +2053,45 @@ You can also use a string array encoding.
 
 For example, `[["category:Book","category:Movie"],"author:John%20Doe"]`.
 
-#### analytics
+</div>
+
+<div class='api-client-parameter'>
+
+### analytics
 
 - scope: `search`
 - type: `boolean`
-- default: `true`
-
+- default: true
 
 If set to false, this query will not be taken into account in the analytics feature.
 
-#### analyticsTags
+</div>
+
+<div class='api-client-parameter'>
+
+### analyticsTags
 
 - scope: `search`
 - type: `array of strings`
-- default: `null`
-
 
 If set, tag your query with the specified identifiers. Tags can then be used in the Analytics to analyze a subset of searches only.
 
-#### synonyms
-
-- scope: `search`
-- type: `boolean`
-- default: `true`
+</div>
 
 
-If set to `false`, the search will not use the synonyms defined for the targeted index.
-
-#### replaceSynonymsInHighlight
-
-- scope: `search`, `settings`
-- type: `boolean`
-- default: `true`
+# Manage Indices
 
 
-If set to `false`, words matched via synonym expansion will not be replaced by the matched synonym in the highlighted result.
 
-#### placeholders
-
-- scope: `settings`
-- type: `hash of array of words`
-- default: ``
-
-
-This is an advanced use-case to define a token substitutable by a list of words
-without having the original token searchable.
-
-It is defined by a hash associating placeholders to lists of substitutable words.
-
-For example, `"placeholders": { "<streetnumber>": ["1", "2", "3", ..., "9999"]}`
-would allow it to be able to match all street numbers. We use the `< >` tag syntax
-to define placeholders in an attribute.
-
-For example:
-
-* Push a record with the placeholder:
-`{ "name" : "Apple Store", "address" : "&lt;streetnumber&gt; Opera street, Paris" }`.
-* Configure the placeholder in your index settings:
-`"placeholders": { "<streetnumber>" : ["1", "2", "3", "4", "5", ... ], ... }`.
-
-#### altCorrections
-
-- scope: `settings`
-- type: `array of objects`
-- default: `[]`
-
-
-Specify alternative corrections that you want to consider.
-
-Each alternative correction is described by an object containing three attributes:
-
-* `word` (string): The word to correct.
-* `correction` (string): The corrected word.
-* `nbTypos` (integer): The number of typos (1 or 2) that will be considered for the ranking algorithm (1 typo is better than 2 typos).
-
-For example:
-
-```
-"altCorrections": [
-  { "word" : "foot", "correction": "feet", "nbTypos": 1 },
-  { "word": "feet", "correction": "foot", "nbTypos": 1 }
-]
-```
-
-#### minProximity
-
-- scope: `search`, `settings`
-- type: `integer`
-- default: `1`
-
-
-Configure the precision of the `proximity` ranking criterion. By default, the minimum (and best) proximity value distance between 2 matching words is 1. Setting it to 2 (or 3) would allow 1 (or 2) words to be found between the matching words without degrading the proximity ranking value.
-
-Considering the query *“javascript framework”*, if you set `minProximity=2`, the records *“JavaScript framework”* and *“JavaScript charting framework”* will get the same proximity score, even if the second contains a word between the two matching words.
-
-**Note:** the maximum `minProximity` that can be set is 7. Any higher value will disable the `proximity` criterion from the ranking formula.
-
-#### responseFields
-
-- scope: `search`, `settings`
-- type: `array of strings`
-- default: `*`
-
-
-Choose which fields the response will contain. Applies to search and browse queries.
-
-By default, all fields are returned. If this parameter is specified, only the fields explicitly listed will be returned, unless `*` is used, in which case all fields are returned. Specifying an empty list or unknown field names is an error.
-
-This parameter is mainly intended to limit the response size. For example, for complex queries, echoing of request parameters in the response's `params` field can be undesirable.
-
-Some fields cannot be filtered out:
-
-- warning `message`
-- `cursor` in browse queries
-- fields triggered explicitly via [getRankingInfo](#getrankinginfo)
-
-
-## Manage Indices
-
-*Note: In most use cases, updating indices is better done from your back-end. Methods in this section are documented for the sake of completeness.*
-
-
-### Create an index
+## Create an index
 
 To create an index, you need to perform any indexing operation like:
 - set settings
 - add object
 
-### List indices - `listIndexesAsync`
+## List indices - `listIndexesAsync` 
 
-You can list all your indices along with their associated information (number of entries, disk size, etc.) with the `listIndexes` method:
+You can list all your indices along with their associated information (number of entries, disk size, etc.) with the `listIndexesAsync` method:
 
 ```java
 client.listIndexesAsync(new CompletionHandler() {
@@ -2027,20 +2103,13 @@ client.listIndexesAsync(new CompletionHandler() {
 ```
 
 
+# Advanced
 
 
 
-
-
-
-
-## Advanced
-
-### Custom batch - `batchAsync`
+## Custom batch - `batchAsync` 
 
 You may want to perform multiple operations with one API call to reduce latency.
-
-
 
 If you have one index per user, you may want to perform a batch operations across several indices.
 We expose a method to perform this type of batch:
@@ -2074,7 +2143,7 @@ The attribute **action** can have these values:
 - partialUpdateObjectNoCreate
 - deleteObject
 
-### Backup / Export an index - `browseAsync`
+## Backup / Export an index - `browseAsync` 
 
 The `search` method cannot return more than 1,000 results. If you need to
 retrieve all the content of your index (for backup, SEO purposes or for running
@@ -2084,14 +2153,6 @@ you retrieve objects beyond the 1,000 limit.
 This method is optimized for speed. To make it fast, distinct, typo-tolerance,
 word proximity, geo distance and number of matched words are disabled. Results
 are still returned ranked by attributes and custom ranking.
-
-
-It will return a `cursor` alongside your data, that you can then use to retrieve
-the next chunk of your records.
-
-You can specify custom parameters (like `page` or `hitsPerPage`) on your first
-`browse` call, and these parameters will then be included in the `cursor`. Note
-that it is not possible to access records beyond the 1,000th on the first call.
 
 #### Response Format
 
@@ -2133,7 +2194,6 @@ The following fields are provided for convenience purposes, and **only when the 
 
 - `nbPages` (integer): Number of pages corresponding to the number of hits. Basically, `ceil(nbHits / hitsPerPage)`.
 
-
 #### Example
 
 Using the low-level methods:
@@ -2172,8 +2232,6 @@ BrowseIterator iterator = new BrowseIterator(index, query, new BrowseIterator.Br
 iterator.start();
 ```
 
-
-
 ### REST API
 
 We've developed API clients for the most common programming languages and platforms.
@@ -2185,8 +2243,5 @@ Everything that can be done using the REST API can be done using those clients.
 
 The REST API lets your interact directly with Algolia platforms from anything that can send an HTTP request
 [Go to the REST API doc](https://algolia.com/doc/rest)
-
-
-
 
 
