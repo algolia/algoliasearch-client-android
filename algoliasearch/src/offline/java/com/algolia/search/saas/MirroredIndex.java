@@ -644,7 +644,7 @@ public class MirroredIndex extends Index
                 if (localIndex.exists()) {
                     return;
                 }
-                _bootstrap(settingsFile, objectFiles);
+                _buildOffline(settingsFile, objectFiles);
             }
         });
     }
@@ -668,33 +668,74 @@ public class MirroredIndex extends Index
                 if (localIndex.exists()) {
                     return;
                 }
-                // Save resources to independent files on disk.
-                // TODO: See if we can have the Offline Core read directly from resources or assets.
-                File tmpDir = new File(getClient().getTempDir(), UUID.randomUUID().toString());
-                try {
-                    tmpDir.mkdirs();
-                    // Settings.
-                    File settingsFile = new File(tmpDir, "settings.json");
-                    FileUtils.writeFile(settingsFile, resources.openRawResource(settingsResId));
-                    // Objects.
-                    File[] objectFiles = new File[objectsResIds.length];
-                    for (int i = 0; i < objectsResIds.length; ++i) {
-                        objectFiles[i] = new File(tmpDir, "objects#" + Integer.toString(objectsResIds[i]) + ".json");
-                        FileUtils.writeFile(objectFiles[i], resources.openRawResource(objectsResIds[i]));
-                    }
-                    // Build the index.
-                    _bootstrap(settingsFile, objectFiles);
-                } catch (IOException e) {
-                    Log.e(MirroredIndex.class.getSimpleName(), "Failed to write bootstrap resources to disk", e);
-                } finally {
-                    // Delete temporary files.
-                    FileUtils.deleteRecursive(tmpDir);
-                }
+                _buildOfflineFromRawResources(resources, settingsResId, objectsResIds);
             }
         });
     }
 
-    private void _bootstrap(@NonNull File settingsFile, @NonNull File... objectFiles) {
+    /**
+     * Replace the local mirror with local data stored on the filesystem.
+     *
+     * **Note:** This method will *always* replace the local mirror with the specified data.
+     *
+     * @param settingsFile Absolute path to the file containing the index settings, in JSON format.
+     * @param objectFiles Absolute path(s) to the file(s) containing the objects. Each file must contain an array of
+     *                    objects, in JSON format.
+     */
+    public void buildOfflineFromFiles(@NonNull final File settingsFile, @NonNull final File... objectFiles) {
+        getClient().localBuildExecutorService.submit(new Runnable() {
+            @Override
+            public void run() {
+                _buildOffline(settingsFile, objectFiles);
+            }
+        });
+    }
+
+    /**
+     * Replace the local mirror with local data stored on the filesystem.
+     *
+     * **Note:** This method will *always* replace the local mirror with the specified data.
+     *
+     * @param resources A {@link Resources} instance to read resources from.
+     * @param settingsResId Resource identifier of the index settings, in JSON format.
+     * @param objectsResIds Resource identifiers of the various objects files. Each file must contain an array of
+     *                    objects, in JSON format.
+     */
+    public void buildOfflineFromRawResources(@NonNull final Resources resources, @NonNull final int settingsResId, @NonNull final int... objectsResIds) {
+        getClient().localBuildExecutorService.submit(new Runnable() {
+            @Override
+            public void run() {
+                _buildOfflineFromRawResources(resources, settingsResId, objectsResIds);
+            }
+        });
+    }
+
+    private void _buildOfflineFromRawResources(@NonNull final Resources resources, @NonNull final int settingsResId, @NonNull final int... objectsResIds) {
+        // Save resources to independent files on disk.
+        // TODO: See if we can have the Offline Core read directly from resources or assets.
+        File tmpDir = new File(getClient().getTempDir(), UUID.randomUUID().toString());
+        try {
+            tmpDir.mkdirs();
+            // Settings.
+            File settingsFile = new File(tmpDir, "settings.json");
+            FileUtils.writeFile(settingsFile, resources.openRawResource(settingsResId));
+            // Objects.
+            File[] objectFiles = new File[objectsResIds.length];
+            for (int i = 0; i < objectsResIds.length; ++i) {
+                objectFiles[i] = new File(tmpDir, "objects#" + Integer.toString(objectsResIds[i]) + ".json");
+                FileUtils.writeFile(objectFiles[i], resources.openRawResource(objectsResIds[i]));
+            }
+            // Build the index.
+            _buildOffline(settingsFile, objectFiles);
+        } catch (IOException e) {
+            Log.e(MirroredIndex.class.getSimpleName(), "Failed to write bootstrap resources to disk", e);
+        } finally {
+            // Delete temporary files.
+            FileUtils.deleteRecursive(tmpDir);
+        }
+    }
+
+    private void _buildOffline(@NonNull File settingsFile, @NonNull File... objectFiles) {
         // Notify listeners.
         getClient().mainHandler.post(new Runnable() {
             @Override
@@ -716,7 +757,7 @@ public class MirroredIndex extends Index
             public void run() {
                 Throwable error = null;
                 if (status != 200) {
-                    error = new AlgoliaException(String.format("Failed to bootstrap index \"%s\"", MirroredIndex.this.getIndexName()), status);
+                    error = new AlgoliaException(String.format("Failed to build local mirror \"%s\"", MirroredIndex.this.getIndexName()), status);
                 }
                 fireBootstrapDidFinish(error);
             }
