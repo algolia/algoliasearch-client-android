@@ -616,6 +616,17 @@ public class MirroredIndex extends Index
     // ----------------------------------------------------------------------
 
     /**
+     * Test if this index has offline data on disk.
+     *
+     * **Warning:** This method is synchronous! It will block until completion.
+     *
+     * @return `true` if data exists on disk for this index, `false` otherwise.
+     */
+    public boolean hasOfflineData() {
+        return localIndex.exists();
+    }
+
+    /**
      * Bootstrap the local mirror with local data stored on the filesystem.
      *
      * **Note:** This method will do nothing if offline data is already available, making it safe to call at every

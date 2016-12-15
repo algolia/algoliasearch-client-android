@@ -818,6 +818,17 @@ public class OfflineIndex {
         return new WriteTransaction();
     }
 
+    /**
+     * Test if this index has offline data on disk.
+     *
+     * **Warning:** This method is synchronous! It will block until completion.
+     *
+     * @return `true` if data exists on disk for this index, `false` otherwise.
+     */
+    public boolean hasOfflineData() {
+        return localIndex.exists();
+    }
+
     // ----------------------------------------------------------------------
     // Helpers
     // ----------------------------------------------------------------------
