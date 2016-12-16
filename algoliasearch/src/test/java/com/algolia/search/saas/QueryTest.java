@@ -427,6 +427,16 @@ public class QueryTest extends RobolectricTestCase {
     }
 
     @Test
+    public void replaceSynonymsInHighlight() {
+        Query query = new Query();
+        assertNull(query.getReplaceSynonymsInHighlight());
+        query.setReplaceSynonymsInHighlight(true);
+        assertEquals(true, query.getReplaceSynonymsInHighlight());
+        assertEquals("true", query.get("replaceSynonymsInHighlight"));
+        assertEquals(query.getReplaceSynonymsInHighlight(), Query.parse(query.build()).getReplaceSynonymsInHighlight());
+    }
+
+    @Test
     public void restrictSearchableAttributes() {
         Query query = new Query();
         assertNull(query.getRestrictSearchableAttributes());

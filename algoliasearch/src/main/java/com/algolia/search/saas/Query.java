@@ -38,14 +38,14 @@ import java.util.List;
 
 /**
  * Describes all parameters of a search query.
- *
+ * <p>
  * There are two ways to access parameters:
- *
+ * <p>
  * 1. Using the high-level, typed properties for individual parameters (recommended).
  * 2. Using the low-level, untyped getter (`get()`) and setter (`set()`) or the subscript operator.
- *    Use this approach if the parameter you wish to set is not supported by this class.
- *
+ * Use this approach if the parameter you wish to set is not supported by this class.
  */
+@SuppressWarnings("WeakerAccess") // Enums & Methods are voluntarily public
 public class Query extends AbstractQuery {
     public enum QueryType {
         /** All query words are interpreted as prefixes. */
@@ -94,6 +94,7 @@ public class Query extends AbstractQuery {
 
     /**
      * Construct a query with the specified query text.
+     *
      * @param query Query text.
      */
     public Query(String query) {
@@ -102,6 +103,7 @@ public class Query extends AbstractQuery {
 
     /**
      * Clone an existing query.
+     *
      * @param other The query to be cloned.
      */
     public Query(@NonNull Query other) {
@@ -136,9 +138,8 @@ public class Query extends AbstractQuery {
     private static final String KEY_ALLOW_TYPOS_ON_NUMERIC_TOKENS = "allowTyposOnNumericTokens";
 
     /**
-     * @param enabled
-     *            If set to false, disable typo-tolerance on numeric tokens.
-     *            Default to true.
+     * @param enabled If set to false, disable typo-tolerance on numeric tokens.
+     *                Defaults to true.
      */
     public @NonNull Query setAllowTyposOnNumericTokens(Boolean enabled) {
         return set(KEY_ALLOW_TYPOS_ON_NUMERIC_TOKENS, enabled);
@@ -151,9 +152,8 @@ public class Query extends AbstractQuery {
     private static final String KEY_ANALYTICS = "analytics";
 
     /**
-     * @param enabled
-     *            If set to false, this query will not be taken into account in
-     *            analytics feature. Default to true.
+     * @param enabled If set to false, this query will not be taken into account in
+     *                analytics feature. Defaults to true.
      */
     public @NonNull Query setAnalytics(Boolean enabled) {
         return set(KEY_ANALYTICS, enabled);
@@ -166,8 +166,7 @@ public class Query extends AbstractQuery {
     private static final String KEY_ANALYTICS_TAGS = "analyticsTags";
 
     /**
-     * @param tags
-     *            Set the analytics tags identifying the query
+     * @param tags Set the analytics tags identifying the query
      */
     public @NonNull Query setAnalyticsTags(String... tags) {
         return set(KEY_ANALYTICS_TAGS, buildJSONArray(tags));
@@ -181,7 +180,6 @@ public class Query extends AbstractQuery {
 
     /**
      * Search for entries around a given latitude/longitude.
-     *
      */
     public @NonNull Query setAroundLatLng(@Nullable LatLng location) {
         if (location == null) {
@@ -200,7 +198,6 @@ public class Query extends AbstractQuery {
     /**
      * Search for entries around the latitude/longitude of user (using IP
      * geolocation)
-     *
      */
     public @NonNull Query setAroundLatLngViaIP(Boolean enabled) {
         return set(KEY_AROUND_LAT_LNG_VIA_IP, enabled);
@@ -228,6 +225,7 @@ public class Query extends AbstractQuery {
 
     /**
      * Change the radius for around latitude/longitude queries.
+     *
      * @param radius the radius to set, or Query.RADIUS_ALL to disable stopping at a specific radius.
      */
     public @NonNull Query setAroundRadius(Integer radius) {
@@ -239,6 +237,7 @@ public class Query extends AbstractQuery {
 
     /**
      * Get the current radius for around latitude/longitude queries.
+     *
      * @return Query.RADIUS_ALL if set to 'all'.
      */
     public Integer getAroundRadius() {
@@ -269,7 +268,6 @@ public class Query extends AbstractQuery {
     /**
      * Specify the list of attribute names to retrieve. By default all
      * attributes are retrieved.
-     *
      */
     public @NonNull Query setAttributesToRetrieve(String... attributes) {
         return set(KEY_ATTRIBUTES_TO_RETRIEVE, buildJSONArray(attributes));
@@ -286,6 +284,7 @@ public class Query extends AbstractQuery {
     private static final String KEY_ATTRIBUTES_TO_SNIPPET = "attributesToSnippet";
 
     // TODO: Use class instead of string for snippet specification
+
     /**
      * Specify the list of attribute names to Snippet alongside the number of
      * words to return (syntax is 'attributeName:nbWords'). By default no
@@ -319,9 +318,8 @@ public class Query extends AbstractQuery {
      * keeping the best value per value of attributeForDistinct, it allows to
      * keep N values.
      *
-     * @param nbHitsToKeep
-     *            Specify the maximum number of hits to keep for each distinct
-     *            value
+     * @param nbHitsToKeep Specify the maximum number of hits to keep for each distinct
+     *                     value
      */
     public @NonNull Query setDistinct(Integer nbHitsToKeep) {
         return set(KEY_DISTINCT, nbHitsToKeep);
@@ -369,8 +367,7 @@ public class Query extends AbstractQuery {
             if (value != null) {
                 return new JSONArray(value);
             }
-        }
-        catch (JSONException e) {
+        } catch (JSONException e) {
             // Will return null
         }
         return null;
@@ -393,6 +390,7 @@ public class Query extends AbstractQuery {
 
     /**
      * Get the numeric, facet or/and tag filters for this Query.
+     *
      * @return a String with this query's filters.
      */
     public @Nullable String getFilters() {
@@ -453,7 +451,7 @@ public class Query extends AbstractQuery {
      * Can represent either a boolean or a list of language codes, see https://www.algolia.com/doc/faq/searching/how-does-ignoreplurals-work.
      */
     public static final class IgnorePlurals {
-        /** Wether plurals are ignored. */
+        /** Whether plurals are ignored. */
         public final boolean enabled;
 
         /** A list containing every active language's code. When {@code null}, all supported languages are be used. */
@@ -563,11 +561,9 @@ public class Query extends AbstractQuery {
 
     /**
      * If set to true, plural won't be considered as a typo (for example
-     * car/cars will be considered as equals). Default to false.
+     * car/cars will be considered as equals). Defaults to false.
      */
-    public
-    @NonNull
-    Query setIgnorePlurals(boolean enabled) {
+    public @NonNull Query setIgnorePlurals(boolean enabled) {
         return set(KEY_IGNORE_PLURALS, enabled);
     }
 
@@ -575,9 +571,7 @@ public class Query extends AbstractQuery {
      * A list of language codes for which plural won't be considered as a typo (for example
      * car/cars will be considered as equals). If empty or null, this disables the feature.
      */
-    public
-    @NonNull
-    Query setIgnorePlurals(@Nullable Collection<String> languageISOCodes) {
+    public @NonNull Query setIgnorePlurals(@Nullable Collection<String> languageISOCodes) {
         return set(KEY_IGNORE_PLURALS, new IgnorePlurals(languageISOCodes));
     }
 
@@ -585,9 +579,7 @@ public class Query extends AbstractQuery {
      * One or several language codes for which plural won't be considered as a typo (for example
      * car/cars will be considered as equals). If empty or null, this disables the feature.
      */
-    public
-    @NonNull
-    Query setIgnorePlurals(@Nullable String... languageISOCodes) {
+    public @NonNull Query setIgnorePlurals(@Nullable String... languageISOCodes) {
         return set(KEY_IGNORE_PLURALS, new IgnorePlurals(languageISOCodes));
     }
 
@@ -599,8 +591,7 @@ public class Query extends AbstractQuery {
      * A rectangle in geo coordinates.
      * Used in geo-search.
      */
-    public static final class GeoRect
-    {
+    public static final class GeoRect {
         @NonNull
         public final LatLng p1;
         @NonNull
@@ -608,14 +599,14 @@ public class Query extends AbstractQuery {
 
         public GeoRect(@NonNull LatLng p1, @NonNull LatLng p2) {
             this.p1 = p1;
-            this.p2 =p2;
+            this.p2 = p2;
         }
 
         @Override
         public boolean equals(@Nullable Object other) {
             return other != null && other instanceof GeoRect
-                && this.p1.equals(((GeoRect)other).p1)
-                && this.p2.equals(((GeoRect)other).p2);
+                    && this.p1.equals(((GeoRect) other).p1)
+                    && this.p2.equals(((GeoRect) other).p2);
         }
 
         @Override
@@ -631,7 +622,7 @@ public class Query extends AbstractQuery {
      * of a rectangle. At indexing, geoloc of an object should be set with
      * _geoloc attribute containing lat and lng attributes (for example
      * {"_geoloc":{"lat":48.853409, "lng":2.348800}})
-     *
+     * <p>
      * You can use several bounding boxes (OR) by calling this method several times.
      */
     public @NonNull Query setInsideBoundingBox(@Nullable GeoRect... boxes) {
@@ -665,21 +656,20 @@ public class Query extends AbstractQuery {
                     GeoRect[] result = new GeoRect[fields.length / 4];
                     for (int i = 0; i < result.length; ++i) {
                         result[i] = new GeoRect(
-                            new LatLng(
-                                    Double.parseDouble(fields[4 * i]),
-                                    Double.parseDouble(fields[4 * i + 1])
-                            ), new LatLng(
+                                new LatLng(
+                                        Double.parseDouble(fields[4 * i]),
+                                        Double.parseDouble(fields[4 * i + 1])
+                                ), new LatLng(
                                 Double.parseDouble(fields[4 * i + 2]),
                                 Double.parseDouble(fields[4 * i + 3])
-                            )
+                        )
                         );
                     }
                     return result;
                 }
             }
             return null;
-        }
-        catch (NumberFormatException e) {
+        } catch (NumberFormatException e) {
             return null;
         }
     }
@@ -720,16 +710,15 @@ public class Query extends AbstractQuery {
                     LatLng[] result = new LatLng[fields.length / 2];
                     for (int i = 0; i < result.length; ++i) {
                         result[i] = new LatLng(
-                            Double.parseDouble(fields[2 * i]),
-                            Double.parseDouble(fields[2 * i + 1])
+                                Double.parseDouble(fields[2 * i]),
+                                Double.parseDouble(fields[2 * i + 1])
                         );
                     }
                     return result;
                 }
             }
             return null;
-        }
-        catch (NumberFormatException e) {
+        } catch (NumberFormatException e) {
             return null;
         }
     }
@@ -825,8 +814,7 @@ public class Query extends AbstractQuery {
             if (value != null) {
                 return new JSONArray(value);
             }
-        }
-        catch (JSONException e) {
+        } catch (JSONException e) {
             // Will return null
         }
         return null;
@@ -838,8 +826,7 @@ public class Query extends AbstractQuery {
      * Set the list of words that should be considered as optional when found in
      * the query.
      *
-     * @param words
-     *            The list of optional words, comma separated.
+     * @param words The list of optional words, comma separated.
      */
     public @NonNull Query setOptionalWords(String... words) {
         return set(KEY_OPTIONAL_WORDS, buildJSONArray(words));
@@ -899,8 +886,7 @@ public class Query extends AbstractQuery {
         return this;
     }
 
-    public @Nullable QueryType getQueryType()
-    {
+    public @Nullable QueryType getQueryType() {
         String value = get(KEY_QUERY_TYPE);
         if (value != null) {
             switch (value) {
@@ -970,8 +956,7 @@ public class Query extends AbstractQuery {
         return this;
     }
 
-    public @Nullable RemoveWordsIfNoResults getRemoveWordsIfNoResults()
-    {
+    public @Nullable RemoveWordsIfNoResults getRemoveWordsIfNoResults() {
         String value = get(KEY_REMOVE_WORDS_IF_NO_RESULT);
         if (value != null) {
             switch (value) {
@@ -991,10 +976,9 @@ public class Query extends AbstractQuery {
     private static final String KEY_REPLACE_SYNONYMS_IN_HIGHLIGHT = "replaceSynonymsInHighlight";
 
     /**
-     * @param enabled
-     *            If set to false, words matched via synonyms expansion will not be
-     *            replaced by the matched synonym in highlight result. Default
-     *            to true.
+     * @param enabled If set to false, words matched via synonyms expansion will not be
+     *                replaced by the matched synonym in highlight result. Default
+     *                to true.
      */
     public @NonNull Query setReplaceSynonymsInHighlight(Boolean enabled) {
         return set(KEY_REPLACE_SYNONYMS_IN_HIGHLIGHT, enabled);
@@ -1018,8 +1002,7 @@ public class Query extends AbstractQuery {
         return set(KEY_RESTRICT_SEARCHABLE_ATTRIBUTES, buildJSONArray(attributes));
     }
 
-    public String[] getRestrictSearchableAttributes()
-    {
+    public String[] getRestrictSearchableAttributes() {
         return parseArray(get(KEY_RESTRICT_SEARCHABLE_ATTRIBUTES));
     }
 
@@ -1040,9 +1023,8 @@ public class Query extends AbstractQuery {
     private static final String KEY_SYNONYMS = "synonyms";
 
     /**
-     * @param enabled
-     *            If set to false, this query will not use synonyms defined in
-     *            configuration. Default to true.
+     * @param enabled If set to false, this query will not use synonyms defined in
+     *                configuration. Defaults to true.
      */
     public @NonNull Query setSynonyms(Boolean enabled) {
         return set(KEY_SYNONYMS, enabled);
@@ -1064,8 +1046,7 @@ public class Query extends AbstractQuery {
             if (value != null) {
                 return new JSONArray(value);
             }
-        }
-        catch (JSONException e) {
+        } catch (JSONException e) {
             // Will return null
         }
         return null;
@@ -1095,8 +1076,7 @@ public class Query extends AbstractQuery {
         return this;
     }
 
-    public @Nullable TypoTolerance getTypoTolerance()
-    {
+    public @Nullable TypoTolerance getTypoTolerance() {
         String value = get(KEY_TYPO_TOLERANCE);
         if (value != null) {
             switch (value) {
@@ -1134,8 +1114,7 @@ public class Query extends AbstractQuery {
         return this;
     }
 
-    public @Nullable ExactOnSingleWordQuery getExactOnSingleWordQuery()
-    {
+    public @Nullable ExactOnSingleWordQuery getExactOnSingleWordQuery() {
         String value = get(KEY_EXACT_ON_SINGLE_WORD_QUERY);
         if (value != null) {
             switch (value) {
@@ -1176,8 +1155,7 @@ public class Query extends AbstractQuery {
         return this;
     }
 
-    public @Nullable AlternativesAsExact[] getAlternativesAsExact()
-    {
+    public @Nullable AlternativesAsExact[] getAlternativesAsExact() {
         String alternativesStr = get(KEY_ALTERNATIVES_AS_EXACT);
         if (alternativesStr == null) {
             return null;
@@ -1210,9 +1188,7 @@ public class Query extends AbstractQuery {
      * <p>
      * By default, all fields are returned. If this parameter is specified, only the fields explicitly listed will be returned, unless * is used, in which case all fields are returned. Specifying an empty list or unknown field names is an error.
      */
-    public
-    @NonNull
-    Query setResponseFields(String... attributes) {
+    public @NonNull Query setResponseFields(String... attributes) {
         return set(KEY_RESPONSE_FIELDS, buildJSONArray(attributes));
     }
 
@@ -1228,6 +1204,7 @@ public class Query extends AbstractQuery {
 
     /**
      * Parse a query object from a URL query parameter string.
+     *
      * @param queryParameters URL query parameter string.
      * @return The parsed query object.
      */
@@ -1244,13 +1221,14 @@ public class Query extends AbstractQuery {
     /**
      * Set a parameter in an untyped fashion.
      * This low-level accessor is intended to access parameters that this client does not yet support.
-     * @param name The parameter's name.
+     *
+     * @param name  The parameter's name.
      * @param value The parameter's value, or null to remove it.
      *              It will first be converted to a String by the `toString()` method.
      * @return This instance (used to chain calls).
      */
     @Override
     public @NonNull Query set(@NonNull String name, @Nullable Object value) {
-        return (Query)super.set(name, value);
+        return (Query) super.set(name, value);
     }
 }
