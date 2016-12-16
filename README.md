@@ -15,31 +15,31 @@ This project is open-source under the [MIT License](./LICENSE). [Your contributi
 **Getting Started**
 
 1. [Install](#install)
-1. [Init index - `initIndex`](#init-index)
+1. [Init index - `initIndex`](#init-index---initindex)
 1. [Quick Start](#quick-start)
 
 **Search**
 
-1. [Search in an index - `searchAsync`](#search-in-an-index)
+1. [Search in an index - `searchAsync`](#search-in-an-index---searchasync)
 1. [Search Response Format](#search-response-format)
 1. [Search Parameters](#search-parameters)
-1. [Search in indices - `multipleQueriesAsync`](#search-in-indices)
-1. [Get Objects - `getObjectsAsync`](#get-objects)
+1. [Search in indices - `multipleQueriesAsync`](#search-in-indices---multiplequeriesasync)
+1. [Get Objects - `getObjectsAsync`](#get-objects---getobjectsasync)
 1. [Search cache](#search-cache)
 
 **Indexing**
 
-1. [Add Objects - `addObjectsAsync`](#add-objects)
-1. [Update objects - `saveObjectsAsync`](#update-objects)
-1. [Partial update objects - `partialUpdateObjectsAsync`](#partial-update-objects)
-1. [Delete objects - `deleteObjectsAsync`](#delete-objects)
-1. [Delete by query - `deleteByQueryAsync`](#delete-by-query)
-1. [Wait for operations - `waitTaskAsync`](#wait-for-operations)
+1. [Add Objects - `addObjectsAsync`](#add-objects---addobjectsasync)
+1. [Update objects - `saveObjectsAsync`](#update-objects---saveobjectsasync)
+1. [Partial update objects - `partialUpdateObjectsAsync`](#partial-update-objects---partialupdateobjectsasync)
+1. [Delete objects - `deleteObjectsAsync`](#delete-objects---deleteobjectsasync)
+1. [Delete by query - `deleteByQueryAsync`](#delete-by-query---deletebyqueryasync)
+1. [Wait for operations - `waitTaskAsync`](#wait-for-operations---waittaskasync)
 
 **Settings**
 
-1. [Get settings - `getSettingsAsync`](#get-settings)
-1. [Set settings - `setSettingsAsync`](#set-settings)
+1. [Get settings - `getSettingsAsync`](#get-settings---getsettingsasync)
+1. [Set settings - `setSettingsAsync`](#set-settings---setsettingsasync)
 1. [Index settings parameters](#index-settings-parameters)
 
 **Parameters**
@@ -59,12 +59,12 @@ This project is open-source under the [MIT License](./LICENSE). [Your contributi
 **Manage Indices**
 
 1. [Create an index](#create-an-index)
-1. [List indices - `listIndexesAsync`](#list-indices)
+1. [List indices - `listIndexesAsync`](#list-indices---listindexesasync)
 
 **Advanced**
 
-1. [Custom batch - `batchAsync`](#custom-batch)
-1. [Backup / Export an index - `browseAsync`](#backup--export-an-index)
+1. [Custom batch - `batchAsync`](#custom-batch---batchasync)
+1. [Backup / Export an index - `browseAsync`](#backup--export-an-index---browseasync)
 
 
 # Guides & Tutorials
@@ -420,6 +420,7 @@ Parameters that can also be used in a setSettings also have the `indexing` [scop
 
 **Advanced**
 
+- [analyticsTags](#analyticstags) `search`
 - [synonyms](#synonyms) `search`
 - [replaceSynonymsInHighlight](#replacesynonymsinhighlight) `settings`, `search`
 - [minProximity](#minproximity) `settings`, `search`
@@ -427,9 +428,9 @@ Parameters that can also be used in a setSettings also have the `indexing` [scop
 - [distinct](#distinct) `settings`, `search`
 - [getRankingInfo](#getrankinginfo) `search`
 - [numericFilters (deprecated)](#numericfilters-deprecated) `search`
+- [tagFilters (deprecated)](#tagfilters-deprecated) `search`
 - [facetFilters (deprecated)](#facetfilters-deprecated) `search`
 - [analytics](#analytics) `search`
-- [analyticsTags](#analyticstags) `search`
 
 ## Search in indices - `multipleQueriesAsync` 
 
@@ -556,7 +557,7 @@ array.add(new JSONObject().put("objectID", "2").put("firstname", "Warren").put("
 index.addObjectsAsync(new JSONArray(array), null);
 ```
 
-To add a single object, use the `[Add Objects](/doc/api-client/android/indexing#add-objects)` method:
+To add a single object, use the [Add Objects](/doc/api-client/android/indexing#add-objects) method:
 
 ```java
 JSONObject object = new JSONObject()
@@ -924,6 +925,7 @@ They are three scopes:
 **Advanced**
 
 - [attributeForDistinct](#attributefordistinct) `settings`
+- [analyticsTags](#analyticstags) `search`
 - [synonyms](#synonyms) `search`
 - [replaceSynonymsInHighlight](#replacesynonymsinhighlight) `settings`, `search`
 - [placeholders](#placeholders) `settings`
@@ -935,9 +937,9 @@ They are three scopes:
 - [numericAttributesForFiltering](#numericattributesforfiltering) `settings`
 - [allowCompressionOfIntegerArray](#allowcompressionofintegerarray) `settings`
 - [numericFilters (deprecated)](#numericfilters-deprecated) `search`
+- [tagFilters (deprecated)](#tagfilters-deprecated) `search`
 - [facetFilters (deprecated)](#facetfilters-deprecated) `search`
 - [analytics](#analytics) `search`
-- [analyticsTags](#analyticstags) `search`
 
 ## Search
 
@@ -1818,6 +1820,17 @@ you can have a look at our [guide on distinct](https://www.algolia.com/doc/searc
 
 <div class='api-client-parameter'>
 
+### analyticsTags
+
+- scope: `search`
+- type: `array of strings`
+
+If set, tag your query with the specified identifiers. Tags can then be used in the Analytics to analyze a subset of searches only.
+
+</div>
+
+<div class='api-client-parameter'>
+
 ### synonyms
 
 - scope: `search`
@@ -2036,6 +2049,37 @@ You can also use a string array encoding (for example `numericFilters: ["price>1
 
 <div class='api-client-parameter'>
 
+### tagFilters (deprecated)
+
+- scope: `search`
+- type: `string`
+- default: ""
+
+**This parameter is deprecated. You should use [filters](#filters) instead.**
+
+Filter the query by a set of tags.
+
+You can AND tags by separating them with commas.
+To OR tags, you must add parentheses.
+
+For example, `tagFilters=tag1,(tag2,tag3)` means *tag1 AND (tag2 OR tag3)*.
+
+You can also use a string array encoding.
+
+For example, `tagFilters: ["tag1",["tag2","tag3"]]` means *tag1 AND (tag2 OR tag3)*.
+
+Negations are supported via the `-` operator, prefixing the value.
+
+For example: `tagFilters=tag1,-tag2`.
+
+At indexing, tags should be added in the **_tags** attribute of objects.
+
+For example `{"_tags":["tag1","tag2"]}`.
+
+</div>
+
+<div class='api-client-parameter'>
+
 ### facetFilters (deprecated)
 
 - scope: `search`
@@ -2064,17 +2108,6 @@ For example, `[["category:Book","category:Movie"],"author:John%20Doe"]`.
 - default: true
 
 If set to false, this query will not be taken into account in the analytics feature.
-
-</div>
-
-<div class='api-client-parameter'>
-
-### analyticsTags
-
-- scope: `search`
-- type: `array of strings`
-
-If set, tag your query with the specified identifiers. Tags can then be used in the Analytics to analyze a subset of searches only.
 
 </div>
 
