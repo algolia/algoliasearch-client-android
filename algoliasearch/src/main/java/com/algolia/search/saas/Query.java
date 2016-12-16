@@ -803,10 +803,20 @@ public class Query extends AbstractQuery {
 
     private static final String KEY_NUMERIC_FILTERS = "numericFilters";
 
+    /**
+     * Set the <b>deprecated</b> {@code numericFilters} parameter.
+     *
+     * @deprecated Use {@link Query#setFilters(String)} instead.
+     */
     public @NonNull Query setNumericFilters(JSONArray filters) {
         return set(KEY_NUMERIC_FILTERS, filters);
     }
 
+    /**
+     * Get the value of <b>deprecated</b> {@code facetFilters} parameter.
+     *
+     * @deprecated Use {@link Query#getFilters()} instead.
+     */
     public JSONArray getNumericFilters() {
         try {
             String value = get(KEY_NUMERIC_FILTERS);
