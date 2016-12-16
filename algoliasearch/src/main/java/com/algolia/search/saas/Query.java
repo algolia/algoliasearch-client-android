@@ -183,7 +183,7 @@ public class Query extends AbstractQuery {
      * Search for entries around a given latitude/longitude.
      *
      */
-    public @NonNull Query setAroundLatLng(LatLng location) {
+    public @NonNull Query setAroundLatLng(@Nullable LatLng location) {
         if (location == null) {
             return set(KEY_AROUND_LAT_LNG, null);
         } else {
@@ -191,7 +191,7 @@ public class Query extends AbstractQuery {
         }
     }
 
-    public LatLng getAroundLatLng() {
+    public @Nullable LatLng getAroundLatLng() {
         return LatLng.parse(get(KEY_AROUND_LAT_LNG));
     }
 
@@ -363,7 +363,7 @@ public class Query extends AbstractQuery {
      *
      * @deprecated Use {@link Query#getFilters()} instead.
      */
-    public JSONArray getFacetFilters() {
+    public @Nullable JSONArray getFacetFilters() {
         try {
             String value = get(KEY_FACET_FILTERS);
             if (value != null) {
@@ -395,7 +395,7 @@ public class Query extends AbstractQuery {
      * Get the numeric, facet or/and tag filters for this Query.
      * @return a String with this query's filters.
      */
-    public String getFilters() {
+    public @Nullable String getFilters() {
         return get(KEY_FILTERS);
     }
 
@@ -419,7 +419,7 @@ public class Query extends AbstractQuery {
         return set(KEY_HIGHLIGHT_POST_TAG, tag);
     }
 
-    public String getHighlightPostTag() {
+    public @Nullable String getHighlightPostTag() {
         return get(KEY_HIGHLIGHT_POST_TAG);
     }
 
@@ -429,7 +429,7 @@ public class Query extends AbstractQuery {
         return set(KEY_HIGHLIGHT_PRE_TAG, tag);
     }
 
-    public String getHighlightPreTag() {
+    public @Nullable String getHighlightPreTag() {
         return get(KEY_HIGHLIGHT_PRE_TAG);
     }
 
@@ -457,7 +457,7 @@ public class Query extends AbstractQuery {
         public final boolean enabled;
 
         /** A list containing every active language's code. When {@code null}, all supported languages are be used. */
-        public final List<String> languageCodes;
+        public @Nullable final List<String> languageCodes;
 
         /**
          * Construct an IgnorePlurals object for a boolean value.
@@ -507,7 +507,7 @@ public class Query extends AbstractQuery {
             }
         }
 
-        static @NonNull IgnorePlurals parse(String s) {
+        static @NonNull IgnorePlurals parse(@Nullable String s) {
             if (s == null || s.length() == 0 || s.equals("null")) {
                 return new IgnorePlurals(false);
             } else if ("true".equals(s) || "false".equals(s)) {
@@ -536,7 +536,7 @@ public class Query extends AbstractQuery {
         }
 
         @Override
-        public boolean equals(Object o) {
+        public boolean equals(@Nullable Object o) {
             if (this == o) {
                 return true;
             }
@@ -601,7 +601,9 @@ public class Query extends AbstractQuery {
      */
     public static final class GeoRect
     {
+        @NonNull
         public final LatLng p1;
+        @NonNull
         public final LatLng p2;
 
         public GeoRect(@NonNull LatLng p1, @NonNull LatLng p2) {
@@ -610,7 +612,7 @@ public class Query extends AbstractQuery {
         }
 
         @Override
-        public boolean equals(Object other) {
+        public boolean equals(@Nullable Object other) {
             return other != null && other instanceof GeoRect
                 && this.p1.equals(((GeoRect)other).p1)
                 && this.p2.equals(((GeoRect)other).p2);
@@ -632,7 +634,7 @@ public class Query extends AbstractQuery {
      *
      * You can use several bounding boxes (OR) by calling this method several times.
      */
-    public @NonNull Query setInsideBoundingBox(GeoRect... boxes) {
+    public @NonNull Query setInsideBoundingBox(@Nullable GeoRect... boxes) {
         if (boxes == null) {
             set(KEY_INSIDE_BOUNDING_BOX, null);
         } else {
@@ -654,7 +656,7 @@ public class Query extends AbstractQuery {
         return this;
     }
 
-    public GeoRect[] getInsideBoundingBox() {
+    public @Nullable GeoRect[] getInsideBoundingBox() {
         try {
             String value = get(KEY_INSIDE_BOUNDING_BOX);
             if (value != null) {
@@ -689,7 +691,7 @@ public class Query extends AbstractQuery {
      * At indexing, you should specify geoloc of an object with the _geoloc attribute (in the form "_geoloc":{"lat":48.853409, "lng":2.348800} or
      * "_geoloc":[{"lat":48.853409, "lng":2.348800},{"lat":48.547456, "lng":2.972075}] if you have several geo-locations in your record).
      */
-    public @NonNull Query setInsidePolygon(LatLng... points) {
+    public @NonNull Query setInsidePolygon(@Nullable LatLng... points) {
         if (points == null) {
             set(KEY_INSIDE_POLYGON, null);
         } else if (points.length < 3) {
@@ -709,7 +711,7 @@ public class Query extends AbstractQuery {
         return this;
     }
 
-    public LatLng[] getInsidePolygon() {
+    public @Nullable LatLng[] getInsidePolygon() {
         try {
             String value = get(KEY_INSIDE_POLYGON);
             if (value != null) {
@@ -817,7 +819,7 @@ public class Query extends AbstractQuery {
      *
      * @deprecated Use {@link Query#getFilters()} instead.
      */
-    public JSONArray getNumericFilters() {
+    public @Nullable JSONArray getNumericFilters() {
         try {
             String value = get(KEY_NUMERIC_FILTERS);
             if (value != null) {
@@ -869,7 +871,7 @@ public class Query extends AbstractQuery {
         return set(KEY_QUERY, query);
     }
 
-    public String getQuery() {
+    public @Nullable String getQuery() {
         return get(KEY_QUERY);
     }
 
@@ -878,7 +880,7 @@ public class Query extends AbstractQuery {
     /**
      * Select how the query words are interpreted:
      */
-    public @NonNull Query setQueryType(QueryType type) {
+    public @NonNull Query setQueryType(@Nullable QueryType type) {
         if (type == null) {
             set(KEY_QUERY_TYPE, null);
         } else {
@@ -897,7 +899,7 @@ public class Query extends AbstractQuery {
         return this;
     }
 
-    public QueryType getQueryType()
+    public @Nullable QueryType getQueryType()
     {
         String value = get(KEY_QUERY_TYPE);
         if (value != null) {
@@ -929,7 +931,7 @@ public class Query extends AbstractQuery {
         throw new AlgoliaException("removeStopWords should be a Boolean or a String.");
     }
 
-    public Object getRemoveStopWords() {
+    public @Nullable Object getRemoveStopWords() {
         final String value = get(KEY_REMOVE_STOP_WORDS);
         if (value == null) {
             return null;
@@ -946,7 +948,7 @@ public class Query extends AbstractQuery {
     /**
      * Select the strategy to adopt when a query does not return any result.
      */
-    public @NonNull Query setRemoveWordsIfNoResults(RemoveWordsIfNoResults type) {
+    public @NonNull Query setRemoveWordsIfNoResults(@Nullable RemoveWordsIfNoResults type) {
         if (type == null) {
             set(KEY_REMOVE_WORDS_IF_NO_RESULT, null);
         } else {
@@ -968,7 +970,7 @@ public class Query extends AbstractQuery {
         return this;
     }
 
-    public RemoveWordsIfNoResults getRemoveWordsIfNoResults()
+    public @Nullable RemoveWordsIfNoResults getRemoveWordsIfNoResults()
     {
         String value = get(KEY_REMOVE_WORDS_IF_NO_RESULT);
         if (value != null) {
@@ -1031,7 +1033,7 @@ public class Query extends AbstractQuery {
         return set(KEY_SNIPPET_ELLIPSIS_TEXT, snippetEllipsisText);
     }
 
-    public String getSnippetEllipsisText() {
+    public @Nullable String getSnippetEllipsisText() {
         return get(KEY_SNIPPET_ELLIPSIS_TEXT);
     }
 
@@ -1056,7 +1058,7 @@ public class Query extends AbstractQuery {
         return set(KEY_TAG_FILTERS, tagFilters);
     }
 
-    public JSONArray getTagFilters() {
+    public @Nullable JSONArray getTagFilters() {
         try {
             String value = get(KEY_TAG_FILTERS);
             if (value != null) {
@@ -1071,7 +1073,7 @@ public class Query extends AbstractQuery {
 
     private static final String KEY_TYPO_TOLERANCE = "typoTolerance";
 
-    public @NonNull Query setTypoTolerance(TypoTolerance type) {
+    public @NonNull Query setTypoTolerance(@Nullable TypoTolerance type) {
         if (type == null) {
             set(KEY_TYPO_TOLERANCE, null);
         } else {
@@ -1093,7 +1095,7 @@ public class Query extends AbstractQuery {
         return this;
     }
 
-    public TypoTolerance getTypoTolerance()
+    public @Nullable TypoTolerance getTypoTolerance()
     {
         String value = get(KEY_TYPO_TOLERANCE);
         if (value != null) {
@@ -1113,7 +1115,7 @@ public class Query extends AbstractQuery {
 
     private static final String KEY_EXACT_ON_SINGLE_WORD_QUERY = "exactOnSingleWordQuery";
 
-    public @NonNull Query setExactOnSingleWordQuery(ExactOnSingleWordQuery type) {
+    public @NonNull Query setExactOnSingleWordQuery(@Nullable ExactOnSingleWordQuery type) {
         if (type == null) {
             set(KEY_EXACT_ON_SINGLE_WORD_QUERY, null);
         } else {
@@ -1132,7 +1134,7 @@ public class Query extends AbstractQuery {
         return this;
     }
 
-    public ExactOnSingleWordQuery getExactOnSingleWordQuery()
+    public @Nullable ExactOnSingleWordQuery getExactOnSingleWordQuery()
     {
         String value = get(KEY_EXACT_ON_SINGLE_WORD_QUERY);
         if (value != null) {
@@ -1150,7 +1152,7 @@ public class Query extends AbstractQuery {
 
     private static final String KEY_ALTERNATIVES_AS_EXACT = "alternativesAsExact";
 
-    public @NonNull Query setAlternativesAsExact(AlternativesAsExact[] types) {
+    public @NonNull Query setAlternativesAsExact(@Nullable AlternativesAsExact[] types) {
         if (types == null) {
             set(KEY_ALTERNATIVES_AS_EXACT, null);
         } else {
@@ -1174,7 +1176,7 @@ public class Query extends AbstractQuery {
         return this;
     }
 
-    public AlternativesAsExact[] getAlternativesAsExact()
+    public @Nullable AlternativesAsExact[] getAlternativesAsExact()
     {
         String alternativesStr = get(KEY_ALTERNATIVES_AS_EXACT);
         if (alternativesStr == null) {
