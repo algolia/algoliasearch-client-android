@@ -430,6 +430,24 @@ public class IndexTest extends RobolectricTestCase {
     }
 
     @Test
+    public void getObjectsWithAttributesToRetrieveAsync() throws Exception {
+        List<String> attributesToRetrieve = new ArrayList<>();
+        attributesToRetrieve.add("objectID");
+        index.getObjectsAsync(ids, attributesToRetrieve, new AssertCompletionHandler() {
+            @Override public void doRequestCompleted(JSONObject content, AlgoliaException error) {
+                if (error == null) {
+                    JSONArray res = content.optJSONArray("results");
+                    assertNotNull(res);
+                    assertTrue("Object has unexpected objectId", res.optJSONObject(0).optString("objectID").equals(ids.get(0)));
+                    assertFalse("Object has unexpected 'city' attribute", res.optJSONObject(1).has("city"));
+                } else {
+                    fail(error.getMessage());
+                }
+            }
+        });
+    }
+
+    @Test
     public void waitTaskAsync() throws Exception {
         index.addObjectAsync(new JSONObject("{\"city\": \"New York\"}"), new AssertCompletionHandler() {
             @Override public void doRequestCompleted(JSONObject content, AlgoliaException error) {

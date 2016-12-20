@@ -1246,6 +1246,149 @@ public class MirroredIndex extends Index
     }
 
     // ----------------------------------------------------------------------
+    // Getting individual objects
+    // ----------------------------------------------------------------------
+
+    /**
+     * Get individual objects from the online API, falling back to the local mirror in case of error (when enabled).
+     *
+     * @param objectIDs Identifiers of objects to retrieve.
+     * @param attributesToRetrieve Attributes to retrieve. If `null` or if at least one item is `*`, all retrievable
+     *                             attributes will be retrieved.
+     * @param completionHandler The listener that will be notified of the request's outcome.
+     * @return A cancellable request.
+     */
+    @Override
+    public Request getObjectsAsync(final @NonNull List<String> objectIDs, final @Nullable List<String> attributesToRetrieve, @NonNull CompletionHandler completionHandler) {
+        if (!mirrored) {
+            return super.getObjectsAsync(objectIDs, attributesToRetrieve, completionHandler);
+        } else {
+            return new OnlineOfflineGetObjectsRequest(objectIDs, attributesToRetrieve, completionHandler).start();
+        }
+    }
+
+    private class OnlineOfflineGetObjectsRequest extends OnlineOfflineRequest {
+        private final List<String> objectIDs;
+        private final List<String> attributesToRetrieve;
+
+        public OnlineOfflineGetObjectsRequest(@NonNull List<String> objectIDs, final @Nullable List<String> attributesToRetrieve, @NonNull CompletionHandler completionHandler) {
+            super(completionHandler);
+            this.objectIDs = objectIDs;
+            this.attributesToRetrieve = attributesToRetrieve;
+        }
+
+        @Override
+        protected Request startOnlineRequest(CompletionHandler completionHandler) {
+            return getObjectsOnlineAsync(objectIDs, attributesToRetrieve, completionHandler);
+        }
+
+        @Override
+        protected Request startOfflineRequest(CompletionHandler completionHandler) {
+            return getObjectsOfflineAsync(objectIDs, attributesToRetrieve, completionHandler);
+        }
+    }
+
+    /**
+     * Get individual objects, explicitly targeting the online API, not the offline mirror.
+     *
+     * @param objectIDs Identifiers of objects to retrieve.
+     * @param attributesToRetrieve Attributes to retrieve. If `null` or if at least one item is `*`, all retrievable
+     *                             attributes will be retrieved.
+     * @param completionHandler The listener that will be notified of the request's outcome.
+     * @return A cancellable request.
+     */
+    public Request getObjectsOnlineAsync(@NonNull final List<String> objectIDs, final @Nullable List<String> attributesToRetrieve, @NonNull final CompletionHandler completionHandler) {
+        return getClient().new AsyncTaskRequest(completionHandler) {
+            @NonNull
+            @Override
+            protected JSONObject run() throws AlgoliaException {
+                return getObjectsOnline(objectIDs, attributesToRetrieve);
+            }
+        }.start();
+    }
+
+    /**
+     * Get individual objects, explicitly targeting the online API, not the offline mirror.
+     *
+     * @param objectIDs Identifiers of objects to retrieve.
+     * @param completionHandler The listener that will be notified of the request's outcome.
+     * @return A cancellable request.
+     */
+    public Request getObjectsOnlineAsync(@NonNull final List<String> objectIDs, @NonNull final CompletionHandler completionHandler) {
+        return getObjectsOnlineAsync(objectIDs, null, completionHandler);
+    }
+
+    private JSONObject getObjectsOnline(@NonNull final List<String> objectIDs, final @Nullable List<String> attributesToRetrieve) throws AlgoliaException {
+        try {
+            JSONObject content = super.getObjects(objectIDs, attributesToRetrieve);
+            // TODO: Factorize origin tagging
+            content.put(JSON_KEY_ORIGIN, JSON_VALUE_ORIGIN_REMOTE);
+            return content;
+        }
+        catch (JSONException e) {
+            throw new AlgoliaException("Failed to patch JSON result");
+        }
+    }
+
+    /**
+     * Get individual objects, explicitly targeting the offline mirror, not the online API.
+     *
+     * @param objectIDs Identifiers of objects to retrieve.
+     * @param attributesToRetrieve Attributes to retrieve. If `null` or if at least one item is `*`, all retrievable
+     *                             attributes will be retrieved.
+     * @param completionHandler The listener that will be notified of the request's outcome.
+     * @return A cancellable request.
+     * @throws IllegalStateException if mirroring is not activated on this index.
+     */
+    public Request getObjectsOfflineAsync(@NonNull final List<String> objectIDs, final @Nullable List<String> attributesToRetrieve, @NonNull CompletionHandler completionHandler) {
+        if (!mirrored) {
+            throw new IllegalStateException("Mirroring not activated on this index");
+        }
+        return getClient().new AsyncTaskRequest(completionHandler, getClient().localSearchExecutorService) {
+            @NonNull
+            @Override
+            protected JSONObject run() throws AlgoliaException {
+                return _getObjectsOffline(objectIDs, attributesToRetrieve);
+            }
+        }.start();
+    }
+
+    /**
+     * Get individual objects, explicitly targeting the offline mirror, not the online API.
+     *
+     * @param objectIDs Identifiers of objects to retrieve.
+     * @param completionHandler The listener that will be notified of the request's outcome.
+     * @return A cancellable request.
+     * @throws IllegalStateException if mirroring is not activated on this index.
+     */
+    public Request getObjectsOfflineAsync(@NonNull final List<String> objectIDs, @NonNull final CompletionHandler completionHandler) {
+        return getObjectsOfflineAsync(objectIDs, null, completionHandler);
+    }
+
+    private JSONObject _getObjectsOffline(@NonNull final List<String> objectIDs, final @Nullable List<String> attributesToRetrieve) throws AlgoliaException
+    {
+        try {
+            Query query = new Query();
+            if (attributesToRetrieve != null) {
+                query.setAttributesToRetrieve(attributesToRetrieve.toArray(new String[attributesToRetrieve.size()]));
+            }
+            Response searchResults = getLocalIndex().getObjects(objectIDs.toArray(new String[objectIDs.size()]), query.build());
+            if (searchResults.getStatusCode() == 200) {
+                String jsonString = new String(searchResults.getData(), "UTF-8");
+                JSONObject json = new JSONObject(jsonString);
+                json.put(JSON_KEY_ORIGIN, JSON_VALUE_ORIGIN_LOCAL);
+                return json;
+            }
+            else {
+                throw new AlgoliaException(searchResults.getErrorMessage(), searchResults.getStatusCode());
+            }
+        }
+        catch (JSONException | UnsupportedEncodingException e) {
+            throw new AlgoliaException("Get objects failed", e);
+        }
+    }
+
+    // ----------------------------------------------------------------------
     // Listeners
     // ----------------------------------------------------------------------
 

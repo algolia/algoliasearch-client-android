@@ -399,12 +399,7 @@ public class Index {
      * @return A cancellable request.
      */
     public Request getObjectAsync(final @NonNull String objectID, @NonNull CompletionHandler completionHandler) {
-        return getClient().new AsyncTaskRequest(completionHandler) {
-            @NonNull
-            @Override protected JSONObject run() throws AlgoliaException {
-                return getObject(objectID);
-            }
-        }.start();
+        return getObjectAsync(objectID, null, completionHandler);
     }
 
     /**
@@ -432,12 +427,7 @@ public class Index {
      * @return A cancellable request.
      */
     public Request getObjectsAsync(final @NonNull List<String> objectIDs, @NonNull CompletionHandler completionHandler) {
-        return getClient().new AsyncTaskRequest(completionHandler) {
-            @NonNull
-            @Override protected JSONObject run() throws AlgoliaException {
-                return getObjects(objectIDs);
-            }
-        }.start();
+        return getObjectsAsync(objectIDs, null, completionHandler);
     }
 
     /**
