@@ -315,6 +315,54 @@ public class MirroredIndexTest extends OfflineTestBase  {
     }
 
     @Test
+    public void testGetObject() {
+        final CountDownLatch signal = new CountDownLatch(4);
+
+        // Populate the online index & sync the offline mirror.
+        final MirroredIndex index = client.getIndex(Helpers.safeIndexName(Helpers.getMethodName()));
+        sync(index, new SyncCompletionHandler() {
+            @Override
+            public void syncCompleted(@Nullable Throwable error) {
+                assertNull(error);
+
+                // Query the online index explicitly.
+                index.getObjectOnlineAsync("1", new AssertCompletionHandler() {
+                    @Override
+                    public void doRequestCompleted(JSONObject content, AlgoliaException error) {
+                        assertNull(error);
+                        assertEquals("Snoopy", content.optString("name"));
+
+                        // Test offline fallback.
+                        client.setReadHosts("unknown.algolia.com");
+                        index.setRequestStrategy(MirroredIndex.Strategy.FALLBACK_ON_FAILURE);
+                        index.getObjectAsync("3", new AssertCompletionHandler() {
+                            @Override
+                            public void doRequestCompleted(JSONObject content, AlgoliaException error) {
+                                assertNull(error);
+                                assertEquals("Charlie Brown", content.optString("name"));
+                                signal.countDown();
+                            }
+                        });
+                        signal.countDown();
+                    }
+                });
+
+                // Query the offline index explicitly.
+                index.getObjectOfflineAsync("2", new AssertCompletionHandler() {
+                    @Override
+                    public void doRequestCompleted(JSONObject content, AlgoliaException error) {
+                        assertNull(error);
+                        assertEquals("Woodstock", content.optString("name"));
+                        signal.countDown();
+                    }
+                });
+
+                signal.countDown();
+            }
+        });
+    }
+
+    @Test
     public void testGetObjects() {
         final CountDownLatch signal = new CountDownLatch(4);
 

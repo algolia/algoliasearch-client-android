@@ -43,6 +43,7 @@ import java.io.UnsupportedEncodingException;
 import java.io.Writer;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
@@ -1248,6 +1249,117 @@ public class MirroredIndex extends Index
     // ----------------------------------------------------------------------
     // Getting individual objects
     // ----------------------------------------------------------------------
+
+    /**
+     * Get an individual object from the online API, falling back to the local mirror in case of error (when enabled).
+     *
+     * @param objectID Identifier of the object to retrieve.
+     * @param attributesToRetrieve Attributes to retrieve. If `null` or if at least one item is `*`, all retrievable
+     *                             attributes will be retrieved.
+     * @param completionHandler The listener that will be notified of the request's outcome.
+     * @return A cancellable request.
+     */
+    @Override
+    public Request getObjectAsync(final @NonNull String objectID, final @Nullable List<String> attributesToRetrieve, @NonNull CompletionHandler completionHandler) {
+        if (!mirrored) {
+            return super.getObjectAsync(objectID, attributesToRetrieve, completionHandler);
+        } else {
+            return new OnlineOfflineGetObjectRequest(objectID, attributesToRetrieve, completionHandler).start();
+        }
+    }
+
+    private class OnlineOfflineGetObjectRequest extends OnlineOfflineRequest {
+        private final String objectID;
+        private final List<String> attributesToRetrieve;
+
+        public OnlineOfflineGetObjectRequest(@NonNull String objectID, final @Nullable List<String> attributesToRetrieve, @NonNull CompletionHandler completionHandler) {
+            super(completionHandler);
+            this.objectID = objectID;
+            this.attributesToRetrieve = attributesToRetrieve;
+        }
+
+        @Override
+        protected Request startOnlineRequest(CompletionHandler completionHandler) {
+            return getObjectOnlineAsync(objectID, attributesToRetrieve, completionHandler);
+        }
+
+        @Override
+        protected Request startOfflineRequest(CompletionHandler completionHandler) {
+            return getObjectOfflineAsync(objectID, attributesToRetrieve, completionHandler);
+        }
+    }
+
+    /**
+     * Get an individual object, explicitly targeting the online API, not the offline mirror.
+     *
+     * @param objectID Identifier of the object to retrieve.
+     * @param attributesToRetrieve Attributes to retrieve. If `null` or if at least one item is `*`, all retrievable
+     *                             attributes will be retrieved.
+     * @param completionHandler The listener that will be notified of the request's outcome.
+     * @return A cancellable request.
+     */
+    public Request getObjectOnlineAsync(@NonNull final String objectID, final @Nullable List<String> attributesToRetrieve, @NonNull final CompletionHandler completionHandler) {
+        // TODO: Cannot perform origin tagging because it could conflict with the object's attributes
+        return super.getObjectAsync(objectID, attributesToRetrieve, completionHandler);
+    }
+
+    /**
+     * Get an individual object, explicitly targeting the online API, not the offline mirror.
+     *
+     * @param objectID Identifier of the object to retrieve.
+     * @param completionHandler The listener that will be notified of the request's outcome.
+     * @return A cancellable request.
+     */
+    public Request getObjectOnlineAsync(@NonNull final String objectID, @NonNull final CompletionHandler completionHandler) {
+        return getObjectOnlineAsync(objectID, null, completionHandler);
+    }
+
+    /**
+     * Get an individual object, explicitly targeting the offline mirror, not the online API.
+     *
+     * @param objectID Identifier of the object to retrieve.
+     * @param attributesToRetrieve Attributes to retrieve. If `null` or if at least one item is `*`, all retrievable
+     *                             attributes will be retrieved.
+     * @param completionHandler The listener that will be notified of the request's outcome.
+     * @return A cancellable request.
+     * @throws IllegalStateException if mirroring is not activated on this index.
+     */
+    public Request getObjectOfflineAsync(@NonNull final String objectID, final @Nullable List<String> attributesToRetrieve, @NonNull CompletionHandler completionHandler) {
+        if (!mirrored) {
+            throw new IllegalStateException("Mirroring not activated on this index");
+        }
+        return getClient().new AsyncTaskRequest(completionHandler, getClient().localSearchExecutorService) {
+            @NonNull
+            @Override
+            protected JSONObject run() throws AlgoliaException {
+                return _getObjectOffline(objectID, attributesToRetrieve);
+            }
+        }.start();
+    }
+
+    /**
+     * Get an individual object, explicitly targeting the offline mirror, not the online API.
+     *
+     * @param objectID Identifier of the object to retrieve.
+     * @param completionHandler The listener that will be notified of the request's outcome.
+     * @return A cancellable request.
+     * @throws IllegalStateException if mirroring is not activated on this index.
+     */
+    public Request getObjectOfflineAsync(@NonNull final String objectID, @NonNull final CompletionHandler completionHandler) {
+        return getObjectOfflineAsync(objectID, null, completionHandler);
+    }
+
+    private JSONObject _getObjectOffline(@NonNull final String objectID, final @Nullable List<String> attributesToRetrieve) throws AlgoliaException
+    {
+        try {
+            JSONObject content = _getObjectsOffline(Collections.singletonList(objectID), attributesToRetrieve);
+            JSONArray results = content.getJSONArray("results");
+            return results.getJSONObject(0);
+        }
+        catch (JSONException e) {
+            throw new AlgoliaException("Invalid response returned", e); // should never happen
+        }
+    }
 
     /**
      * Get individual objects from the online API, falling back to the local mirror in case of error (when enabled).
