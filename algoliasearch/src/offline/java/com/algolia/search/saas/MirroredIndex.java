@@ -47,7 +47,6 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
@@ -55,74 +54,79 @@ import java.util.concurrent.TimeUnit;
 /**
  * An online index that can also be mirrored locally.
  *
- * You cannot construct this class directly. Please use {@link OfflineClient#getIndex(String)} to obtain an instance.
-
- * <p>When created, an instance of this class has its <code>mirrored</code> flag set to false, and behaves like a normal,
- * online {@link Index}. When the <code>mirrored</code> flag is set to true, the index becomes capable of acting upon
- * local data.</p>
+ * **Note:** You cannot construct this class directly. Please use {@link OfflineClient#getIndex(String)} to obtain an
+ * instance.
  *
- * <p>It is a programming error to call methods acting on the local data when <code>mirrored</code> is false. Doing so
- * will result in an {@link IllegalStateException} being thrown.</p>
+ * **Note:** Requires Algolia Offline Core. {@link OfflineClient#enableOfflineMode(String)} must be called with a
+ * valid license key prior to calling any offline-related method.
  *
- * <p>Native resources are lazily instantiated at the first method call requiring them. They are released when the
- * object is garbage-collected. Although the client guards against concurrent accesses, it is strongly discouraged
- * to create more than one <code>MirroredIndex</code> instance pointing to the same index, as that would duplicate
- * native resources.</p>
+ * When created, an instance of this class has its `mirrored` flag set to false, and behaves like a normal,
+ * online {@link Index}. When the `mirrored` flag is set to true, the index becomes capable of acting upon local data.
  *
- * <p>NOTE: Requires Algolia's SDK. The {@link OfflineClient#enableOfflineMode(String)} method must be called with
- * a valid license key prior to calling any offline-related method.</p>
+ * **Warning:** It is a programming error to call methods acting on the local data when `mirrored` is false. Doing so
+ * will result in an assertion exception being thrown.
  *
- * <h3>Request strategy</h3>
+ *
+ * ## Request strategy
  *
  * When the index is mirrored and the device is online, it becomes possible to transparently switch between online and
  * offline requests. There is no single best strategy for that, because it depends on the use case and the current
- * network conditions. You can choose the strategy through {@link #setRequestStrategy(Strategy)}. The default is
- * {@link Strategy#FALLBACK_ON_FAILURE}, which will always target the online API first, then fallback to the offline
- * mirror in case of failure (including network unavailability).
+ * network conditions. You can choose the strategy via {@link #setRequestStrategy(Strategy) setRequestStrategy}. The
+ * default is {@link Strategy#FALLBACK_ON_FAILURE FALLBACK_ON_FAILURE}, which will always target the online API first,
+ * then fallback to the offline mirror in case of failure (including network unavailability).
  *
- * NOTE: If you want to explicitly target either the online API or the offline mirror, doing so is always possible
- * using the {@link #searchOnlineAsync(Query, CompletionHandler)} or {@link #searchOfflineAsync(Query, CompletionHandler)}
- * methods.
+ * **Note:** If you want to explicitly target either the online API or the offline mirror, doing so is always possible
+ * using the {@link #searchOnlineAsync searchOnlineAsync} or {@link #searchOfflineAsync searchOfflineAsync} methods.
  *
- * NOTE: The strategy applies both to {@link #searchAsync(Query, CompletionHandler)} and
- * {@link #searchDisjunctiveFacetingAsync(Query, List, Map, CompletionHandler)}.
+ * **Note:** The strategy applies to:
+ *
+ * - `searchAsync`
+ * - `searchDisjunctiveFacetingAsync`
+ * - `multipleQueriesAsync`
+ * - `getObjectAsync`
+ * - `getObjectsAsync`
  *
  *
  * ## Bootstrapping
  *
  * Before the first sync has successfully completed, a mirrored index is not available offline, because it has simply
- * no data to search in yet. In most cases, this is not a problem: the app will sync as soon as possible, so unless
+ * no data to search in yet. In most cases, this is not a problem: the app will sync as soon as instructed, so unless
  * the device is offline when the app is started for the first time, or unless search is required right after the
  * first launch, the user should not notice anything.
  *
  * However, in some cases, you might need to have offline data available as soon as possible. To achieve that,
- * `MirroredIndex` provides a **bootstrapping** feature.
+ * `MirroredIndex` provides a **manual build** feature.
  *
- * Bootstrapping consists in prepackaging with your app the data necessary to build your index, in JSON format;
- * namely:
+ * ### Manual build
  *
- * - settings (one file)
- * - objects (as many files as needed, each containing an array of objects)
+ * Manual building consists in specifying the source data for your index from local files, instead of downloading it
+ * from the API. Namely, you need:
  *
- * Then, upon application startup, call one of the `bootstrap*` methods. This will check if data already exists for the
- * mirror and, if not, populate the mirror with the provided data. It also guarantees that a sync will not be started
- * in the meantime, thus avoiding race conditions.
+ * - the **index settings** (one JSON file); and
+ * - the **objects** (as many JSON files as needed, each containing an array of objects).
  *
- * ### Discussion
+ * Those files are typically embedded in the application as resources, although any other origin works too.
+ *
+ * ### Conditional bootstrapping
+ *
+ * To avoid replacing the local mirror every time the app is started (and potentially overwriting more recent data
+ * synced from the API), you should test whether the index already has offline data using {@link #hasOfflineData()}.
+ *
+ * #### Discussion
  *
  * **Warning:** We strongly advise against prepackaging index files. While it may work in some cases, Algolia Offline
  * makes no guarantee whatsoever that the index file format will remain backward-compatible forever, nor that it
  * is independent of the hardware architecture (e.g. 32 bits vs 64 bits, or Little Endian vs Big Endian). Instead,
- * always use the official bootstrapping feature.
+ * always use the manual build feature.
  *
- * While bootstrapping involves building the offline index on the device, and therefore incurs a small delay before
- * the mirror is actually usable, using plain JSON offers a few advantages compared to prepackaging the index file
+ * While a manual build involves computing the offline index on the device, and therefore incurs a small delay before
+ * the mirror is actually usable, using plain JSON offers several advantages compared to prepackaging the index file
  * itself:
  *
  * - You only need to ship the raw object data, which is smaller than shipping an entire index file, which contains
  *   both the raw data *and* indexing metadata.
  *
- * - Plain JSON compresses well with standard compression techniques like GZip, whereas an index file has a binary
+ * - Plain JSON compresses well with standard compression techniques like GZip, whereas an index file uses a binary
  *   format which doesn't compress very efficiently.
  *
  * - Build automation is facilitated: you can easily extract the required data from your back-end, whereas building
@@ -130,7 +134,7 @@ import java.util.concurrent.TimeUnit;
  *   filesystem.
  *
  * Also, the build process is purposedly single-threaded across all indices, which means that on most modern devices
- * with multi-core CPUs, the impact of bootstrapping on the app's performance will be very moderate, especially
+ * with multi-core CPUs, the impact of manual building on the app's performance will be very moderate, especially
  * regarding UI responsiveness.
  *
  *
@@ -150,7 +154,7 @@ import java.util.concurrent.TimeUnit;
  *
  * - Dictionary-based **plurals** are not supported. ("Simple" plurals with a final S are supported.)
  *
- * - **IP geolocation** (see {@link Query#setAroundLatLngViaIP}) is not supported.
+ * - **IP geolocation** (see {@link Query#setAroundLatLngViaIP(Boolean)}) is not supported.
  *
  * - **CJK segmentation** is not supported.
  */
@@ -648,7 +652,7 @@ public class MirroredIndex extends Index
     }
 
     /**
-     * Replace the local mirror with local data stored on the filesystem.
+     * Replace the local mirror with local data stored in raw resources.
      *
      * @param resources A {@link Resources} instance to read resources from.
      * @param settingsResId Resource identifier of the index settings, in JSON format.

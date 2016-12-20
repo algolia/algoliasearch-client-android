@@ -27,7 +27,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 /**
- * Listener for events related to index bootstrapping.
+ * Listener for events related to index building.
  *
  * Notifications are sent on a per-index basis, but you may register the same listener for all indices.
  * Notifications are sent on the main thread.

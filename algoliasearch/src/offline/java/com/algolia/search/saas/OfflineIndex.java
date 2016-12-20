@@ -52,12 +52,70 @@ import java.util.Set;
 import java.util.UUID;
 
 
+
 /**
  * A purely offline index.
  * Such an index has no online counterpart. It is updated and queried locally.
  *
  * **Note:** You cannot construct this class directly. Please use {@link OfflineClient#getOfflineIndex(String)} to
  * obtain an instance.
+ *
+ * **Note:** Requires Algolia Offline Core. {@link OfflineClient#enableOfflineMode(String)} must be called with a
+ * valid license key prior to calling any offline-related method.
+ *
+ *
+ * ## Reading
+ *
+ * Read operations behave identically as with online indices.
+ *
+ *
+ * ## Writing
+ *
+ * Updating an index involves rebuilding it, which is an expensive and potentially lengthy operation. Therefore, all
+ * updates must be wrapped inside a **transaction**.
+ *
+ * The procedure to update an index is as follows:
+ *
+ * - Create a transaction by calling {@link #newTransaction()}.
+ *
+ * - Populate the transaction: call the various write methods on the {@link WriteTransaction WriteTransaction} class.
+ *
+ * - Either commit or rollback the transaction.
+ *
+ * ### Synchronous vs asynchronous updates
+ *
+ * Any write operation, especially (but not limited to) the final commit, is potentially lengthy. This is why all
+ * operations provide an asynchronous version, which accepts an optional completion handler that will be notified of
+ * the operation's completion (either successful or erroneous).
+ *
+ * If you already have a background thread/queue performing data-handling tasks, you may find it more convenient to
+ * use the synchronous versions of the write methods. They are named after the asynchronous versions, suffixed by
+ * `Sync`. The flow is identical to the asynchronous version (see above).
+ *
+ * **Warning:** You must not call synchronous methods from the main thread. The methods will throw an
+ * `IllegalStateException` if you do so.
+ *
+ * **Note:** The synchronous methods can throw; you have to catch and handle the exception.
+ *
+ * ### Parallel transactions
+ *
+ * While it is possible to create parallel transactions, there is little interest in doing so, since each committed
+ * transaction results in an index rebuild. Multiplying transactions therefore only degrades performance.
+ *
+ * Also, transactions are serially executed in the order they were committed, the latest transaction potentially
+ * overwriting the previous transactions' result.
+ *
+ * ### Manual build
+ *
+ * As an alternative to using write transactions, `OfflineIndex` also offers a **manual build** feature. Provided that
+ * you have:
+ *
+ * - the **index settings** (one JSON file); and
+ * - the **objects** (as many JSON files as needed, each containing an array of objects)
+ *
+ * ... available as local files on disk, you can replace the index's content with that data by calling
+ * {@link #buildFromFiles buildFromFiles} or {@link #buildFromRawResources buildFromRawResources}.
+ *
  *
  * ## Caveats
  *
@@ -77,51 +135,9 @@ import java.util.UUID;
  *   is omitted in the new version, it reverts back to its default value. (This is in contrast with the online API,
  *   where you can only specify the settings you want to change and omit the others.)
  *
- * - You cannot batch arbitrary write operations in a single method call (as you would do with {@link Index#batch(JSONArray)}).
- *   However, all write operations are *de facto* batches, since they must be wrapped inside a transaction (see below).
- *
- * ## Operations
- *
- * ### Writing
- *
- * Updating an index involves rebuilding it, which is an expensive and potentially lengthy operation. Therefore, all
- * updates must be wrapped inside a **transaction**.
- *
- * **Warning:** You cannot have several parallel transactions on a given index.
- *
- * The procedure to update an index is as follows:
- *
- * - Create a transaction by calling {@link #newTransaction()}.
- *
- * - Populate the transaction: call the various write methods on the {@link WriteTransaction} class.
- *
- * - Either commit or rollback the transaction.
- *
- * #### Synchronous vs asynchronous updates
- *
- * Any write operation, especially (but not limited to) the final commit, is potentially lengthy. This is why all
- * operations provide an asynchronous version, which accepts an optional completion handler that will be notified of
- * the operation's completion (either successful or erroneous).
- *
- * If you already have a background thread/queue performing data-handling tasks, you may find it more convenient to
- * use the synchronous versions of the write methods. They are named after the asynchronous versions, suffixed by
- * `Sync`. The flow is identical to the asynchronous version (see above).
- *
- * **Warning:** You must not call synchronous methods from the main thread. The methods will assert if you do so.
- *
- * **Note:** The synchronous methods can throw; you have to catch and handle the error.
- *
- * #### Parallel transactions
- *
- * While it is possible to create parallel transactions, there is little interest in doing so, since each committed
- * transaction results in an index rebuild. Multiplying transactions therefore only degrades performance.
- *
- * Also, transactions are serially executed in the order they were committed, the latest transaction potentially
- * overwriting the previous transactions' result.
- *
- * ### Reading
- *
- * Read operations behave identically as with online indices.
+ * - You cannot batch arbitrary write operations in a single method call (as you would do with
+ *   {@link Client#batchAsync Client.batchAsync}). However, all write operations are *de facto* batches, since they
+ *   must be wrapped inside a transaction (see below).
  */
 public class OfflineIndex {
     /** The client to which this index belongs. */

@@ -370,7 +370,6 @@ public class MirroredIndexTest extends OfflineTestBase  {
         });
     }
 
-
     @Test
     public void testGetObject() {
         final CountDownLatch signal = new CountDownLatch(4);
