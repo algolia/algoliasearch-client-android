@@ -23,6 +23,7 @@
 
 package com.algolia.search.saas;
 
+import android.content.res.Resources;
 import android.os.Looper;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -827,6 +828,100 @@ public class OfflineIndex {
      */
     public boolean hasOfflineData() {
         return localIndex.exists();
+    }
+
+    // ----------------------------------------------------------------------
+    // Manual build
+    // ----------------------------------------------------------------------
+
+    /**
+     * Build the index from local data stored on the filesystem.
+     *
+     * @param settingsFile Absolute path to the file containing the index settings, in JSON format.
+     * @param objectFiles Absolute path(s) to the file(s) containing the objects. Each file must contain an array of
+     *                    objects, in JSON format.
+     * @param completionHandler Optional completion handler to be notified of the build's outcome.
+     * @return A cancellable request.
+     *
+     * **Note:** Cancelling the request does *not* cancel the build; it merely prevents the completion handler from
+     * being called.
+     */
+    public Request buildFromFiles(@NonNull final File settingsFile, @NonNull final File[] objectFiles, @Nullable CompletionHandler completionHandler) {
+        return getClient().new AsyncTaskRequest(completionHandler, getClient().localBuildExecutorService) {
+            @NonNull
+            @Override
+            protected JSONObject run() throws AlgoliaException {
+                return _build(settingsFile, objectFiles);
+            }
+        }.start();
+    }
+
+    public Request buildFromFiles(@NonNull final File settingsFile, @NonNull final File... objectFiles) {
+        return buildFromFiles(settingsFile, objectFiles, null);
+    }
+
+    /**
+     * Build the index from local data stored in raw resources.
+     *
+     * @param resources A {@link Resources} instance to read resources from.
+     * @param settingsResId Resource identifier of the index settings, in JSON format.
+     * @param objectsResIds Resource identifiers of the various objects files. Each file must contain an array of
+     *                    objects, in JSON format.
+     * @param completionHandler Optional completion handler to be notified of the build's outcome.
+     * @return A cancellable request.
+     *
+     * **Note:** Cancelling the request does *not* cancel the build; it merely prevents the completion handler from
+     * being called.
+     */
+    public Request buildFromRawResources(@NonNull final Resources resources, @NonNull final int settingsResId, @NonNull final int[] objectsResIds, @Nullable CompletionHandler completionHandler) {
+        return getClient().new AsyncTaskRequest(completionHandler, getClient().localBuildExecutorService) {
+            @NonNull
+            @Override
+            protected JSONObject run() throws AlgoliaException {
+                return _buildFromRawResources(resources, settingsResId, objectsResIds);
+            }
+        }.start();
+    }
+
+    public Request buildFromRawResources(@NonNull final Resources resources, @NonNull final int settingsResId, @NonNull final int... objectsResIds) {
+        return buildFromRawResources(resources, settingsResId, objectsResIds, null);
+    }
+
+    private JSONObject _buildFromRawResources(@NonNull final Resources resources, @NonNull final int settingsResId, @NonNull final int... objectsResIds) throws AlgoliaException {
+        // Save resources to independent files on disk.
+        File tmpDir = new File(getClient().getTempDir(), UUID.randomUUID().toString());
+        try {
+            tmpDir.mkdirs();
+            // Settings.
+            File settingsFile = new File(tmpDir, "settings.json");
+            FileUtils.writeFile(settingsFile, resources.openRawResource(settingsResId));
+            // Objects.
+            File[] objectFiles = new File[objectsResIds.length];
+            for (int i = 0; i < objectsResIds.length; ++i) {
+                objectFiles[i] = new File(tmpDir, "objects#" + Integer.toString(objectsResIds[i]) + ".json");
+                FileUtils.writeFile(objectFiles[i], resources.openRawResource(objectsResIds[i]));
+            }
+            // Build the index.
+            return _build(settingsFile, objectFiles);
+        } catch (IOException e) {
+            throw new AlgoliaException("Failed to write build resources to disk", e);
+        } finally {
+            // Delete temporary files.
+            FileUtils.deleteRecursive(tmpDir);
+        }
+    }
+
+    private JSONObject _build(@NonNull File settingsFile, @NonNull File... objectFiles) throws AlgoliaException {
+        AlgoliaException error = null;
+        String[] objectFilePaths = new String[objectFiles.length];
+        for (int i = 0; i < objectFiles.length; ++i) {
+            objectFilePaths[i] = objectFiles[i].getAbsolutePath();
+        }
+        final int status = localIndex.build(settingsFile.getAbsolutePath(), objectFilePaths, true /* clearIndex */, null /* deletedObjectIDs */);
+        if (status != 200) {
+            throw new AlgoliaException(String.format("Failed to build local index \"%s\"", OfflineIndex.this.getName()), status);
+        }
+        return new JSONObject();
     }
 
     // ----------------------------------------------------------------------

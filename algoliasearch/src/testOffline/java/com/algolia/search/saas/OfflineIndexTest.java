@@ -27,7 +27,9 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 import org.junit.Test;
 import org.mockito.internal.util.reflection.Whitebox;
+import org.robolectric.RuntimeEnvironment;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -518,6 +520,46 @@ public class OfflineIndexTest extends OfflineTestBase  {
                         signal.countDown();
                     }
                 });
+            }
+        });
+    }
+
+    @Test
+    public void testBuild() {
+        final CountDownLatch signal = new CountDownLatch(2);
+
+        // Retrieve data files from resources.
+        File resourcesDir = new File(RuntimeEnvironment.application.getPackageResourcePath() + "/src/testOffline/res");
+        File rawDir = new File(resourcesDir, "raw");
+        File settingsFile = new File(rawDir, "settings.json");
+        File objectFile = new File(rawDir, "objects.json");
+
+        // Create the index.
+        final OfflineIndex index = client.getOfflineIndex(Helpers.safeIndexName(Helpers.getMethodName()));
+
+        // Check that no offline data exists.
+        assertFalse(index.hasOfflineData());
+
+        // Build the index.
+        index.buildFromFiles(settingsFile, new File[]{ objectFile }, new AssertCompletionHandler() {
+            @Override
+            public void doRequestCompleted(JSONObject content, AlgoliaException error) {
+                assertNull(error);
+
+                // Check that offline data exists now.
+                assertTrue(index.hasOfflineData());
+
+                // Search.
+                Query query = new Query().setQuery("peanuts").setFilters("kind:animal");
+                index.searchAsync(query, new AssertCompletionHandler() {
+                    @Override
+                    public void doRequestCompleted(JSONObject content, AlgoliaException error) {
+                        assertNull(error);
+                        assertEquals(2, content.optInt("nbHits"));
+                        signal.countDown();
+                    }
+                });
+                signal.countDown();
             }
         });
     }
