@@ -1286,18 +1286,18 @@ public class MirroredIndex extends Index
     // BuildListener
 
     /**
-     * Add a listener for bootstrapping events.
+     * Add a listener for build events.
      * @param listener The listener to add.
      */
-    public void addBootstrapListener(@NonNull BuildListener listener) {
+    public void addBuildListener(@NonNull BuildListener listener) {
         buildListeners.add(listener);
     }
 
     /**
-     * Remove a listener for bootstrapping events.
+     * Remove a listener for build events.
      * @param listener The listener to remove.
      */
-    public void removeBootstrapListener(@NonNull BuildListener listener) {
+    public void removeBuildListener(@NonNull BuildListener listener) {
         buildListeners.remove(listener);
     }
 
