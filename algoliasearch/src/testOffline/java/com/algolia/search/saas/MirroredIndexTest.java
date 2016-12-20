@@ -31,7 +31,9 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.junit.Test;
+import org.robolectric.RuntimeEnvironment;
 
+import java.io.File;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
@@ -43,6 +45,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 
@@ -313,6 +316,60 @@ public class MirroredIndexTest extends OfflineTestBase  {
             }
         });
     }
+
+    @Test
+    public void testBuildOffline() {
+        final CountDownLatch signal = new CountDownLatch(4);
+
+        // Retrieve data files from resources.
+        File resourcesDir = new File(RuntimeEnvironment.application.getPackageResourcePath() + "/src/testOffline/res");
+        File rawDir = new File(resourcesDir, "raw");
+        File settingsFile = new File(rawDir, "settings.json");
+        File objectFile = new File(rawDir, "objects.json");
+
+        // Create the index.
+        final MirroredIndex index = client.getIndex(Helpers.safeIndexName(Helpers.getMethodName()));
+        index.setMirrored(true);
+
+        // Check that no offline data exists.
+        assertFalse(index.hasOfflineData());
+
+        // Build the index.
+        index.addBuildListener(new BuildListener() {
+            @Override
+            public void buildDidStart(@NonNull MirroredIndex index) {
+                signal.countDown();
+            }
+
+            @Override
+            public void buildDidFinish(@NonNull MirroredIndex index, @Nullable Throwable error) {
+                assertNull(error);
+                signal.countDown();
+            }
+        });
+        index.buildOfflineFromFiles(settingsFile, new File[]{ objectFile }, new AssertCompletionHandler() {
+            @Override
+            public void doRequestCompleted(JSONObject content, AlgoliaException error) {
+                assertNull(error);
+
+                // Check that offline data exists now.
+                assertTrue(index.hasOfflineData());
+
+                // Search.
+                Query query = new Query().setQuery("peanuts").setFilters("kind:animal");
+                index.searchOfflineAsync(query, new AssertCompletionHandler() {
+                    @Override
+                    public void doRequestCompleted(JSONObject content, AlgoliaException error) {
+                        assertNull(error);
+                        assertEquals(2, content.optInt("nbHits"));
+                        signal.countDown();
+                    }
+                });
+                signal.countDown();
+            }
+        });
+    }
+
 
     @Test
     public void testGetObject() {
