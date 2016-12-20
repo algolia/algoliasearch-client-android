@@ -93,8 +93,8 @@ public class IndexTest extends RobolectricTestCase {
             client.deleteIndex(originalIndexName);
 
             originalObjects = new ArrayList<>();
-            originalObjects.add(new JSONObject("{\"city\": \"San Francisco\"}"));
-            originalObjects.add(new JSONObject("{\"city\": \"San José\"}"));
+            originalObjects.add(new JSONObject("{\"city\": \"San Francisco\", \"state\": \"CA\"}"));
+            originalObjects.add(new JSONObject("{\"city\": \"San José\", \"state\": \"CA\"}"));
 
             JSONObject task = originalIndex.addObjects(new JSONArray(originalObjects));
             originalIndex.waitTask(task.getString("taskID"));
@@ -399,12 +399,12 @@ public class IndexTest extends RobolectricTestCase {
 
     @Test
     public void getObjectWithAttributesToRetrieveAsync() throws Exception {
-        List<String> attributesToRetrieve = new ArrayList<>();
-        attributesToRetrieve.add("objectID");
+        List<String> attributesToRetrieve = Arrays.asList("objectID", "state");
         index.getObjectAsync(ids.get(0), attributesToRetrieve, new AssertCompletionHandler() {
             @Override public void doRequestCompleted(JSONObject content, AlgoliaException error) {
                 if (error == null) {
                     assertTrue("Object has unexpected objectId", content.optString("objectID").equals(ids.get(0)));
+                    assertTrue("Object is missing expected 'state' attribute", content.has("state"));
                     assertFalse("Object has unexpected 'city' attribute", content.has("city"));
                 } else {
                     fail(error.getMessage());
