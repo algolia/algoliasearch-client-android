@@ -618,7 +618,7 @@ public class MirroredIndex extends Index
      * @return `true` if data exists on disk for this index, `false` otherwise.
      */
     public boolean hasOfflineData() {
-        return localIndex.exists();
+        return getLocalIndex().exists();
     }
 
     /**
