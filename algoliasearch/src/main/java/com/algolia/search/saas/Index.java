@@ -732,8 +732,11 @@ public class Index {
      */
     protected JSONObject getObject(String objectID, List<String> attributesToRetrieve) throws AlgoliaException {
         try {
-            String params = encodeAttributes(attributesToRetrieve, true);
-            return client.getRequest("/1/indexes/" + encodedIndexName + "/" + URLEncoder.encode(objectID, "UTF-8") + params, false);
+            String path = "/1/indexes/" + encodedIndexName + "/" + URLEncoder.encode(objectID, "UTF-8");
+            if (attributesToRetrieve != null) {
+                path += encodeAttributes(attributesToRetrieve, true); // includes the query separator (`?`)
+            }
+            return client.getRequest(path, false);
         } catch (UnsupportedEncodingException e) {
             throw new RuntimeException(e);
         }
