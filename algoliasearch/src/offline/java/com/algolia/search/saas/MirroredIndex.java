@@ -561,13 +561,7 @@ public class MirroredIndex extends Index
             stats.fileCount = objectFiles.size();
 
             // Build the index.
-            String[] objectFilePaths = new String[objectFiles.size()];
-            for (int i = 0; i < objectFiles.size(); ++i)
-                objectFilePaths[i] = objectFiles.get(i).getAbsolutePath();
-            int status = getLocalIndex().build(settingsFile.getAbsolutePath(), objectFilePaths, true /* clearIndex */, null /* deletedObjectIDs */);
-            if (status != 200) {
-                throw new AlgoliaException("Build index failed", status);
-            }
+            _buildOffline(settingsFile, objectFiles.toArray(new File[objectFiles.size()]));
 
             // Update statistics.
             long afterBuildTime = System.currentTimeMillis();
@@ -612,7 +606,7 @@ public class MirroredIndex extends Index
     }
 
     // ----------------------------------------------------------------------
-    // Bootstrapping
+    // Manual build
     // ----------------------------------------------------------------------
 
     /**
@@ -627,90 +621,59 @@ public class MirroredIndex extends Index
     }
 
     /**
-     * Bootstrap the local mirror with local data stored on the filesystem.
-     *
-     * **Note:** This method will do nothing if offline data is already available, making it safe to call at every
-     * application launch.
+     * Replace the local mirror with local data stored on the filesystem.
      *
      * @param settingsFile Absolute path to the file containing the index settings, in JSON format.
      * @param objectFiles Absolute path(s) to the file(s) containing the objects. Each file must contain an array of
      *                    objects, in JSON format.
+     * @param completionHandler Optional completion handler to be notified of the build's outcome.
+     * @return A cancellable request.
+     *
+     * **Note:** Cancelling the request does *not* cancel the build; it merely prevents the completion handler from
+     * being called.
      */
-    public void bootstrapFromFiles(@NonNull final File settingsFile, @NonNull final File... objectFiles) {
-        getClient().localBuildExecutorService.submit(new Runnable() {
+    public Request buildOfflineFromFiles(@NonNull final File settingsFile, @NonNull final File[] objectFiles, @Nullable CompletionHandler completionHandler) {
+        return getClient().new AsyncTaskRequest(completionHandler, getClient().localBuildExecutorService) {
+            @NonNull
             @Override
-            public void run() {
-                // Abort immediately if data already exists.
-                if (localIndex.exists()) {
-                    return;
-                }
-                _buildOffline(settingsFile, objectFiles);
+            protected JSONObject run() throws AlgoliaException {
+                return _buildOffline(settingsFile, objectFiles);
             }
-        });
+        }.start();
     }
 
-    /**
-     * Bootstrap the local mirror with local data stored in raw Android resources.
-     *
-     * **Note:** This method will do nothing if offline data is already available, making it safe to call at every
-     * application launch.
-     *
-     * @param resources A {@link Resources} instance to read resources from.
-     * @param settingsResId Resource identifier of the index settings, in JSON format.
-     * @param objectsResIds Resource identifiers of the various objects files. Each file must contain an array of
-     *                    objects, in JSON format.
-     */
-    public void bootstrapFromRawResources(@NonNull final Resources resources, @NonNull final int settingsResId, @NonNull final int... objectsResIds) {
-        getClient().localBuildExecutorService.submit(new Runnable() {
-            @Override
-            public void run() {
-                // Abort immediately if data already exists.
-                if (localIndex.exists()) {
-                    return;
-                }
-                _buildOfflineFromRawResources(resources, settingsResId, objectsResIds);
-            }
-        });
+    public Request buildOfflineFromFiles(@NonNull final File settingsFile, @NonNull final File... objectFiles) {
+        return buildOfflineFromFiles(settingsFile, objectFiles, null);
     }
 
     /**
      * Replace the local mirror with local data stored on the filesystem.
      *
-     * **Note:** This method will *always* replace the local mirror with the specified data.
-     *
-     * @param settingsFile Absolute path to the file containing the index settings, in JSON format.
-     * @param objectFiles Absolute path(s) to the file(s) containing the objects. Each file must contain an array of
-     *                    objects, in JSON format.
-     */
-    public void buildOfflineFromFiles(@NonNull final File settingsFile, @NonNull final File... objectFiles) {
-        getClient().localBuildExecutorService.submit(new Runnable() {
-            @Override
-            public void run() {
-                _buildOffline(settingsFile, objectFiles);
-            }
-        });
-    }
-
-    /**
-     * Replace the local mirror with local data stored on the filesystem.
-     *
-     * **Note:** This method will *always* replace the local mirror with the specified data.
-     *
      * @param resources A {@link Resources} instance to read resources from.
      * @param settingsResId Resource identifier of the index settings, in JSON format.
      * @param objectsResIds Resource identifiers of the various objects files. Each file must contain an array of
      *                    objects, in JSON format.
+     * @param completionHandler Optional completion handler to be notified of the build's outcome.
+     * @return A cancellable request.
+     *
+     * **Note:** Cancelling the request does *not* cancel the build; it merely prevents the completion handler from
+     * being called.
      */
-    public void buildOfflineFromRawResources(@NonNull final Resources resources, @NonNull final int settingsResId, @NonNull final int... objectsResIds) {
-        getClient().localBuildExecutorService.submit(new Runnable() {
+    public Request buildOfflineFromRawResources(@NonNull final Resources resources, @NonNull final int settingsResId, @NonNull final int[] objectsResIds, @Nullable CompletionHandler completionHandler) {
+        return getClient().new AsyncTaskRequest(completionHandler, getClient().localBuildExecutorService) {
+            @NonNull
             @Override
-            public void run() {
-                _buildOfflineFromRawResources(resources, settingsResId, objectsResIds);
+            protected JSONObject run() throws AlgoliaException {
+                return _buildOfflineFromRawResources(resources, settingsResId, objectsResIds);
             }
-        });
+        }.start();
     }
 
-    private void _buildOfflineFromRawResources(@NonNull final Resources resources, @NonNull final int settingsResId, @NonNull final int... objectsResIds) {
+    public Request buildOfflineFromRawResources(@NonNull final Resources resources, @NonNull final int settingsResId, @NonNull final int... objectsResIds) {
+        return buildOfflineFromRawResources(resources, settingsResId, objectsResIds, null);
+    }
+
+    private JSONObject _buildOfflineFromRawResources(@NonNull final Resources resources, @NonNull final int settingsResId, @NonNull final int... objectsResIds) throws AlgoliaException {
         // Save resources to independent files on disk.
         // TODO: See if we can have the Offline Core read directly from resources or assets.
         File tmpDir = new File(getClient().getTempDir(), UUID.randomUUID().toString());
@@ -726,48 +689,48 @@ public class MirroredIndex extends Index
                 FileUtils.writeFile(objectFiles[i], resources.openRawResource(objectsResIds[i]));
             }
             // Build the index.
-            _buildOffline(settingsFile, objectFiles);
+            return _buildOffline(settingsFile, objectFiles);
         } catch (IOException e) {
-            Log.e(MirroredIndex.class.getSimpleName(), "Failed to write build resources to disk", e);
+            throw new AlgoliaException("Failed to write build resources to disk", e);
         } finally {
             // Delete temporary files.
             FileUtils.deleteRecursive(tmpDir);
         }
     }
 
-    /**
-     * Build the local mirror (synchronously).
-     *
-     * @param settingsFile The file containing index settings.
-     * @param objectFiles The files containing objects.
-     */
-    private void _buildOffline(@NonNull File settingsFile, @NonNull File... objectFiles) {
-        // Notify listeners.
-        getClient().mainHandler.post(new Runnable() {
-            @Override
-            public void run() {
-                fireBuildDidStart();
-            }
-        });
-
-        // Build the index.
-        String[] objectFilePaths = new String[objectFiles.length];
-        for (int i = 0; i < objectFiles.length; ++i) {
-            objectFilePaths[i] = objectFiles[i].getAbsolutePath();
-        }
-        final int status = localIndex.build(settingsFile.getAbsolutePath(), objectFilePaths, true /* clearIndex */, null /* deletedObjectIDs */);
-
-        // Notify listeners.
-        getClient().mainHandler.post(new Runnable() {
-            @Override
-            public void run() {
-                Throwable error = null;
-                if (status != 200) {
-                    error = new AlgoliaException(String.format("Failed to build local mirror \"%s\"", MirroredIndex.this.getIndexName()), status);
+    private JSONObject _buildOffline(@NonNull File settingsFile, @NonNull File... objectFiles) throws AlgoliaException {
+        AlgoliaException error = null;
+        try {
+            // Notify listeners.
+            getClient().mainHandler.post(new Runnable() {
+                @Override
+                public void run() {
+                    fireBuildDidStart();
                 }
-                fireBuildDidFinish(error);
+            });
+
+            // Build the index.
+            String[] objectFilePaths = new String[objectFiles.length];
+            for (int i = 0; i < objectFiles.length; ++i) {
+                objectFilePaths[i] = objectFiles[i].getAbsolutePath();
             }
-        });
+            final int status = getLocalIndex().build(settingsFile.getAbsolutePath(), objectFilePaths, true /* clearIndex */, null /* deletedObjectIDs */);
+            if (status != 200) {
+                error = new AlgoliaException(String.format("Failed to build local mirror \"%s\"", MirroredIndex.this.getIndexName()), status);
+                throw error;
+            }
+            return new JSONObject();
+        }
+        finally {
+            // Notify listeners.
+            final Throwable finalError = error;
+            getClient().mainHandler.post(new Runnable() {
+                @Override
+                public void run() {
+                    fireBuildDidFinish(finalError);
+                }
+            });
+        }
     }
 
     // ----------------------------------------------------------------------
