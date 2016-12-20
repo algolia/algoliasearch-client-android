@@ -24,6 +24,7 @@
 package com.algolia.search.saas;
 
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
 /**
  * Listener for events related to index bootstrapping.
@@ -31,20 +32,20 @@ import android.support.annotation.NonNull;
  * Notifications are sent on a per-index basis, but you may register the same listener for all indices.
  * Notifications are sent on the main thread.
  */
-public interface BootstrapListener
+public interface BuildListener
 {
     /**
-     * Bootstrapping has just started.
+     * Build of the local index has just started.
      *
-     * @param index The bootstrapping index.
+     * @param index The index being built.
      */
-    public void bootstrapDidStart(@NonNull MirroredIndex index);
+    public void buildDidStart(@NonNull MirroredIndex index);
 
     /**
-     * Bootstrapping has just finished.
+     * Build of the local index has just finished.
      *
-     * @param index The bootstrapping index.
-     * @param error Null if success, otherwise indicates the error.
+     * @param index The index having been built.
+     * @param error `null` if success, otherwise indicates the error.
      */
-    public void bootstrapDidFinish(@NonNull MirroredIndex index, Throwable error);
+    public void buildDidFinish(@NonNull MirroredIndex index, @Nullable Throwable error);
 }

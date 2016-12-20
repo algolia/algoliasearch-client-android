@@ -169,7 +169,7 @@ public class MirroredIndex extends Index
     private SyncStats stats;
 
     private Set<SyncListener> syncListeners = new HashSet<>();
-    private Set<BootstrapListener> bootstrapListeners = new HashSet<>();
+    private Set<BuildListener> buildListeners = new HashSet<>();
 
     // ----------------------------------------------------------------------
     // Constants
@@ -728,19 +728,25 @@ public class MirroredIndex extends Index
             // Build the index.
             _buildOffline(settingsFile, objectFiles);
         } catch (IOException e) {
-            Log.e(MirroredIndex.class.getSimpleName(), "Failed to write bootstrap resources to disk", e);
+            Log.e(MirroredIndex.class.getSimpleName(), "Failed to write build resources to disk", e);
         } finally {
             // Delete temporary files.
             FileUtils.deleteRecursive(tmpDir);
         }
     }
 
+    /**
+     * Build the local mirror (synchronously).
+     *
+     * @param settingsFile The file containing index settings.
+     * @param objectFiles The files containing objects.
+     */
     private void _buildOffline(@NonNull File settingsFile, @NonNull File... objectFiles) {
         // Notify listeners.
         getClient().mainHandler.post(new Runnable() {
             @Override
             public void run() {
-                fireBootstrapDidStart();
+                fireBuildDidStart();
             }
         });
 
@@ -759,7 +765,7 @@ public class MirroredIndex extends Index
                 if (status != 200) {
                     error = new AlgoliaException(String.format("Failed to build local mirror \"%s\"", MirroredIndex.this.getIndexName()), status);
                 }
-                fireBootstrapDidFinish(error);
+                fireBuildDidFinish(error);
             }
         });
     }
@@ -1314,33 +1320,33 @@ public class MirroredIndex extends Index
         }
     }
 
-    // BootstrapListener
+    // BuildListener
 
     /**
      * Add a listener for bootstrapping events.
      * @param listener The listener to add.
      */
-    public void addBootstrapListener(@NonNull BootstrapListener listener) {
-        bootstrapListeners.add(listener);
+    public void addBootstrapListener(@NonNull BuildListener listener) {
+        buildListeners.add(listener);
     }
 
     /**
      * Remove a listener for bootstrapping events.
      * @param listener The listener to remove.
      */
-    public void removeBootstrapListener(@NonNull BootstrapListener listener) {
-        bootstrapListeners.remove(listener);
+    public void removeBootstrapListener(@NonNull BuildListener listener) {
+        buildListeners.remove(listener);
     }
 
-    private void fireBootstrapDidStart() {
-        for (BootstrapListener listener : bootstrapListeners) {
-            listener.bootstrapDidStart(this);
+    private void fireBuildDidStart() {
+        for (BuildListener listener : buildListeners) {
+            listener.buildDidStart(this);
         }
     }
 
-    private void fireBootstrapDidFinish(@Nullable Throwable error) {
-        for (BootstrapListener listener : bootstrapListeners) {
-            listener.bootstrapDidFinish(this, error);
+    private void fireBuildDidFinish(@Nullable Throwable error) {
+        for (BuildListener listener : buildListeners) {
+            listener.buildDidFinish(this, error);
         }
     }
 }
