@@ -619,11 +619,11 @@ public class Query extends AbstractQuery {
 
     /**
      * Search for entries inside a given area defined by the two extreme points
-     * of a rectangle. At indexing, geoloc of an object should be set with
-     * _geoloc attribute containing lat and lng attributes (for example
-     * {"_geoloc":{"lat":48.853409, "lng":2.348800}})
+     * of a rectangle.
      * <p>
-     * You can use several bounding boxes (OR) by calling this method several times.
+     * At indexing, geoloc of an object should be set with
+     * {@code _geoloc} attribute containing lat and lng attributes (for example
+     * {@code {"_geoloc":{"lat":48.853409, "lng":2.348800}})}
      */
     public @NonNull Query setInsideBoundingBox(@Nullable GeoRect... boxes) {
         if (boxes == null) {
@@ -674,19 +674,46 @@ public class Query extends AbstractQuery {
         }
     }
 
-    private static final String KEY_INSIDE_POLYGON = "insidePolygon";
-
     /**
-     * Add a point to the polygon of geo-search (requires a minimum of three points to define a valid polygon)
-     * At indexing, you should specify geoloc of an object with the _geoloc attribute (in the form "_geoloc":{"lat":48.853409, "lng":2.348800} or
-     * "_geoloc":[{"lat":48.853409, "lng":2.348800},{"lat":48.547456, "lng":2.972075}] if you have several geo-locations in your record).
+     * A polygon in geo coordinates.
+     * Used in geo-search.
      */
-    public @NonNull Query setInsidePolygon(@Nullable LatLng... points) {
-        if (points == null) {
-            set(KEY_INSIDE_POLYGON, null);
-        } else if (points.length < 3) {
-            throw new IllegalArgumentException("A polygon must have at least three vertices");
-        } else {
+    public static final class Polygon {
+        @NonNull
+        public final LatLng[] points;
+
+        public Polygon(@NonNull LatLng... points) {
+            if (points.length < 3) {
+                throw new IllegalArgumentException("A polygon must have at least three vertices");
+            }
+            this.points = points;
+        }
+
+        public Polygon(String value) {
+            this(parse(value));
+        }
+
+        public Polygon(Polygon other) {
+            this.points = other.points;
+        }
+
+        @Override public boolean equals(Object o) {
+            if (this == o) {
+                return true;
+            }
+            if (o == null || getClass() != o.getClass()) {
+                return false;
+            }
+
+            Polygon polygon = (Polygon) o;
+            return Arrays.equals(points, polygon.points);
+        }
+
+        @Override public int hashCode() {
+            return Arrays.hashCode(points);
+        }
+
+        @Override public String toString() {
             StringBuilder sb = new StringBuilder();
             for (LatLng point : points) {
                 if (sb.length() != 0) {
@@ -696,14 +723,10 @@ public class Query extends AbstractQuery {
                 sb.append(',');
                 sb.append(point.lng);
             }
-            set(KEY_INSIDE_POLYGON, sb.toString());
+            return sb.toString();
         }
-        return this;
-    }
 
-    public @Nullable LatLng[] getInsidePolygon() {
-        try {
-            String value = get(KEY_INSIDE_POLYGON);
+        public static @Nullable Polygon parse(String value) {
             if (value != null) {
                 String[] fields = value.split(",");
                 if (fields.length % 2 == 0 && fields.length / 2 >= 3) {
@@ -714,12 +737,69 @@ public class Query extends AbstractQuery {
                                 Double.parseDouble(fields[2 * i + 1])
                         );
                     }
-                    return result;
+                    return new Polygon(result);
                 }
             }
             return null;
-        } catch (NumberFormatException e) {
+        }
+    }
+
+    private static final String KEY_INSIDE_POLYGON = "insidePolygon";
+
+    /**
+     * Search for entries inside a given area defined by the points of a polygon.
+     * <p>
+     * At indexing, geoloc of an object should be set with {@code _geoloc} attribute containing lat
+     * and lng attributes (for example {@code {"_geoloc":{"lat":48.853409, "lng":2.348800}})}
+     */
+    public @NonNull Query setInsidePolygon(@Nullable LatLng... points) {
+        set(KEY_INSIDE_POLYGON, points == null ? null : new Polygon(points).toString());
+        return this;
+    }
+
+    /**
+     * Search for entries inside a given area defined by several polygons.
+     * <p>
+     * At indexing, geoloc of an object should be set with {@code _geoloc} attribute containing lat
+     * and lng attributes (for example {@code {"_geoloc":{"lat":48.853409, "lng":2.348800}})}
+     */
+    public @NonNull Query setInsidePolygon(@Nullable Polygon... polygons) {
+        String insidePolygon = null;
+        if (polygons == null) {
+            insidePolygon = null;
+        } else if (polygons.length == 1) {
+            insidePolygon = polygons[0].toString();
+        } else {
+            for (Polygon polygon : polygons) {
+                String polygonStr = "[" + polygon + "]";
+                if (insidePolygon == null) {
+                    insidePolygon = "[";
+                } else {
+                    insidePolygon += ",";
+                }
+                insidePolygon += polygonStr;
+            }
+            insidePolygon += "]";
+        }
+        set(KEY_INSIDE_POLYGON, insidePolygon);
+        return this;
+    }
+
+    public @Nullable Polygon[] getInsidePolygon() {
+        String value = get(KEY_INSIDE_POLYGON);
+        Polygon[] polygons;
+        if (value == null) {
             return null;
+        } else if (value.startsWith("[")) {
+            String[] values = parseArray(value);
+            polygons = new Polygon[values.length];
+            for (int i = 0; i < values.length; i++) {
+                polygons[i] = new Polygon(values[i].replace("[", "").replace("]", ""));
+            }
+            return polygons;
+        } else {
+            final Polygon polygon = Polygon.parse(value);
+            return new Polygon[]{polygon};
         }
     }
 

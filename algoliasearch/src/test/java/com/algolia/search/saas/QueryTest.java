@@ -563,10 +563,18 @@ public class QueryTest extends RobolectricTestCase {
     public void insidePolygon() {
         Query query = new Query();
         assertNull(query.getInsidePolygon());
-        final Query.LatLng[] box = { new Query.LatLng(11.111111, 22.222222), new Query.LatLng(33.333333, 44.444444), new Query.LatLng(-55.555555, -66.666666) };
-        query.setInsidePolygon(box);
-        assertArrayEquals(box, query.getInsidePolygon());
+        final Query.Polygon polygon = new Query.Polygon(new Query.LatLng(11.111111, 22.222222), new Query.LatLng(33.333333, 44.444444), new Query.LatLng(-55.555555, -66.666666));
+        Query.Polygon[] polygons = {polygon};
+        query.setInsidePolygon(polygons);
+        assertArrayEquals(polygons, query.getInsidePolygon());
         assertEquals("11.111111,22.222222,33.333333,44.444444,-55.555555,-66.666666", query.get("insidePolygon"));
+        assertArrayEquals(query.getInsidePolygon(), Query.parse(query.build()).getInsidePolygon());
+
+        final Query.Polygon polygon2 = new Query.Polygon(new Query.LatLng(77.777777, 88.888888), new Query.LatLng(99.999999, 11.111111), new Query.LatLng(-11.111111, -22.222222));
+        polygons = new Query.Polygon[]{polygon, polygon2};
+        query.setInsidePolygon(polygons);
+        assertArrayEquals(polygons, query.getInsidePolygon());
+        assertEquals("[[11.111111,22.222222,33.333333,44.444444,-55.555555,-66.666666],[77.777777,88.888888,99.999999,11.111111,-11.111111,-22.222222]]", query.get("insidePolygon"));
         assertArrayEquals(query.getInsidePolygon(), Query.parse(query.build()).getInsidePolygon());
     }
 
