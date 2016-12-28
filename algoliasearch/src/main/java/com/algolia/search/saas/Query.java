@@ -776,20 +776,24 @@ public class Query extends AbstractQuery {
     }
 
     public @Nullable Polygon[] getInsidePolygon() {
-        String value = get(KEY_INSIDE_POLYGON);
-        Polygon[] polygons;
-        if (value == null) {
-            return null;
-        } else if (value.startsWith("[")) {
-            String[] values = parseArray(value);
-            polygons = new Polygon[values.length];
-            for (int i = 0; i < values.length; i++) {
-                polygons[i] = new Polygon(values[i].replace("[", "").replace("]", ""));
+        try {
+            String value = get(KEY_INSIDE_POLYGON);
+            Polygon[] polygons;
+            if (value == null) {
+                return null;
+            } else if (value.startsWith("[")) {
+                String[] values = parseArray(value);
+                polygons = new Polygon[values.length];
+                for (int i = 0; i < values.length; i++) {
+                    polygons[i] = new Polygon(values[i].replace("[", "").replace("]", ""));
+                }
+                return polygons;
+            } else {
+                final Polygon polygon = Polygon.parse(value);
+                return new Polygon[]{polygon};
             }
-            return polygons;
-        } else {
-            final Polygon polygon = Polygon.parse(value);
-            return new Polygon[]{polygon};
+        } catch (NumberFormatException e) {
+            return null;
         }
     }
 
