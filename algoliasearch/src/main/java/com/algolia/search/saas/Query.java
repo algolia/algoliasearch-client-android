@@ -618,12 +618,8 @@ public class Query extends AbstractQuery {
     private static final String KEY_INSIDE_BOUNDING_BOX = "insideBoundingBox";
 
     /**
-     * Search for entries inside a given area defined by the two extreme points
-     * of a rectangle.
-     * <p>
-     * At indexing, geoloc of an object should be set with
-     * {@code _geoloc} attribute containing lat and lng attributes (for example
-     * {@code {"_geoloc":{"lat":48.853409, "lng":2.348800}})}
+     * Search for entries inside one area or the union of several areas
+     * defined by the two extreme points of a rectangle.
      */
     public @NonNull Query setInsideBoundingBox(@Nullable GeoRect... boxes) {
         if (boxes == null) {
@@ -748,9 +744,6 @@ public class Query extends AbstractQuery {
 
     /**
      * Search for entries inside a given area defined by the points of a polygon.
-     * <p>
-     * At indexing, geoloc of an object should be set with {@code _geoloc} attribute containing lat
-     * and lng attributes (for example {@code {"_geoloc":{"lat":48.853409, "lng":2.348800}})}
      */
     public @NonNull Query setInsidePolygon(@Nullable LatLng... points) {
         set(KEY_INSIDE_POLYGON, points == null ? null : new Polygon(points).toString());
@@ -759,9 +752,6 @@ public class Query extends AbstractQuery {
 
     /**
      * Search for entries inside a given area defined by several polygons.
-     * <p>
-     * At indexing, geoloc of an object should be set with {@code _geoloc} attribute containing lat
-     * and lng attributes (for example {@code {"_geoloc":{"lat":48.853409, "lng":2.348800}})}
      */
     public @NonNull Query setInsidePolygon(@Nullable Polygon... polygons) {
         String insidePolygon = null;
