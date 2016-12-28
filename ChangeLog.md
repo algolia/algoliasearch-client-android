@@ -1,6 +1,18 @@
 Change Log
 ==========
 
+## Upcoming 
+
+**This release includes backward-incompatible changes**:
+- (#229) `getInsidePolygon()` now returns a `Query.Polygon` array
+
+## New features
+- (#229) `insidePolygon` now accepts one or several polygons
+
+## Other changes
+- (#202) Mark `{get,set}NumericFilters` as deprecated, you should use `{get,set}Filters`
+- (#202) Add Nullility annotations on Query methods
+
 ## 3.7.1 (2016-12-08)
 
 - Improved retry logic in case of down host
