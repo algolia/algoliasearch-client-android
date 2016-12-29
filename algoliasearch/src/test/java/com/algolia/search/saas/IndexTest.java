@@ -879,10 +879,11 @@ public class IndexTest extends RobolectricTestCase {
     public void getObjectAttributes() throws AlgoliaException {
         for (String id : ids) {
             JSONObject object = index.getObject(id);
-            assertEquals("The retrieved object should have two attributes.", 2, object.names().length());
-            object = index.getObject(id, Collections.singletonList("objectID"));
-            assertEquals("The retrieved object should have only one attribute.", 1, object.names().length());
-            assertTrue("The retrieved object should have one objectID attribute.", object.optString("objectID", "").length() > 0);
+            assertEquals("The retrieved object should have 3 attributes.", 3, object.names().length()); // 2 attributes + `objectID`
+            object = index.getObject(id, Collections.singletonList("city"));
+            assertEquals("The retrieved object should have 2 attributes.", 2, object.names().length()); // 1 attribute + `objectID`
+            assertNotNull("The retrieved object should have an `objectID` attribute.", object.optString("objectID", null));
+            assertNotNull("The retrieved object should have a `city` attribute.", object.optString("city", null));
         }
     }
 
@@ -892,13 +893,14 @@ public class IndexTest extends RobolectricTestCase {
             JSONArray results = index.getObjects(ids).getJSONArray("results");
             for (int i = 0; i < results.length(); i++) {
                 JSONObject object = results.getJSONObject(i);
-                assertEquals("The retrieved object should have two attributes.", 2, object.names().length());
+                assertEquals("The retrieved object should have 3 attributes.", 3, object.names().length()); // 2 attributes + `objectID`
             }
-            results = index.getObjects(ids, Collections.singletonList("objectID")).getJSONArray("results");
+            results = index.getObjects(ids, Collections.singletonList("city")).getJSONArray("results");
             for (int i = 0; i < results.length(); i++) {
                 JSONObject object = results.getJSONObject(i);
-                assertEquals("The retrieved object should have only one attribute.", 1, object.names().length());
-                assertTrue("The retrieved object should have one objectID attribute.", object.optString("objectID", "").length() > 0);
+                assertEquals("The retrieved object should have 2 attributes.", 2, object.names().length()); // 1 attribute + `objectID`
+                assertNotNull("The retrieved object should have an `objectID` attribute.", object.optString("objectID", null));
+                assertNotNull("The retrieved object should have a `city` attribute.", object.optString("city", null));
             }
         } catch (JSONException e) {
             fail(e.getMessage());
