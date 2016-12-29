@@ -6,15 +6,15 @@ Change Log
 **This release includes backward-incompatible changes**:
 - (#229) `getInsidePolygon()` now returns a `Query.Polygon` array
 
-## New features
+### New features
 - (#229) `insidePolygon` now accepts one or several polygons
 - [offline] Support manual building of local indices (`MirroredIndex` and `OfflineIndex`)
 - [offline] Support fallback logic when getting individual objects
 
-## Bug fixes
+### Bug fixes
 - Fix filtering by attribute in `getObjectAsync` and `getObjectsAsync`
 
-## Other changes
+### Other changes
 - (#202) Mark `{get,set}NumericFilters` as deprecated, you should use `{get,set}Filters`
 - (#202) Add Nullility annotations on Query methods
 
