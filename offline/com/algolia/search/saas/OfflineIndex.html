@@ -17,7 +17,7 @@
     catch(err) {
     }
 //-->
-var methods = {"i0":10,"i1":10,"i2":10,"i3":10,"i4":10,"i5":10,"i6":10,"i7":10,"i8":10,"i9":10,"i10":10,"i11":10,"i12":10,"i13":10};
+var methods = {"i0":10,"i1":10,"i2":10,"i3":10,"i4":10,"i5":10,"i6":10,"i7":10,"i8":10,"i9":10,"i10":10,"i11":10,"i12":10,"i13":10,"i14":10,"i15":10,"i16":10,"i17":10,"i18":10};
 var tabs = {65535:["t0","All Methods"],2:["t2","Instance Methods"],8:["t4","Concrete Methods"]};
 var altColor = "altColor";
 var rowColor = "rowColor";
@@ -111,6 +111,35 @@ var activeTableTab = "activeTableTab";
 extends Object</pre>
 <div class="block"><p>A purely offline index. Such an index has no online counterpart. It is updated and queried locally.</p>
 <p><strong>Note:</strong> You cannot construct this class directly. Please use <a href="../../../../com/algolia/search/saas/OfflineClient.html#getOfflineIndex-java.lang.String-"><code>OfflineClient.getOfflineIndex(String)</code></a> to obtain an instance.</p>
+<p><strong>Note:</strong> Requires Algolia Offline Core. <a href="../../../../com/algolia/search/saas/OfflineClient.html#enableOfflineMode-java.lang.String-"><code>OfflineClient.enableOfflineMode(String)</code></a> must be called with a valid license key prior to calling any offline-related method.</p>
+<h2>Reading</h2>
+<p>Read operations behave identically as with online indices.</p>
+<h2>Writing</h2>
+<p>Updating an index involves rebuilding it, which is an expensive and potentially lengthy operation. Therefore, all updates must be wrapped inside a <strong>transaction</strong>.</p>
+<p>The procedure to update an index is as follows:</p>
+<ul>
+  <li>
+  <p>Create a transaction by calling <a href="../../../../com/algolia/search/saas/OfflineIndex.html#newTransaction--"><code>newTransaction()</code></a>.</p></li>
+  <li>
+  <p>Populate the transaction: call the various write methods on the <a href="../../../../com/algolia/search/saas/OfflineIndex.WriteTransaction.html" title="class in com.algolia.search.saas"><code>WriteTransaction</code></a> class.</p></li>
+  <li>
+  <p>Either commit or rollback the transaction.</p></li>
+</ul>
+<h3>Synchronous vs asynchronous updates</h3>
+<p>Any write operation, especially (but not limited to) the final commit, is potentially lengthy. This is why all operations provide an asynchronous version, which accepts an optional completion handler that will be notified of the operation&rsquo;s completion (either successful or erroneous).</p>
+<p>If you already have a background thread/queue performing data-handling tasks, you may find it more convenient to use the synchronous versions of the write methods. They are named after the asynchronous versions, suffixed by <code>Sync</code>. The flow is identical to the asynchronous version (see above).</p>
+<p><strong>Warning:</strong> You must not call synchronous methods from the main thread. The methods will throw an <code>IllegalStateException</code> if you do so.</p>
+<p><strong>Note:</strong> The synchronous methods can throw; you have to catch and handle the exception.</p>
+<h3>Parallel transactions</h3>
+<p>While it is possible to create parallel transactions, there is little interest in doing so, since each committed transaction results in an index rebuild. Multiplying transactions therefore only degrades performance.</p>
+<p>Also, transactions are serially executed in the order they were committed, the latest transaction potentially overwriting the previous transactions&rsquo; result.</p>
+<h3>Manual build</h3>
+<p>As an alternative to using write transactions, <code>OfflineIndex</code> also offers a <strong>manual build</strong> feature. Provided that you have:</p>
+<ul>
+  <li>the <strong>index settings</strong> (one JSON file); and</li>
+  <li>the <strong>objects</strong> (as many JSON files as needed, each containing an array of objects)</li>
+</ul>
+<p>&hellip; available as local files on disk, you can replace the index&rsquo;s content with that data by calling <a href="../../../../com/algolia/search/saas/OfflineIndex.html#buildFromFiles-java.io.File-java.io.File:A-com.algolia.search.saas.CompletionHandler-"><code>buildFromFiles</code></a> or <a href="../../../../com/algolia/search/saas/OfflineIndex.html#buildFromRawResources-android.content.res.Resources-int-int:A-com.algolia.search.saas.CompletionHandler-"><code>buildFromRawResources</code></a>.</p>
 <h2>Caveats</h2>
 <h3>Limitations</h3>
 <p>Though offline indices support most features of an online index, there are some limitations:</p>
@@ -127,31 +156,8 @@ extends Object</pre>
   <li>
   <p><strong>Settings</strong> are not incremental: the new settings completely replace the previous ones. If a setting  is omitted in the new version, it reverts back to its default value. (This is in contrast with the online API,  where you can only specify the settings you want to change and omit the others.)</p></li>
   <li>
-  <p>You cannot batch arbitrary write operations in a single method call (as you would do with <a href="../../../../com/algolia/search/saas/Index.html#batch-org.json.JSONArray-"><code>Index.batch(JSONArray)</code></a>).  However, all write operations are <em>de facto</em> batches, since they must be wrapped inside a transaction (see below).</p></li>
-</ul>
-<h2>Operations</h2>
-<h3>Writing</h3>
-<p>Updating an index involves rebuilding it, which is an expensive and potentially lengthy operation. Therefore, all updates must be wrapped inside a <strong>transaction</strong>.</p>
-<p><strong>Warning:</strong> You cannot have several parallel transactions on a given index.</p>
-<p>The procedure to update an index is as follows:</p>
-<ul>
-  <li>
-  <p>Create a transaction by calling <a href="../../../../com/algolia/search/saas/OfflineIndex.html#newTransaction--"><code>newTransaction()</code></a>.</p></li>
-  <li>
-  <p>Populate the transaction: call the various write methods on the <a href="../../../../com/algolia/search/saas/OfflineIndex.WriteTransaction.html" title="class in com.algolia.search.saas"><code>OfflineIndex.WriteTransaction</code></a> class.</p></li>
-  <li>
-  <p>Either commit or rollback the transaction.</p></li>
-</ul>
-<h4>Synchronous vs asynchronous updates</h4>
-<p>Any write operation, especially (but not limited to) the final commit, is potentially lengthy. This is why all operations provide an asynchronous version, which accepts an optional completion handler that will be notified of the operation&rsquo;s completion (either successful or erroneous).</p>
-<p>If you already have a background thread/queue performing data-handling tasks, you may find it more convenient to use the synchronous versions of the write methods. They are named after the asynchronous versions, suffixed by <code>Sync</code>. The flow is identical to the asynchronous version (see above).</p>
-<p><strong>Warning:</strong> You must not call synchronous methods from the main thread. The methods will assert if you do so.</p>
-<p><strong>Note:</strong> The synchronous methods can throw; you have to catch and handle the error.</p>
-<h4>Parallel transactions</h4>
-<p>While it is possible to create parallel transactions, there is little interest in doing so, since each committed transaction results in an index rebuild. Multiplying transactions therefore only degrades performance.</p>
-<p>Also, transactions are serially executed in the order they were committed, the latest transaction potentially overwriting the previous transactions&rsquo; result.</p>
-<h3>Reading</h3>
-<p>Read operations behave identically as with online indices.</p></div>
+  <p>You cannot batch arbitrary write operations in a single method call (as you would do with  <a href="../../../../com/algolia/search/saas/Client.html#batchAsync-org.json.JSONArray-com.algolia.search.saas.CompletionHandler-"><code>Client.batchAsync</code></a>). However, all write operations are <em>de facto</em> batches, since they  must be wrapped inside a transaction (see below).</p></li>
+</ul></div>
 </li>
 </ul>
 </div>
@@ -207,31 +213,59 @@ extends Object</pre>
 </tr>
 <tr id="i2" class="altColor">
 <td class="colFirst"><code><a href="../../../../com/algolia/search/saas/Request.html" title="interface in com.algolia.search.saas">Request</a></code></td>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/algolia/search/saas/OfflineIndex.html#buildFromFiles-java.io.File-java.io.File...-">buildFromFiles</a></span>(File&nbsp;settingsFile,
+              File...&nbsp;objectFiles)</code>&nbsp;</td>
+</tr>
+<tr id="i3" class="rowColor">
+<td class="colFirst"><code><a href="../../../../com/algolia/search/saas/Request.html" title="interface in com.algolia.search.saas">Request</a></code></td>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/algolia/search/saas/OfflineIndex.html#buildFromFiles-java.io.File-java.io.File:A-com.algolia.search.saas.CompletionHandler-">buildFromFiles</a></span>(File&nbsp;settingsFile,
+              File[]&nbsp;objectFiles,
+              <a href="../../../../com/algolia/search/saas/CompletionHandler.html" title="interface in com.algolia.search.saas">CompletionHandler</a>&nbsp;completionHandler)</code>
+<div class="block">Build the index from local data stored on the filesystem.</div>
+</td>
+</tr>
+<tr id="i4" class="altColor">
+<td class="colFirst"><code><a href="../../../../com/algolia/search/saas/Request.html" title="interface in com.algolia.search.saas">Request</a></code></td>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/algolia/search/saas/OfflineIndex.html#buildFromRawResources-android.content.res.Resources-int-int...-">buildFromRawResources</a></span>(android.content.res.Resources&nbsp;resources,
+                     int&nbsp;settingsResId,
+                     int...&nbsp;objectsResIds)</code>&nbsp;</td>
+</tr>
+<tr id="i5" class="rowColor">
+<td class="colFirst"><code><a href="../../../../com/algolia/search/saas/Request.html" title="interface in com.algolia.search.saas">Request</a></code></td>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/algolia/search/saas/OfflineIndex.html#buildFromRawResources-android.content.res.Resources-int-int:A-com.algolia.search.saas.CompletionHandler-">buildFromRawResources</a></span>(android.content.res.Resources&nbsp;resources,
+                     int&nbsp;settingsResId,
+                     int[]&nbsp;objectsResIds,
+                     <a href="../../../../com/algolia/search/saas/CompletionHandler.html" title="interface in com.algolia.search.saas">CompletionHandler</a>&nbsp;completionHandler)</code>
+<div class="block">Build the index from local data stored in raw resources.</div>
+</td>
+</tr>
+<tr id="i6" class="altColor">
+<td class="colFirst"><code><a href="../../../../com/algolia/search/saas/Request.html" title="interface in com.algolia.search.saas">Request</a></code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/algolia/search/saas/OfflineIndex.html#deleteByQueryAsync-com.algolia.search.saas.Query-com.algolia.search.saas.CompletionHandler-">deleteByQueryAsync</a></span>(<a href="../../../../com/algolia/search/saas/Query.html" title="class in com.algolia.search.saas">Query</a>&nbsp;query,
                   <a href="../../../../com/algolia/search/saas/CompletionHandler.html" title="interface in com.algolia.search.saas">CompletionHandler</a>&nbsp;completionHandler)</code>
 <div class="block">Delete all objects matching a query (helper).</div>
 </td>
 </tr>
-<tr id="i3" class="rowColor">
+<tr id="i7" class="rowColor">
 <td class="colFirst"><code><a href="../../../../com/algolia/search/saas/OfflineClient.html" title="class in com.algolia.search.saas">OfflineClient</a></code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/algolia/search/saas/OfflineIndex.html#getClient--">getClient</a></span>()</code>
 <div class="block">Get the client to which this index belongs.</div>
 </td>
 </tr>
-<tr id="i4" class="altColor">
+<tr id="i8" class="altColor">
 <td class="colFirst"><code>String</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/algolia/search/saas/OfflineIndex.html#getName--">getName</a></span>()</code>
 <div class="block">Get this index&rsquo;s name.</div>
 </td>
 </tr>
-<tr id="i5" class="rowColor">
+<tr id="i9" class="rowColor">
 <td class="colFirst"><code><a href="../../../../com/algolia/search/saas/Request.html" title="interface in com.algolia.search.saas">Request</a></code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/algolia/search/saas/OfflineIndex.html#getObjectAsync-java.lang.String-com.algolia.search.saas.CompletionHandler-">getObjectAsync</a></span>(String&nbsp;objectID,
               <a href="../../../../com/algolia/search/saas/CompletionHandler.html" title="interface in com.algolia.search.saas">CompletionHandler</a>&nbsp;completionHandler)</code>
 <div class="block">Get an object from this index (asynchronously).</div>
 </td>
 </tr>
-<tr id="i6" class="altColor">
+<tr id="i10" class="altColor">
 <td class="colFirst"><code><a href="../../../../com/algolia/search/saas/Request.html" title="interface in com.algolia.search.saas">Request</a></code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/algolia/search/saas/OfflineIndex.html#getObjectAsync-java.lang.String-java.util.List-com.algolia.search.saas.CompletionHandler-">getObjectAsync</a></span>(String&nbsp;objectID,
               List&lt;String&gt;&nbsp;attributesToRetrieve,
@@ -239,20 +273,26 @@ extends Object</pre>
 <div class="block">Get an object from this index, optionally restricting the retrieved content (asynchronously).</div>
 </td>
 </tr>
-<tr id="i7" class="rowColor">
+<tr id="i11" class="rowColor">
 <td class="colFirst"><code><a href="../../../../com/algolia/search/saas/Request.html" title="interface in com.algolia.search.saas">Request</a></code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/algolia/search/saas/OfflineIndex.html#getObjectsAsync-java.util.List-com.algolia.search.saas.CompletionHandler-">getObjectsAsync</a></span>(List&lt;String&gt;&nbsp;objectIDs,
                <a href="../../../../com/algolia/search/saas/CompletionHandler.html" title="interface in com.algolia.search.saas">CompletionHandler</a>&nbsp;completionHandler)</code>
 <div class="block">Get several objects from this index (asynchronously).</div>
 </td>
 </tr>
-<tr id="i8" class="altColor">
+<tr id="i12" class="altColor">
 <td class="colFirst"><code><a href="../../../../com/algolia/search/saas/Request.html" title="interface in com.algolia.search.saas">Request</a></code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/algolia/search/saas/OfflineIndex.html#getSettingsAsync-com.algolia.search.saas.CompletionHandler-">getSettingsAsync</a></span>(<a href="../../../../com/algolia/search/saas/CompletionHandler.html" title="interface in com.algolia.search.saas">CompletionHandler</a>&nbsp;completionHandler)</code>
 <div class="block">Get this index&rsquo;s settings (asynchronously).</div>
 </td>
 </tr>
-<tr id="i9" class="rowColor">
+<tr id="i13" class="rowColor">
+<td class="colFirst"><code>boolean</code></td>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/algolia/search/saas/OfflineIndex.html#hasOfflineData--">hasOfflineData</a></span>()</code>
+<div class="block">Test if this index has offline data on disk.</div>
+</td>
+</tr>
+<tr id="i14" class="altColor">
 <td class="colFirst"><code><a href="../../../../com/algolia/search/saas/Request.html" title="interface in com.algolia.search.saas">Request</a></code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/algolia/search/saas/OfflineIndex.html#multipleQueriesAsync-java.util.List-com.algolia.search.saas.Client.MultipleQueriesStrategy-com.algolia.search.saas.CompletionHandler-">multipleQueriesAsync</a></span>(List&lt;<a href="../../../../com/algolia/search/saas/Query.html" title="class in com.algolia.search.saas">Query</a>&gt;&nbsp;queries,
                     <a href="../../../../com/algolia/search/saas/Client.MultipleQueriesStrategy.html" title="enum in com.algolia.search.saas">Client.MultipleQueriesStrategy</a>&nbsp;strategy,
@@ -260,20 +300,20 @@ extends Object</pre>
 <div class="block">Run multiple queries on this index with one API call.</div>
 </td>
 </tr>
-<tr id="i10" class="altColor">
+<tr id="i15" class="rowColor">
 <td class="colFirst"><code><a href="../../../../com/algolia/search/saas/OfflineIndex.WriteTransaction.html" title="class in com.algolia.search.saas">OfflineIndex.WriteTransaction</a></code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/algolia/search/saas/OfflineIndex.html#newTransaction--">newTransaction</a></span>()</code>
 <div class="block">Create a new write transaction.</div>
 </td>
 </tr>
-<tr id="i11" class="rowColor">
+<tr id="i16" class="altColor">
 <td class="colFirst"><code><a href="../../../../com/algolia/search/saas/Request.html" title="interface in com.algolia.search.saas">Request</a></code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/algolia/search/saas/OfflineIndex.html#searchAsync-com.algolia.search.saas.Query-com.algolia.search.saas.CompletionHandler-">searchAsync</a></span>(<a href="../../../../com/algolia/search/saas/Query.html" title="class in com.algolia.search.saas">Query</a>&nbsp;query,
            <a href="../../../../com/algolia/search/saas/CompletionHandler.html" title="interface in com.algolia.search.saas">CompletionHandler</a>&nbsp;completionHandler)</code>
 <div class="block">Search inside this index (asynchronously).</div>
 </td>
 </tr>
-<tr id="i12" class="altColor">
+<tr id="i17" class="rowColor">
 <td class="colFirst"><code><a href="../../../../com/algolia/search/saas/Request.html" title="interface in com.algolia.search.saas">Request</a></code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/algolia/search/saas/OfflineIndex.html#searchDisjunctiveFacetingAsync-com.algolia.search.saas.Query-java.util.List-java.util.Map-com.algolia.search.saas.CompletionHandler-">searchDisjunctiveFacetingAsync</a></span>(<a href="../../../../com/algolia/search/saas/Query.html" title="class in com.algolia.search.saas">Query</a>&nbsp;query,
                               List&lt;String&gt;&nbsp;disjunctiveFacets,
@@ -282,7 +322,7 @@ extends Object</pre>
 <div class="block">Perform a search with disjunctive facets, generating as many queries as number of disjunctive facets (helper).</div>
 </td>
 </tr>
-<tr id="i13" class="rowColor">
+<tr id="i18" class="altColor">
 <td class="colFirst"><code>String</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/algolia/search/saas/OfflineIndex.html#toString--">toString</a></span>()</code>&nbsp;</td>
 </tr>
@@ -520,6 +560,98 @@ extends Object</pre>
 <pre>@NonNull
 public&nbsp;<a href="../../../../com/algolia/search/saas/OfflineIndex.WriteTransaction.html" title="class in com.algolia.search.saas">OfflineIndex.WriteTransaction</a>&nbsp;newTransaction()</pre>
 <div class="block"><p>Create a new write transaction.</p></div>
+</li>
+</ul>
+<a name="hasOfflineData--">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>hasOfflineData</h4>
+<pre>public&nbsp;boolean&nbsp;hasOfflineData()</pre>
+<div class="block"><p>Test if this index has offline data on disk.</p>
+<p><strong>Warning:</strong> This method is synchronous! It will block until completion.</p></div>
+<dl>
+<dt><span class="returnLabel">Returns:</span></dt>
+<dd><code>true</code> if data exists on disk for this index, <code>false</code> otherwise.</dd>
+</dl>
+</li>
+</ul>
+<a name="buildFromFiles-java.io.File-java.io.File:A-com.algolia.search.saas.CompletionHandler-">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>buildFromFiles</h4>
+<pre>public&nbsp;<a href="../../../../com/algolia/search/saas/Request.html" title="interface in com.algolia.search.saas">Request</a>&nbsp;buildFromFiles(@NonNull
+                              File&nbsp;settingsFile,
+                              @NonNull
+                              File[]&nbsp;objectFiles,
+                              @Nullable
+                              <a href="../../../../com/algolia/search/saas/CompletionHandler.html" title="interface in com.algolia.search.saas">CompletionHandler</a>&nbsp;completionHandler)</pre>
+<div class="block"><p>Build the index from local data stored on the filesystem.</p></div>
+<dl>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>settingsFile</code> - Absolute path to the file containing the index settings, in JSON format.</dd>
+<dd><code>objectFiles</code> - Absolute path(s) to the file(s) containing the objects. Each file must contain an array of  objects, in JSON format.</dd>
+<dd><code>completionHandler</code> - Optional completion handler to be notified of the build&rsquo;s outcome.</dd>
+<dt><span class="returnLabel">Returns:</span></dt>
+<dd>A cancellable request.</p>
+<p><strong>Note:</strong> Cancelling the request does <em>not</em> cancel the build; it merely prevents the completion handler from being called.</dd>
+</dl>
+</li>
+</ul>
+<a name="buildFromFiles-java.io.File-java.io.File...-">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>buildFromFiles</h4>
+<pre>public&nbsp;<a href="../../../../com/algolia/search/saas/Request.html" title="interface in com.algolia.search.saas">Request</a>&nbsp;buildFromFiles(@NonNull
+                              File&nbsp;settingsFile,
+                              @NonNull
+                              File...&nbsp;objectFiles)</pre>
+</li>
+</ul>
+<a name="buildFromRawResources-android.content.res.Resources-int-int:A-com.algolia.search.saas.CompletionHandler-">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>buildFromRawResources</h4>
+<pre>public&nbsp;<a href="../../../../com/algolia/search/saas/Request.html" title="interface in com.algolia.search.saas">Request</a>&nbsp;buildFromRawResources(@NonNull
+                                     android.content.res.Resources&nbsp;resources,
+                                     @NonNull
+                                     int&nbsp;settingsResId,
+                                     @NonNull
+                                     int[]&nbsp;objectsResIds,
+                                     @Nullable
+                                     <a href="../../../../com/algolia/search/saas/CompletionHandler.html" title="interface in com.algolia.search.saas">CompletionHandler</a>&nbsp;completionHandler)</pre>
+<div class="block"><p>Build the index from local data stored in raw resources.</p></div>
+<dl>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>resources</code> - A <code>Resources</code> instance to read resources from.</dd>
+<dd><code>settingsResId</code> - Resource identifier of the index settings, in JSON format.</dd>
+<dd><code>objectsResIds</code> - Resource identifiers of the various objects files. Each file must contain an array of  objects, in JSON format.</dd>
+<dd><code>completionHandler</code> - Optional completion handler to be notified of the build&rsquo;s outcome.</dd>
+<dt><span class="returnLabel">Returns:</span></dt>
+<dd>A cancellable request.</p>
+<p><strong>Note:</strong> Cancelling the request does <em>not</em> cancel the build; it merely prevents the completion handler from being called.</dd>
+</dl>
+</li>
+</ul>
+<a name="buildFromRawResources-android.content.res.Resources-int-int...-">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>buildFromRawResources</h4>
+<pre>public&nbsp;<a href="../../../../com/algolia/search/saas/Request.html" title="interface in com.algolia.search.saas">Request</a>&nbsp;buildFromRawResources(@NonNull
+                                     android.content.res.Resources&nbsp;resources,
+                                     @NonNull
+                                     int&nbsp;settingsResId,
+                                     @NonNull
+                                     int...&nbsp;objectsResIds)</pre>
 </li>
 </ul>
 <a name="searchDisjunctiveFacetingAsync-com.algolia.search.saas.Query-java.util.List-java.util.Map-com.algolia.search.saas.CompletionHandler-">

@@ -17,7 +17,7 @@
     catch(err) {
     }
 //-->
-var methods = {"i0":10,"i1":10,"i2":10,"i3":10,"i4":10,"i5":10,"i6":10,"i7":10,"i8":10,"i9":10,"i10":10,"i11":10,"i12":10,"i13":10,"i14":10,"i15":10,"i16":10,"i17":10};
+var methods = {"i0":10,"i1":10,"i2":10,"i3":10,"i4":10,"i5":10,"i6":10,"i7":10,"i8":10,"i9":10,"i10":10,"i11":10,"i12":10,"i13":10,"i14":10,"i15":10,"i16":10,"i17":10,"i18":10,"i19":10};
 var tabs = {65535:["t0","All Methods"],2:["t2","Instance Methods"],8:["t4","Concrete Methods"]};
 var altColor = "altColor";
 var rowColor = "rowColor";
@@ -176,79 +176,91 @@ extends Object</pre>
 </td>
 </tr>
 <tr id="i4" class="altColor">
+<td class="colFirst"><code>int</code></td>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/algolia/search/saas/AbstractClient.html#getHostDownDelay--">getHostDownDelay</a></span>()</code>
+<div class="block">Get the timeout for retrying connection to a down host.</div>
+</td>
+</tr>
+<tr id="i5" class="rowColor">
 <td class="colFirst"><code>String[]</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/algolia/search/saas/AbstractClient.html#getReadHosts--">getReadHosts</a></span>()</code>&nbsp;</td>
 </tr>
-<tr id="i5" class="rowColor">
+<tr id="i6" class="altColor">
 <td class="colFirst"><code>int</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/algolia/search/saas/AbstractClient.html#getReadTimeout--">getReadTimeout</a></span>()</code>
 <div class="block">Get the default read timeout.</div>
 </td>
 </tr>
-<tr id="i6" class="altColor">
+<tr id="i7" class="rowColor">
 <td class="colFirst"><code>int</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/algolia/search/saas/AbstractClient.html#getSearchTimeout--">getSearchTimeout</a></span>()</code>
 <div class="block">Get the read timeout for search requests.</div>
 </td>
 </tr>
-<tr id="i7" class="rowColor">
+<tr id="i8" class="altColor">
 <td class="colFirst"><code><a href="../../../../com/algolia/search/saas/AbstractClient.LibraryVersion.html" title="class in com.algolia.search.saas">AbstractClient.LibraryVersion</a>[]</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/algolia/search/saas/AbstractClient.html#getUserAgents--">getUserAgents</a></span>()</code>
 <div class="block">Retrieve the list of declared user agents.</div>
 </td>
 </tr>
-<tr id="i8" class="altColor">
+<tr id="i9" class="rowColor">
 <td class="colFirst"><code>String[]</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/algolia/search/saas/AbstractClient.html#getWriteHosts--">getWriteHosts</a></span>()</code>&nbsp;</td>
 </tr>
-<tr id="i9" class="rowColor">
+<tr id="i10" class="altColor">
 <td class="colFirst"><code>boolean</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/algolia/search/saas/AbstractClient.html#hasUserAgent-com.algolia.search.saas.AbstractClient.LibraryVersion-">hasUserAgent</a></span>(<a href="../../../../com/algolia/search/saas/AbstractClient.LibraryVersion.html" title="class in com.algolia.search.saas">AbstractClient.LibraryVersion</a>&nbsp;userAgent)</code>
 <div class="block">Test whether a user agent is declared.</div>
 </td>
 </tr>
-<tr id="i10" class="altColor">
+<tr id="i11" class="rowColor">
 <td class="colFirst"><code>void</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/algolia/search/saas/AbstractClient.html#removeUserAgent-com.algolia.search.saas.AbstractClient.LibraryVersion-">removeUserAgent</a></span>(<a href="../../../../com/algolia/search/saas/AbstractClient.LibraryVersion.html" title="class in com.algolia.search.saas">AbstractClient.LibraryVersion</a>&nbsp;userAgent)</code>
 <div class="block">Remove a software library from the list of user agents.</div>
 </td>
 </tr>
-<tr id="i11" class="rowColor">
+<tr id="i12" class="altColor">
 <td class="colFirst"><code>void</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/algolia/search/saas/AbstractClient.html#setConnectTimeout-int-">setConnectTimeout</a></span>(int&nbsp;connectTimeout)</code>
 <div class="block">Set the connection timeout.</div>
 </td>
 </tr>
-<tr id="i12" class="altColor">
+<tr id="i13" class="rowColor">
 <td class="colFirst"><code>void</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/algolia/search/saas/AbstractClient.html#setHeader-java.lang.String-java.lang.String-">setHeader</a></span>(String&nbsp;name,
          String&nbsp;value)</code>
 <div class="block">Set an HTTP header that will be sent with every request.</div>
 </td>
 </tr>
-<tr id="i13" class="rowColor">
+<tr id="i14" class="altColor">
+<td class="colFirst"><code>void</code></td>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/algolia/search/saas/AbstractClient.html#setHostDownDelay-int-">setHostDownDelay</a></span>(int&nbsp;hostDownDelay)</code>
+<div class="block">Set the timeout for retrying connection to a down host.</div>
+</td>
+</tr>
+<tr id="i15" class="rowColor">
 <td class="colFirst"><code>void</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/algolia/search/saas/AbstractClient.html#setHosts-java.lang.String...-">setHosts</a></span>(String...&nbsp;hosts)</code>
 <div class="block">Set read and write hosts to the same value (convenience method).</div>
 </td>
 </tr>
-<tr id="i14" class="altColor">
+<tr id="i16" class="altColor">
 <td class="colFirst"><code>void</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/algolia/search/saas/AbstractClient.html#setReadHosts-java.lang.String...-">setReadHosts</a></span>(String...&nbsp;hosts)</code>&nbsp;</td>
 </tr>
-<tr id="i15" class="rowColor">
+<tr id="i17" class="rowColor">
 <td class="colFirst"><code>void</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/algolia/search/saas/AbstractClient.html#setReadTimeout-int-">setReadTimeout</a></span>(int&nbsp;readTimeout)</code>
 <div class="block">Set the default read timeout.</div>
 </td>
 </tr>
-<tr id="i16" class="altColor">
+<tr id="i18" class="altColor">
 <td class="colFirst"><code>void</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/algolia/search/saas/AbstractClient.html#setSearchTimeout-int-">setSearchTimeout</a></span>(int&nbsp;searchTimeout)</code>
 <div class="block">Set the read timeout for search requests.</div>
 </td>
 </tr>
-<tr id="i17" class="rowColor">
+<tr id="i19" class="rowColor">
 <td class="colFirst"><code>void</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/algolia/search/saas/AbstractClient.html#setWriteHosts-java.lang.String...-">setWriteHosts</a></span>(String...&nbsp;hosts)</code>&nbsp;</td>
 </tr>
@@ -450,6 +462,34 @@ extends Object</pre>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>searchTimeout</code> - The read timeout for search requests (ms).</dd>
+</dl>
+</li>
+</ul>
+<a name="getHostDownDelay--">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>getHostDownDelay</h4>
+<pre>public&nbsp;int&nbsp;getHostDownDelay()</pre>
+<div class="block"><p>Get the timeout for retrying connection to a down host.</p></div>
+<dl>
+<dt><span class="returnLabel">Returns:</span></dt>
+<dd>The delay before connecting again to a down host (ms).</dd>
+</dl>
+</li>
+</ul>
+<a name="setHostDownDelay-int-">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>setHostDownDelay</h4>
+<pre>public&nbsp;void&nbsp;setHostDownDelay(int&nbsp;hostDownDelay)</pre>
+<div class="block"><p>Set the timeout for retrying connection to a down host.</p></div>
+<dl>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>hostDownDelay</code> - The delay before connecting again to a down host (ms).</dd>
 </dl>
 </li>
 </ul>

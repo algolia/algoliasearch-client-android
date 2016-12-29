@@ -17,8 +17,8 @@
     catch(err) {
     }
 //-->
-var methods = {"i0":10,"i1":10,"i2":10,"i3":10,"i4":10,"i5":10,"i6":10,"i7":10,"i8":10,"i9":10,"i10":10,"i11":10,"i12":10,"i13":10,"i14":10,"i15":10,"i16":10,"i17":10,"i18":10,"i19":10,"i20":10,"i21":10,"i22":10,"i23":10,"i24":10,"i25":10,"i26":10,"i27":10,"i28":10,"i29":10,"i30":10,"i31":10,"i32":10,"i33":10,"i34":10,"i35":10,"i36":10,"i37":10,"i38":10,"i39":10,"i40":10,"i41":10,"i42":10,"i43":10,"i44":10,"i45":10,"i46":10,"i47":10,"i48":10,"i49":10,"i50":10,"i51":10,"i52":10,"i53":10,"i54":10,"i55":10,"i56":10,"i57":10,"i58":10,"i59":10,"i60":10,"i61":10,"i62":10,"i63":10,"i64":10,"i65":10,"i66":10,"i67":10,"i68":10,"i69":10,"i70":10,"i71":10,"i72":10,"i73":10,"i74":10,"i75":10,"i76":10,"i77":10,"i78":10,"i79":10,"i80":10,"i81":10,"i82":10,"i83":10,"i84":10,"i85":10,"i86":10};
-var tabs = {65535:["t0","All Methods"],2:["t2","Instance Methods"],8:["t4","Concrete Methods"]};
+var methods = {"i0":10,"i1":10,"i2":10,"i3":10,"i4":10,"i5":10,"i6":10,"i7":10,"i8":10,"i9":10,"i10":10,"i11":10,"i12":10,"i13":10,"i14":10,"i15":42,"i16":10,"i17":10,"i18":10,"i19":10,"i20":10,"i21":10,"i22":10,"i23":10,"i24":10,"i25":10,"i26":10,"i27":10,"i28":10,"i29":10,"i30":42,"i31":10,"i32":10,"i33":10,"i34":10,"i35":10,"i36":10,"i37":10,"i38":10,"i39":10,"i40":10,"i41":10,"i42":10,"i43":10,"i44":10,"i45":10,"i46":10,"i47":10,"i48":10,"i49":10,"i50":10,"i51":10,"i52":10,"i53":10,"i54":10,"i55":10,"i56":10,"i57":10,"i58":10,"i59":10,"i60":42,"i61":10,"i62":10,"i63":10,"i64":10,"i65":10,"i66":10,"i67":10,"i68":10,"i69":10,"i70":10,"i71":10,"i72":10,"i73":10,"i74":10,"i75":10,"i76":10,"i77":10,"i78":42,"i79":10,"i80":10,"i81":10,"i82":10,"i83":10,"i84":10,"i85":10,"i86":10,"i87":10,"i88":10,"i89":10,"i90":10,"i91":10};
+var tabs = {65535:["t0","All Methods"],2:["t2","Instance Methods"],8:["t4","Concrete Methods"],32:["t6","Deprecated Methods"]};
 var altColor = "altColor";
 var rowColor = "rowColor";
 var tableTab = "tableTab";
@@ -114,12 +114,7 @@ var activeTableTab = "activeTableTab";
 <br>
 <pre>public class <span class="typeNameLabel">Query</span>
 extends <a href="../../../../com/algolia/search/saas/AbstractQuery.html" title="class in com.algolia.search.saas">AbstractQuery</a></pre>
-<div class="block"><p>Describes all parameters of a search query.</p>
-<p>There are two ways to access parameters:</p>
-<ol>
-  <li>Using the high-level, typed properties for individual parameters (recommended).</li>
-  <li>Using the low-level, untyped getter (<code>get()</code>) and setter (<code>set()</code>) or the subscript operator.  Use this approach if the parameter you wish to set is not supported by this class.</li>
-</ol></div>
+<div class="block"><p>Describes all parameters of a search query. <p> There are two ways to access parameters: <p> 1. Using the high-level, typed properties for individual parameters (recommended). 2. Using the low-level, untyped getter (<code>get()</code>) and setter (<code>set()</code>) or the subscript operator. Use this approach if the parameter you wish to set is not supported by this class.</p></div>
 </li>
 </ul>
 </div>
@@ -150,6 +145,18 @@ extends <a href="../../../../com/algolia/search/saas/AbstractQuery.html" title="
 <td class="colFirst"><code>static class&nbsp;</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/algolia/search/saas/Query.GeoRect.html" title="class in com.algolia.search.saas">Query.GeoRect</a></span></code>
 <div class="block">A rectangle in geo coordinates.</div>
+</td>
+</tr>
+<tr class="rowColor">
+<td class="colFirst"><code>static class&nbsp;</code></td>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/algolia/search/saas/Query.IgnorePlurals.html" title="class in com.algolia.search.saas">Query.IgnorePlurals</a></span></code>
+<div class="block">A value of the <code>ignorePlurals</code> setting.</div>
+</td>
+</tr>
+<tr class="altColor">
+<td class="colFirst"><code>static class&nbsp;</code></td>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/algolia/search/saas/Query.Polygon.html" title="class in com.algolia.search.saas">Query.Polygon</a></span></code>
+<div class="block">A polygon in geo coordinates.</div>
 </td>
 </tr>
 <tr class="rowColor">
@@ -229,7 +236,7 @@ extends <a href="../../../../com/algolia/search/saas/AbstractQuery.html" title="
 </a>
 <h3>Method Summary</h3>
 <table class="memberSummary" border="0" cellpadding="3" cellspacing="0" summary="Method Summary table, listing methods, and an explanation">
-<caption><span id="t0" class="activeTableTab"><span>All Methods</span><span class="tabEnd">&nbsp;</span></span><span id="t2" class="tableTab"><span><a href="javascript:show(2);">Instance Methods</a></span><span class="tabEnd">&nbsp;</span></span><span id="t4" class="tableTab"><span><a href="javascript:show(8);">Concrete Methods</a></span><span class="tabEnd">&nbsp;</span></span></caption>
+<caption><span id="t0" class="activeTableTab"><span>All Methods</span><span class="tabEnd">&nbsp;</span></span><span id="t2" class="tableTab"><span><a href="javascript:show(2);">Instance Methods</a></span><span class="tabEnd">&nbsp;</span></span><span id="t4" class="tableTab"><span><a href="javascript:show(8);">Concrete Methods</a></span><span class="tabEnd">&nbsp;</span></span><span id="t6" class="tableTab"><span><a href="javascript:show(32);">Deprecated Methods</a></span><span class="tabEnd">&nbsp;</span></span></caption>
 <tr>
 <th class="colFirst" scope="col">Modifier and Type</th>
 <th class="colLast" scope="col">Method and Description</th>
@@ -298,7 +305,11 @@ extends <a href="../../../../com/algolia/search/saas/AbstractQuery.html" title="
 </tr>
 <tr id="i15" class="rowColor">
 <td class="colFirst"><code>JSONArray</code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/algolia/search/saas/Query.html#getFacetFilters--">getFacetFilters</a></span>()</code>&nbsp;</td>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/algolia/search/saas/Query.html#getFacetFilters--">getFacetFilters</a></span>()</code>
+<div class="block"><span class="deprecatedLabel">Deprecated.</span>&nbsp;
+<div class="block"><span class="deprecationComment">Use <a href="../../../../com/algolia/search/saas/Query.html#getFilters--"><code>getFilters()</code></a> instead.</span></div>
+</div>
+</td>
 </tr>
 <tr id="i16" class="altColor">
 <td class="colFirst"><code>String[]</code></td>
@@ -306,7 +317,9 @@ extends <a href="../../../../com/algolia/search/saas/AbstractQuery.html" title="
 </tr>
 <tr id="i17" class="rowColor">
 <td class="colFirst"><code>String</code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/algolia/search/saas/Query.html#getFilters--">getFilters</a></span>()</code>&nbsp;</td>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/algolia/search/saas/Query.html#getFilters--">getFilters</a></span>()</code>
+<div class="block">Get the numeric, facet or/and tag filters for this Query.</div>
+</td>
 </tr>
 <tr id="i18" class="altColor">
 <td class="colFirst"><code>Boolean</code></td>
@@ -325,7 +338,7 @@ extends <a href="../../../../com/algolia/search/saas/AbstractQuery.html" title="
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/algolia/search/saas/Query.html#getHitsPerPage--">getHitsPerPage</a></span>()</code>&nbsp;</td>
 </tr>
 <tr id="i22" class="altColor">
-<td class="colFirst"><code>Boolean</code></td>
+<td class="colFirst"><code><a href="../../../../com/algolia/search/saas/Query.IgnorePlurals.html" title="class in com.algolia.search.saas">Query.IgnorePlurals</a></code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/algolia/search/saas/Query.html#getIgnorePlurals--">getIgnorePlurals</a></span>()</code>&nbsp;</td>
 </tr>
 <tr id="i23" class="rowColor">
@@ -333,7 +346,7 @@ extends <a href="../../../../com/algolia/search/saas/AbstractQuery.html" title="
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/algolia/search/saas/Query.html#getInsideBoundingBox--">getInsideBoundingBox</a></span>()</code>&nbsp;</td>
 </tr>
 <tr id="i24" class="altColor">
-<td class="colFirst"><code><a href="../../../../com/algolia/search/saas/AbstractQuery.LatLng.html" title="class in com.algolia.search.saas">AbstractQuery.LatLng</a>[]</code></td>
+<td class="colFirst"><code><a href="../../../../com/algolia/search/saas/Query.Polygon.html" title="class in com.algolia.search.saas">Query.Polygon</a>[]</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/algolia/search/saas/Query.html#getInsidePolygon--">getInsidePolygon</a></span>()</code>&nbsp;</td>
 </tr>
 <tr id="i25" class="rowColor">
@@ -358,7 +371,11 @@ extends <a href="../../../../com/algolia/search/saas/AbstractQuery.html" title="
 </tr>
 <tr id="i30" class="altColor">
 <td class="colFirst"><code>JSONArray</code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/algolia/search/saas/Query.html#getNumericFilters--">getNumericFilters</a></span>()</code>&nbsp;</td>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/algolia/search/saas/Query.html#getNumericFilters--">getNumericFilters</a></span>()</code>
+<div class="block"><span class="deprecatedLabel">Deprecated.</span>&nbsp;
+<div class="block"><span class="deprecationComment">Use <a href="../../../../com/algolia/search/saas/Query.html#getFilters--"><code>getFilters()</code></a> instead.</span></div>
+</div>
+</td>
 </tr>
 <tr id="i31" class="rowColor">
 <td class="colFirst"><code>String[]</code></td>
@@ -390,258 +407,298 @@ extends <a href="../../../../com/algolia/search/saas/AbstractQuery.html" title="
 </tr>
 <tr id="i38" class="altColor">
 <td class="colFirst"><code>String[]</code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/algolia/search/saas/Query.html#getRestrictSearchableAttributes--">getRestrictSearchableAttributes</a></span>()</code>&nbsp;</td>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/algolia/search/saas/Query.html#getResponseFields--">getResponseFields</a></span>()</code>
+<div class="block">Get the fields the response will contain.</div>
+</td>
 </tr>
 <tr id="i39" class="rowColor">
+<td class="colFirst"><code>String[]</code></td>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/algolia/search/saas/Query.html#getRestrictSearchableAttributes--">getRestrictSearchableAttributes</a></span>()</code>&nbsp;</td>
+</tr>
+<tr id="i40" class="altColor">
 <td class="colFirst"><code>String</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/algolia/search/saas/Query.html#getSnippetEllipsisText--">getSnippetEllipsisText</a></span>()</code>&nbsp;</td>
 </tr>
-<tr id="i40" class="altColor">
+<tr id="i41" class="rowColor">
 <td class="colFirst"><code>Boolean</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/algolia/search/saas/Query.html#getSynonyms--">getSynonyms</a></span>()</code>&nbsp;</td>
 </tr>
-<tr id="i41" class="rowColor">
+<tr id="i42" class="altColor">
 <td class="colFirst"><code>JSONArray</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/algolia/search/saas/Query.html#getTagFilters--">getTagFilters</a></span>()</code>&nbsp;</td>
 </tr>
-<tr id="i42" class="altColor">
+<tr id="i43" class="rowColor">
 <td class="colFirst"><code><a href="../../../../com/algolia/search/saas/Query.TypoTolerance.html" title="enum in com.algolia.search.saas">Query.TypoTolerance</a></code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/algolia/search/saas/Query.html#getTypoTolerance--">getTypoTolerance</a></span>()</code>&nbsp;</td>
 </tr>
-<tr id="i43" class="rowColor">
+<tr id="i44" class="altColor">
 <td class="colFirst"><code><a href="../../../../com/algolia/search/saas/Query.html" title="class in com.algolia.search.saas">Query</a></code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/algolia/search/saas/Query.html#set-java.lang.String-java.lang.Object-">set</a></span>(String&nbsp;name,
    Object&nbsp;value)</code>
 <div class="block">Set a parameter in an untyped fashion.</div>
 </td>
 </tr>
-<tr id="i44" class="altColor">
+<tr id="i45" class="rowColor">
 <td class="colFirst"><code><a href="../../../../com/algolia/search/saas/Query.html" title="class in com.algolia.search.saas">Query</a></code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/algolia/search/saas/Query.html#setAdvancedSyntax-java.lang.Boolean-">setAdvancedSyntax</a></span>(Boolean&nbsp;enabled)</code>
 <div class="block">Enable the advanced query syntax.</div>
 </td>
 </tr>
-<tr id="i45" class="rowColor">
+<tr id="i46" class="altColor">
 <td class="colFirst"><code><a href="../../../../com/algolia/search/saas/Query.html" title="class in com.algolia.search.saas">Query</a></code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/algolia/search/saas/Query.html#setAllowTyposOnNumericTokens-java.lang.Boolean-">setAllowTyposOnNumericTokens</a></span>(Boolean&nbsp;enabled)</code>&nbsp;</td>
 </tr>
-<tr id="i46" class="altColor">
+<tr id="i47" class="rowColor">
 <td class="colFirst"><code><a href="../../../../com/algolia/search/saas/Query.html" title="class in com.algolia.search.saas">Query</a></code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/algolia/search/saas/Query.html#setAlternativesAsExact-com.algolia.search.saas.Query.AlternativesAsExact:A-">setAlternativesAsExact</a></span>(<a href="../../../../com/algolia/search/saas/Query.AlternativesAsExact.html" title="enum in com.algolia.search.saas">Query.AlternativesAsExact</a>[]&nbsp;types)</code>&nbsp;</td>
 </tr>
-<tr id="i47" class="rowColor">
+<tr id="i48" class="altColor">
 <td class="colFirst"><code><a href="../../../../com/algolia/search/saas/Query.html" title="class in com.algolia.search.saas">Query</a></code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/algolia/search/saas/Query.html#setAnalytics-java.lang.Boolean-">setAnalytics</a></span>(Boolean&nbsp;enabled)</code>&nbsp;</td>
 </tr>
-<tr id="i48" class="altColor">
+<tr id="i49" class="rowColor">
 <td class="colFirst"><code><a href="../../../../com/algolia/search/saas/Query.html" title="class in com.algolia.search.saas">Query</a></code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/algolia/search/saas/Query.html#setAnalyticsTags-java.lang.String...-">setAnalyticsTags</a></span>(String...&nbsp;tags)</code>&nbsp;</td>
 </tr>
-<tr id="i49" class="rowColor">
+<tr id="i50" class="altColor">
 <td class="colFirst"><code><a href="../../../../com/algolia/search/saas/Query.html" title="class in com.algolia.search.saas">Query</a></code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/algolia/search/saas/Query.html#setAroundLatLng-com.algolia.search.saas.AbstractQuery.LatLng-">setAroundLatLng</a></span>(<a href="../../../../com/algolia/search/saas/AbstractQuery.LatLng.html" title="class in com.algolia.search.saas">AbstractQuery.LatLng</a>&nbsp;location)</code>
 <div class="block">Search for entries around a given latitude/longitude.</div>
 </td>
 </tr>
-<tr id="i50" class="altColor">
+<tr id="i51" class="rowColor">
 <td class="colFirst"><code><a href="../../../../com/algolia/search/saas/Query.html" title="class in com.algolia.search.saas">Query</a></code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/algolia/search/saas/Query.html#setAroundLatLngViaIP-java.lang.Boolean-">setAroundLatLngViaIP</a></span>(Boolean&nbsp;enabled)</code>
 <div class="block">Search for entries around the latitude/longitude of user (using IP geolocation)</div>
 </td>
 </tr>
-<tr id="i51" class="rowColor">
+<tr id="i52" class="altColor">
 <td class="colFirst"><code><a href="../../../../com/algolia/search/saas/Query.html" title="class in com.algolia.search.saas">Query</a></code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/algolia/search/saas/Query.html#setAroundPrecision-java.lang.Integer-">setAroundPrecision</a></span>(Integer&nbsp;precision)</code>
 <div class="block">Change the radius or around latitude/longitude query</div>
 </td>
 </tr>
-<tr id="i52" class="altColor">
+<tr id="i53" class="rowColor">
 <td class="colFirst"><code><a href="../../../../com/algolia/search/saas/Query.html" title="class in com.algolia.search.saas">Query</a></code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/algolia/search/saas/Query.html#setAroundRadius-java.lang.Integer-">setAroundRadius</a></span>(Integer&nbsp;radius)</code>
 <div class="block">Change the radius for around latitude/longitude queries.</div>
 </td>
 </tr>
-<tr id="i53" class="rowColor">
+<tr id="i54" class="altColor">
 <td class="colFirst"><code><a href="../../../../com/algolia/search/saas/Query.html" title="class in com.algolia.search.saas">Query</a></code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/algolia/search/saas/Query.html#setAttributesToHighlight-java.lang.String...-">setAttributesToHighlight</a></span>(String...&nbsp;attributes)</code>
 <div class="block">Specify the list of attribute names to highlight.</div>
 </td>
 </tr>
-<tr id="i54" class="altColor">
+<tr id="i55" class="rowColor">
 <td class="colFirst"><code><a href="../../../../com/algolia/search/saas/Query.html" title="class in com.algolia.search.saas">Query</a></code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/algolia/search/saas/Query.html#setAttributesToRetrieve-java.lang.String...-">setAttributesToRetrieve</a></span>(String...&nbsp;attributes)</code>
 <div class="block">Specify the list of attribute names to retrieve.</div>
 </td>
 </tr>
-<tr id="i55" class="rowColor">
+<tr id="i56" class="altColor">
 <td class="colFirst"><code><a href="../../../../com/algolia/search/saas/Query.html" title="class in com.algolia.search.saas">Query</a></code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/algolia/search/saas/Query.html#setAttributesToSnippet-java.lang.String...-">setAttributesToSnippet</a></span>(String...&nbsp;attributes)</code>
 <div class="block">Specify the list of attribute names to Snippet alongside the number of words to return (syntax is &lsquo;attributeName:nbWords&rsquo;).</div>
 </td>
 </tr>
-<tr id="i56" class="altColor">
+<tr id="i57" class="rowColor">
 <td class="colFirst"><code><a href="../../../../com/algolia/search/saas/Query.html" title="class in com.algolia.search.saas">Query</a></code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/algolia/search/saas/Query.html#setDisableTypoToleranceOnAttributes-java.lang.String...-">setDisableTypoToleranceOnAttributes</a></span>(String...&nbsp;attributes)</code>
 <div class="block">List of attributes on which you want to disable typo tolerance (must be a subset of the <code>searchableAttributes</code> index setting).</div>
 </td>
 </tr>
-<tr id="i57" class="rowColor">
+<tr id="i58" class="altColor">
 <td class="colFirst"><code><a href="../../../../com/algolia/search/saas/Query.html" title="class in com.algolia.search.saas">Query</a></code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/algolia/search/saas/Query.html#setDistinct-java.lang.Integer-">setDistinct</a></span>(Integer&nbsp;nbHitsToKeep)</code>
 <div class="block">This feature is similar to the distinct just before but instead of keeping the best value per value of attributeForDistinct, it allows to keep N values.</div>
 </td>
 </tr>
-<tr id="i58" class="altColor">
+<tr id="i59" class="rowColor">
 <td class="colFirst"><code><a href="../../../../com/algolia/search/saas/Query.html" title="class in com.algolia.search.saas">Query</a></code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/algolia/search/saas/Query.html#setExactOnSingleWordQuery-com.algolia.search.saas.Query.ExactOnSingleWordQuery-">setExactOnSingleWordQuery</a></span>(<a href="../../../../com/algolia/search/saas/Query.ExactOnSingleWordQuery.html" title="enum in com.algolia.search.saas">Query.ExactOnSingleWordQuery</a>&nbsp;type)</code>&nbsp;</td>
 </tr>
-<tr id="i59" class="rowColor">
-<td class="colFirst"><code><a href="../../../../com/algolia/search/saas/Query.html" title="class in com.algolia.search.saas">Query</a></code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/algolia/search/saas/Query.html#setFacetFilters-org.json.JSONArray-">setFacetFilters</a></span>(JSONArray&nbsp;filters)</code>&nbsp;</td>
-</tr>
 <tr id="i60" class="altColor">
+<td class="colFirst"><code><a href="../../../../com/algolia/search/saas/Query.html" title="class in com.algolia.search.saas">Query</a></code></td>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/algolia/search/saas/Query.html#setFacetFilters-org.json.JSONArray-">setFacetFilters</a></span>(JSONArray&nbsp;filters)</code>
+<div class="block"><span class="deprecatedLabel">Deprecated.</span>&nbsp;
+<div class="block"><span class="deprecationComment">Use <a href="../../../../com/algolia/search/saas/Query.html#setFilters-java.lang.String-"><code>setFilters(String)</code></a> instead.</span></div>
+</div>
+</td>
+</tr>
+<tr id="i61" class="rowColor">
 <td class="colFirst"><code><a href="../../../../com/algolia/search/saas/Query.html" title="class in com.algolia.search.saas">Query</a></code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/algolia/search/saas/Query.html#setFacets-java.lang.String...-">setFacets</a></span>(String...&nbsp;facets)</code>
 <div class="block">List of object attributes that you want to use for faceting.</div>
 </td>
 </tr>
-<tr id="i61" class="rowColor">
-<td class="colFirst"><code><a href="../../../../com/algolia/search/saas/Query.html" title="class in com.algolia.search.saas">Query</a></code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/algolia/search/saas/Query.html#setFilters-java.lang.String-">setFilters</a></span>(String&nbsp;filters)</code>&nbsp;</td>
-</tr>
 <tr id="i62" class="altColor">
+<td class="colFirst"><code><a href="../../../../com/algolia/search/saas/Query.html" title="class in com.algolia.search.saas">Query</a></code></td>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/algolia/search/saas/Query.html#setFilters-java.lang.String-">setFilters</a></span>(String&nbsp;filters)</code>
+<div class="block">Filter the query with numeric, facet or/and tag filters.</div>
+</td>
+</tr>
+<tr id="i63" class="rowColor">
 <td class="colFirst"><code><a href="../../../../com/algolia/search/saas/Query.html" title="class in com.algolia.search.saas">Query</a></code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/algolia/search/saas/Query.html#setGetRankingInfo-java.lang.Boolean-">setGetRankingInfo</a></span>(Boolean&nbsp;enabled)</code>
 <div class="block">if set, the result hits will contain ranking information in _rankingInfo attribute.</div>
 </td>
 </tr>
-<tr id="i63" class="rowColor">
+<tr id="i64" class="altColor">
 <td class="colFirst"><code><a href="../../../../com/algolia/search/saas/Query.html" title="class in com.algolia.search.saas">Query</a></code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/algolia/search/saas/Query.html#setHighlightPostTag-java.lang.String-">setHighlightPostTag</a></span>(String&nbsp;tag)</code>&nbsp;</td>
 </tr>
-<tr id="i64" class="altColor">
+<tr id="i65" class="rowColor">
 <td class="colFirst"><code><a href="../../../../com/algolia/search/saas/Query.html" title="class in com.algolia.search.saas">Query</a></code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/algolia/search/saas/Query.html#setHighlightPreTag-java.lang.String-">setHighlightPreTag</a></span>(String&nbsp;tag)</code>&nbsp;</td>
 </tr>
-<tr id="i65" class="rowColor">
+<tr id="i66" class="altColor">
 <td class="colFirst"><code><a href="../../../../com/algolia/search/saas/Query.html" title="class in com.algolia.search.saas">Query</a></code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/algolia/search/saas/Query.html#setHitsPerPage-java.lang.Integer-">setHitsPerPage</a></span>(Integer&nbsp;nbHitsPerPage)</code>
 <div class="block">Set the number of hits per page.</div>
 </td>
 </tr>
-<tr id="i66" class="altColor">
-<td class="colFirst"><code><a href="../../../../com/algolia/search/saas/Query.html" title="class in com.algolia.search.saas">Query</a></code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/algolia/search/saas/Query.html#setIgnorePlurals-java.lang.Boolean-">setIgnorePlurals</a></span>(Boolean&nbsp;enabled)</code>
-<div class="block">If set to true, plural won&rsquo;t be considered as a typo (for example car/cars will be considered as equals).</div>
-</td>
-</tr>
 <tr id="i67" class="rowColor">
 <td class="colFirst"><code><a href="../../../../com/algolia/search/saas/Query.html" title="class in com.algolia.search.saas">Query</a></code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/algolia/search/saas/Query.html#setInsideBoundingBox-com.algolia.search.saas.Query.GeoRect...-">setInsideBoundingBox</a></span>(<a href="../../../../com/algolia/search/saas/Query.GeoRect.html" title="class in com.algolia.search.saas">Query.GeoRect</a>...&nbsp;boxes)</code>
-<div class="block">Search for entries inside a given area defined by the two extreme points of a rectangle.</div>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/algolia/search/saas/Query.html#setIgnorePlurals-boolean-">setIgnorePlurals</a></span>(boolean&nbsp;enabled)</code>
+<div class="block">If set to true, plural won&rsquo;t be considered as a typo (for example car/cars will be considered as equals).</div>
 </td>
 </tr>
 <tr id="i68" class="altColor">
 <td class="colFirst"><code><a href="../../../../com/algolia/search/saas/Query.html" title="class in com.algolia.search.saas">Query</a></code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/algolia/search/saas/Query.html#setInsidePolygon-com.algolia.search.saas.AbstractQuery.LatLng...-">setInsidePolygon</a></span>(<a href="../../../../com/algolia/search/saas/AbstractQuery.LatLng.html" title="class in com.algolia.search.saas">AbstractQuery.LatLng</a>...&nbsp;points)</code>
-<div class="block">Add a point to the polygon of geo-search (requires a minimum of three points to define a valid polygon) At indexing, you should specify geoloc of an object with the _geoloc attribute (in the form &quot;_geoloc&ldquo;:{&rdquo;lat&ldquo;:48.853409, &rdquo;lng&ldquo;:2.348800} or &rdquo;_geoloc&quot;:[{&ldquo;lat&rdquo;:48.853409, &ldquo;lng&rdquo;:2.348800},{&ldquo;lat&rdquo;:48.547456, &ldquo;lng&rdquo;:2.972075}] if you have several geo-locations in your record).</div>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/algolia/search/saas/Query.html#setIgnorePlurals-java.util.Collection-">setIgnorePlurals</a></span>(Collection&lt;String&gt;&nbsp;languageISOCodes)</code>
+<div class="block">A list of language codes for which plural won&rsquo;t be considered as a typo (for example car/cars will be considered as equals).</div>
 </td>
 </tr>
 <tr id="i69" class="rowColor">
+<td class="colFirst"><code><a href="../../../../com/algolia/search/saas/Query.html" title="class in com.algolia.search.saas">Query</a></code></td>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/algolia/search/saas/Query.html#setIgnorePlurals-java.lang.String...-">setIgnorePlurals</a></span>(String...&nbsp;languageISOCodes)</code>
+<div class="block">One or several language codes for which plural won&rsquo;t be considered as a typo (for example car/cars will be considered as equals).</div>
+</td>
+</tr>
+<tr id="i70" class="altColor">
+<td class="colFirst"><code><a href="../../../../com/algolia/search/saas/Query.html" title="class in com.algolia.search.saas">Query</a></code></td>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/algolia/search/saas/Query.html#setInsideBoundingBox-com.algolia.search.saas.Query.GeoRect...-">setInsideBoundingBox</a></span>(<a href="../../../../com/algolia/search/saas/Query.GeoRect.html" title="class in com.algolia.search.saas">Query.GeoRect</a>...&nbsp;boxes)</code>
+<div class="block">Search for entries inside one area or the union of several areas defined by the two extreme points of a rectangle.</div>
+</td>
+</tr>
+<tr id="i71" class="rowColor">
+<td class="colFirst"><code><a href="../../../../com/algolia/search/saas/Query.html" title="class in com.algolia.search.saas">Query</a></code></td>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/algolia/search/saas/Query.html#setInsidePolygon-com.algolia.search.saas.AbstractQuery.LatLng...-">setInsidePolygon</a></span>(<a href="../../../../com/algolia/search/saas/AbstractQuery.LatLng.html" title="class in com.algolia.search.saas">AbstractQuery.LatLng</a>...&nbsp;points)</code>
+<div class="block">Search for entries inside a given area defined by the points of a polygon.</div>
+</td>
+</tr>
+<tr id="i72" class="altColor">
+<td class="colFirst"><code><a href="../../../../com/algolia/search/saas/Query.html" title="class in com.algolia.search.saas">Query</a></code></td>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/algolia/search/saas/Query.html#setInsidePolygon-com.algolia.search.saas.Query.Polygon...-">setInsidePolygon</a></span>(<a href="../../../../com/algolia/search/saas/Query.Polygon.html" title="class in com.algolia.search.saas">Query.Polygon</a>...&nbsp;polygons)</code>
+<div class="block">Search for entries inside a given area defined by several polygons.</div>
+</td>
+</tr>
+<tr id="i73" class="rowColor">
 <td class="colFirst"><code><a href="../../../../com/algolia/search/saas/Query.html" title="class in com.algolia.search.saas">Query</a></code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/algolia/search/saas/Query.html#setMaxValuesPerFacet-java.lang.Integer-">setMaxValuesPerFacet</a></span>(Integer&nbsp;n)</code>
 <div class="block">Limit the number of facet values returned for each facet.</div>
 </td>
 </tr>
-<tr id="i70" class="altColor">
+<tr id="i74" class="altColor">
 <td class="colFirst"><code><a href="../../../../com/algolia/search/saas/Query.html" title="class in com.algolia.search.saas">Query</a></code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/algolia/search/saas/Query.html#setMinimumAroundRadius-java.lang.Integer-">setMinimumAroundRadius</a></span>(Integer&nbsp;minimumAroundRadius)</code>
 <div class="block">Specify the minimum number of characters in a query word to accept one typo in this word.</div>
 </td>
 </tr>
-<tr id="i71" class="rowColor">
+<tr id="i75" class="rowColor">
 <td class="colFirst"><code><a href="../../../../com/algolia/search/saas/Query.html" title="class in com.algolia.search.saas">Query</a></code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/algolia/search/saas/Query.html#setMinProximity-java.lang.Integer-">setMinProximity</a></span>(Integer&nbsp;nbChars)</code>
 <div class="block">Specify the minimum number of characters in a query word to accept one typo in this word.</div>
 </td>
 </tr>
-<tr id="i72" class="altColor">
+<tr id="i76" class="altColor">
 <td class="colFirst"><code><a href="../../../../com/algolia/search/saas/Query.html" title="class in com.algolia.search.saas">Query</a></code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/algolia/search/saas/Query.html#setMinWordSizefor1Typo-java.lang.Integer-">setMinWordSizefor1Typo</a></span>(Integer&nbsp;nbChars)</code>
 <div class="block">Specify the minimum number of characters in a query word to accept one typo in this word.</div>
 </td>
 </tr>
-<tr id="i73" class="rowColor">
+<tr id="i77" class="rowColor">
 <td class="colFirst"><code><a href="../../../../com/algolia/search/saas/Query.html" title="class in com.algolia.search.saas">Query</a></code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/algolia/search/saas/Query.html#setMinWordSizefor2Typos-java.lang.Integer-">setMinWordSizefor2Typos</a></span>(Integer&nbsp;nbChars)</code>
 <div class="block">Specify the minimum number of characters in a query word to accept one typo in this word.</div>
 </td>
 </tr>
-<tr id="i74" class="altColor">
+<tr id="i78" class="altColor">
 <td class="colFirst"><code><a href="../../../../com/algolia/search/saas/Query.html" title="class in com.algolia.search.saas">Query</a></code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/algolia/search/saas/Query.html#setNumericFilters-org.json.JSONArray-">setNumericFilters</a></span>(JSONArray&nbsp;filters)</code>&nbsp;</td>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/algolia/search/saas/Query.html#setNumericFilters-org.json.JSONArray-">setNumericFilters</a></span>(JSONArray&nbsp;filters)</code>
+<div class="block"><span class="deprecatedLabel">Deprecated.</span>&nbsp;
+<div class="block"><span class="deprecationComment">Use <a href="../../../../com/algolia/search/saas/Query.html#setFilters-java.lang.String-"><code>setFilters(String)</code></a> instead.</span></div>
+</div>
+</td>
 </tr>
-<tr id="i75" class="rowColor">
+<tr id="i79" class="rowColor">
 <td class="colFirst"><code><a href="../../../../com/algolia/search/saas/Query.html" title="class in com.algolia.search.saas">Query</a></code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/algolia/search/saas/Query.html#setOptionalWords-java.lang.String...-">setOptionalWords</a></span>(String...&nbsp;words)</code>
 <div class="block">Set the list of words that should be considered as optional when found in the query.</div>
 </td>
 </tr>
-<tr id="i76" class="altColor">
+<tr id="i80" class="altColor">
 <td class="colFirst"><code><a href="../../../../com/algolia/search/saas/Query.html" title="class in com.algolia.search.saas">Query</a></code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/algolia/search/saas/Query.html#setPage-java.lang.Integer-">setPage</a></span>(Integer&nbsp;page)</code>
 <div class="block">Set the page to retrieve (zero base).</div>
 </td>
 </tr>
-<tr id="i77" class="rowColor">
+<tr id="i81" class="rowColor">
 <td class="colFirst"><code><a href="../../../../com/algolia/search/saas/Query.html" title="class in com.algolia.search.saas">Query</a></code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/algolia/search/saas/Query.html#setQuery-java.lang.String-">setQuery</a></span>(String&nbsp;query)</code>
 <div class="block">Set the full text query</div>
 </td>
 </tr>
-<tr id="i78" class="altColor">
+<tr id="i82" class="altColor">
 <td class="colFirst"><code><a href="../../../../com/algolia/search/saas/Query.html" title="class in com.algolia.search.saas">Query</a></code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/algolia/search/saas/Query.html#setQueryType-com.algolia.search.saas.Query.QueryType-">setQueryType</a></span>(<a href="../../../../com/algolia/search/saas/Query.QueryType.html" title="enum in com.algolia.search.saas">Query.QueryType</a>&nbsp;type)</code>
 <div class="block">Select how the query words are interpreted:</div>
 </td>
 </tr>
-<tr id="i79" class="rowColor">
+<tr id="i83" class="rowColor">
 <td class="colFirst"><code><a href="../../../../com/algolia/search/saas/Query.html" title="class in com.algolia.search.saas">Query</a></code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/algolia/search/saas/Query.html#setRemoveStopWords-java.lang.Object-">setRemoveStopWords</a></span>(Object&nbsp;removeStopWords)</code>
 <div class="block">Enable the removal of stop words, disabled by default.</div>
 </td>
 </tr>
-<tr id="i80" class="altColor">
+<tr id="i84" class="altColor">
 <td class="colFirst"><code><a href="../../../../com/algolia/search/saas/Query.html" title="class in com.algolia.search.saas">Query</a></code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/algolia/search/saas/Query.html#setRemoveWordsIfNoResults-com.algolia.search.saas.Query.RemoveWordsIfNoResults-">setRemoveWordsIfNoResults</a></span>(<a href="../../../../com/algolia/search/saas/Query.RemoveWordsIfNoResults.html" title="enum in com.algolia.search.saas">Query.RemoveWordsIfNoResults</a>&nbsp;type)</code>
 <div class="block">Select the strategy to adopt when a query does not return any result.</div>
 </td>
 </tr>
-<tr id="i81" class="rowColor">
+<tr id="i85" class="rowColor">
 <td class="colFirst"><code><a href="../../../../com/algolia/search/saas/Query.html" title="class in com.algolia.search.saas">Query</a></code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/algolia/search/saas/Query.html#setReplaceSynonymsInHighlight-java.lang.Boolean-">setReplaceSynonymsInHighlight</a></span>(Boolean&nbsp;enabled)</code>&nbsp;</td>
 </tr>
-<tr id="i82" class="altColor">
+<tr id="i86" class="altColor">
+<td class="colFirst"><code><a href="../../../../com/algolia/search/saas/Query.html" title="class in com.algolia.search.saas">Query</a></code></td>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/algolia/search/saas/Query.html#setResponseFields-java.lang.String...-">setResponseFields</a></span>(String...&nbsp;attributes)</code>
+<div class="block">Choose which fields the response will contain.</div>
+</td>
+</tr>
+<tr id="i87" class="rowColor">
 <td class="colFirst"><code><a href="../../../../com/algolia/search/saas/Query.html" title="class in com.algolia.search.saas">Query</a></code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/algolia/search/saas/Query.html#setRestrictSearchableAttributes-java.lang.String...-">setRestrictSearchableAttributes</a></span>(String...&nbsp;attributes)</code>
 <div class="block">List of object attributes you want to use for textual search (must be a subset of the <code>searchableAttributes</code> index setting).</div>
 </td>
 </tr>
-<tr id="i83" class="rowColor">
+<tr id="i88" class="altColor">
 <td class="colFirst"><code><a href="../../../../com/algolia/search/saas/Query.html" title="class in com.algolia.search.saas">Query</a></code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/algolia/search/saas/Query.html#setSnippetEllipsisText-java.lang.String-">setSnippetEllipsisText</a></span>(String&nbsp;snippetEllipsisText)</code>
 <div class="block">Specify the string that is used as an ellipsis indicator when a snippet is truncated (defaults to the empty string).</div>
 </td>
 </tr>
-<tr id="i84" class="altColor">
+<tr id="i89" class="rowColor">
 <td class="colFirst"><code><a href="../../../../com/algolia/search/saas/Query.html" title="class in com.algolia.search.saas">Query</a></code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/algolia/search/saas/Query.html#setSynonyms-java.lang.Boolean-">setSynonyms</a></span>(Boolean&nbsp;enabled)</code>&nbsp;</td>
 </tr>
-<tr id="i85" class="rowColor">
+<tr id="i90" class="altColor">
 <td class="colFirst"><code><a href="../../../../com/algolia/search/saas/Query.html" title="class in com.algolia.search.saas">Query</a></code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/algolia/search/saas/Query.html#setTagFilters-org.json.JSONArray-">setTagFilters</a></span>(JSONArray&nbsp;tagFilters)</code>&nbsp;</td>
 </tr>
-<tr id="i86" class="altColor">
+<tr id="i91" class="rowColor">
 <td class="colFirst"><code><a href="../../../../com/algolia/search/saas/Query.html" title="class in com.algolia.search.saas">Query</a></code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/algolia/search/saas/Query.html#setTypoTolerance-com.algolia.search.saas.Query.TypoTolerance-">setTypoTolerance</a></span>(<a href="../../../../com/algolia/search/saas/Query.TypoTolerance.html" title="enum in com.algolia.search.saas">Query.TypoTolerance</a>&nbsp;type)</code>&nbsp;</td>
 </tr>
@@ -772,7 +829,7 @@ public&nbsp;<a href="../../../../com/algolia/search/saas/Query.html" title="clas
 public&nbsp;<a href="../../../../com/algolia/search/saas/Query.html" title="class in com.algolia.search.saas">Query</a>&nbsp;setAllowTyposOnNumericTokens(Boolean&nbsp;enabled)</pre>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
-<dd><code>enabled</code> - If set to false, disable typo-tolerance on numeric tokens.  Default to true.</dd>
+<dd><code>enabled</code> - If set to false, disable typo-tolerance on numeric tokens.  Defaults to true.</dd>
 </dl>
 </li>
 </ul>
@@ -795,7 +852,7 @@ public&nbsp;<a href="../../../../com/algolia/search/saas/Query.html" title="clas
 public&nbsp;<a href="../../../../com/algolia/search/saas/Query.html" title="class in com.algolia.search.saas">Query</a>&nbsp;setAnalytics(Boolean&nbsp;enabled)</pre>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
-<dd><code>enabled</code> - If set to false, this query will not be taken into account in  analytics feature. Default to true.</dd>
+<dd><code>enabled</code> - If set to false, this query will not be taken into account in  analytics feature. Defaults to true.</dd>
 </dl>
 </li>
 </ul>
@@ -838,7 +895,8 @@ public&nbsp;<a href="../../../../com/algolia/search/saas/Query.html" title="clas
 <li class="blockList">
 <h4>setAroundLatLng</h4>
 <pre>@NonNull
-public&nbsp;<a href="../../../../com/algolia/search/saas/Query.html" title="class in com.algolia.search.saas">Query</a>&nbsp;setAroundLatLng(<a href="../../../../com/algolia/search/saas/AbstractQuery.LatLng.html" title="class in com.algolia.search.saas">AbstractQuery.LatLng</a>&nbsp;location)</pre>
+public&nbsp;<a href="../../../../com/algolia/search/saas/Query.html" title="class in com.algolia.search.saas">Query</a>&nbsp;setAroundLatLng(@Nullable
+                                      <a href="../../../../com/algolia/search/saas/AbstractQuery.LatLng.html" title="class in com.algolia.search.saas">AbstractQuery.LatLng</a>&nbsp;location)</pre>
 <div class="block"><p>Search for entries around a given latitude/longitude.</p></div>
 </li>
 </ul>
@@ -848,7 +906,8 @@ public&nbsp;<a href="../../../../com/algolia/search/saas/Query.html" title="clas
 <ul class="blockList">
 <li class="blockList">
 <h4>getAroundLatLng</h4>
-<pre>public&nbsp;<a href="../../../../com/algolia/search/saas/AbstractQuery.LatLng.html" title="class in com.algolia.search.saas">AbstractQuery.LatLng</a>&nbsp;getAroundLatLng()</pre>
+<pre>@Nullable
+public&nbsp;<a href="../../../../com/algolia/search/saas/AbstractQuery.LatLng.html" title="class in com.algolia.search.saas">AbstractQuery.LatLng</a>&nbsp;getAroundLatLng()</pre>
 </li>
 </ul>
 <a name="setAroundLatLngViaIP-java.lang.Boolean-">
@@ -1052,6 +1111,8 @@ public&nbsp;<a href="../../../../com/algolia/search/saas/Query.html" title="clas
 <h4>setFacetFilters</h4>
 <pre>@NonNull
 public&nbsp;<a href="../../../../com/algolia/search/saas/Query.html" title="class in com.algolia.search.saas">Query</a>&nbsp;setFacetFilters(JSONArray&nbsp;filters)</pre>
+<div class="block"><span class="deprecatedLabel">Deprecated.</span>&nbsp;<span class="deprecationComment">Use <a href="../../../../com/algolia/search/saas/Query.html#setFilters-java.lang.String-"><code>setFilters(String)</code></a> instead.</span></div>
+<div class="block"><p>Set the <b>deprecated</b> <code>facetFilters</code> parameter.</p></div>
 </li>
 </ul>
 <a name="getFacetFilters--">
@@ -1060,7 +1121,10 @@ public&nbsp;<a href="../../../../com/algolia/search/saas/Query.html" title="clas
 <ul class="blockList">
 <li class="blockList">
 <h4>getFacetFilters</h4>
-<pre>public&nbsp;JSONArray&nbsp;getFacetFilters()</pre>
+<pre>@Nullable
+public&nbsp;JSONArray&nbsp;getFacetFilters()</pre>
+<div class="block"><span class="deprecatedLabel">Deprecated.</span>&nbsp;<span class="deprecationComment">Use <a href="../../../../com/algolia/search/saas/Query.html#getFilters--"><code>getFilters()</code></a> instead.</span></div>
+<div class="block"><p>Get the value of <b>deprecated</b> <code>facetFilters</code> parameter.</p></div>
 </li>
 </ul>
 <a name="setFilters-java.lang.String-">
@@ -1071,6 +1135,13 @@ public&nbsp;<a href="../../../../com/algolia/search/saas/Query.html" title="clas
 <h4>setFilters</h4>
 <pre>@NonNull
 public&nbsp;<a href="../../../../com/algolia/search/saas/Query.html" title="class in com.algolia.search.saas">Query</a>&nbsp;setFilters(String&nbsp;filters)</pre>
+<div class="block"><p>Filter the query with numeric, facet or/and tag filters. <p> The syntax is a SQL like syntax, you can use the OR and AND keywords. The syntax for the underlying numeric, facet and tag filters is the same than in the other filters: <code>available=1 AND (category:Book OR NOT category:Ebook) AND _tags:public date: 1441745506 TO 1441755506 AND inStock &gt; 0 AND author:"John Doe"</code></p></div>
+<dl>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>filters</code> - a string following the given syntax.</dd>
+<dt><span class="returnLabel">Returns:</span></dt>
+<dd>the <a href="../../../../com/algolia/search/saas/Query.html" title="class in com.algolia.search.saas"><code>Query</code></a> for chaining.</dd>
+</dl>
 </li>
 </ul>
 <a name="getFilters--">
@@ -1079,7 +1150,13 @@ public&nbsp;<a href="../../../../com/algolia/search/saas/Query.html" title="clas
 <ul class="blockList">
 <li class="blockList">
 <h4>getFilters</h4>
-<pre>public&nbsp;String&nbsp;getFilters()</pre>
+<pre>@Nullable
+public&nbsp;String&nbsp;getFilters()</pre>
+<div class="block"><p>Get the numeric, facet or/and tag filters for this Query.</p></div>
+<dl>
+<dt><span class="returnLabel">Returns:</span></dt>
+<dd>a String with this query&rsquo;s filters.</dd>
+</dl>
 </li>
 </ul>
 <a name="setGetRankingInfo-java.lang.Boolean-">
@@ -1118,7 +1195,8 @@ public&nbsp;<a href="../../../../com/algolia/search/saas/Query.html" title="clas
 <ul class="blockList">
 <li class="blockList">
 <h4>getHighlightPostTag</h4>
-<pre>public&nbsp;String&nbsp;getHighlightPostTag()</pre>
+<pre>@Nullable
+public&nbsp;String&nbsp;getHighlightPostTag()</pre>
 </li>
 </ul>
 <a name="setHighlightPreTag-java.lang.String-">
@@ -1137,7 +1215,8 @@ public&nbsp;<a href="../../../../com/algolia/search/saas/Query.html" title="clas
 <ul class="blockList">
 <li class="blockList">
 <h4>getHighlightPreTag</h4>
-<pre>public&nbsp;String&nbsp;getHighlightPreTag()</pre>
+<pre>@Nullable
+public&nbsp;String&nbsp;getHighlightPreTag()</pre>
 </li>
 </ul>
 <a name="setHitsPerPage-java.lang.Integer-">
@@ -1160,15 +1239,39 @@ public&nbsp;<a href="../../../../com/algolia/search/saas/Query.html" title="clas
 <pre>public&nbsp;Integer&nbsp;getHitsPerPage()</pre>
 </li>
 </ul>
-<a name="setIgnorePlurals-java.lang.Boolean-">
+<a name="setIgnorePlurals-boolean-">
 <!--   -->
 </a>
 <ul class="blockList">
 <li class="blockList">
 <h4>setIgnorePlurals</h4>
 <pre>@NonNull
-public&nbsp;<a href="../../../../com/algolia/search/saas/Query.html" title="class in com.algolia.search.saas">Query</a>&nbsp;setIgnorePlurals(Boolean&nbsp;enabled)</pre>
-<div class="block"><p>If set to true, plural won&rsquo;t be considered as a typo (for example car/cars will be considered as equals). Default to false.</p></div>
+public&nbsp;<a href="../../../../com/algolia/search/saas/Query.html" title="class in com.algolia.search.saas">Query</a>&nbsp;setIgnorePlurals(boolean&nbsp;enabled)</pre>
+<div class="block"><p>If set to true, plural won&rsquo;t be considered as a typo (for example car/cars will be considered as equals). Defaults to false.</p></div>
+</li>
+</ul>
+<a name="setIgnorePlurals-java.util.Collection-">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>setIgnorePlurals</h4>
+<pre>@NonNull
+public&nbsp;<a href="../../../../com/algolia/search/saas/Query.html" title="class in com.algolia.search.saas">Query</a>&nbsp;setIgnorePlurals(@Nullable
+                                       Collection&lt;String&gt;&nbsp;languageISOCodes)</pre>
+<div class="block"><p>A list of language codes for which plural won&rsquo;t be considered as a typo (for example car/cars will be considered as equals). If empty or null, this disables the feature.</p></div>
+</li>
+</ul>
+<a name="setIgnorePlurals-java.lang.String...-">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>setIgnorePlurals</h4>
+<pre>@NonNull
+public&nbsp;<a href="../../../../com/algolia/search/saas/Query.html" title="class in com.algolia.search.saas">Query</a>&nbsp;setIgnorePlurals(@Nullable
+                                       String...&nbsp;languageISOCodes)</pre>
+<div class="block"><p>One or several language codes for which plural won&rsquo;t be considered as a typo (for example car/cars will be considered as equals). If empty or null, this disables the feature.</p></div>
 </li>
 </ul>
 <a name="getIgnorePlurals--">
@@ -1177,7 +1280,8 @@ public&nbsp;<a href="../../../../com/algolia/search/saas/Query.html" title="clas
 <ul class="blockList">
 <li class="blockList">
 <h4>getIgnorePlurals</h4>
-<pre>public&nbsp;Boolean&nbsp;getIgnorePlurals()</pre>
+<pre>@NonNull
+public&nbsp;<a href="../../../../com/algolia/search/saas/Query.IgnorePlurals.html" title="class in com.algolia.search.saas">Query.IgnorePlurals</a>&nbsp;getIgnorePlurals()</pre>
 </li>
 </ul>
 <a name="setInsideBoundingBox-com.algolia.search.saas.Query.GeoRect...-">
@@ -1187,9 +1291,9 @@ public&nbsp;<a href="../../../../com/algolia/search/saas/Query.html" title="clas
 <li class="blockList">
 <h4>setInsideBoundingBox</h4>
 <pre>@NonNull
-public&nbsp;<a href="../../../../com/algolia/search/saas/Query.html" title="class in com.algolia.search.saas">Query</a>&nbsp;setInsideBoundingBox(<a href="../../../../com/algolia/search/saas/Query.GeoRect.html" title="class in com.algolia.search.saas">Query.GeoRect</a>...&nbsp;boxes)</pre>
-<div class="block"><p>Search for entries inside a given area defined by the two extreme points of a rectangle. At indexing, geoloc of an object should be set with _geoloc attribute containing lat and lng attributes (for example {&quot;_geoloc&ldquo;:{&rdquo;lat&ldquo;:48.853409, &rdquo;lng&quot;:2.348800}})</p>
-<p>You can use several bounding boxes (OR) by calling this method several times.</p></div>
+public&nbsp;<a href="../../../../com/algolia/search/saas/Query.html" title="class in com.algolia.search.saas">Query</a>&nbsp;setInsideBoundingBox(@Nullable
+                                           <a href="../../../../com/algolia/search/saas/Query.GeoRect.html" title="class in com.algolia.search.saas">Query.GeoRect</a>...&nbsp;boxes)</pre>
+<div class="block"><p>Search for entries inside one area or the union of several areas defined by the two extreme points of a rectangle.</p></div>
 </li>
 </ul>
 <a name="getInsideBoundingBox--">
@@ -1198,7 +1302,8 @@ public&nbsp;<a href="../../../../com/algolia/search/saas/Query.html" title="clas
 <ul class="blockList">
 <li class="blockList">
 <h4>getInsideBoundingBox</h4>
-<pre>public&nbsp;<a href="../../../../com/algolia/search/saas/Query.GeoRect.html" title="class in com.algolia.search.saas">Query.GeoRect</a>[]&nbsp;getInsideBoundingBox()</pre>
+<pre>@Nullable
+public&nbsp;<a href="../../../../com/algolia/search/saas/Query.GeoRect.html" title="class in com.algolia.search.saas">Query.GeoRect</a>[]&nbsp;getInsideBoundingBox()</pre>
 </li>
 </ul>
 <a name="setInsidePolygon-com.algolia.search.saas.AbstractQuery.LatLng...-">
@@ -1208,8 +1313,21 @@ public&nbsp;<a href="../../../../com/algolia/search/saas/Query.html" title="clas
 <li class="blockList">
 <h4>setInsidePolygon</h4>
 <pre>@NonNull
-public&nbsp;<a href="../../../../com/algolia/search/saas/Query.html" title="class in com.algolia.search.saas">Query</a>&nbsp;setInsidePolygon(<a href="../../../../com/algolia/search/saas/AbstractQuery.LatLng.html" title="class in com.algolia.search.saas">AbstractQuery.LatLng</a>...&nbsp;points)</pre>
-<div class="block"><p>Add a point to the polygon of geo-search (requires a minimum of three points to define a valid polygon) At indexing, you should specify geoloc of an object with the _geoloc attribute (in the form &quot;_geoloc&ldquo;:{&rdquo;lat&ldquo;:48.853409, &rdquo;lng&ldquo;:2.348800} or &rdquo;_geoloc&quot;:[{&ldquo;lat&rdquo;:48.853409, &ldquo;lng&rdquo;:2.348800},{&ldquo;lat&rdquo;:48.547456, &ldquo;lng&rdquo;:2.972075}] if you have several geo-locations in your record).</p></div>
+public&nbsp;<a href="../../../../com/algolia/search/saas/Query.html" title="class in com.algolia.search.saas">Query</a>&nbsp;setInsidePolygon(@Nullable
+                                       <a href="../../../../com/algolia/search/saas/AbstractQuery.LatLng.html" title="class in com.algolia.search.saas">AbstractQuery.LatLng</a>...&nbsp;points)</pre>
+<div class="block"><p>Search for entries inside a given area defined by the points of a polygon.</p></div>
+</li>
+</ul>
+<a name="setInsidePolygon-com.algolia.search.saas.Query.Polygon...-">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>setInsidePolygon</h4>
+<pre>@NonNull
+public&nbsp;<a href="../../../../com/algolia/search/saas/Query.html" title="class in com.algolia.search.saas">Query</a>&nbsp;setInsidePolygon(@Nullable
+                                       <a href="../../../../com/algolia/search/saas/Query.Polygon.html" title="class in com.algolia.search.saas">Query.Polygon</a>...&nbsp;polygons)</pre>
+<div class="block"><p>Search for entries inside a given area defined by several polygons.</p></div>
 </li>
 </ul>
 <a name="getInsidePolygon--">
@@ -1218,7 +1336,8 @@ public&nbsp;<a href="../../../../com/algolia/search/saas/Query.html" title="clas
 <ul class="blockList">
 <li class="blockList">
 <h4>getInsidePolygon</h4>
-<pre>public&nbsp;<a href="../../../../com/algolia/search/saas/AbstractQuery.LatLng.html" title="class in com.algolia.search.saas">AbstractQuery.LatLng</a>[]&nbsp;getInsidePolygon()</pre>
+<pre>@Nullable
+public&nbsp;<a href="../../../../com/algolia/search/saas/Query.Polygon.html" title="class in com.algolia.search.saas">Query.Polygon</a>[]&nbsp;getInsidePolygon()</pre>
 </li>
 </ul>
 <a name="setMaxValuesPerFacet-java.lang.Integer-">
@@ -1329,6 +1448,8 @@ public&nbsp;<a href="../../../../com/algolia/search/saas/Query.html" title="clas
 <h4>setNumericFilters</h4>
 <pre>@NonNull
 public&nbsp;<a href="../../../../com/algolia/search/saas/Query.html" title="class in com.algolia.search.saas">Query</a>&nbsp;setNumericFilters(JSONArray&nbsp;filters)</pre>
+<div class="block"><span class="deprecatedLabel">Deprecated.</span>&nbsp;<span class="deprecationComment">Use <a href="../../../../com/algolia/search/saas/Query.html#setFilters-java.lang.String-"><code>setFilters(String)</code></a> instead.</span></div>
+<div class="block"><p>Set the <b>deprecated</b> <code>numericFilters</code> parameter.</p></div>
 </li>
 </ul>
 <a name="getNumericFilters--">
@@ -1337,7 +1458,10 @@ public&nbsp;<a href="../../../../com/algolia/search/saas/Query.html" title="clas
 <ul class="blockList">
 <li class="blockList">
 <h4>getNumericFilters</h4>
-<pre>public&nbsp;JSONArray&nbsp;getNumericFilters()</pre>
+<pre>@Nullable
+public&nbsp;JSONArray&nbsp;getNumericFilters()</pre>
+<div class="block"><span class="deprecatedLabel">Deprecated.</span>&nbsp;<span class="deprecationComment">Use <a href="../../../../com/algolia/search/saas/Query.html#getFilters--"><code>getFilters()</code></a> instead.</span></div>
+<div class="block"><p>Get the value of <b>deprecated</b> <code>facetFilters</code> parameter.</p></div>
 </li>
 </ul>
 <a name="setOptionalWords-java.lang.String...-">
@@ -1401,7 +1525,8 @@ public&nbsp;<a href="../../../../com/algolia/search/saas/Query.html" title="clas
 <ul class="blockList">
 <li class="blockList">
 <h4>getQuery</h4>
-<pre>public&nbsp;String&nbsp;getQuery()</pre>
+<pre>@Nullable
+public&nbsp;String&nbsp;getQuery()</pre>
 </li>
 </ul>
 <a name="setQueryType-com.algolia.search.saas.Query.QueryType-">
@@ -1411,7 +1536,8 @@ public&nbsp;<a href="../../../../com/algolia/search/saas/Query.html" title="clas
 <li class="blockList">
 <h4>setQueryType</h4>
 <pre>@NonNull
-public&nbsp;<a href="../../../../com/algolia/search/saas/Query.html" title="class in com.algolia.search.saas">Query</a>&nbsp;setQueryType(<a href="../../../../com/algolia/search/saas/Query.QueryType.html" title="enum in com.algolia.search.saas">Query.QueryType</a>&nbsp;type)</pre>
+public&nbsp;<a href="../../../../com/algolia/search/saas/Query.html" title="class in com.algolia.search.saas">Query</a>&nbsp;setQueryType(@Nullable
+                                   <a href="../../../../com/algolia/search/saas/Query.QueryType.html" title="enum in com.algolia.search.saas">Query.QueryType</a>&nbsp;type)</pre>
 <div class="block"><p>Select how the query words are interpreted:</p></div>
 </li>
 </ul>
@@ -1421,7 +1547,8 @@ public&nbsp;<a href="../../../../com/algolia/search/saas/Query.html" title="clas
 <ul class="blockList">
 <li class="blockList">
 <h4>getQueryType</h4>
-<pre>public&nbsp;<a href="../../../../com/algolia/search/saas/Query.QueryType.html" title="enum in com.algolia.search.saas">Query.QueryType</a>&nbsp;getQueryType()</pre>
+<pre>@Nullable
+public&nbsp;<a href="../../../../com/algolia/search/saas/Query.QueryType.html" title="enum in com.algolia.search.saas">Query.QueryType</a>&nbsp;getQueryType()</pre>
 </li>
 </ul>
 <a name="setRemoveStopWords-java.lang.Object-">
@@ -1448,7 +1575,8 @@ public&nbsp;<a href="../../../../com/algolia/search/saas/Query.html" title="clas
 <ul class="blockList">
 <li class="blockList">
 <h4>getRemoveStopWords</h4>
-<pre>public&nbsp;Object&nbsp;getRemoveStopWords()</pre>
+<pre>@Nullable
+public&nbsp;Object&nbsp;getRemoveStopWords()</pre>
 </li>
 </ul>
 <a name="setRemoveWordsIfNoResults-com.algolia.search.saas.Query.RemoveWordsIfNoResults-">
@@ -1458,7 +1586,8 @@ public&nbsp;<a href="../../../../com/algolia/search/saas/Query.html" title="clas
 <li class="blockList">
 <h4>setRemoveWordsIfNoResults</h4>
 <pre>@NonNull
-public&nbsp;<a href="../../../../com/algolia/search/saas/Query.html" title="class in com.algolia.search.saas">Query</a>&nbsp;setRemoveWordsIfNoResults(<a href="../../../../com/algolia/search/saas/Query.RemoveWordsIfNoResults.html" title="enum in com.algolia.search.saas">Query.RemoveWordsIfNoResults</a>&nbsp;type)</pre>
+public&nbsp;<a href="../../../../com/algolia/search/saas/Query.html" title="class in com.algolia.search.saas">Query</a>&nbsp;setRemoveWordsIfNoResults(@Nullable
+                                                <a href="../../../../com/algolia/search/saas/Query.RemoveWordsIfNoResults.html" title="enum in com.algolia.search.saas">Query.RemoveWordsIfNoResults</a>&nbsp;type)</pre>
 <div class="block"><p>Select the strategy to adopt when a query does not return any result.</p></div>
 </li>
 </ul>
@@ -1468,7 +1597,8 @@ public&nbsp;<a href="../../../../com/algolia/search/saas/Query.html" title="clas
 <ul class="blockList">
 <li class="blockList">
 <h4>getRemoveWordsIfNoResults</h4>
-<pre>public&nbsp;<a href="../../../../com/algolia/search/saas/Query.RemoveWordsIfNoResults.html" title="enum in com.algolia.search.saas">Query.RemoveWordsIfNoResults</a>&nbsp;getRemoveWordsIfNoResults()</pre>
+<pre>@Nullable
+public&nbsp;<a href="../../../../com/algolia/search/saas/Query.RemoveWordsIfNoResults.html" title="enum in com.algolia.search.saas">Query.RemoveWordsIfNoResults</a>&nbsp;getRemoveWordsIfNoResults()</pre>
 </li>
 </ul>
 <a name="setReplaceSynonymsInHighlight-java.lang.Boolean-">
@@ -1531,7 +1661,8 @@ public&nbsp;<a href="../../../../com/algolia/search/saas/Query.html" title="clas
 <ul class="blockList">
 <li class="blockList">
 <h4>getSnippetEllipsisText</h4>
-<pre>public&nbsp;String&nbsp;getSnippetEllipsisText()</pre>
+<pre>@Nullable
+public&nbsp;String&nbsp;getSnippetEllipsisText()</pre>
 </li>
 </ul>
 <a name="setSynonyms-java.lang.Boolean-">
@@ -1544,7 +1675,7 @@ public&nbsp;<a href="../../../../com/algolia/search/saas/Query.html" title="clas
 public&nbsp;<a href="../../../../com/algolia/search/saas/Query.html" title="class in com.algolia.search.saas">Query</a>&nbsp;setSynonyms(Boolean&nbsp;enabled)</pre>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
-<dd><code>enabled</code> - If set to false, this query will not use synonyms defined in  configuration. Default to true.</dd>
+<dd><code>enabled</code> - If set to false, this query will not use synonyms defined in  configuration. Defaults to true.</dd>
 </dl>
 </li>
 </ul>
@@ -1573,7 +1704,8 @@ public&nbsp;<a href="../../../../com/algolia/search/saas/Query.html" title="clas
 <ul class="blockList">
 <li class="blockList">
 <h4>getTagFilters</h4>
-<pre>public&nbsp;JSONArray&nbsp;getTagFilters()</pre>
+<pre>@Nullable
+public&nbsp;JSONArray&nbsp;getTagFilters()</pre>
 </li>
 </ul>
 <a name="setTypoTolerance-com.algolia.search.saas.Query.TypoTolerance-">
@@ -1583,7 +1715,8 @@ public&nbsp;<a href="../../../../com/algolia/search/saas/Query.html" title="clas
 <li class="blockList">
 <h4>setTypoTolerance</h4>
 <pre>@NonNull
-public&nbsp;<a href="../../../../com/algolia/search/saas/Query.html" title="class in com.algolia.search.saas">Query</a>&nbsp;setTypoTolerance(<a href="../../../../com/algolia/search/saas/Query.TypoTolerance.html" title="enum in com.algolia.search.saas">Query.TypoTolerance</a>&nbsp;type)</pre>
+public&nbsp;<a href="../../../../com/algolia/search/saas/Query.html" title="class in com.algolia.search.saas">Query</a>&nbsp;setTypoTolerance(@Nullable
+                                       <a href="../../../../com/algolia/search/saas/Query.TypoTolerance.html" title="enum in com.algolia.search.saas">Query.TypoTolerance</a>&nbsp;type)</pre>
 </li>
 </ul>
 <a name="getTypoTolerance--">
@@ -1592,7 +1725,8 @@ public&nbsp;<a href="../../../../com/algolia/search/saas/Query.html" title="clas
 <ul class="blockList">
 <li class="blockList">
 <h4>getTypoTolerance</h4>
-<pre>public&nbsp;<a href="../../../../com/algolia/search/saas/Query.TypoTolerance.html" title="enum in com.algolia.search.saas">Query.TypoTolerance</a>&nbsp;getTypoTolerance()</pre>
+<pre>@Nullable
+public&nbsp;<a href="../../../../com/algolia/search/saas/Query.TypoTolerance.html" title="enum in com.algolia.search.saas">Query.TypoTolerance</a>&nbsp;getTypoTolerance()</pre>
 </li>
 </ul>
 <a name="setExactOnSingleWordQuery-com.algolia.search.saas.Query.ExactOnSingleWordQuery-">
@@ -1602,7 +1736,8 @@ public&nbsp;<a href="../../../../com/algolia/search/saas/Query.html" title="clas
 <li class="blockList">
 <h4>setExactOnSingleWordQuery</h4>
 <pre>@NonNull
-public&nbsp;<a href="../../../../com/algolia/search/saas/Query.html" title="class in com.algolia.search.saas">Query</a>&nbsp;setExactOnSingleWordQuery(<a href="../../../../com/algolia/search/saas/Query.ExactOnSingleWordQuery.html" title="enum in com.algolia.search.saas">Query.ExactOnSingleWordQuery</a>&nbsp;type)</pre>
+public&nbsp;<a href="../../../../com/algolia/search/saas/Query.html" title="class in com.algolia.search.saas">Query</a>&nbsp;setExactOnSingleWordQuery(@Nullable
+                                                <a href="../../../../com/algolia/search/saas/Query.ExactOnSingleWordQuery.html" title="enum in com.algolia.search.saas">Query.ExactOnSingleWordQuery</a>&nbsp;type)</pre>
 </li>
 </ul>
 <a name="getExactOnSingleWordQuery--">
@@ -1611,7 +1746,8 @@ public&nbsp;<a href="../../../../com/algolia/search/saas/Query.html" title="clas
 <ul class="blockList">
 <li class="blockList">
 <h4>getExactOnSingleWordQuery</h4>
-<pre>public&nbsp;<a href="../../../../com/algolia/search/saas/Query.ExactOnSingleWordQuery.html" title="enum in com.algolia.search.saas">Query.ExactOnSingleWordQuery</a>&nbsp;getExactOnSingleWordQuery()</pre>
+<pre>@Nullable
+public&nbsp;<a href="../../../../com/algolia/search/saas/Query.ExactOnSingleWordQuery.html" title="enum in com.algolia.search.saas">Query.ExactOnSingleWordQuery</a>&nbsp;getExactOnSingleWordQuery()</pre>
 </li>
 </ul>
 <a name="setAlternativesAsExact-com.algolia.search.saas.Query.AlternativesAsExact:A-">
@@ -1621,7 +1757,8 @@ public&nbsp;<a href="../../../../com/algolia/search/saas/Query.html" title="clas
 <li class="blockList">
 <h4>setAlternativesAsExact</h4>
 <pre>@NonNull
-public&nbsp;<a href="../../../../com/algolia/search/saas/Query.html" title="class in com.algolia.search.saas">Query</a>&nbsp;setAlternativesAsExact(<a href="../../../../com/algolia/search/saas/Query.AlternativesAsExact.html" title="enum in com.algolia.search.saas">Query.AlternativesAsExact</a>[]&nbsp;types)</pre>
+public&nbsp;<a href="../../../../com/algolia/search/saas/Query.html" title="class in com.algolia.search.saas">Query</a>&nbsp;setAlternativesAsExact(@Nullable
+                                             <a href="../../../../com/algolia/search/saas/Query.AlternativesAsExact.html" title="enum in com.algolia.search.saas">Query.AlternativesAsExact</a>[]&nbsp;types)</pre>
 </li>
 </ul>
 <a name="getAlternativesAsExact--">
@@ -1630,7 +1767,29 @@ public&nbsp;<a href="../../../../com/algolia/search/saas/Query.html" title="clas
 <ul class="blockList">
 <li class="blockList">
 <h4>getAlternativesAsExact</h4>
-<pre>public&nbsp;<a href="../../../../com/algolia/search/saas/Query.AlternativesAsExact.html" title="enum in com.algolia.search.saas">Query.AlternativesAsExact</a>[]&nbsp;getAlternativesAsExact()</pre>
+<pre>@Nullable
+public&nbsp;<a href="../../../../com/algolia/search/saas/Query.AlternativesAsExact.html" title="enum in com.algolia.search.saas">Query.AlternativesAsExact</a>[]&nbsp;getAlternativesAsExact()</pre>
+</li>
+</ul>
+<a name="setResponseFields-java.lang.String...-">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>setResponseFields</h4>
+<pre>@NonNull
+public&nbsp;<a href="../../../../com/algolia/search/saas/Query.html" title="class in com.algolia.search.saas">Query</a>&nbsp;setResponseFields(String...&nbsp;attributes)</pre>
+<div class="block"><p>Choose which fields the response will contain. Applies to search and browse queries. <p> By default, all fields are returned. If this parameter is specified, only the fields explicitly listed will be returned, unless * is used, in which case all fields are returned. Specifying an empty list or unknown field names is an error.</p></div>
+</li>
+</ul>
+<a name="getResponseFields--">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>getResponseFields</h4>
+<pre>public&nbsp;String[]&nbsp;getResponseFields()</pre>
+<div class="block"><p>Get the fields the response will contain. If unspecified, all fields are returned.</p></div>
 </li>
 </ul>
 <a name="set-java.lang.String-java.lang.Object-">
