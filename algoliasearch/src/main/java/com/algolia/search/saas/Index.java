@@ -399,12 +399,7 @@ public class Index {
      * @return A cancellable request.
      */
     public Request getObjectAsync(final @NonNull String objectID, @NonNull CompletionHandler completionHandler) {
-        return getClient().new AsyncTaskRequest(completionHandler) {
-            @NonNull
-            @Override protected JSONObject run() throws AlgoliaException {
-                return getObject(objectID);
-            }
-        }.start();
+        return getObjectAsync(objectID, null, completionHandler);
     }
 
     /**
@@ -432,12 +427,7 @@ public class Index {
      * @return A cancellable request.
      */
     public Request getObjectsAsync(final @NonNull List<String> objectIDs, @NonNull CompletionHandler completionHandler) {
-        return getClient().new AsyncTaskRequest(completionHandler) {
-            @NonNull
-            @Override protected JSONObject run() throws AlgoliaException {
-                return getObjects(objectIDs);
-            }
-        }.start();
+        return getObjectsAsync(objectIDs, null, completionHandler);
     }
 
     /**
@@ -742,8 +732,11 @@ public class Index {
      */
     protected JSONObject getObject(String objectID, List<String> attributesToRetrieve) throws AlgoliaException {
         try {
-            String params = encodeAttributes(attributesToRetrieve, true);
-            return client.getRequest("/1/indexes/" + encodedIndexName + "/" + URLEncoder.encode(objectID, "UTF-8") + params, false);
+            String path = "/1/indexes/" + encodedIndexName + "/" + URLEncoder.encode(objectID, "UTF-8");
+            if (attributesToRetrieve != null) {
+                path += encodeAttributes(attributesToRetrieve, true); // includes the query separator (`?`)
+            }
+            return client.getRequest(path, false);
         } catch (UnsupportedEncodingException e) {
             throw new RuntimeException(e);
         }

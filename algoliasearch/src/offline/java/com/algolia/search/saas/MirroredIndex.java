@@ -23,7 +23,9 @@
 
 package com.algolia.search.saas;
 
+import android.content.res.Resources;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.util.Log;
 
 import com.algolia.search.offline.core.LocalIndex;
@@ -35,15 +37,16 @@ import org.json.JSONObject;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.UnsupportedEncodingException;
 import java.io.Writer;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
@@ -51,37 +54,89 @@ import java.util.concurrent.TimeUnit;
 /**
  * An online index that can also be mirrored locally.
  *
- * You cannot construct this class directly. Please use {@link OfflineClient#getIndex(String)} to obtain an instance.
-
- * <p>When created, an instance of this class has its <code>mirrored</code> flag set to false, and behaves like a normal,
- * online {@link Index}. When the <code>mirrored</code> flag is set to true, the index becomes capable of acting upon
- * local data.</p>
+ * **Note:** You cannot construct this class directly. Please use {@link OfflineClient#getIndex(String)} to obtain an
+ * instance.
  *
- * <p>It is a programming error to call methods acting on the local data when <code>mirrored</code> is false. Doing so
- * will result in an {@link IllegalStateException} being thrown.</p>
+ * **Note:** Requires Algolia Offline Core. {@link OfflineClient#enableOfflineMode(String)} must be called with a
+ * valid license key prior to calling any offline-related method.
  *
- * <p>Native resources are lazily instantiated at the first method call requiring them. They are released when the
- * object is garbage-collected. Although the client guards against concurrent accesses, it is strongly discouraged
- * to create more than one <code>MirroredIndex</code> instance pointing to the same index, as that would duplicate
- * native resources.</p>
+ * When created, an instance of this class has its `mirrored` flag set to false, and behaves like a normal,
+ * online {@link Index}. When the `mirrored` flag is set to true, the index becomes capable of acting upon local data.
  *
- * <p>NOTE: Requires Algolia's SDK. The {@link OfflineClient#enableOfflineMode(String)} method must be called with
- * a valid license key prior to calling any offline-related method.</p>
+ * **Warning:** It is a programming error to call methods acting on the local data when `mirrored` is false. Doing so
+ * will result in an assertion exception being thrown.
  *
- * <h3>Request strategy</h3>
+ *
+ * ## Request strategy
  *
  * When the index is mirrored and the device is online, it becomes possible to transparently switch between online and
  * offline requests. There is no single best strategy for that, because it depends on the use case and the current
- * network conditions. You can choose the strategy through {@link #setRequestStrategy(Strategy)}. The default is
- * {@link Strategy#FALLBACK_ON_FAILURE}, which will always target the online API first, then fallback to the offline
- * mirror in case of failure (including network unavailability).
+ * network conditions. You can choose the strategy via {@link #setRequestStrategy(Strategy) setRequestStrategy}. The
+ * default is {@link Strategy#FALLBACK_ON_FAILURE FALLBACK_ON_FAILURE}, which will always target the online API first,
+ * then fallback to the offline mirror in case of failure (including network unavailability).
  *
- * NOTE: If you want to explicitly target either the online API or the offline mirror, doing so is always possible
- * using the {@link #searchOnlineAsync(Query, CompletionHandler)} or {@link #searchOfflineAsync(Query, CompletionHandler)}
- * methods.
+ * **Note:** If you want to explicitly target either the online API or the offline mirror, doing so is always possible
+ * using the {@link #searchOnlineAsync searchOnlineAsync} or {@link #searchOfflineAsync searchOfflineAsync} methods.
  *
- * NOTE: The strategy applies both to {@link #searchAsync(Query, CompletionHandler)} and
- * {@link #searchDisjunctiveFacetingAsync(Query, List, Map, CompletionHandler)}.
+ * **Note:** The strategy applies to:
+ *
+ * - `searchAsync`
+ * - `searchDisjunctiveFacetingAsync`
+ * - `multipleQueriesAsync`
+ * - `getObjectAsync`
+ * - `getObjectsAsync`
+ *
+ *
+ * ## Bootstrapping
+ *
+ * Before the first sync has successfully completed, a mirrored index is not available offline, because it has simply
+ * no data to search in yet. In most cases, this is not a problem: the app will sync as soon as instructed, so unless
+ * the device is offline when the app is started for the first time, or unless search is required right after the
+ * first launch, the user should not notice anything.
+ *
+ * However, in some cases, you might need to have offline data available as soon as possible. To achieve that,
+ * `MirroredIndex` provides a **manual build** feature.
+ *
+ * ### Manual build
+ *
+ * Manual building consists in specifying the source data for your index from local files, instead of downloading it
+ * from the API. Namely, you need:
+ *
+ * - the **index settings** (one JSON file); and
+ * - the **objects** (as many JSON files as needed, each containing an array of objects).
+ *
+ * Those files are typically embedded in the application as resources, although any other origin works too.
+ *
+ * ### Conditional bootstrapping
+ *
+ * To avoid replacing the local mirror every time the app is started (and potentially overwriting more recent data
+ * synced from the API), you should test whether the index already has offline data using {@link #hasOfflineData()}.
+ *
+ * #### Discussion
+ *
+ * **Warning:** We strongly advise against prepackaging index files. While it may work in some cases, Algolia Offline
+ * makes no guarantee whatsoever that the index file format will remain backward-compatible forever, nor that it
+ * is independent of the hardware architecture (e.g. 32 bits vs 64 bits, or Little Endian vs Big Endian). Instead,
+ * always use the manual build feature.
+ *
+ * While a manual build involves computing the offline index on the device, and therefore incurs a small delay before
+ * the mirror is actually usable, using plain JSON offers several advantages compared to prepackaging the index file
+ * itself:
+ *
+ * - You only need to ship the raw object data, which is smaller than shipping an entire index file, which contains
+ *   both the raw data *and* indexing metadata.
+ *
+ * - Plain JSON compresses well with standard compression techniques like GZip, whereas an index file uses a binary
+ *   format which doesn't compress very efficiently.
+ *
+ * - Build automation is facilitated: you can easily extract the required data from your back-end, whereas building
+ *   an index would involve running the app on each mobile platform as part of your build process and capturing the
+ *   filesystem.
+ *
+ * Also, the build process is purposedly single-threaded across all indices, which means that on most modern devices
+ * with multi-core CPUs, the impact of manual building on the app's performance will be very moderate, especially
+ * regarding UI responsiveness.
+ *
  *
  * ## Limitations
  *
@@ -99,7 +154,7 @@ import java.util.concurrent.TimeUnit;
  *
  * - Dictionary-based **plurals** are not supported. ("Simple" plurals with a final S are supported.)
  *
- * - **IP geolocation** (see {@link Query#setAroundLatLngViaIP}) is not supported.
+ * - **IP geolocation** (see {@link Query#setAroundLatLngViaIP(Boolean)}) is not supported.
  *
  * - **CJK segmentation** is not supported.
  */
@@ -119,6 +174,7 @@ public class MirroredIndex extends Index
     private SyncStats stats;
 
     private Set<SyncListener> syncListeners = new HashSet<>();
+    private Set<BuildListener> buildListeners = new HashSet<>();
 
     // ----------------------------------------------------------------------
     // Constants
@@ -510,13 +566,7 @@ public class MirroredIndex extends Index
             stats.fileCount = objectFiles.size();
 
             // Build the index.
-            String[] objectFilePaths = new String[objectFiles.size()];
-            for (int i = 0; i < objectFiles.size(); ++i)
-                objectFilePaths[i] = objectFiles.get(i).getAbsolutePath();
-            int status = getLocalIndex().build(settingsFile.getAbsolutePath(), objectFilePaths, true /* clearIndex */, null /* deletedObjectIDs */);
-            if (status != 200) {
-                throw new AlgoliaException("Build index failed", status);
-            }
+            _buildOffline(settingsFile, objectFiles.toArray(new File[objectFiles.size()]));
 
             // Update statistics.
             long afterBuildTime = System.currentTimeMillis();
@@ -555,6 +605,134 @@ public class MirroredIndex extends Index
                 public void run()
                 {
                     fireSyncDidFinish();
+                }
+            });
+        }
+    }
+
+    // ----------------------------------------------------------------------
+    // Manual build
+    // ----------------------------------------------------------------------
+
+    /**
+     * Test if this index has offline data on disk.
+     *
+     * **Warning:** This method is synchronous! It will block until completion.
+     *
+     * @return `true` if data exists on disk for this index, `false` otherwise.
+     */
+    public boolean hasOfflineData() {
+        return getLocalIndex().exists();
+    }
+
+    /**
+     * Replace the local mirror with local data stored on the filesystem.
+     *
+     * @param settingsFile Absolute path to the file containing the index settings, in JSON format.
+     * @param objectFiles Absolute path(s) to the file(s) containing the objects. Each file must contain an array of
+     *                    objects, in JSON format.
+     * @param completionHandler Optional completion handler to be notified of the build's outcome.
+     * @return A cancellable request.
+     *
+     * **Note:** Cancelling the request does *not* cancel the build; it merely prevents the completion handler from
+     * being called.
+     */
+    public Request buildOfflineFromFiles(@NonNull final File settingsFile, @NonNull final File[] objectFiles, @Nullable CompletionHandler completionHandler) {
+        return getClient().new AsyncTaskRequest(completionHandler, getClient().localBuildExecutorService) {
+            @NonNull
+            @Override
+            protected JSONObject run() throws AlgoliaException {
+                return _buildOffline(settingsFile, objectFiles);
+            }
+        }.start();
+    }
+
+    public Request buildOfflineFromFiles(@NonNull final File settingsFile, @NonNull final File... objectFiles) {
+        return buildOfflineFromFiles(settingsFile, objectFiles, null);
+    }
+
+    /**
+     * Replace the local mirror with local data stored in raw resources.
+     *
+     * @param resources A {@link Resources} instance to read resources from.
+     * @param settingsResId Resource identifier of the index settings, in JSON format.
+     * @param objectsResIds Resource identifiers of the various objects files. Each file must contain an array of
+     *                    objects, in JSON format.
+     * @param completionHandler Optional completion handler to be notified of the build's outcome.
+     * @return A cancellable request.
+     *
+     * **Note:** Cancelling the request does *not* cancel the build; it merely prevents the completion handler from
+     * being called.
+     */
+    public Request buildOfflineFromRawResources(@NonNull final Resources resources, @NonNull final int settingsResId, @NonNull final int[] objectsResIds, @Nullable CompletionHandler completionHandler) {
+        return getClient().new AsyncTaskRequest(completionHandler, getClient().localBuildExecutorService) {
+            @NonNull
+            @Override
+            protected JSONObject run() throws AlgoliaException {
+                return _buildOfflineFromRawResources(resources, settingsResId, objectsResIds);
+            }
+        }.start();
+    }
+
+    public Request buildOfflineFromRawResources(@NonNull final Resources resources, @NonNull final int settingsResId, @NonNull final int... objectsResIds) {
+        return buildOfflineFromRawResources(resources, settingsResId, objectsResIds, null);
+    }
+
+    private JSONObject _buildOfflineFromRawResources(@NonNull final Resources resources, @NonNull final int settingsResId, @NonNull final int... objectsResIds) throws AlgoliaException {
+        // Save resources to independent files on disk.
+        // TODO: See if we can have the Offline Core read directly from resources or assets.
+        File tmpDir = new File(getClient().getTempDir(), UUID.randomUUID().toString());
+        try {
+            tmpDir.mkdirs();
+            // Settings.
+            File settingsFile = new File(tmpDir, "settings.json");
+            FileUtils.writeFile(settingsFile, resources.openRawResource(settingsResId));
+            // Objects.
+            File[] objectFiles = new File[objectsResIds.length];
+            for (int i = 0; i < objectsResIds.length; ++i) {
+                objectFiles[i] = new File(tmpDir, "objects#" + Integer.toString(objectsResIds[i]) + ".json");
+                FileUtils.writeFile(objectFiles[i], resources.openRawResource(objectsResIds[i]));
+            }
+            // Build the index.
+            return _buildOffline(settingsFile, objectFiles);
+        } catch (IOException e) {
+            throw new AlgoliaException("Failed to write build resources to disk", e);
+        } finally {
+            // Delete temporary files.
+            FileUtils.deleteRecursive(tmpDir);
+        }
+    }
+
+    private JSONObject _buildOffline(@NonNull File settingsFile, @NonNull File... objectFiles) throws AlgoliaException {
+        AlgoliaException error = null;
+        try {
+            // Notify listeners.
+            getClient().mainHandler.post(new Runnable() {
+                @Override
+                public void run() {
+                    fireBuildDidStart();
+                }
+            });
+
+            // Build the index.
+            String[] objectFilePaths = new String[objectFiles.length];
+            for (int i = 0; i < objectFiles.length; ++i) {
+                objectFilePaths[i] = objectFiles[i].getAbsolutePath();
+            }
+            final int status = getLocalIndex().build(settingsFile.getAbsolutePath(), objectFilePaths, true /* clearIndex */, null /* deletedObjectIDs */);
+            if (status != 200) {
+                error = new AlgoliaException(String.format("Failed to build local mirror \"%s\"", MirroredIndex.this.getIndexName()), status);
+                throw error;
+            }
+            return new JSONObject();
+        }
+        finally {
+            // Notify listeners.
+            final Throwable finalError = error;
+            getClient().mainHandler.post(new Runnable() {
+                @Override
+                public void run() {
+                    fireBuildDidFinish(finalError);
                 }
             });
         }
@@ -1073,8 +1251,264 @@ public class MirroredIndex extends Index
     }
 
     // ----------------------------------------------------------------------
+    // Getting individual objects
+    // ----------------------------------------------------------------------
+
+    /**
+     * Get an individual object from the online API, falling back to the local mirror in case of error (when enabled).
+     *
+     * @param objectID Identifier of the object to retrieve.
+     * @param attributesToRetrieve Attributes to retrieve. If `null` or if at least one item is `*`, all retrievable
+     *                             attributes will be retrieved.
+     * @param completionHandler The listener that will be notified of the request's outcome.
+     * @return A cancellable request.
+     */
+    @Override
+    public Request getObjectAsync(final @NonNull String objectID, final @Nullable List<String> attributesToRetrieve, @NonNull CompletionHandler completionHandler) {
+        if (!mirrored) {
+            return super.getObjectAsync(objectID, attributesToRetrieve, completionHandler);
+        } else {
+            return new OnlineOfflineGetObjectRequest(objectID, attributesToRetrieve, completionHandler).start();
+        }
+    }
+
+    private class OnlineOfflineGetObjectRequest extends OnlineOfflineRequest {
+        private final String objectID;
+        private final List<String> attributesToRetrieve;
+
+        public OnlineOfflineGetObjectRequest(@NonNull String objectID, final @Nullable List<String> attributesToRetrieve, @NonNull CompletionHandler completionHandler) {
+            super(completionHandler);
+            this.objectID = objectID;
+            this.attributesToRetrieve = attributesToRetrieve;
+        }
+
+        @Override
+        protected Request startOnlineRequest(CompletionHandler completionHandler) {
+            return getObjectOnlineAsync(objectID, attributesToRetrieve, completionHandler);
+        }
+
+        @Override
+        protected Request startOfflineRequest(CompletionHandler completionHandler) {
+            return getObjectOfflineAsync(objectID, attributesToRetrieve, completionHandler);
+        }
+    }
+
+    /**
+     * Get an individual object, explicitly targeting the online API, not the offline mirror.
+     *
+     * @param objectID Identifier of the object to retrieve.
+     * @param attributesToRetrieve Attributes to retrieve. If `null` or if at least one item is `*`, all retrievable
+     *                             attributes will be retrieved.
+     * @param completionHandler The listener that will be notified of the request's outcome.
+     * @return A cancellable request.
+     */
+    public Request getObjectOnlineAsync(@NonNull final String objectID, final @Nullable List<String> attributesToRetrieve, @NonNull final CompletionHandler completionHandler) {
+        // TODO: Cannot perform origin tagging because it could conflict with the object's attributes
+        return super.getObjectAsync(objectID, attributesToRetrieve, completionHandler);
+    }
+
+    /**
+     * Get an individual object, explicitly targeting the online API, not the offline mirror.
+     *
+     * @param objectID Identifier of the object to retrieve.
+     * @param completionHandler The listener that will be notified of the request's outcome.
+     * @return A cancellable request.
+     */
+    public Request getObjectOnlineAsync(@NonNull final String objectID, @NonNull final CompletionHandler completionHandler) {
+        return getObjectOnlineAsync(objectID, null, completionHandler);
+    }
+
+    /**
+     * Get an individual object, explicitly targeting the offline mirror, not the online API.
+     *
+     * @param objectID Identifier of the object to retrieve.
+     * @param attributesToRetrieve Attributes to retrieve. If `null` or if at least one item is `*`, all retrievable
+     *                             attributes will be retrieved.
+     * @param completionHandler The listener that will be notified of the request's outcome.
+     * @return A cancellable request.
+     * @throws IllegalStateException if mirroring is not activated on this index.
+     */
+    public Request getObjectOfflineAsync(@NonNull final String objectID, final @Nullable List<String> attributesToRetrieve, @NonNull CompletionHandler completionHandler) {
+        if (!mirrored) {
+            throw new IllegalStateException("Mirroring not activated on this index");
+        }
+        return getClient().new AsyncTaskRequest(completionHandler, getClient().localSearchExecutorService) {
+            @NonNull
+            @Override
+            protected JSONObject run() throws AlgoliaException {
+                return _getObjectOffline(objectID, attributesToRetrieve);
+            }
+        }.start();
+    }
+
+    /**
+     * Get an individual object, explicitly targeting the offline mirror, not the online API.
+     *
+     * @param objectID Identifier of the object to retrieve.
+     * @param completionHandler The listener that will be notified of the request's outcome.
+     * @return A cancellable request.
+     * @throws IllegalStateException if mirroring is not activated on this index.
+     */
+    public Request getObjectOfflineAsync(@NonNull final String objectID, @NonNull final CompletionHandler completionHandler) {
+        return getObjectOfflineAsync(objectID, null, completionHandler);
+    }
+
+    private JSONObject _getObjectOffline(@NonNull final String objectID, final @Nullable List<String> attributesToRetrieve) throws AlgoliaException
+    {
+        try {
+            JSONObject content = _getObjectsOffline(Collections.singletonList(objectID), attributesToRetrieve);
+            JSONArray results = content.getJSONArray("results");
+            return results.getJSONObject(0);
+        }
+        catch (JSONException e) {
+            throw new AlgoliaException("Invalid response returned", e); // should never happen
+        }
+    }
+
+    /**
+     * Get individual objects from the online API, falling back to the local mirror in case of error (when enabled).
+     *
+     * @param objectIDs Identifiers of objects to retrieve.
+     * @param attributesToRetrieve Attributes to retrieve. If `null` or if at least one item is `*`, all retrievable
+     *                             attributes will be retrieved.
+     * @param completionHandler The listener that will be notified of the request's outcome.
+     * @return A cancellable request.
+     */
+    @Override
+    public Request getObjectsAsync(final @NonNull List<String> objectIDs, final @Nullable List<String> attributesToRetrieve, @NonNull CompletionHandler completionHandler) {
+        if (!mirrored) {
+            return super.getObjectsAsync(objectIDs, attributesToRetrieve, completionHandler);
+        } else {
+            return new OnlineOfflineGetObjectsRequest(objectIDs, attributesToRetrieve, completionHandler).start();
+        }
+    }
+
+    private class OnlineOfflineGetObjectsRequest extends OnlineOfflineRequest {
+        private final List<String> objectIDs;
+        private final List<String> attributesToRetrieve;
+
+        public OnlineOfflineGetObjectsRequest(@NonNull List<String> objectIDs, final @Nullable List<String> attributesToRetrieve, @NonNull CompletionHandler completionHandler) {
+            super(completionHandler);
+            this.objectIDs = objectIDs;
+            this.attributesToRetrieve = attributesToRetrieve;
+        }
+
+        @Override
+        protected Request startOnlineRequest(CompletionHandler completionHandler) {
+            return getObjectsOnlineAsync(objectIDs, attributesToRetrieve, completionHandler);
+        }
+
+        @Override
+        protected Request startOfflineRequest(CompletionHandler completionHandler) {
+            return getObjectsOfflineAsync(objectIDs, attributesToRetrieve, completionHandler);
+        }
+    }
+
+    /**
+     * Get individual objects, explicitly targeting the online API, not the offline mirror.
+     *
+     * @param objectIDs Identifiers of objects to retrieve.
+     * @param attributesToRetrieve Attributes to retrieve. If `null` or if at least one item is `*`, all retrievable
+     *                             attributes will be retrieved.
+     * @param completionHandler The listener that will be notified of the request's outcome.
+     * @return A cancellable request.
+     */
+    public Request getObjectsOnlineAsync(@NonNull final List<String> objectIDs, final @Nullable List<String> attributesToRetrieve, @NonNull final CompletionHandler completionHandler) {
+        return getClient().new AsyncTaskRequest(completionHandler) {
+            @NonNull
+            @Override
+            protected JSONObject run() throws AlgoliaException {
+                return getObjectsOnline(objectIDs, attributesToRetrieve);
+            }
+        }.start();
+    }
+
+    /**
+     * Get individual objects, explicitly targeting the online API, not the offline mirror.
+     *
+     * @param objectIDs Identifiers of objects to retrieve.
+     * @param completionHandler The listener that will be notified of the request's outcome.
+     * @return A cancellable request.
+     */
+    public Request getObjectsOnlineAsync(@NonNull final List<String> objectIDs, @NonNull final CompletionHandler completionHandler) {
+        return getObjectsOnlineAsync(objectIDs, null, completionHandler);
+    }
+
+    private JSONObject getObjectsOnline(@NonNull final List<String> objectIDs, final @Nullable List<String> attributesToRetrieve) throws AlgoliaException {
+        try {
+            JSONObject content = super.getObjects(objectIDs, attributesToRetrieve);
+            // TODO: Factorize origin tagging
+            content.put(JSON_KEY_ORIGIN, JSON_VALUE_ORIGIN_REMOTE);
+            return content;
+        }
+        catch (JSONException e) {
+            throw new AlgoliaException("Failed to patch JSON result");
+        }
+    }
+
+    /**
+     * Get individual objects, explicitly targeting the offline mirror, not the online API.
+     *
+     * @param objectIDs Identifiers of objects to retrieve.
+     * @param attributesToRetrieve Attributes to retrieve. If `null` or if at least one item is `*`, all retrievable
+     *                             attributes will be retrieved.
+     * @param completionHandler The listener that will be notified of the request's outcome.
+     * @return A cancellable request.
+     * @throws IllegalStateException if mirroring is not activated on this index.
+     */
+    public Request getObjectsOfflineAsync(@NonNull final List<String> objectIDs, final @Nullable List<String> attributesToRetrieve, @NonNull CompletionHandler completionHandler) {
+        if (!mirrored) {
+            throw new IllegalStateException("Mirroring not activated on this index");
+        }
+        return getClient().new AsyncTaskRequest(completionHandler, getClient().localSearchExecutorService) {
+            @NonNull
+            @Override
+            protected JSONObject run() throws AlgoliaException {
+                return _getObjectsOffline(objectIDs, attributesToRetrieve);
+            }
+        }.start();
+    }
+
+    /**
+     * Get individual objects, explicitly targeting the offline mirror, not the online API.
+     *
+     * @param objectIDs Identifiers of objects to retrieve.
+     * @param completionHandler The listener that will be notified of the request's outcome.
+     * @return A cancellable request.
+     * @throws IllegalStateException if mirroring is not activated on this index.
+     */
+    public Request getObjectsOfflineAsync(@NonNull final List<String> objectIDs, @NonNull final CompletionHandler completionHandler) {
+        return getObjectsOfflineAsync(objectIDs, null, completionHandler);
+    }
+
+    private JSONObject _getObjectsOffline(@NonNull final List<String> objectIDs, final @Nullable List<String> attributesToRetrieve) throws AlgoliaException
+    {
+        try {
+            Query query = new Query();
+            if (attributesToRetrieve != null) {
+                query.setAttributesToRetrieve(attributesToRetrieve.toArray(new String[attributesToRetrieve.size()]));
+            }
+            Response searchResults = getLocalIndex().getObjects(objectIDs.toArray(new String[objectIDs.size()]), query.build());
+            if (searchResults.getStatusCode() == 200) {
+                String jsonString = new String(searchResults.getData(), "UTF-8");
+                JSONObject json = new JSONObject(jsonString);
+                json.put(JSON_KEY_ORIGIN, JSON_VALUE_ORIGIN_LOCAL);
+                return json;
+            }
+            else {
+                throw new AlgoliaException(searchResults.getErrorMessage(), searchResults.getStatusCode());
+            }
+        }
+        catch (JSONException | UnsupportedEncodingException e) {
+            throw new AlgoliaException("Get objects failed", e);
+        }
+    }
+
+    // ----------------------------------------------------------------------
     // Listeners
     // ----------------------------------------------------------------------
+
+    // SyncListener
 
     /**
      * Add a listener for sync events.
@@ -1105,6 +1539,36 @@ public class MirroredIndex extends Index
     {
         for (SyncListener listener : syncListeners) {
             listener.syncDidFinish(this, error, stats);
+        }
+    }
+
+    // BuildListener
+
+    /**
+     * Add a listener for build events.
+     * @param listener The listener to add.
+     */
+    public void addBuildListener(@NonNull BuildListener listener) {
+        buildListeners.add(listener);
+    }
+
+    /**
+     * Remove a listener for build events.
+     * @param listener The listener to remove.
+     */
+    public void removeBuildListener(@NonNull BuildListener listener) {
+        buildListeners.remove(listener);
+    }
+
+    private void fireBuildDidStart() {
+        for (BuildListener listener : buildListeners) {
+            listener.buildDidStart(this);
+        }
+    }
+
+    private void fireBuildDidFinish(@Nullable Throwable error) {
+        for (BuildListener listener : buildListeners) {
+            listener.buildDidFinish(this, error);
         }
     }
 }

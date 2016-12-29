@@ -23,6 +23,7 @@
 
 package com.algolia.search.saas;
 
+import android.content.res.Resources;
 import android.os.Looper;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -51,12 +52,70 @@ import java.util.Set;
 import java.util.UUID;
 
 
+
 /**
  * A purely offline index.
  * Such an index has no online counterpart. It is updated and queried locally.
  *
  * **Note:** You cannot construct this class directly. Please use {@link OfflineClient#getOfflineIndex(String)} to
  * obtain an instance.
+ *
+ * **Note:** Requires Algolia Offline Core. {@link OfflineClient#enableOfflineMode(String)} must be called with a
+ * valid license key prior to calling any offline-related method.
+ *
+ *
+ * ## Reading
+ *
+ * Read operations behave identically as with online indices.
+ *
+ *
+ * ## Writing
+ *
+ * Updating an index involves rebuilding it, which is an expensive and potentially lengthy operation. Therefore, all
+ * updates must be wrapped inside a **transaction**.
+ *
+ * The procedure to update an index is as follows:
+ *
+ * - Create a transaction by calling {@link #newTransaction()}.
+ *
+ * - Populate the transaction: call the various write methods on the {@link WriteTransaction WriteTransaction} class.
+ *
+ * - Either commit or rollback the transaction.
+ *
+ * ### Synchronous vs asynchronous updates
+ *
+ * Any write operation, especially (but not limited to) the final commit, is potentially lengthy. This is why all
+ * operations provide an asynchronous version, which accepts an optional completion handler that will be notified of
+ * the operation's completion (either successful or erroneous).
+ *
+ * If you already have a background thread/queue performing data-handling tasks, you may find it more convenient to
+ * use the synchronous versions of the write methods. They are named after the asynchronous versions, suffixed by
+ * `Sync`. The flow is identical to the asynchronous version (see above).
+ *
+ * **Warning:** You must not call synchronous methods from the main thread. The methods will throw an
+ * `IllegalStateException` if you do so.
+ *
+ * **Note:** The synchronous methods can throw; you have to catch and handle the exception.
+ *
+ * ### Parallel transactions
+ *
+ * While it is possible to create parallel transactions, there is little interest in doing so, since each committed
+ * transaction results in an index rebuild. Multiplying transactions therefore only degrades performance.
+ *
+ * Also, transactions are serially executed in the order they were committed, the latest transaction potentially
+ * overwriting the previous transactions' result.
+ *
+ * ### Manual build
+ *
+ * As an alternative to using write transactions, `OfflineIndex` also offers a **manual build** feature. Provided that
+ * you have:
+ *
+ * - the **index settings** (one JSON file); and
+ * - the **objects** (as many JSON files as needed, each containing an array of objects)
+ *
+ * ... available as local files on disk, you can replace the index's content with that data by calling
+ * {@link #buildFromFiles buildFromFiles} or {@link #buildFromRawResources buildFromRawResources}.
+ *
  *
  * ## Caveats
  *
@@ -76,51 +135,9 @@ import java.util.UUID;
  *   is omitted in the new version, it reverts back to its default value. (This is in contrast with the online API,
  *   where you can only specify the settings you want to change and omit the others.)
  *
- * - You cannot batch arbitrary write operations in a single method call (as you would do with {@link Index#batch(JSONArray)}).
- *   However, all write operations are *de facto* batches, since they must be wrapped inside a transaction (see below).
- *
- * ## Operations
- *
- * ### Writing
- *
- * Updating an index involves rebuilding it, which is an expensive and potentially lengthy operation. Therefore, all
- * updates must be wrapped inside a **transaction**.
- *
- * **Warning:** You cannot have several parallel transactions on a given index.
- *
- * The procedure to update an index is as follows:
- *
- * - Create a transaction by calling {@link #newTransaction()}.
- *
- * - Populate the transaction: call the various write methods on the {@link WriteTransaction} class.
- *
- * - Either commit or rollback the transaction.
- *
- * #### Synchronous vs asynchronous updates
- *
- * Any write operation, especially (but not limited to) the final commit, is potentially lengthy. This is why all
- * operations provide an asynchronous version, which accepts an optional completion handler that will be notified of
- * the operation's completion (either successful or erroneous).
- *
- * If you already have a background thread/queue performing data-handling tasks, you may find it more convenient to
- * use the synchronous versions of the write methods. They are named after the asynchronous versions, suffixed by
- * `Sync`. The flow is identical to the asynchronous version (see above).
- *
- * **Warning:** You must not call synchronous methods from the main thread. The methods will assert if you do so.
- *
- * **Note:** The synchronous methods can throw; you have to catch and handle the error.
- *
- * #### Parallel transactions
- *
- * While it is possible to create parallel transactions, there is little interest in doing so, since each committed
- * transaction results in an index rebuild. Multiplying transactions therefore only degrades performance.
- *
- * Also, transactions are serially executed in the order they were committed, the latest transaction potentially
- * overwriting the previous transactions' result.
- *
- * ### Reading
- *
- * Read operations behave identically as with online indices.
+ * - You cannot batch arbitrary write operations in a single method call (as you would do with
+ *   {@link Client#batchAsync Client.batchAsync}). However, all write operations are *de facto* batches, since they
+ *   must be wrapped inside a transaction (see below).
  */
 public class OfflineIndex {
     /** The client to which this index belongs. */
@@ -816,6 +833,111 @@ public class OfflineIndex {
      */
     public @NonNull WriteTransaction newTransaction() {
         return new WriteTransaction();
+    }
+
+    /**
+     * Test if this index has offline data on disk.
+     *
+     * **Warning:** This method is synchronous! It will block until completion.
+     *
+     * @return `true` if data exists on disk for this index, `false` otherwise.
+     */
+    public boolean hasOfflineData() {
+        return localIndex.exists();
+    }
+
+    // ----------------------------------------------------------------------
+    // Manual build
+    // ----------------------------------------------------------------------
+
+    /**
+     * Build the index from local data stored on the filesystem.
+     *
+     * @param settingsFile Absolute path to the file containing the index settings, in JSON format.
+     * @param objectFiles Absolute path(s) to the file(s) containing the objects. Each file must contain an array of
+     *                    objects, in JSON format.
+     * @param completionHandler Optional completion handler to be notified of the build's outcome.
+     * @return A cancellable request.
+     *
+     * **Note:** Cancelling the request does *not* cancel the build; it merely prevents the completion handler from
+     * being called.
+     */
+    public Request buildFromFiles(@NonNull final File settingsFile, @NonNull final File[] objectFiles, @Nullable CompletionHandler completionHandler) {
+        return getClient().new AsyncTaskRequest(completionHandler, getClient().localBuildExecutorService) {
+            @NonNull
+            @Override
+            protected JSONObject run() throws AlgoliaException {
+                return _build(settingsFile, objectFiles);
+            }
+        }.start();
+    }
+
+    public Request buildFromFiles(@NonNull final File settingsFile, @NonNull final File... objectFiles) {
+        return buildFromFiles(settingsFile, objectFiles, null);
+    }
+
+    /**
+     * Build the index from local data stored in raw resources.
+     *
+     * @param resources A {@link Resources} instance to read resources from.
+     * @param settingsResId Resource identifier of the index settings, in JSON format.
+     * @param objectsResIds Resource identifiers of the various objects files. Each file must contain an array of
+     *                    objects, in JSON format.
+     * @param completionHandler Optional completion handler to be notified of the build's outcome.
+     * @return A cancellable request.
+     *
+     * **Note:** Cancelling the request does *not* cancel the build; it merely prevents the completion handler from
+     * being called.
+     */
+    public Request buildFromRawResources(@NonNull final Resources resources, @NonNull final int settingsResId, @NonNull final int[] objectsResIds, @Nullable CompletionHandler completionHandler) {
+        return getClient().new AsyncTaskRequest(completionHandler, getClient().localBuildExecutorService) {
+            @NonNull
+            @Override
+            protected JSONObject run() throws AlgoliaException {
+                return _buildFromRawResources(resources, settingsResId, objectsResIds);
+            }
+        }.start();
+    }
+
+    public Request buildFromRawResources(@NonNull final Resources resources, @NonNull final int settingsResId, @NonNull final int... objectsResIds) {
+        return buildFromRawResources(resources, settingsResId, objectsResIds, null);
+    }
+
+    private JSONObject _buildFromRawResources(@NonNull final Resources resources, @NonNull final int settingsResId, @NonNull final int... objectsResIds) throws AlgoliaException {
+        // Save resources to independent files on disk.
+        File tmpDir = new File(getClient().getTempDir(), UUID.randomUUID().toString());
+        try {
+            tmpDir.mkdirs();
+            // Settings.
+            File settingsFile = new File(tmpDir, "settings.json");
+            FileUtils.writeFile(settingsFile, resources.openRawResource(settingsResId));
+            // Objects.
+            File[] objectFiles = new File[objectsResIds.length];
+            for (int i = 0; i < objectsResIds.length; ++i) {
+                objectFiles[i] = new File(tmpDir, "objects#" + Integer.toString(objectsResIds[i]) + ".json");
+                FileUtils.writeFile(objectFiles[i], resources.openRawResource(objectsResIds[i]));
+            }
+            // Build the index.
+            return _build(settingsFile, objectFiles);
+        } catch (IOException e) {
+            throw new AlgoliaException("Failed to write build resources to disk", e);
+        } finally {
+            // Delete temporary files.
+            FileUtils.deleteRecursive(tmpDir);
+        }
+    }
+
+    private JSONObject _build(@NonNull File settingsFile, @NonNull File... objectFiles) throws AlgoliaException {
+        AlgoliaException error = null;
+        String[] objectFilePaths = new String[objectFiles.length];
+        for (int i = 0; i < objectFiles.length; ++i) {
+            objectFilePaths[i] = objectFiles[i].getAbsolutePath();
+        }
+        final int status = localIndex.build(settingsFile.getAbsolutePath(), objectFilePaths, true /* clearIndex */, null /* deletedObjectIDs */);
+        if (status != 200) {
+            throw new AlgoliaException(String.format("Failed to build local index \"%s\"", OfflineIndex.this.getName()), status);
+        }
+        return new JSONObject();
     }
 
     // ----------------------------------------------------------------------

@@ -31,7 +31,10 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.junit.Test;
+import org.robolectric.RuntimeEnvironment;
 
+import java.io.File;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.CountDownLatch;
@@ -40,7 +43,9 @@ import java.util.concurrent.TimeUnit;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 
@@ -308,6 +313,161 @@ public class MirroredIndexTest extends OfflineTestBase  {
                         signal.countDown();
                     }
                 });
+            }
+        });
+    }
+
+    @Test
+    public void testBuildOffline() {
+        final CountDownLatch signal = new CountDownLatch(4);
+
+        // Retrieve data files from resources.
+        File resourcesDir = new File(RuntimeEnvironment.application.getPackageResourcePath() + "/src/testOffline/res");
+        File rawDir = new File(resourcesDir, "raw");
+        File settingsFile = new File(rawDir, "settings.json");
+        File objectFile = new File(rawDir, "objects.json");
+
+        // Create the index.
+        final MirroredIndex index = client.getIndex(Helpers.safeIndexName(Helpers.getMethodName()));
+        index.setMirrored(true);
+
+        // Check that no offline data exists.
+        assertFalse(index.hasOfflineData());
+
+        // Build the index.
+        index.addBuildListener(new BuildListener() {
+            @Override
+            public void buildDidStart(@NonNull MirroredIndex index) {
+                signal.countDown();
+            }
+
+            @Override
+            public void buildDidFinish(@NonNull MirroredIndex index, @Nullable Throwable error) {
+                assertNull(error);
+                signal.countDown();
+            }
+        });
+        index.buildOfflineFromFiles(settingsFile, new File[]{ objectFile }, new AssertCompletionHandler() {
+            @Override
+            public void doRequestCompleted(JSONObject content, AlgoliaException error) {
+                assertNull(error);
+
+                // Check that offline data exists now.
+                assertTrue(index.hasOfflineData());
+
+                // Search.
+                Query query = new Query().setQuery("peanuts").setFilters("kind:animal");
+                index.searchOfflineAsync(query, new AssertCompletionHandler() {
+                    @Override
+                    public void doRequestCompleted(JSONObject content, AlgoliaException error) {
+                        assertNull(error);
+                        assertEquals(2, content.optInt("nbHits"));
+                        signal.countDown();
+                    }
+                });
+                signal.countDown();
+            }
+        });
+    }
+
+    @Test
+    public void testGetObject() {
+        final CountDownLatch signal = new CountDownLatch(4);
+
+        // Populate the online index & sync the offline mirror.
+        final MirroredIndex index = client.getIndex(Helpers.safeIndexName(Helpers.getMethodName()));
+        sync(index, new SyncCompletionHandler() {
+            @Override
+            public void syncCompleted(@Nullable Throwable error) {
+                assertNull(error);
+
+                // Query the online index explicitly.
+                index.getObjectOnlineAsync("1", new AssertCompletionHandler() {
+                    @Override
+                    public void doRequestCompleted(JSONObject content, AlgoliaException error) {
+                        assertNull(error);
+                        assertEquals("Snoopy", content.optString("name"));
+
+                        // Test offline fallback.
+                        client.setReadHosts("unknown.algolia.com");
+                        index.setRequestStrategy(MirroredIndex.Strategy.FALLBACK_ON_FAILURE);
+                        index.getObjectAsync("3", new AssertCompletionHandler() {
+                            @Override
+                            public void doRequestCompleted(JSONObject content, AlgoliaException error) {
+                                assertNull(error);
+                                assertEquals("Charlie Brown", content.optString("name"));
+                                signal.countDown();
+                            }
+                        });
+                        signal.countDown();
+                    }
+                });
+
+                // Query the offline index explicitly.
+                index.getObjectOfflineAsync("2", new AssertCompletionHandler() {
+                    @Override
+                    public void doRequestCompleted(JSONObject content, AlgoliaException error) {
+                        assertNull(error);
+                        assertEquals("Woodstock", content.optString("name"));
+                        signal.countDown();
+                    }
+                });
+
+                signal.countDown();
+            }
+        });
+    }
+
+    @Test
+    public void testGetObjects() {
+        final CountDownLatch signal = new CountDownLatch(4);
+
+        // Populate the online index & sync the offline mirror.
+        final MirroredIndex index = client.getIndex(Helpers.safeIndexName(Helpers.getMethodName()));
+        sync(index, new SyncCompletionHandler() {
+            @Override
+            public void syncCompleted(@Nullable Throwable error) {
+                assertNull(error);
+
+                // Query the online index explicitly.
+                index.getObjectsOnlineAsync(Arrays.asList("1"), new AssertCompletionHandler() {
+                    @Override
+                    public void doRequestCompleted(JSONObject content, AlgoliaException error) {
+                        assertNull(error);
+                        assertNotNull(content.optJSONArray("results"));
+                        assertEquals(1, content.optJSONArray("results").length());
+                        assertEquals("remote", content.optString("origin"));
+
+                        // Test offline fallback.
+                        client.setReadHosts("unknown.algolia.com");
+                        index.setRequestStrategy(MirroredIndex.Strategy.FALLBACK_ON_FAILURE);
+                        index.getObjectsAsync(Arrays.asList("1", "2", "3"), new AssertCompletionHandler() {
+                            @Override
+                            public void doRequestCompleted(JSONObject content, AlgoliaException error) {
+                                assertNull(error);
+                                assertNotNull(content.optJSONArray("results"));
+                                assertEquals(3, content.optJSONArray("results").length());
+                                assertEquals("local", content.optString("origin"));
+                                signal.countDown();
+                            }
+                        });
+                        signal.countDown();
+                    }
+                });
+
+                // Query the offline index explicitly.
+                index.getObjectsOfflineAsync(Arrays.asList("1", "2"), new AssertCompletionHandler() {
+                    @Override
+                    public void doRequestCompleted(JSONObject content, AlgoliaException error) {
+                        assertNull(error);
+                        assertNotNull(content.optJSONArray("results"));
+                        assertEquals(2, content.optJSONArray("results").length());
+                        assertEquals("local", content.optString("origin"));
+                        signal.countDown();
+                    }
+                });
+
+                signal.countDown();
             }
         });
     }
