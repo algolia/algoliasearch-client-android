@@ -37,6 +37,7 @@ import java.io.File;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
@@ -476,6 +477,176 @@ public class MirroredIndexTest extends OfflineTestBase  {
                 });
 
                 signal.countDown();
+            }
+        });
+    }
+
+    /**
+     * Test the `ONLINE_ONLY` request strategy.
+     */
+    @Test
+    public void testRequestStrategyOnlineOnly() {
+        final CountDownLatch signal = new CountDownLatch(1);
+
+        // Populate the online index & sync the offline mirror.
+        final MirroredIndex index = client.getIndex(Helpers.safeIndexName(Helpers.getMethodName()));
+        index.setRequestStrategy(MirroredIndex.Strategy.ONLINE_ONLY);
+        sync(index, new SyncCompletionHandler() {
+            @Override
+            public void syncCompleted(@Nullable Throwable error) {
+                assertNull(error);
+
+                // Test success.
+                index.searchAsync(new Query(), new AssertCompletionHandler() {
+                    @Override
+                    public void doRequestCompleted(JSONObject content, AlgoliaException error) {
+                        assertNull(error);
+                        assertEquals(5, content.optInt("nbHits"));
+                        assertEquals("remote", content.optString("origin"));
+
+                        // Test failure.
+                        client.setReadHosts("unknown.algolia.com");
+                        index.searchAsync(new Query(), new AssertCompletionHandler() {
+                            @Override
+                            public void doRequestCompleted(JSONObject content, AlgoliaException error) {
+                                assertNotNull(error);
+                                signal.countDown();
+                            }
+                        });
+                    }
+                });
+            }
+        });
+    }
+
+    /**
+     * Test the `OFFLINE_ONLY` request strategy.
+     */
+    @Test
+    public void testRequestStrategyOfflineOnly() {
+        final CountDownLatch signal = new CountDownLatch(1);
+
+        final MirroredIndex index = client.getIndex(Helpers.safeIndexName(Helpers.getMethodName()));
+        index.setMirrored(true);
+        index.setRequestStrategy(MirroredIndex.Strategy.OFFLINE_ONLY);
+
+        // Check that a request without local data fails.
+        index.searchAsync(new Query(), new AssertCompletionHandler() {
+            @Override
+            public void doRequestCompleted(JSONObject content, AlgoliaException error) {
+                assertNotNull(error);
+
+                // Populate the online index & sync the offline mirror.
+                sync(index, new SyncCompletionHandler() {
+                    @Override
+                    public void syncCompleted(@Nullable Throwable error) {
+                        assertNull(error);
+
+                        // Test success.
+                        index.searchAsync(new Query(), new AssertCompletionHandler() {
+                            @Override
+                            public void doRequestCompleted(JSONObject content, AlgoliaException error) {
+                                assertNull(error);
+                                assertEquals(3, content.optInt("nbHits"));
+                                assertEquals("local", content.optString("origin"));
+
+                                signal.countDown();
+                            }
+                        });
+                    }
+                });
+            }
+        });
+    }
+
+    /**
+     * Test the `FALLBACK_ON_FAILURE` request strategy.
+     */
+    @Test
+    public void testRequestStrategyFallbackOnFailure() {
+        final CountDownLatch signal = new CountDownLatch(1);
+
+        // Populate the online index & sync the offline mirror.
+        final MirroredIndex index = client.getIndex(Helpers.safeIndexName(Helpers.getMethodName()));
+        index.setRequestStrategy(MirroredIndex.Strategy.FALLBACK_ON_FAILURE);
+        // Populate the online index & sync the offline mirror.
+        sync(index, new SyncCompletionHandler() {
+            @Override
+            public void syncCompleted(@Nullable Throwable error) {
+                assertNull(error);
+
+                // Test online success.
+                index.searchAsync(new Query(), new AssertCompletionHandler() {
+                    @Override
+                    public void doRequestCompleted(JSONObject content, AlgoliaException error) {
+                        assertNull(error);
+                        assertEquals(5, content.optInt("nbHits"));
+                        assertEquals("remote", content.optString("origin"));
+
+                        // Test network failure.
+                        client.setReadHosts("unknown.algolia.com");
+                        index.searchAsync(new Query(), new AssertCompletionHandler() {
+                            @Override
+                            public void doRequestCompleted(JSONObject content, AlgoliaException error) {
+                                assertNull(error);
+                                assertEquals(3, content.optInt("nbHits"));
+                                assertEquals("local", content.optString("origin"));
+                                signal.countDown();
+                            }
+                        });
+                    }
+                });
+            }
+        });
+    }
+
+    /**
+     * Test the `FALLBACK_ON_TIMEOUT` request strategy.
+     */
+    @Test
+    public void testRequestStrategyFallbackOnTimeout() {
+        final CountDownLatch signal = new CountDownLatch(1);
+
+        // Populate the online index & sync the offline mirror.
+        final MirroredIndex index = client.getIndex(Helpers.safeIndexName(Helpers.getMethodName()));
+        index.setRequestStrategy(MirroredIndex.Strategy.FALLBACK_ON_TIMEOUT);
+        // Populate the online index & sync the offline mirror.
+        sync(index, new SyncCompletionHandler() {
+            @Override
+            public void syncCompleted(@Nullable Throwable error) {
+                assertNull(error);
+
+                // Test online success.
+                index.searchAsync(new Query(), new AssertCompletionHandler() {
+                    @Override
+                    public void doRequestCompleted(JSONObject content, AlgoliaException error) {
+                        assertNull(error);
+                        assertEquals(5, content.optInt("nbHits"));
+                        assertEquals("remote", content.optString("origin"));
+
+                        // Test network failure.
+                        final String timeoutingHost = UUID.randomUUID().toString() + ".algolia.biz";
+                        client.setReadHosts(timeoutingHost);
+                        final long startTime = System.currentTimeMillis();
+                        index.searchAsync(new Query(), new AssertCompletionHandler() {
+                            @Override
+                            public void doRequestCompleted(JSONObject content, AlgoliaException error) {
+                                final long stopTime = System.currentTimeMillis();
+                                final long duration = stopTime - startTime;
+                                assertNull(error);
+                                assertEquals(3, content.optInt("nbHits"));
+                                assertEquals("local", content.optString("origin"));
+                                // Check that we hit the fallback time out, but not the complete online timeout.
+                                // NOTE: Those tests cannot be performed because of Robolectric's single-threaded model.
+                                if (false) {
+                                    assertTrue(duration >= index.getOfflineFallbackTimeout());
+                                    assertTrue(duration < Math.min(client.getSearchTimeout(), client.getReadTimeout()));
+                                }
+                                signal.countDown();
+                            }
+                        });
+                    }
+                });
             }
         });
     }
