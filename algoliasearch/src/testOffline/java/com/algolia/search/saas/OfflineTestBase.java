@@ -94,7 +94,7 @@ public abstract class OfflineTestBase extends RobolectricTestCase {
         client = new OfflineClient(RuntimeEnvironment.application, Helpers.app_id, Helpers.api_key);
         // NOTE: We don't really control the package name with Robolectric's supplied application.
         // The license below is generated for package "com.algolia.search.saas.android".
-        client.enableOfflineMode("AkcFAQH/hsTABf/y3rwFZBhBbGdvbGlhIERldmVsb3BtZW50IFRlYW0fY29tLmFsZ29saWEuc2VhcmNoLnNhYXMuYW5kcm9pZDAsAhRcbBRtOf3b+N51ZDnzzCKptmj2VQIUFurp73dObNtuDtfFkt42xt9B/Tw=");
+        client.enableOfflineMode("AkcFAQH/8t68Bf+khLkFZBhBbGdvbGlhIERldmVsb3BtZW50IFRlYW0fY29tLmFsZ29saWEuc2VhcmNoLnNhYXMuYW5kcm9pZDAtAhRETtx0EMmO5K7HzhJCO4rcdqI5jQIVAKOZrmizb82ntMb6x+aQKqet9J5x");
 
         // WARNING: Robolectric cannot work with custom executors in `AsyncTask`, so we substitute the client's
         // executor with a Robolectric-compliant one.
