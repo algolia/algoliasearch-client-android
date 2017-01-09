@@ -108,7 +108,7 @@ public class MirroredIndexTest extends OfflineTestBase  {
         void syncCompleted(@Nullable Throwable error);
     }
 
-    private void sync(final @NonNull MirroredIndex index, final @NonNull SyncCompletionHandler completionHandler) {
+    private void populate(final @NonNull MirroredIndex index, final @NonNull SyncCompletionHandler completionHandler) {
         // Delete the index.
         client.deleteIndexAsync(index.getIndexName(), new AssertCompletionHandler() {
             @Override
@@ -131,36 +131,44 @@ public class MirroredIndexTest extends OfflineTestBase  {
                                     @Override
                                     public void doRequestCompleted(JSONObject content, AlgoliaException error) {
                                         assertNull(error);
-
-                                        // Sync the offline mirror.
-                                        index.setMirrored(true);
-                                        Query query = new Query();
-                                        query.setNumericFilters(new JSONArray().put("born < 1980"));
-                                        index.setDataSelectionQueries(
-                                                new MirroredIndex.DataSelectionQuery(query, 10)
-                                        );
-
-                                        listener = new SyncListener() {
-                                            @Override
-                                            public void syncDidStart(MirroredIndex index) {
-                                                // Nothing to do.
-                                            }
-
-                                            @Override
-                                            public void syncDidFinish(MirroredIndex index, Throwable error, MirroredIndex.SyncStats stats) {
-                                                Log.d(MirroredIndexTest.class.getSimpleName(), "Sync finished");
-                                                index.removeSyncListener(listener);
-                                                completionHandler.syncCompleted(error);
-                                            }
-                                        };
-                                        index.addSyncListener(listener);
-                                        index.sync();
+                                        completionHandler.syncCompleted(error);
                                     }
                                 });
                             }
                         });
                     }
                 });
+            }
+        });
+    }
+
+    private void sync(final @NonNull MirroredIndex index, final @NonNull SyncCompletionHandler completionHandler) {
+        populate(index, new SyncCompletionHandler() {
+            @Override
+            public void syncCompleted(@Nullable Throwable error) {
+                // Sync the offline mirror.
+                index.setMirrored(true);
+                Query query = new Query();
+                query.setNumericFilters(new JSONArray().put("born < 1980"));
+                index.setDataSelectionQueries(
+                        new MirroredIndex.DataSelectionQuery(query, 10)
+                );
+
+                listener = new SyncListener() {
+                    @Override
+                    public void syncDidStart(MirroredIndex index) {
+                        // Nothing to do.
+                    }
+
+                    @Override
+                    public void syncDidFinish(MirroredIndex index, Throwable error, MirroredIndex.SyncStats stats) {
+                        Log.d(MirroredIndexTest.class.getSimpleName(), "Sync finished");
+                        index.removeSyncListener(listener);
+                        completionHandler.syncCompleted(error);
+                    }
+                };
+                index.addSyncListener(listener);
+                index.sync();
             }
         });
     }
@@ -467,6 +475,63 @@ public class MirroredIndexTest extends OfflineTestBase  {
                     }
                 });
 
+                signal.countDown();
+            }
+        });
+    }
+
+    /**
+     * Test that a non-mirrored index behaves like a purely online index.
+     */
+    @Test
+    public void testNotMirrored() {
+        final CountDownLatch signal = new CountDownLatch(5);
+
+        final MirroredIndex index = client.getIndex(Helpers.safeIndexName(Helpers.getMethodName()));
+        // Check that the index is *not* mirrored by default.
+        assertFalse(index.isMirrored());
+
+        populate(index, new SyncCompletionHandler() {
+            @Override
+            public void syncCompleted(@Nullable Throwable error) {
+                // Check that a non-mirrored index returns online results without origin tagging.
+                index.searchAsync(new Query(), new AssertCompletionHandler() {
+                    @Override
+                    public void doRequestCompleted(JSONObject content, AlgoliaException error) {
+                        assertNull(error);
+                        assertEquals(5, content.optInt("nbHits"));
+                        assertNull(content.opt("origin"));
+                        signal.countDown();
+                    }
+                });
+                index.browseAsync(new Query(), new AssertCompletionHandler() {
+                    @Override
+                    public void doRequestCompleted(JSONObject content, AlgoliaException error) {
+                        assertNull(error);
+                        assertEquals(5, content.optInt("nbHits"));
+                        assertNull(content.opt("origin"));
+                        signal.countDown();
+                    }
+                });
+                index.getObjectAsync("1", new AssertCompletionHandler() {
+                    @Override
+                    public void doRequestCompleted(JSONObject content, AlgoliaException error) {
+                        assertNull(error);
+                        assertEquals("Snoopy", content.optString("name"));
+                        assertNull(content.opt("origin"));
+                        signal.countDown();
+                    }
+                });
+                index.getObjectsAsync(Arrays.asList("1", "2"), new AssertCompletionHandler() {
+                    @Override
+                    public void doRequestCompleted(JSONObject content, AlgoliaException error) {
+                        assertNull(error);
+                        assertNotNull(content.optJSONArray("results"));
+                        assertEquals(2, content.optJSONArray("results").length());
+                        assertNull(content.opt("origin"));
+                        signal.countDown();
+                    }
+                });
                 signal.countDown();
             }
         });
