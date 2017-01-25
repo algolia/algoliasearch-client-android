@@ -763,4 +763,15 @@ public class QueryTest extends RobolectricTestCase {
         expected = "responseFields=" + URLEncoder.encode("[\"hits\",\"page\"]", "UTF-8");
         assertTrue("The built query should contain \"" + expected + "\", but contains _" + queryStr + "_.", queryStr.contains(expected));
     }
+
+
+    @Test
+    public void facetingAfterDistinct() {
+        Query query = new Query();
+        assertNull(query.getFacetingAfterDistinct());
+        query.setFacetingAfterDistinct(true);
+        assertEquals(Boolean.TRUE, query.getFacetingAfterDistinct());
+        assertEquals("true", query.get("facetingAfterDistinct"));
+        assertEquals(query.getFacetingAfterDistinct(), Query.parse(query.build()).getFacetingAfterDistinct());
+    }
 }
