@@ -373,6 +373,22 @@ public class Query extends AbstractQuery {
         return null;
     }
 
+    private static final String KEY_FACETING_AFTER_DISTINCT = "facetingAfterDistinct";
+
+    public @Nullable Boolean getFacetingAfterDistinct() {
+        return parseBoolean(get(KEY_FACETING_AFTER_DISTINCT));
+    }
+
+    /**
+     * Force faceting to be applied after de-duplication. Please check <a href="https://www.algolia.com/doc/rest-api/search/#facetingafterdistinct">documentation</a> for consequences and limitations
+     *
+     * @param enabled if {@code true}, facets will be computed after de-duplication is applied.
+     * @see <a href="https://www.algolia.com/doc/api-client/android/parameters/#facetingafterdistinct">facetingAfterDistinct's documentation</a>
+     */
+    public @NonNull Query setFacetingAfterDistinct(Boolean enabled) {
+        return set(KEY_FACETING_AFTER_DISTINCT, enabled);
+    }
+
     private static final String KEY_FILTERS = "filters";
 
     /**
