@@ -563,4 +563,40 @@ public class OfflineIndexTest extends OfflineTestBase  {
             }
         });
     }
+
+    @Test
+    public void testSearchForFacetValues() throws Exception {
+        final CountDownLatch signal = new CountDownLatch(1);
+        final OfflineIndex index = client.getOfflineIndex(Helpers.getMethodName());
+        final OfflineIndex.WriteTransaction transaction = index.newTransaction();
+        transaction.setSettingsAsync(settings, new AssertCompletionHandler() {
+            @Override
+            public void doRequestCompleted(JSONObject content, AlgoliaException error) {
+                transaction.saveObjectsAsync(new JSONArray(objects.values()), new AssertCompletionHandler() {
+                    @Override
+                    public void doRequestCompleted(JSONObject content, AlgoliaException error) {
+                        assertNull(error);
+                        transaction.commitAsync(new AssertCompletionHandler() {
+                            @Override
+                            public void doRequestCompleted(JSONObject content, AlgoliaException error) {
+                                final Query query = new Query("snoopy");
+                                index.searchForFacetValuesAsync("series", "pea", new Query().setQuery("snoopy"), new AssertCompletionHandler() {
+                                    @Override
+                                    public void doRequestCompleted(JSONObject content, AlgoliaException error) {
+                                        assertNotNull(content);
+                                        JSONArray facetHits = content.optJSONArray("facetHits");
+                                        assertNotNull(facetHits);
+                                        assertEquals(1, facetHits.length());
+                                        assertEquals("Peanuts", facetHits.optJSONObject(0).optString("value"));
+                                        assertEquals(1, facetHits.optJSONObject(0).optInt("count"));
+                                        signal.countDown();
+                                    }
+                                });
+                            }
+                        });
+                    }
+                });
+            }
+        });
+    }
 }
