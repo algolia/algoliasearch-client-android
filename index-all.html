@@ -332,6 +332,8 @@
 <div class="block"><span class="deprecationComment">Use <a href="com/algolia/search/saas/Query.html#getFilters--"><code>Query.getFilters()</code></a> instead.</span></div>
 </div>
 </dd>
+<dt><span class="memberNameLink"><a href="com/algolia/search/saas/Query.html#getFacetingAfterDistinct--">getFacetingAfterDistinct()</a></span> - Method in class com.algolia.search.saas.<a href="com/algolia/search/saas/Query.html" title="class in com.algolia.search.saas">Query</a></dt>
+<dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="com/algolia/search/saas/Query.html#getFacets--">getFacets()</a></span> - Method in class com.algolia.search.saas.<a href="com/algolia/search/saas/Query.html" title="class in com.algolia.search.saas">Query</a></dt>
 <dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="com/algolia/search/saas/Query.html#getFilters--">getFilters()</a></span> - Method in class com.algolia.search.saas.<a href="com/algolia/search/saas/Query.html" title="class in com.algolia.search.saas">Query</a></dt>
@@ -375,6 +377,8 @@
 <dt><span class="memberNameLink"><a href="com/algolia/search/saas/Query.html#getInsidePolygon--">getInsidePolygon()</a></span> - Method in class com.algolia.search.saas.<a href="com/algolia/search/saas/Query.html" title="class in com.algolia.search.saas">Query</a></dt>
 <dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="com/algolia/search/saas/places/PlacesQuery.html#getLanguage--">getLanguage()</a></span> - Method in class com.algolia.search.saas.places.<a href="com/algolia/search/saas/places/PlacesQuery.html" title="class in com.algolia.search.saas.places">PlacesQuery</a></dt>
+<dd>&nbsp;</dd>
+<dt><span class="memberNameLink"><a href="com/algolia/search/saas/Query.html#getMaxFacetHits--">getMaxFacetHits()</a></span> - Method in class com.algolia.search.saas.<a href="com/algolia/search/saas/Query.html" title="class in com.algolia.search.saas">Query</a></dt>
 <dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="com/algolia/search/saas/Query.html#getMaxValuesPerFacet--">getMaxValuesPerFacet()</a></span> - Method in class com.algolia.search.saas.<a href="com/algolia/search/saas/Query.html" title="class in com.algolia.search.saas">Query</a></dt>
 <dd>&nbsp;</dd>
@@ -768,9 +772,17 @@
 </dd>
 <dt><span class="memberNameLink"><a href="com/algolia/search/saas/Index.html#searchForFacetValues-java.lang.String-java.lang.String-com.algolia.search.saas.CompletionHandler-">searchForFacetValues(String, String, CompletionHandler)</a></span> - Method in class com.algolia.search.saas.<a href="com/algolia/search/saas/Index.html" title="class in com.algolia.search.saas">Index</a></dt>
 <dd>
-<div class="block">Search for some text in a facet values.</div>
+<div class="block">Search (asynchronously) for some text in a facet values.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="com/algolia/search/saas/Index.html#searchForFacetValues-java.lang.String-java.lang.String-com.algolia.search.saas.Query-com.algolia.search.saas.CompletionHandler-">searchForFacetValues(String, String, Query, CompletionHandler)</a></span> - Method in class com.algolia.search.saas.<a href="com/algolia/search/saas/Index.html" title="class in com.algolia.search.saas">Index</a></dt>
+<dd>
+<div class="block">Search (asynchronously) for some text in a facet values, optionally restricting the returned values to those contained in objects matching other (regular) search criteria.</div>
+</dd>
+<dt><span class="memberNameLink"><a href="com/algolia/search/saas/Index.html#searchForFacetValuesAsync-java.lang.String-java.lang.String-com.algolia.search.saas.CompletionHandler-">searchForFacetValuesAsync(String, String, CompletionHandler)</a></span> - Method in class com.algolia.search.saas.<a href="com/algolia/search/saas/Index.html" title="class in com.algolia.search.saas">Index</a></dt>
+<dd>
+<div class="block">Search (asynchronously) for some text in a facet values.</div>
+</dd>
+<dt><span class="memberNameLink"><a href="com/algolia/search/saas/Index.html#searchForFacetValuesAsync-java.lang.String-java.lang.String-com.algolia.search.saas.Query-com.algolia.search.saas.CompletionHandler-">searchForFacetValuesAsync(String, String, Query, CompletionHandler)</a></span> - Method in class com.algolia.search.saas.<a href="com/algolia/search/saas/Index.html" title="class in com.algolia.search.saas">Index</a></dt>
 <dd>
 <div class="block">Search for some text in a facet values, optionally restricting the returned values to those contained in objects matching other (regular) search criteria.</div>
 </dd>
@@ -866,6 +878,10 @@
 <div class="block"><span class="deprecationComment">Use <a href="com/algolia/search/saas/Query.html#setFilters-java.lang.String-"><code>Query.setFilters(String)</code></a> instead.</span></div>
 </div>
 </dd>
+<dt><span class="memberNameLink"><a href="com/algolia/search/saas/Query.html#setFacetingAfterDistinct-java.lang.Boolean-">setFacetingAfterDistinct(Boolean)</a></span> - Method in class com.algolia.search.saas.<a href="com/algolia/search/saas/Query.html" title="class in com.algolia.search.saas">Query</a></dt>
+<dd>
+<div class="block">Force faceting to be applied after de-duplication.</div>
+</dd>
 <dt><span class="memberNameLink"><a href="com/algolia/search/saas/Query.html#setFacets-java.lang.String...-">setFacets(String...)</a></span> - Method in class com.algolia.search.saas.<a href="com/algolia/search/saas/Query.html" title="class in com.algolia.search.saas">Query</a></dt>
 <dd>
 <div class="block">List of object attributes that you want to use for faceting.</div>
@@ -933,6 +949,10 @@
 <dt><span class="memberNameLink"><a href="com/algolia/search/saas/places/PlacesQuery.html#setLanguage-java.lang.String-">setLanguage(String)</a></span> - Method in class com.algolia.search.saas.places.<a href="com/algolia/search/saas/places/PlacesQuery.html" title="class in com.algolia.search.saas.places">PlacesQuery</a></dt>
 <dd>
 <div class="block">Restrict the search results to a single language.</div>
+</dd>
+<dt><span class="memberNameLink"><a href="com/algolia/search/saas/Query.html#setMaxFacetHits-java.lang.Integer-">setMaxFacetHits(Integer)</a></span> - Method in class com.algolia.search.saas.<a href="com/algolia/search/saas/Query.html" title="class in com.algolia.search.saas">Query</a></dt>
+<dd>
+<div class="block">Limit the number of facet values returned for each facet.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="com/algolia/search/saas/Query.html#setMaxValuesPerFacet-java.lang.Integer-">setMaxValuesPerFacet(Integer)</a></span> - Method in class com.algolia.search.saas.<a href="com/algolia/search/saas/Query.html" title="class in com.algolia.search.saas">Query</a></dt>
 <dd>

@@ -17,7 +17,7 @@
     catch(err) {
     }
 //-->
-var methods = {"i0":10,"i1":10,"i2":10,"i3":10,"i4":10,"i5":10,"i6":10,"i7":10,"i8":10,"i9":10,"i10":10,"i11":10,"i12":10,"i13":10,"i14":10,"i15":10,"i16":10,"i17":10,"i18":10};
+var methods = {"i0":10,"i1":10,"i2":10,"i3":10,"i4":10,"i5":10,"i6":10,"i7":10,"i8":10,"i9":10,"i10":10,"i11":10,"i12":10,"i13":10,"i14":10,"i15":10,"i16":10,"i17":10,"i18":10,"i19":10};
 var tabs = {65535:["t0","All Methods"],2:["t2","Instance Methods"],8:["t4","Concrete Methods"]};
 var altColor = "altColor";
 var rowColor = "rowColor";
@@ -323,6 +323,15 @@ extends Object</pre>
 </td>
 </tr>
 <tr id="i18" class="altColor">
+<td class="colFirst"><code><a href="../../../../com/algolia/search/saas/Request.html" title="interface in com.algolia.search.saas">Request</a></code></td>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/algolia/search/saas/OfflineIndex.html#searchForFacetValuesAsync-java.lang.String-java.lang.String-com.algolia.search.saas.Query-com.algolia.search.saas.CompletionHandler-">searchForFacetValuesAsync</a></span>(String&nbsp;facetName,
+                         String&nbsp;facetQuery,
+                         <a href="../../../../com/algolia/search/saas/Query.html" title="class in com.algolia.search.saas">Query</a>&nbsp;query,
+                         <a href="../../../../com/algolia/search/saas/CompletionHandler.html" title="interface in com.algolia.search.saas">CompletionHandler</a>&nbsp;completionHandler)</code>
+<div class="block">Search for facet values (asynchronously).</div>
+</td>
+</tr>
+<tr id="i19" class="rowColor">
 <td class="colFirst"><code>String</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/algolia/search/saas/OfflineIndex.html#toString--">toString</a></span>()</code>&nbsp;</td>
 </tr>
@@ -549,6 +558,23 @@ extends Object</pre>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>A cancellable request.</dd>
 </dl>
+</li>
+</ul>
+<a name="searchForFacetValuesAsync-java.lang.String-java.lang.String-com.algolia.search.saas.Query-com.algolia.search.saas.CompletionHandler-">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>searchForFacetValuesAsync</h4>
+<pre>public&nbsp;<a href="../../../../com/algolia/search/saas/Request.html" title="interface in com.algolia.search.saas">Request</a>&nbsp;searchForFacetValuesAsync(@NonNull
+                                         String&nbsp;facetName,
+                                         @NonNull
+                                         String&nbsp;facetQuery,
+                                         @Nullable
+                                         <a href="../../../../com/algolia/search/saas/Query.html" title="class in com.algolia.search.saas">Query</a>&nbsp;query,
+                                         @NonNull
+                                         <a href="../../../../com/algolia/search/saas/CompletionHandler.html" title="interface in com.algolia.search.saas">CompletionHandler</a>&nbsp;completionHandler)</pre>
+<div class="block"><p>Search for facet values (asynchronously). Same parameters as <a href="../../../../com/algolia/search/saas/Index.html#searchForFacetValues-java.lang.String-java.lang.String-com.algolia.search.saas.Query-com.algolia.search.saas.CompletionHandler-"><code>Index.searchForFacetValues(String, String, Query, CompletionHandler)</code></a>.</p></div>
 </li>
 </ul>
 <a name="newTransaction--">
