@@ -182,7 +182,19 @@ public class Index {
     }
 
     /**
-     * Search for some text in a facet values.
+     * Search (asynchronously) for some text in a facet values.
+     *
+     * @param facetName The name of the facet to search. It must have been declared in the index's `attributesForFaceting` setting with the `searchable()` modifier.
+     * @param text      The text to search for in the facet's values.
+     * @param handler   A Completion handler that will be notified of the request's outcome.
+     * @return A cancellable request.
+     */
+    public Request searchForFacetValuesAsync(@NonNull String facetName, @NonNull String text, @NonNull final CompletionHandler handler) throws AlgoliaException {
+        return searchForFacetValues(facetName, text, null, handler);
+    }
+
+    /**
+     * Search (asynchronously) for some text in a facet values.
      *
      * @param facetName The name of the facet to search. It must have been declared in the index's `attributesForFaceting` setting with the `searchable()` modifier.
      * @param text      The text to search for in the facet's values.
@@ -195,6 +207,19 @@ public class Index {
 
     /**
      * Search for some text in a facet values, optionally restricting the returned values to those contained in objects matching other (regular) search criteria.
+     *
+     * @param facetName The name of the facet to search. It must have been declared in the index's `attributesForFaceting` setting with the `searchable()` modifier.
+     * @param facetText      The text to search for in the facet's values.
+     * @param query     An optional query to take extra search parameters into account. There parameters apply to index objects like in a regular search query. Only facet values contained in the matched objects will be returned
+     * @param handler   A Completion handler that will be notified of the request's outcome.
+     * @return A cancellable request.
+     */
+    public Request searchForFacetValuesAsync(@NonNull String facetName, @NonNull String facetText, @Nullable Query query, @NonNull final CompletionHandler handler) {
+        return searchForFacetValues(facetName, facetText, query, handler);
+    }
+
+    /**
+     * Search (asynchronously) for some text in a facet values, optionally restricting the returned values to those contained in objects matching other (regular) search criteria.
      *
      * @param facetName The name of the facet to search. It must have been declared in the index's `attributesForFaceting` setting with the `searchable()` modifier.
      * @param facetText      The text to search for in the facet's values.

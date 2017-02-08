@@ -645,6 +645,16 @@ public class QueryTest extends RobolectricTestCase {
     }
 
     @Test
+    public void maxFacetHits() {
+        Query query = new Query();
+        assertNull(query.getMaxFacetHits());
+        query.setMaxFacetHits(456);
+        assertEquals(Integer.valueOf(456), query.getMaxFacetHits());
+        assertEquals("456", query.get("maxFacetHits"));
+        assertEquals(query.getMaxFacetHits(), Query.parse(query.build()).getMaxFacetHits());
+    }
+
+    @Test
     public void maxValuesPerFacet() {
         Query query = new Query();
         assertNull(query.getMaxValuesPerFacet());

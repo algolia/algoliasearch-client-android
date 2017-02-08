@@ -813,6 +813,19 @@ public class Query extends AbstractQuery {
         }
     }
 
+    private static final String KEY_MAX_FACET_HITS = "maxFacetHits";
+
+    /**
+     * Limit the number of facet values returned for each facet.
+     */
+    public @NonNull Query setMaxFacetHits(Integer n) {
+        return set(KEY_MAX_FACET_HITS, n);
+    }
+
+    public Integer getMaxFacetHits() {
+        return parseInt(get(KEY_MAX_FACET_HITS));
+    }
+
     private static final String KEY_MAX_VALUES_PER_FACET = "maxValuesPerFacet";
 
     /**
