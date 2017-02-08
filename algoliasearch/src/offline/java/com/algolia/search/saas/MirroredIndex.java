@@ -1505,6 +1505,99 @@ public class MirroredIndex extends Index
     }
 
     // ----------------------------------------------------------------------
+    // Search for facet values
+    // ----------------------------------------------------------------------
+
+    @Override
+    public Request searchForFacetValues(@NonNull String facetName, @NonNull String text, @Nullable Query query, @NonNull final CompletionHandler completionHandler) {
+        // A non-mirrored index behaves exactly as an online index.
+        if (!mirrored) {
+            return super.searchForFacetValues(facetName, text, query, completionHandler);
+        }
+        // A mirrored index launches a mixed offline/online request.
+        else {
+            final Query queryCopy = query != null ? new Query(query) : null;
+            return new MixedFacetSearchRequest(facetName, text, queryCopy, completionHandler).start();
+        }
+    }
+
+    /**
+     * Search for facet values, explicitly targeting the online API, not the offline mirror.
+     * Same parameters as {@link Index#searchForFacetValues(String, String, Query, CompletionHandler)}.
+     */
+    public Request searchForFacetValuesOnline(@NonNull String facetName, @NonNull String text, @Nullable Query query, @NonNull final CompletionHandler completionHandler) {
+        return super.searchForFacetValues(facetName, text, query, new CompletionHandler() {
+            @Override
+            public void requestCompleted(JSONObject content, AlgoliaException error) {
+                try {
+                    if (content != null)
+                        content.put(JSON_KEY_ORIGIN, JSON_VALUE_ORIGIN_REMOTE);
+                }
+                catch (JSONException e) {
+                    throw new RuntimeException(e); // should never happen
+                }
+                completionHandler.requestCompleted(content, error);
+            }
+        });
+    }
+
+    /**
+     * Search for facet values, explicitly targeting the offline mirror, not the online API.
+     */
+    public Request searchForFacetValuesOffline(final @NonNull String facetName, final @NonNull String text, @Nullable Query query, @NonNull final CompletionHandler completionHandler) {
+        if (!mirrored) {
+            throw new IllegalStateException("Offline requests are only available when the index is mirrored");
+        }
+        final Query queryCopy = query != null ? new Query(query) : null;
+        return getClient().new AsyncTaskRequest(completionHandler, getClient().localSearchExecutorService) {
+            @NonNull
+            @Override
+            protected JSONObject run() throws AlgoliaException {
+                return _searchForFacetValuesOffline(facetName, text, queryCopy);
+            }
+        }.start();
+    }
+
+    private class MixedFacetSearchRequest extends OnlineOfflineRequest {
+        private final @NonNull String facetName;
+        private final @NonNull String facetQuery;
+        private final Query query;
+
+        public MixedFacetSearchRequest(@NonNull String facetName, @NonNull String facetQuery, @Nullable Query query, @NonNull CompletionHandler completionHandler) {
+            super(completionHandler);
+            this.facetName = facetName;
+            this.facetQuery = facetQuery;
+            this.query = query;
+        }
+
+        @Override
+        protected Request startOnlineRequest(CompletionHandler completionHandler) {
+            return searchForFacetValuesOnline(facetName, facetQuery, query, completionHandler);
+        }
+
+        @Override
+        protected Request startOfflineRequest(CompletionHandler completionHandler) {
+            return searchForFacetValuesOffline(facetName, facetQuery, query, completionHandler);
+        }
+    }
+
+    private JSONObject _searchForFacetValuesOffline(@NonNull String facetName, @NonNull String text, @Nullable Query query) throws AlgoliaException {
+        try {
+            Response searchResults =  getLocalIndex().searchForFacetValues(facetName, text, query != null ? query.build() : null);
+            if (searchResults.getStatusCode() == 200) {
+                String jsonString = new String(searchResults.getData(), "UTF-8");
+                return new JSONObject(jsonString); // NOTE: Origin tagging performed by the SDK
+            }
+            else {
+                throw new AlgoliaException(searchResults.getErrorMessage(), searchResults.getStatusCode());
+            }
+        }
+        catch (JSONException | UnsupportedEncodingException e) {
+            throw new AlgoliaException("Search failed", e);
+        }
+    }
+
+    // ----------------------------------------------------------------------
     // Listeners
     // ----------------------------------------------------------------------
 

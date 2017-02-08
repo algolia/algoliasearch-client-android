@@ -121,18 +121,24 @@ public class MirroredIndexTest extends OfflineTestBase  {
                     @Override
                     public void doRequestCompleted(JSONObject content, AlgoliaException error) {
                         assertNull(error);
-                        // Populate the online index.
-                        index.addObjectsAsync(new JSONArray(moreObjects.values()), new AssertCompletionHandler() {
+                        index.setSettingsAsync(settings, new AssertCompletionHandler() {
                             @Override
                             public void doRequestCompleted(JSONObject content, AlgoliaException error) {
                                 assertNull(error);
-                                int taskID = content.optInt("taskID", -1);
-                                assertNotEquals(-1, taskID);
-                                index.waitTaskAsync(Integer.toString(taskID), new AssertCompletionHandler() {
+                                // Populate the online index.
+                                index.addObjectsAsync(new JSONArray(moreObjects.values()), new AssertCompletionHandler() {
                                     @Override
                                     public void doRequestCompleted(JSONObject content, AlgoliaException error) {
                                         assertNull(error);
-                                        completionHandler.syncCompleted(error);
+                                        int taskID = content.optInt("taskID", -1);
+                                        assertNotEquals(-1, taskID);
+                                        index.waitTaskAsync(Integer.toString(taskID), new AssertCompletionHandler() {
+                                            @Override
+                                            public void doRequestCompleted(JSONObject content, AlgoliaException error) {
+                                                assertNull(error);
+                                                completionHandler.syncCompleted(error);
+                                            }
+                                        });
                                     }
                                 });
                             }
@@ -704,6 +710,64 @@ public class MirroredIndexTest extends OfflineTestBase  {
                     }
                 });
                 signal.countDown();
+            }
+        });
+    }
+
+    @Test
+    public void testSearchForFacetValues() throws Exception {
+        final CountDownLatch signal = new CountDownLatch(3);
+
+        // Populate the online index & sync the offline mirror.
+        final MirroredIndex index = client.getIndex(Helpers.safeIndexName(Helpers.getMethodName()));
+        sync(index, new SyncCompletionHandler() {
+            @Override
+            public void syncCompleted(@Nullable Throwable error) {
+                assertNull(error);
+
+                // Query the online index explicitly.
+                index.searchForFacetValuesOnline("series", "", null, new AssertCompletionHandler() {
+                    @Override
+                    public void doRequestCompleted(JSONObject content, AlgoliaException error) {
+                        assertNull(error);
+                        JSONArray facetHits = content.optJSONArray("facetHits");
+                        assertNotNull(facetHits);
+                        assertEquals(2, facetHits.length());
+                        assertEquals("remote", content.optString("origin"));
+                        signal.countDown();
+
+                        // Test offline fallback.
+                        client.setReadHosts("unknown.algolia.com");
+                        index.setRequestStrategy(MirroredIndex.Strategy.FALLBACK_ON_FAILURE);
+                        index.searchForFacetValues("series", "pea", new Query().setQuery("snoopy"), new AssertCompletionHandler() {
+                            @Override
+                            public void doRequestCompleted(JSONObject content, AlgoliaException error) {
+                                assertNull(error);
+                                JSONArray facetHits = content.optJSONArray("facetHits");
+                                assertNotNull(facetHits);
+                                assertEquals(1, facetHits.length());
+                                assertEquals("Peanuts", facetHits.optJSONObject(0).optString("value"));
+                                assertEquals(1, facetHits.optJSONObject(0).optInt("count"));
+                                assertEquals("local", content.optString("origin"));
+                                signal.countDown();
+                            }
+                        });
+                    }
+                });
+
+                // Query the offline index explicitly.
+                index.searchForFacetValuesOffline("series", "", null, new AssertCompletionHandler() {
+                    @Override
+                    public void doRequestCompleted(JSONObject content, AlgoliaException error) {
+                        assertNull(error);
+                        JSONArray facetHits = content.optJSONArray("facetHits");
+                        assertEquals(1, facetHits.length());
+                        assertEquals("Peanuts", facetHits.optJSONObject(0).optString("value"));
+                        assertEquals(3, facetHits.optJSONObject(0).optInt("count"));
+                        assertEquals("local", content.optString("origin"));
+                        signal.countDown();
+                    }
+                });
             }
         });
     }

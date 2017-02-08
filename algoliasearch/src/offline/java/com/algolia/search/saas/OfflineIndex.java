@@ -390,6 +390,28 @@ public class OfflineIndex {
         return OfflineClient.parseSearchResults(localIndex.browse(query.build()));
     }
 
+    /**
+     * Search for facet values (asynchronously).
+     * Same parameters as {@link Index#searchForFacetValues(String, String, Query, CompletionHandler)}.
+     */
+    public Request searchForFacetValuesAsync(final @NonNull String facetName, final @NonNull String facetQuery, @Nullable Query query, @NonNull CompletionHandler completionHandler) {
+        final Query queryCopy = query != null ? new Query(query) : null;
+        return getClient().new AsyncTaskRequest(completionHandler) {
+            @NonNull
+            @Override
+            protected JSONObject run() throws AlgoliaException {
+                return searchForFacetValuesSync(facetName, facetQuery, queryCopy);
+            }
+        }.start();
+    }
+
+    /**
+     * Search for facet values (synchronously).
+     */
+    private JSONObject searchForFacetValuesSync(@NonNull String facetName, @NonNull String facetQuery, @Nullable Query query) throws AlgoliaException {
+        return OfflineClient.parseSearchResults(localIndex.searchForFacetValues(facetName, facetQuery, query != null ? query.build() : null));
+    }
+
     // ----------------------------------------------------------------------
     // Transaction management
     // ----------------------------------------------------------------------

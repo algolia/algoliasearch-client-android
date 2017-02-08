@@ -87,6 +87,22 @@ public abstract class OfflineTestBase extends RobolectricTestCase {
         }
     }
 
+    /** Index settings. */
+    protected static JSONObject settings = new JSONObject();
+    static {
+        try {
+            settings
+                .put("searchableAttributes", new JSONArray()
+                    .put("name").put("kind").put("series")
+                )
+                .put("attributesForFaceting", new JSONArray().put("searchable(series)")
+            );
+        }
+        catch (JSONException e) {
+            throw new RuntimeException(e); // should never happen
+        }
+    }
+
     @Override
     public void setUp() throws Exception {
         super.setUp();

@@ -201,7 +201,7 @@ public class Index {
      * @param handler   A Completion handler that will be notified of the request's outcome.
      * @return A cancellable request.
      */
-    public Request searchForFacetValues(@NonNull String facetName, @NonNull String text, @NonNull final CompletionHandler handler) throws AlgoliaException {
+    public Request searchForFacetValues(@NonNull String facetName, @NonNull String text, @NonNull final CompletionHandler handler) {
         return searchForFacetValues(facetName, text, null, handler);
     }
 
@@ -214,7 +214,7 @@ public class Index {
      * @param handler   A Completion handler that will be notified of the request's outcome.
      * @return A cancellable request.
      */
-    public Request searchForFacetValuesAsync(@NonNull String facetName, @NonNull String facetText, @Nullable Query query, @NonNull final CompletionHandler handler) throws AlgoliaException {
+    public Request searchForFacetValuesAsync(@NonNull String facetName, @NonNull String facetText, @Nullable Query query, @NonNull final CompletionHandler handler) {
         return searchForFacetValues(facetName, facetText, query, handler);
     }
 
@@ -227,7 +227,7 @@ public class Index {
      * @param handler   A Completion handler that will be notified of the request's outcome.
      * @return A cancellable request.
      */
-    public Request searchForFacetValues(@NonNull String facetName, @NonNull String facetText, @Nullable Query query, @NonNull final CompletionHandler handler) throws AlgoliaException {
+    public Request searchForFacetValues(@NonNull String facetName, @NonNull String facetText, @Nullable Query query, @NonNull final CompletionHandler handler) {
         try {
             final String path = "/1/indexes/" + getEncodedIndexName() + "/facets/" + URLEncoder.encode(facetName, "UTF-8") + "/query";
             final Query params = (query != null ? new Query(query) : new Query());
@@ -243,7 +243,7 @@ public class Index {
                 }
             }.start();
         } catch (UnsupportedEncodingException | JSONException e) {
-            throw new AlgoliaException(e.getMessage());
+            throw new RuntimeException(e); // should never happen
         }
     }
 
