@@ -1,6 +1,19 @@
 Change Log
 ==========
 
+## 3.9 (2017-02-08)
+
+### New features
+
+- Support `facetingAfterDistinct` query parameter
+- Support `maxFacetHits` parameter when searching for facet values
+- [offline] Support offline search for facet values
+
+### Other changes
+
+- Add `Async` suffixed aliases to `searchForFacetValues(...)`
+
+
 ## 3.8 (2016-12-29)
 
 **This release includes backward-incompatible changes**:
