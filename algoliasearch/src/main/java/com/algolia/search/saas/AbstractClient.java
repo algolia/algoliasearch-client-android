@@ -113,10 +113,14 @@ public abstract class AbstractClient {
      * The user agents as a raw string. This is what is passed in request headers.
      * WARNING: It is stored for efficiency purposes. It should not be modified directly.
      */
-    private String userAgentRaw;
+    private static String userAgentRaw;
 
     /** The user agents, as a structured list of library versions. */
-    private List<LibraryVersion> userAgents = new ArrayList<>();
+    private static List<LibraryVersion> userAgents = new ArrayList<>();
+    static {
+        addUserAgent(new LibraryVersion("Algolia for Android", version));
+        addUserAgent(new LibraryVersion("Android", Build.VERSION.RELEASE));
+    }
 
     /** Connect timeout (ms). */
     private int connectTimeout = 2000;
@@ -164,8 +168,6 @@ public abstract class AbstractClient {
     protected AbstractClient(@Nullable String applicationID, @Nullable String apiKey, @Nullable String[] readHosts, @Nullable String[] writeHosts) {
         this.applicationID = applicationID;
         this.apiKey = apiKey;
-        this.addUserAgent(new LibraryVersion("Algolia for Android", version));
-        this.addUserAgent(new LibraryVersion("Android", Build.VERSION.RELEASE));
         if (readHosts != null)
             setReadHosts(readHosts);
         if (writeHosts != null)
@@ -316,17 +318,21 @@ public abstract class AbstractClient {
      *
      * @param userAgent The library to add.
      */
-    public void addUserAgent(@NonNull LibraryVersion userAgent) {
-        userAgents.add(userAgent);
-        updateUserAgents();
+    public static void addUserAgent(@NonNull LibraryVersion userAgent) {
+        if (!userAgents.contains(userAgent)) {
+            userAgents.add(userAgent);
+            updateUserAgents();
+        }
     }
 
     /**
      * Remove a software library from the list of user agents.
      *
+     * @deprecated Will be removed in a future release.
+     *
      * @param userAgent The library to remove.
      */
-    public void removeUserAgent(@NonNull LibraryVersion userAgent) {
+    public static void removeUserAgent(@NonNull LibraryVersion userAgent) {
         userAgents.remove(userAgent);
         updateUserAgents();
     }
@@ -336,7 +342,7 @@ public abstract class AbstractClient {
      *
      * @return The declared user agents.
      */
-    public @NonNull LibraryVersion[] getUserAgents() {
+    public static @NonNull LibraryVersion[] getUserAgents() {
         return userAgents.toArray(new LibraryVersion[userAgents.size()]);
     }
 
@@ -346,11 +352,11 @@ public abstract class AbstractClient {
      * @param userAgent The user agent to look for.
      * @return true if it is declared on this client, false otherwise.
      */
-    public boolean hasUserAgent(@NonNull LibraryVersion userAgent) {
+    public static boolean hasUserAgent(@NonNull LibraryVersion userAgent) {
         return userAgents.contains(userAgent);
     }
 
-    private void updateUserAgents() {
+    private static void updateUserAgents() {
         StringBuilder s = new StringBuilder();
         for (LibraryVersion userAgent : userAgents) {
             if (s.length() != 0) {

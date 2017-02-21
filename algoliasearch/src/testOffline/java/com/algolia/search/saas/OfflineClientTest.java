@@ -26,6 +26,7 @@ package com.algolia.search.saas;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.junit.Test;
+import org.mockito.internal.util.reflection.Whitebox;
 
 import java.util.concurrent.CountDownLatch;
 
@@ -41,6 +42,13 @@ import static org.junit.Assert.assertTrue;
  * Unit tests for the `OfflineIndex` class.
  */
 public class OfflineClientTest extends OfflineTestBase  {
+    @Test
+    public void userAgent() throws Exception {
+        // Check that the Offline Core is properly registered in the `User-Agent` header.
+        final String userAgent = (String) Whitebox.getInternalState(client, "userAgentRaw");
+        assertTrue(userAgent.matches("^.*; algoliasearch-offline-core-android \\(([0-9.]+)\\)($|;)"));
+    }
+
     @Test
     public void testListIndexes() throws Exception {
         final CountDownLatch signal = new CountDownLatch(1);

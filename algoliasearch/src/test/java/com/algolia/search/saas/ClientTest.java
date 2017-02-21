@@ -33,6 +33,8 @@ import java.lang.ref.WeakReference;
 import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 /**
  * <a href="http://d.android.com/tools/testing/testing_android.html">Testing Fundamentals</a>
@@ -77,5 +79,24 @@ public class ClientTest extends RobolectricTestCase {
         System.gc();
         assertNull(indices.get(indexName).get());
         */
+    }
+
+    @Test
+    public void userAgent() throws Exception {
+        // Test the default value.
+        String userAgent = (String) Whitebox.getInternalState(client, "userAgentRaw"); // works even for static field
+        assertTrue(userAgent.matches("^Algolia for Android \\([0-9.]+\\); Android \\(([0-9.]+(_r[0-9]+)?|unknown)\\)$"));
+
+        // Manipulate the list.
+        assertFalse(AbstractClient.hasUserAgent(new Client.LibraryVersion("toto", "6.6.6")));
+        AbstractClient.addUserAgent(new Client.LibraryVersion("toto", "6.6.6"));
+        assertTrue(AbstractClient.hasUserAgent(new Client.LibraryVersion("toto", "6.6.6")));
+        userAgent = (String) Whitebox.getInternalState(client, "userAgentRaw");
+        assertTrue(userAgent.matches("^.*; toto \\(6.6.6\\)$"));
+
+        // Check that adding the same user agent twice results in a no-op.
+        AbstractClient.addUserAgent(new Client.LibraryVersion("toto", "6.6.6"));
+        final String userAgent2 = (String) Whitebox.getInternalState(client, "userAgentRaw");
+        assertEquals(userAgent, userAgent2);
     }
 }

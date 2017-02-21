@@ -862,20 +862,6 @@ public class IndexTest extends RobolectricTestCase {
     }
 
     @Test
-    public void userAgent() throws Exception {
-        // Test the default value.
-        String userAgent = (String) Whitebox.getInternalState(client, "userAgentRaw");
-        assertTrue(userAgent.matches("^Algolia for Android \\([0-9.]+\\); Android \\(([0-9.]+(_r[0-9]+)?|unknown)\\)$"));
-
-        // Manipulate the list.
-        assertFalse(client.hasUserAgent(new Client.LibraryVersion("toto", "6.6.6")));
-        client.addUserAgent(new Client.LibraryVersion("toto", "6.6.6"));
-        assertTrue(client.hasUserAgent(new Client.LibraryVersion("toto", "6.6.6")));
-        userAgent = (String) Whitebox.getInternalState(client, "userAgentRaw");
-        assertTrue(userAgent.matches("^.*; toto \\(6.6.6\\)$"));
-    }
-
-    @Test
     public void getObjectAttributes() throws AlgoliaException {
         for (String id : ids) {
             JSONObject object = index.getObject(id);

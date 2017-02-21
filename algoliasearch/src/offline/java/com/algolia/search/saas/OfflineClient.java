@@ -72,6 +72,14 @@ public class OfflineClient extends Client
     /** Background queue used to run transaction bodies (but not the build). */
     protected ExecutorService transactionExecutorService = Executors.newSingleThreadExecutor();
 
+    // ----------------------------------------------------------------------
+    // Initialization
+    // ----------------------------------------------------------------------
+
+    static {
+        addUserAgent(new LibraryVersion("algoliasearch-offline-core-android", Sdk.getInstance().getVersionString()));
+    }
+
     /**
      * Construct a new offline-enabled API client.
      *
@@ -117,7 +125,6 @@ public class OfflineClient extends Client
         } else {
             this.rootDataDir = getDefaultDataDir();
         }
-        this.addUserAgent(new LibraryVersion("algoliasearch-offline-core-android", Sdk.getInstance().getVersionString()));
     }
 
     /**
