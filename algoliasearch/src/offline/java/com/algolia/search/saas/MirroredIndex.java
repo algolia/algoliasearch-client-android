@@ -138,6 +138,12 @@ import java.util.concurrent.TimeUnit;
  * regarding UI responsiveness.
  *
  *
+ * ## Listeners
+ *
+ * You may register a {@link SyncListener} to listen for sync-related events. The listener methods will be called using
+ * the client's completion executor (which is, by default, the main thread).
+ *
+ *
  * ## Limitations
  *
  * Algolia's core features are fully supported offline, including (but not limited to): **ranking**,
@@ -498,8 +504,8 @@ public class MirroredIndex extends Index
         stats = new SyncStats();
         long startTime = System.currentTimeMillis();
 
-        // Notify listeners (on main thread).
-        getClient().mainHandler.post(new Runnable()
+        // Notify listeners.
+        getClient().completionExecutor.execute(new Runnable()
         {
             @Override
             public void run()
@@ -598,8 +604,8 @@ public class MirroredIndex extends Index
                 syncing = false;
             }
 
-            // Notify listeners (on main thread).
-            getClient().mainHandler.post(new Runnable()
+            // Notify listeners.
+            getClient().completionExecutor.execute(new Runnable()
             {
                 @Override
                 public void run()
@@ -707,7 +713,7 @@ public class MirroredIndex extends Index
         AlgoliaException error = null;
         try {
             // Notify listeners.
-            getClient().mainHandler.post(new Runnable() {
+            getClient().completionExecutor.execute(new Runnable() {
                 @Override
                 public void run() {
                     fireBuildDidStart();
@@ -729,7 +735,7 @@ public class MirroredIndex extends Index
         finally {
             // Notify listeners.
             final Throwable finalError = error;
-            getClient().mainHandler.post(new Runnable() {
+            getClient().completionExecutor.execute(new Runnable() {
                 @Override
                 public void run() {
                     fireBuildDidFinish(finalError);
@@ -831,6 +837,10 @@ public class MirroredIndex extends Index
     /**
      * A mixed online/offline request.
      * This request encapsulates two concurrent online and offline requests, to optimize response time.
+     *
+     * WARNING: The fallback logic requires that all phases are run sequentially. Since we have no guaranteee that
+     * the completion handlers run on a serial executor or even on the same executor as the time-triggered fallback,
+     * we explicitly synchronize the blocks using a serial dispatch queue specific to this operation.
      */
     private abstract class OnlineOfflineRequest implements Request {
         private CompletionHandler completionHandler;
@@ -851,7 +861,7 @@ public class MirroredIndex extends Index
         }
 
         @Override
-        public void cancel() {
+        public synchronized void cancel() {
             if (!cancelled) {
                 if (onlineRequest != null) {
                     onlineRequest.cancel();
@@ -864,16 +874,16 @@ public class MirroredIndex extends Index
         }
 
         @Override
-        public boolean isFinished() {
+        public synchronized boolean isFinished() {
             return onlineRequest.isFinished() && (offlineRequest == null || offlineRequest.isFinished());
         }
 
         @Override
-        public boolean isCancelled() {
+        public synchronized boolean isCancelled() {
             return cancelled;
         }
 
-        public OnlineOfflineRequest start() {
+        public synchronized OnlineOfflineRequest start() {
             // WARNING: All callbacks must run sequentially; we cannot afford race conditions between them.
             // Since most methods use the main thread for callbacks, we have to use it as well.
 
@@ -893,14 +903,16 @@ public class MirroredIndex extends Index
                 startOfflineRunnable = new Runnable() {
                     @Override
                     public void run() {
-                        // If the online request has not returned yet, or has returned an error, use the offline mirror.
-                        // Let's also make sure that we don't start the offline request twice.
-                        if (mayRunOfflineRequest && offlineRequest == null) {
-                            startOffline();
+                        synchronized (OnlineOfflineRequest.this) {
+                            // If the online request has not returned yet, or has returned an error, use the offline mirror.
+                            // Let's also make sure that we don't start the offline request twice.
+                            if (mayRunOfflineRequest && offlineRequest == null) {
+                                startOffline();
+                            }
                         }
                     }
                 };
-                getClient().mainHandler.postDelayed(startOfflineRunnable, offlineFallbackTimeout);
+                getClient().mixedRequestHandler.postDelayed(startOfflineRunnable, offlineFallbackTimeout);
             }
             return this;
         }
@@ -913,11 +925,13 @@ public class MirroredIndex extends Index
             onlineRequest = startOnlineRequest(new CompletionHandler() {
                 @Override
                 public void requestCompleted(JSONObject content, AlgoliaException error) {
-                    if (error != null && error.isTransient() && mayRunOfflineRequest) {
-                        startOffline();
-                    } else {
-                        cancelOffline();
-                        callCompletion(content, error);
+                    synchronized (OnlineOfflineRequest.this) {
+                        if (error != null && error.isTransient() && mayRunOfflineRequest) {
+                            startOffline();
+                        } else {
+                            cancelOffline();
+                            callCompletion(content, error);
+                        }
                     }
                 }
             });
@@ -935,10 +949,12 @@ public class MirroredIndex extends Index
             offlineRequest = startOfflineRequest(new CompletionHandler() {
                 @Override
                 public void requestCompleted(JSONObject content, AlgoliaException error) {
-                    if (onlineRequest != null) {
-                        onlineRequest.cancel();
+                    synchronized (OnlineOfflineRequest.this) {
+                        if (onlineRequest != null) {
+                            onlineRequest.cancel();
+                        }
+                        callCompletion(content, error);
                     }
-                    callCompletion(content, error);
                 }
             });
         }
@@ -955,7 +971,7 @@ public class MirroredIndex extends Index
             mayRunOfflineRequest = false;
             // Prevent the start offline request runnable from even running if it is still time.
             if (startOfflineRunnable != null) {
-                getClient().mainHandler.removeCallbacks(startOfflineRunnable);
+                getClient().mixedRequestHandler .removeCallbacks(startOfflineRunnable);
             }
             // Cancel the offline request if already running.
             if (offlineRequest != null) {

@@ -23,12 +23,13 @@
 
 package com.algolia.search.saas;
 
-import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Handler;
 import android.os.Looper;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+
+import com.algolia.search.saas.helpers.HandlerExecutor;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -49,6 +50,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.zip.GZIPInputStream;
@@ -141,11 +143,11 @@ public abstract class AbstractClient {
      */
     private HashMap<String, String> headers = new HashMap<String, String>();
 
-    /** Handler used to execute operations on the main thread. */
-    protected Handler mainHandler = new Handler(Looper.getMainLooper());
-
     /** Thread pool used to run asynchronous requests. */
     protected ExecutorService searchExecutorService = Executors.newFixedThreadPool(4);
+
+    /** Executor used to run completion handlers. By default, runs on the main thread. */
+    protected @NonNull Executor completionExecutor = new HandlerExecutor(new Handler(Looper.getMainLooper()));
 
     protected Map<String, WeakReference<Object>> indices = new HashMap<>();
 
@@ -370,6 +372,16 @@ public abstract class AbstractClient {
 
     private List<String> getWriteHostsThatAreUp() {
         return hostsThatAreUp(writeHosts);
+    }
+
+    /**
+     * Change the executor on which completion handlers are executed.
+     * By default, completion handlers are executed on the main thread.
+     *
+     * @param completionExecutor The new completion executor to use.
+     */
+    public void setCompletionExecutor(@NonNull Executor completionExecutor) {
+        this.completionExecutor = completionExecutor;
     }
 
     // ----------------------------------------------------------------------
@@ -670,127 +682,28 @@ public abstract class AbstractClient {
     // ----------------------------------------------------------------------
 
     /**
-     * Abstract {@link Request} implementation using an `AsyncTask`.
-     * Derived classes just have to implement the {@link #run()} method.
+     * Abstract convenience implementation of {@link FutureRequest} using the client's default executors.
      */
-    abstract protected class AsyncTaskRequest implements Request {
-        /** The completion handler notified of the result. May be null if the caller omitted it. */
-        private CompletionHandler completionHandler;
-
-        /** The executor used to execute the request. */
-        private ExecutorService executorService;
-
-        private boolean finished = false;
-
+    abstract protected class AsyncTaskRequest extends FutureRequest {
         /**
-         * The underlying asynchronous task.
-         */
-        private AsyncTask<Void, Void, APIResult> task = new AsyncTask<Void, Void, APIResult>() {
-            @Override
-            protected APIResult doInBackground(Void... params) {
-                try {
-                    return new APIResult(run());
-                } catch (AlgoliaException e) {
-                    return new APIResult(e);
-                }
-            }
-
-            @Override
-            protected void onPostExecute(APIResult result) {
-                finished = true;
-                if (completionHandler != null) {
-                    completionHandler.requestCompleted(result.content, result.error);
-                }
-            }
-
-            @Override
-            protected void onCancelled(APIResult apiResult) {
-                finished = true;
-            }
-        };
-
-        /**
-         * Construct a new request with the specified completion handler, executing on the client's default executor.
+         * Construct a new request with the specified completion handler, executing on the client's search executor,
+         * and calling the completion handler on the client's completion executor.
          *
-         * @param completionHandler The completion handler to be notified of results. May be null if the caller omitted it.
+         * @param completionHandler  The completion handler to be notified of results. May be null if the caller omitted it.
          */
         protected AsyncTaskRequest(@Nullable CompletionHandler completionHandler) {
             this(completionHandler, searchExecutorService);
         }
 
         /**
-         * Construct a new request with the specified completion handler, executing on the specified executor.
+         * Construct a new request with the specified completion handler, executing on the specified executor, and
+         * calling the completion handler on the client's completion executor.
          *
-         * @param completionHandler The completion handler to be notified of results. May be null if the caller omitted it.
-         * @param executorService Executor service on which to execute the request.
+         * @param completionHandler  The completion handler to be notified of results. May be null if the caller omitted it.
+         * @param requestExecutor    Executor on which to execute the request.
          */
-        protected AsyncTaskRequest(@Nullable CompletionHandler completionHandler, @NonNull ExecutorService executorService) {
-            this.completionHandler = completionHandler;
-            this.executorService = executorService;
-        }
-
-        /**
-         * Run this request synchronously. To be implemented by derived classes.
-         * <p>
-         * <strong>Do not call this method directly.</strong> Will be run in a background thread when calling
-         * {@link #start()}.
-         * </p>
-         *
-         * @return The request's result.
-         * @throws AlgoliaException If an error was encountered.
-         */
-        @NonNull
-        abstract protected JSONObject run() throws AlgoliaException;
-
-        /**
-         * Run this request asynchronously.
-         *
-         * @return This instance.
-         */
-        public AsyncTaskRequest start() {
-            // WARNING: Starting with Honeycomb (3.0), `AsyncTask` execution is serial, so we must force parallel
-            // execution. See <http://developer.android.com/reference/android/os/AsyncTask.html>.
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-                task.executeOnExecutor(executorService);
-            } else {
-                task.execute();
-            }
-            return this;
-        }
-
-        /**
-         * Cancel this request.
-         * The listener will not be called after a request has been cancelled.
-         * <p>
-         * WARNING: Cancelling a request may or may not cancel the underlying network call, depending how late the
-         * cancellation happens. In other words, a cancelled request may have already been executed by the server. In any
-         * case, cancelling never carries "undo" semantics.
-         * </p>
-         */
-        @Override
-        public void cancel() {
-            // NOTE: We interrupt the task's thread to better cope with timeouts.
-            task.cancel(true /* mayInterruptIfRunning */);
-        }
-
-        /**
-         * Test if this request is still running.
-         *
-         * @return true if completed or cancelled, false if still running.
-         */
-        @Override
-        public boolean isFinished() {
-            return finished;
-        }
-
-        /**
-         * Test if this request has been cancelled.
-         *
-         * @return true if cancelled, false otherwise.
-         */
-        @Override
-        public boolean isCancelled() {
-            return task.isCancelled();
+        protected AsyncTaskRequest(@Nullable CompletionHandler completionHandler, @NonNull Executor requestExecutor) {
+            super(completionHandler, requestExecutor, completionExecutor);
         }
     }
 }
