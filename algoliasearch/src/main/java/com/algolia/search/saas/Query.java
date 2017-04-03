@@ -936,6 +936,22 @@ public class Query extends AbstractQuery {
         return null;
     }
 
+    private static final String KEY_OFFSET = "offset";
+
+    /**
+     * Set the offset of the first hit to return (zero-based).
+     * In most cases, {@link #setPage(Integer) page}/{@link #setHitsPerPage(Integer) hitsPerPage} is the recommended method for pagination.
+     *
+     * @param offset a zero-based offset.
+     */
+    public @NonNull Query setOffset(int offset) {
+        return set(KEY_OFFSET, offset);
+    }
+
+    public Integer getOffset() {
+        return parseInt(get(KEY_OFFSET));
+    }
+
     private static final String KEY_OPTIONAL_WORDS = "optionalWords";
 
     /**

@@ -416,6 +416,17 @@ public class QueryTest extends RobolectricTestCase {
         assertArrayEquals(query.getFacets(), query2.getFacets());
     }
 
+
+    @Test
+    public void offset() {
+        Query query = new Query();
+        assertNull(query.getOffset());
+        query.setOffset(0);
+        assertEquals(Integer.valueOf(0), query.getOffset());
+        assertEquals("0", query.get("offset"));
+        assertEquals(query.getOffset(), Query.parse(query.build()).getOffset());
+    }
+
     @Test
     public void optionalWords() {
         Query query = new Query();
