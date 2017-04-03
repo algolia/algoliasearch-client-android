@@ -298,6 +298,19 @@ public class Query extends AbstractQuery {
         return parseArray(get(KEY_ATTRIBUTES_TO_SNIPPET));
     }
 
+    private static final String KEY_DISABLE_EXACT_ON_ATTRIBUTES = "disableExactOnAttributes";
+
+    /**
+     * List of attributes on which you want to disable computation of the {@code exact} ranking criterion (must be a subset of the `searchableAttributes` index setting).
+     */
+    public @NonNull Query setDisableExactOnAttributes(String... attributes) {
+        return set(KEY_DISABLE_EXACT_ON_ATTRIBUTES, buildJSONArray(attributes));
+    }
+
+    public String[] getDisableExactOnAttributes() {
+        return parseArray(get(KEY_DISABLE_EXACT_ON_ATTRIBUTES));
+    }
+
     private static final String KEY_DISABLE_TYPO_TOLERANCE_ON_ATTRIBUTES = "disableTypoToleranceOnAttributes";
 
     /**

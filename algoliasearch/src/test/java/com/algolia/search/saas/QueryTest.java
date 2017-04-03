@@ -489,6 +489,17 @@ public class QueryTest extends RobolectricTestCase {
     }
 
     @Test
+    public void disableExactOnAttributes() {
+        Query query = new Query();
+        assertNull(query.getDisableExactOnAttributes());
+        query.setDisableExactOnAttributes("foo", "bar");
+        assertArrayEquals(new String[]{ "foo", "bar" }, query.getDisableExactOnAttributes());
+        assertEquals("[\"foo\",\"bar\"]", query.get("disableExactOnAttributes"));
+        Query query2 = Query.parse(query.build());
+        assertArrayEquals(query.getDisableExactOnAttributes(), query2.getDisableExactOnAttributes());
+    }
+
+    @Test
     public void disableTypoToleranceOnAttributes() {
         Query query = new Query();
         assertNull(query.getDisableTypoToleranceOnAttributes());
