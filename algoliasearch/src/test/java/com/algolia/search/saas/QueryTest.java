@@ -677,6 +677,16 @@ public class QueryTest extends RobolectricTestCase {
     }
 
     @Test
+    public void length() {
+        Query query = new Query();
+        assertNull(query.getLength());
+        query.setLength(456);
+        assertEquals(Integer.valueOf(456), query.getLength());
+        assertEquals("456", query.get("length"));
+        assertEquals(query.getLength(), Query.parse(query.build()).getLength());
+    }
+
+    @Test
     public void maxFacetHits() {
         Query query = new Query();
         assertNull(query.getMaxFacetHits());

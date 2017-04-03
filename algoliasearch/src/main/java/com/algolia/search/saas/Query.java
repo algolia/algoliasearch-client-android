@@ -826,6 +826,24 @@ public class Query extends AbstractQuery {
         }
     }
 
+    private static final String KEY_LENGTH = "length";
+
+    /**
+     * Maximum number of hits to return.
+     * <p>
+     * In most cases, {@link #setPage(Integer) page}/{@link #setHitsPerPage(Integer) hitsPerPage} is the recommended method for pagination.
+     *
+     * @param n the number of hits to return. (Maximum 1000)
+     */
+    public @NonNull Query setLength(Integer n) {
+        return set(KEY_LENGTH, n);
+    }
+
+    public Integer getLength() {
+        return parseInt(get(KEY_LENGTH));
+    }
+
+
     private static final String KEY_MAX_FACET_HITS = "maxFacetHits";
 
     /**
