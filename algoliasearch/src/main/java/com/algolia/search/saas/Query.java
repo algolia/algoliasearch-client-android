@@ -999,6 +999,23 @@ public class Query extends AbstractQuery {
         return parseInt(get(KEY_PAGE));
     }
 
+    private static final String KEY_PERCENTILE_COMPUTATION = "percentileComputation";
+
+    /**
+     * Whether to include the query in processing time percentile computation.
+     *
+     * @param enabled if {@code true}, the API records the processing time of the search query
+     *                and includes it when computing the 90% and 99% percentiles, available in your
+     *                Algolia dashboard. When `false`, the search query is excluded from percentile computation.
+     */
+    public @NonNull Query setPercentileComputation(boolean enabled) {
+        return set(KEY_PERCENTILE_COMPUTATION, enabled);
+    }
+
+    public Boolean getPercentileComputation() {
+        return parseBoolean(get(KEY_PERCENTILE_COMPUTATION));
+    }
+
     private static final String KEY_QUERY = "query";
 
     /**

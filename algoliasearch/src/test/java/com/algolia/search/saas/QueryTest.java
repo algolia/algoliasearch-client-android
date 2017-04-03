@@ -233,6 +233,16 @@ public class QueryTest extends RobolectricTestCase {
     }
 
     @Test
+    public void percentileCalculation() {
+        Query query = new Query();
+        assertNull(query.getPercentileComputation());
+        query.setPercentileComputation(true);
+        assertEquals(Boolean.TRUE, query.getPercentileComputation());
+        assertEquals("true", query.get("percentileComputation"));
+        assertEquals(query.getPercentileComputation(), Query.parse(query.build()).getPercentileComputation());
+    }
+
+    @Test
     public void hitsPerPage() {
         Query query = new Query();
         assertNull(query.getHitsPerPage());
