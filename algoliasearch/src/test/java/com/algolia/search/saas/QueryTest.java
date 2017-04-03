@@ -448,6 +448,16 @@ public class QueryTest extends RobolectricTestCase {
     }
 
     @Test
+    public void restrictHighlightAndSnippetArrays() {
+        Query query = new Query();
+        assertNull(query.getRestrictHighlightAndSnippetArrays());
+        query.setRestrictHighlightAndSnippetArrays(true);
+        assertEquals(true, query.getRestrictHighlightAndSnippetArrays());
+        assertEquals("true", query.get("restrictHighlightAndSnippetArrays"));
+        assertEquals(query.getRestrictHighlightAndSnippetArrays(), Query.parse(query.build()).getRestrictHighlightAndSnippetArrays());
+    }
+
+    @Test
     public void restrictSearchableAttributes() {
         Query query = new Query();
         assertNull(query.getRestrictSearchableAttributes());

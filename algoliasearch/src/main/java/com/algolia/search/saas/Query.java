@@ -1120,6 +1120,22 @@ public class Query extends AbstractQuery {
         return parseBoolean(get(KEY_REPLACE_SYNONYMS_IN_HIGHLIGHT));
     }
 
+    private static final String KEY_RESTRICT_HIGHLIGHT_AND_SNIPPET = "restrictHighlightAndSnippetArrays";
+
+    /**
+     * Restricts arrays in highlight and snippet results to items that matched the query.
+     *
+     * @param restrict if {@code false}, all array items are highlighted/snippeted. When true,
+     *                 only array items that matched at least partially are highlighted/snippeted.
+     */
+    public @NonNull Query setRestrictHighlightAndSnippetArrays(boolean restrict) {
+        return set(KEY_RESTRICT_HIGHLIGHT_AND_SNIPPET, restrict);
+    }
+
+    public Boolean getRestrictHighlightAndSnippetArrays() {
+        return parseBoolean(get(KEY_RESTRICT_HIGHLIGHT_AND_SNIPPET));
+    }
+
     private static final String KEY_RESTRICT_SEARCHABLE_ATTRIBUTES = "restrictSearchableAttributes";
 
     /**
