@@ -1,7 +1,21 @@
 Change Log
 ==========
 
-## 3.9 (2017-02-08)
+## 3.10.0 (2017-04-04)
+
+### New features
+
+- Support `percentileCalculation` query parameter
+- Support `length` and `offset` query parameter
+- Support `disableExactOnAttributes` query parameter
+- Support `restrictHighlightAndSnippetArrays` query parameter
+- Support `percentileCalculation` query parameter
+
+### Other changes
+
+- Expose a getSettings overload using a default format version
+
+## 3.9.0 (2017-02-08)
 
 ### New features
 
@@ -14,7 +28,7 @@ Change Log
 - Add `Async` suffixed aliases to `searchForFacetValues(...)`
 
 
-## 3.8 (2016-12-29)
+## 3.8.0 (2016-12-29)
 
 **This release includes backward-incompatible changes**:
 - (#229) `getInsidePolygon()` now returns a `Query.Polygon` array
