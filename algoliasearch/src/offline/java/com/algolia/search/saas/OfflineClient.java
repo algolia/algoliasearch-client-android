@@ -419,15 +419,19 @@ public class OfflineClient extends Client
     static protected JSONObject parseSearchResults(Response searchResults) throws AlgoliaException {
         try {
             if (searchResults.getStatusCode() == 200) {
-                String jsonString = new String(searchResults.getData(), "UTF-8");
-                return new JSONObject(jsonString);
+                if (searchResults.getData() != null) {
+                    String jsonString = new String(searchResults.getData(), "UTF-8");
+                    return new JSONObject(jsonString);
+                } else { // may happen when building: no output
+                    return new JSONObject();
+                }
             }
             else {
                 throw new AlgoliaException(searchResults.getErrorMessage(), searchResults.getStatusCode());
             }
         }
         catch (JSONException | UnsupportedEncodingException e) {
-            throw new AlgoliaException("Invalid JSON", e);
+            throw new AlgoliaException("Offline Core returned invalid JSON", e);
         }
     }
 }
