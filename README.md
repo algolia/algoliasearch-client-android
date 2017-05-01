@@ -71,13 +71,7 @@ You can find both of them on [your Algolia account](https://www.algolia.com/api-
 
 ```java
 Client client = new Client("YOUR_APP_ID", "YOUR_API_KEY");
-``````csharp
-using Algolia.Search;
-
-AlgoliaClient client = new AlgoliaClient("YourApplicationID", "YourAPIKey");
 ```
-
-**Note:** **Note**: If you're using Algolia in an ASP.NET project you might experience some deadlocks while using our asynchronous API. You can fix it by calling the following method:
 
 ### Push data
 
