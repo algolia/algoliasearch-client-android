@@ -452,7 +452,7 @@ public class IndexTest extends RobolectricTestCase {
         index.addObjectAsync(new JSONObject("{\"city\": \"New York\"}"), new AssertCompletionHandler() {
             @Override public void doRequestCompleted(JSONObject content, AlgoliaException error) {
                 if (error == null) {
-                    index.waitTaskAsync(content.optString("taskID"), new AssertCompletionHandler() {
+                    index.waitTaskAsync(content.optInt("taskID"), new AssertCompletionHandler() {
                         @Override
                         public void doRequestCompleted(JSONObject content, AlgoliaException error) {
                             if (error == null) {
