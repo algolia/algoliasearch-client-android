@@ -2,7 +2,11 @@
 
 set -eo pipefail
 
-SELF_ROOT=$(cd $(dirname "$0") && pwd)
+if [ $# -ne 1 ]; then
+    echo "$0 | A script to release new versions automatically"
+    echo "Usage: $0 VERSION_CODE"
+    exit -1
+fi
 
 function call_sed(){
 PATTERN="$1"
@@ -18,14 +22,17 @@ fi
 
 FILE_BUILD_GRADLE="$SELF_ROOT/algoliasearch/common.gradle"
 FILE_API_CLIENT="$SELF_ROOT/algoliasearch/src/main/java/com/algolia/search/saas/Client.java"
+SELF_ROOT=$(cd $(dirname "$0") && pwd)
+VERSION_CODE=$1
 
-if [ $# -ne 1 ]; then
-    echo "$0 | A script to release new versions automatically"
-    echo "Usage: $0 VERSION_CODE"
+set +eo pipefail
+COUNT_DOTS=$(grep -o "\." <<< $VERSION_CODE | wc -l)
+set -eo pipefail
+
+if [ $COUNT_DOTS -ne 2 ]; then
+    echo "$VERSION_CODE is not a valid version code, please use the form X.Y.Z (e.g. v1 = 1.0.0)"
     exit -1
 fi
-
-VERSION_CODE=$1
 
 # Check that the working repository is clean (without any changes, neither staged nor unstaged).
 # An exception is the change log, which should have been edited, but not necessarily committed (we usually commit it

@@ -233,6 +233,16 @@ public class QueryTest extends RobolectricTestCase {
     }
 
     @Test
+    public void percentileCalculation() {
+        Query query = new Query();
+        assertNull(query.getPercentileComputation());
+        query.setPercentileComputation(true);
+        assertEquals(Boolean.TRUE, query.getPercentileComputation());
+        assertEquals("true", query.get("percentileComputation"));
+        assertEquals(query.getPercentileComputation(), Query.parse(query.build()).getPercentileComputation());
+    }
+
+    @Test
     public void hitsPerPage() {
         Query query = new Query();
         assertNull(query.getHitsPerPage());
@@ -416,6 +426,17 @@ public class QueryTest extends RobolectricTestCase {
         assertArrayEquals(query.getFacets(), query2.getFacets());
     }
 
+
+    @Test
+    public void offset() {
+        Query query = new Query();
+        assertNull(query.getOffset());
+        query.setOffset(0);
+        assertEquals(Integer.valueOf(0), query.getOffset());
+        assertEquals("0", query.get("offset"));
+        assertEquals(query.getOffset(), Query.parse(query.build()).getOffset());
+    }
+
     @Test
     public void optionalWords() {
         Query query = new Query();
@@ -434,6 +455,16 @@ public class QueryTest extends RobolectricTestCase {
         assertEquals(true, query.getReplaceSynonymsInHighlight());
         assertEquals("true", query.get("replaceSynonymsInHighlight"));
         assertEquals(query.getReplaceSynonymsInHighlight(), Query.parse(query.build()).getReplaceSynonymsInHighlight());
+    }
+
+    @Test
+    public void restrictHighlightAndSnippetArrays() {
+        Query query = new Query();
+        assertNull(query.getRestrictHighlightAndSnippetArrays());
+        query.setRestrictHighlightAndSnippetArrays(true);
+        assertEquals(true, query.getRestrictHighlightAndSnippetArrays());
+        assertEquals("true", query.get("restrictHighlightAndSnippetArrays"));
+        assertEquals(query.getRestrictHighlightAndSnippetArrays(), Query.parse(query.build()).getRestrictHighlightAndSnippetArrays());
     }
 
     @Test
@@ -486,6 +517,17 @@ public class QueryTest extends RobolectricTestCase {
         assertEquals("[\"foo\",\"bar\"]", query.get("analyticsTags"));
         Query query2 = Query.parse(query.build());
         assertArrayEquals(query.getAnalyticsTags(), query2.getAnalyticsTags());
+    }
+
+    @Test
+    public void disableExactOnAttributes() {
+        Query query = new Query();
+        assertNull(query.getDisableExactOnAttributes());
+        query.setDisableExactOnAttributes("foo", "bar");
+        assertArrayEquals(new String[]{ "foo", "bar" }, query.getDisableExactOnAttributes());
+        assertEquals("[\"foo\",\"bar\"]", query.get("disableExactOnAttributes"));
+        Query query2 = Query.parse(query.build());
+        assertArrayEquals(query.getDisableExactOnAttributes(), query2.getDisableExactOnAttributes());
     }
 
     @Test
@@ -642,6 +684,16 @@ public class QueryTest extends RobolectricTestCase {
             return; //pass
         }
         fail("setRemoveStopWords should throw when its parameter is neither Boolean nor String.");
+    }
+
+    @Test
+    public void length() {
+        Query query = new Query();
+        assertNull(query.getLength());
+        query.setLength(456);
+        assertEquals(Integer.valueOf(456), query.getLength());
+        assertEquals("456", query.get("length"));
+        assertEquals(query.getLength(), Query.parse(query.build()).getLength());
     }
 
     @Test

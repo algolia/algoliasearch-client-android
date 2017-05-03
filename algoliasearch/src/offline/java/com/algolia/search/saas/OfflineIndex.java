@@ -30,6 +30,7 @@ import android.support.annotation.Nullable;
 import android.util.Log;
 
 import com.algolia.search.offline.core.LocalIndex;
+import com.algolia.search.offline.core.Response;
 import com.algolia.search.saas.helpers.DisjunctiveFaceting;
 
 import org.json.JSONArray;
@@ -786,15 +787,13 @@ public class OfflineIndex {
                 if (finished) throw new IllegalStateException();
                 try {
                     flushObjectsToDisk(true);
-                    int statusCode = OfflineIndex.this.localIndex.build(
+                    Response result = OfflineIndex.this.localIndex.build(
                         settingsFile != null ? settingsFile.getAbsolutePath() : null,
                         objectFilePaths.toArray(new String[objectFilePaths.size()]),
                         shouldClearIndex,
                         deletedObjectIDs.toArray(new String[deletedObjectIDs.size()])
                     );
-                    if (statusCode != 200) {
-                        throw new AlgoliaException("Error building index", statusCode);
-                    }
+                    OfflineClient.parseSearchResults(result);
                 } finally {
                     finished = true;
                 }
@@ -955,11 +954,8 @@ public class OfflineIndex {
         for (int i = 0; i < objectFiles.length; ++i) {
             objectFilePaths[i] = objectFiles[i].getAbsolutePath();
         }
-        final int status = localIndex.build(settingsFile.getAbsolutePath(), objectFilePaths, true /* clearIndex */, null /* deletedObjectIDs */);
-        if (status != 200) {
-            throw new AlgoliaException(String.format("Failed to build local index \"%s\"", OfflineIndex.this.getName()), status);
-        }
-        return new JSONObject();
+        final Response result = localIndex.build(settingsFile.getAbsolutePath(), objectFilePaths, true /* clearIndex */, null /* deletedObjectIDs */);
+        return OfflineClient.parseSearchResults(result);
     }
 
     // ----------------------------------------------------------------------

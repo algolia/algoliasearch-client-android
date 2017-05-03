@@ -719,12 +719,12 @@ public class MirroredIndex extends Index
             for (int i = 0; i < objectFiles.length; ++i) {
                 objectFilePaths[i] = objectFiles[i].getAbsolutePath();
             }
-            final int status = getLocalIndex().build(settingsFile.getAbsolutePath(), objectFilePaths, true /* clearIndex */, null /* deletedObjectIDs */);
-            if (status != 200) {
-                error = new AlgoliaException(String.format("Failed to build local mirror \"%s\"", MirroredIndex.this.getIndexName()), status);
-                throw error;
-            }
-            return new JSONObject();
+            final Response result = getLocalIndex().build(settingsFile.getAbsolutePath(), objectFilePaths, true /* clearIndex */, null /* deletedObjectIDs */);
+            return OfflineClient.parseSearchResults(result);
+        }
+        catch (AlgoliaException e) {
+            error = e;
+            throw e;
         }
         finally {
             // Notify listeners.
@@ -1042,21 +1042,8 @@ public class MirroredIndex extends Index
 
     private JSONObject _searchOffline(@NonNull Query query) throws AlgoliaException
     {
-        try {
-            Response searchResults = getLocalIndex().search(query.build());
-            if (searchResults.getStatusCode() == 200) {
-                String jsonString = new String(searchResults.getData(), "UTF-8");
-                JSONObject json = new JSONObject(jsonString);
-                // NOTE: Origin tagging performed by the SDK.
-                return json;
-            }
-            else {
-                throw new AlgoliaException(searchResults.getErrorMessage(), searchResults.getStatusCode());
-            }
-        }
-        catch (JSONException | UnsupportedEncodingException e) {
-            throw new AlgoliaException("Search failed", e);
-        }
+        Response searchResults = getLocalIndex().search(query.build());
+        return OfflineClient.parseSearchResults(searchResults);
     }
 
     // ----------------------------------------------------------------------
@@ -1233,21 +1220,8 @@ public class MirroredIndex extends Index
 
     private JSONObject _browseMirror(@NonNull Query query) throws AlgoliaException
     {
-        try {
-            Response searchResults = getLocalIndex().browse(query.build());
-            if (searchResults.getStatusCode() == 200) {
-                String jsonString = new String(searchResults.getData(), "UTF-8");
-                JSONObject json = new JSONObject(jsonString);
-                // NOTE: Origin tagging performed by the SDK.
-                return json;
-            }
-            else {
-                throw new AlgoliaException(searchResults.getErrorMessage(), searchResults.getStatusCode());
-            }
-        }
-        catch (JSONException | UnsupportedEncodingException e) {
-            throw new AlgoliaException("Search failed", e);
-        }
+        Response searchResults = getLocalIndex().browse(query.build());
+        return OfflineClient.parseSearchResults(searchResults);
     }
 
     // ----------------------------------------------------------------------
