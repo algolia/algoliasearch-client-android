@@ -1,6 +1,12 @@
 Change Log
 ==========
 
+## 3.11.0 (2017-05-30)
+
+## New features
+
+- `Query.parseFrom()` made public, mirroring `Query.build()`
+
 ## 3.10.1 (2017-04-14)
 
 ### Miscellaneous changes

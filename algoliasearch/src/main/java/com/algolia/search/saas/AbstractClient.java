@@ -103,7 +103,7 @@ public abstract class AbstractClient {
     // ----------------------------------------------------------------------
 
     /** This library's version. */
-    private final static String version = "3.10.1";
+    private final static String version = "3.11.0";
 
     // ----------------------------------------------------------------------
     // Fields
