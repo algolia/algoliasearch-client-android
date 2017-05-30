@@ -196,7 +196,7 @@ public abstract class AbstractQuery {
      * Parse a URL query parameter string and store the resulting parameters into this query.
      * @param queryParameters URL query parameter string.
      */
-    protected void parseFrom(@NonNull String queryParameters) {
+    public void parseFrom(@NonNull String queryParameters) {
         try {
             String[] parameters = queryParameters.split("&");
             for (String parameter : parameters) {
