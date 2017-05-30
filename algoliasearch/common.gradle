@@ -27,14 +27,16 @@ ext {
     PUBLISH_GROUP_ID = rootProject.properties["PUBLISH_GROUP_ID"] ?: "com.algolia"
     // NOTE: This is the official version number used during publication.
     PUBLISH_VERSION = '3.10.1'
+    APPCOMPAT_VERSION = '25.3.0'
+    BUILD_TOOLS_VERSION = '25.0.2'
 }
 
 android {
-    compileSdkVersion 24
-    buildToolsVersion "24.0.3"
+    compileSdkVersion 25
+    buildToolsVersion BUILD_TOOLS_VERSION
     defaultConfig {
         minSdkVersion 10
-        targetSdkVersion 24
+        targetSdkVersion 25
         versionCode 1
         versionName PUBLISH_VERSION
     }
@@ -73,8 +75,8 @@ repositories {
 }
 
 dependencies {
-    compile 'com.android.support:appcompat-v7:24.2.1'
-    compile 'com.android.support:support-annotations:24.2.1'
+    compile "com.android.support:appcompat-v7:$APPCOMPAT_VERSION"
+    compile "com.android.support:support-annotations:$APPCOMPAT_VERSION"
     compile fileTree(include: ['*.jar'], dir: 'libs')
 
     testCompile "junit:junit:4.12"
@@ -87,7 +89,7 @@ dependencies {
     testCompile "org.powermock:powermock-classloading-xstream:1.6.1"
     testCompile "org.powermock:powermock-api-mockito:1.6.1"
 
-    javadoc 'com.android.support:support-annotations:24.2.1'
+    javadoc "com.android.support:support-annotations:$APPCOMPAT_VERSION"
 }
 
 // Javadoc
