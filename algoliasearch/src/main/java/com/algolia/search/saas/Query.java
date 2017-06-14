@@ -251,6 +251,14 @@ public class Query extends AbstractQuery {
     private static final String KEY_ATTRIBUTES_TO_HIGHLIGHT = "attributesToHighlight";
 
     /**
+     * Deprecated, use {@link #setAttributesToHighlight(String...)}
+     */
+    @Deprecated
+    public @NonNull Query setAttributesToHighlight(List<String> attributes) {
+        return set(KEY_ATTRIBUTES_TO_HIGHLIGHT, buildJSONArray((String[]) attributes.toArray()));
+    }
+
+    /**
      * Specify the list of attribute names to highlight. By default indexed
      * attributes are highlighted.
      */
@@ -264,6 +272,14 @@ public class Query extends AbstractQuery {
 
     private static final String KEY_ATTRIBUTES_TO_RETRIEVE = "attributesToRetrieve";
     private static final String KEY_ATTRIBUTES_TO_RETRIEVE_LEGACY = "attributes";
+
+    /**
+     * Deprecated, use {@link #setAttributesToRetrieve(String...)}
+     */
+    @Deprecated
+    public @NonNull Query setAttributesToRetrieve(List<String> attributes) {
+        return set(KEY_ATTRIBUTES_TO_RETRIEVE, buildJSONArray((String[]) attributes.toArray()));
+    }
 
     /**
      * Specify the list of attribute names to retrieve. By default all
