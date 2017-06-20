@@ -3,7 +3,9 @@ branches:
     - master
 
 sudo: required
-dist: precise # require Precise infrastructure: fully virtualized, 7.5GB RAM
+#dist: precise # require Precise infrastructure: fully virtualized, 7.5GB RAM
+dist: trusty
+group: edge # New android image with last {SDK,Build,Platform} tools
 language: android
 jdk:
   - oraclejdk8
