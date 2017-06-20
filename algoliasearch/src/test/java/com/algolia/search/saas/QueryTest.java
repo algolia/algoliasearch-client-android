@@ -30,6 +30,7 @@ import org.junit.Test;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import static junit.framework.Assert.assertFalse;
@@ -295,6 +296,11 @@ public class QueryTest extends RobolectricTestCase {
         assertArrayEquals(new String[]{ "foo", "bar" }, query.getAttributesToHighlight());
         assertEquals("[\"foo\",\"bar\"]", query.get("attributesToHighlight"));
         assertArrayEquals(query.getAttributesToHighlight(), Query.parse(query.build()).getAttributesToHighlight());
+
+        query.setAttributesToHighlight(Arrays.asList("foo", "bar"));
+        assertArrayEquals(new String[]{ "foo", "bar" }, query.getAttributesToHighlight());
+        assertEquals("[\"foo\",\"bar\"]", query.get("attributesToHighlight"));
+        assertArrayEquals(query.getAttributesToHighlight(), Query.parse(query.build()).getAttributesToHighlight());
     }
 
     @Test
@@ -302,6 +308,11 @@ public class QueryTest extends RobolectricTestCase {
         Query query = new Query();
         assertNull(query.getAttributesToRetrieve());
         query.setAttributesToRetrieve("foo", "bar");
+        assertArrayEquals(new String[]{ "foo", "bar" }, query.getAttributesToRetrieve());
+        assertEquals("[\"foo\",\"bar\"]", query.get("attributesToRetrieve"));
+        assertArrayEquals(query.getAttributesToRetrieve(), Query.parse(query.build()).getAttributesToRetrieve());
+
+        query.setAttributesToRetrieve(Arrays.asList("foo", "bar"));
         assertArrayEquals(new String[]{ "foo", "bar" }, query.getAttributesToRetrieve());
         assertEquals("[\"foo\",\"bar\"]", query.get("attributesToRetrieve"));
         assertArrayEquals(query.getAttributesToRetrieve(), Query.parse(query.build()).getAttributesToRetrieve());

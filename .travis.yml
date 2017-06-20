@@ -3,24 +3,26 @@ branches:
     - master
 
 sudo: required
-dist: precise # require Precise infrastructure: fully virtualized, 7.5GB RAM
-
+#dist: precise # require Precise infrastructure: fully virtualized, 7.5GB RAM
+dist: trusty
+group: edge # New android image with last {SDK,Build,Platform} tools
 language: android
 jdk:
   - oraclejdk8
 env:
   global:
-  - ANDROID_ABI=armeabi-v7a
+  - ABI=armeabi-v7
+  - TAG=google_apis
   - secure: DENCjlvzW54U9QH7mWO3LJVLYEiX0Mj9U44QoGQcienflSDlVN1UhAiT7xnCKwWT38B37CzeQlHc541z78vAj+YPzPbebowFW0aiq/LNdFMigsT1j3gLpqrICjylG08i1Ho95FLCOaJSQWZJ5nSd3OceWLLxCYUXtS9E3BuMHGg=
   - secure: HBdvSvplPEJWEu7aij7cA+ZiQt2qmb9+Q8WsUGOJJ1uYIOt/MVHSo0bYYLfk90eFlnJecN+oBi92LCM9PUT3mKIHm9apRsK9os+W/6wIezD+rKVYPfOLZ4uINaFRDjXUJqKB46fzVR54vc4N2QO0+spn7Sv7sXaytYEPwrO6tmo=
   - secure: LwmoZ2AlZHGToVAko19F4Gthw45MBr0LOx9Y9a0AyiAzXr4g6HRx3fB0EsWBC2wL9Yk0cOqd3sahH79SnmomdPgeRANgvpF7udtK3MG84j2H1AmuEwqhWKm8mwYBi+jP0Ayx6PybhApaLlQJ191IUkHTlVB0G80oX1W/ypU2qE0=
   - secure: fEnmnjnqqg6Rgmg9zvc23RzqgPGAYsadbkQDH1SDJ3KQEqC8sCglcYxGWqRkoVPO1oiA6b8uvYt9/bsWX6PIzL67nwPaNroHL7XarSrPwpPsldOpUHfrRX4negLSg5Y0nKJbtnjf7dfVg4nENs5zHrxNtok47iHcbsecuq9ueTM=
   matrix:
-    - ANDROID_TARGET=android-16
-    - ANDROID_TARGET=android-17
-    - ANDROID_TARGET=android-19
-    - ANDROID_TARGET=android-22
-    - ANDROID_TARGET=android-24
+    - API=16
+    - API=19
+    - API=22
+    - API=23
+    - API=25
 matrix:
   fast_finish: true
 android:
@@ -28,27 +30,29 @@ android:
     - tools
     - platform-tools
     - tools # Fix SDK Tools https://github.com/travis-ci/travis-ci/issues/6122
-    - build-tools-25.0.2
+    - build-tools-25.0.3
     - android-25 # target SDK version
-    - $ANDROID_TARGET
+    - android-$API
     - extra-android-support
     - extra-android-m2repository
-    - sys-img-armeabi-v7a-$ANDROID_TARGET
 cache:
   directories:
     - $HOME/.gradle/caches/
     - $HOME/.gradle/daemon
     - $HOME/.gradle/native
     - $HOME/.gradle/wrapper
+before_install:
+    - export EMULATOR="system-images;android-${API};${TAG};${ABI}" # Used to install/create emulator
 before_script:
-# Avoid useless reupload of cache after every build, see https://docs.travis-ci.com/user/languages/android
-- rm -f $HOME/.gradle/caches/modules-2/modules-2.lock
-# Create Android Virtual Device with current config, saying no to custom build
-- echo no | android create avd --force -n test -t $ANDROID_TARGET --abi $ANDROID_ABI
-# Run emulator and wait until it is ready, then send KEYCODE_MENU to unlock the phone
-- emulator -avd test -no-skin -no-window &
-- android-wait-for-emulator
-- adb shell input keyevent 82 &
+    # Avoid useless reupload of cache after every build, see https://docs.travis-ci.com/user/languages/android
+    - rm -f $HOME/.gradle/caches/modules-2/modules-2.lock
+    - sdkmanager "$EMULATOR"
+      # Create Android Virtual Device with current config, saying no to custom build
+    - echo no | avdmanager create avd -n test -k $EMULATOR -f --abi $ABI --tag $TAG
+      # Run emulator and wait until it is ready, then send KEYCODE_MENU to unlock the phone
+    - emulator -avd test -no-skin -no-window &
+    - android-wait-for-emulator
+    - adb shell input keyevent 82 &
 script:
-- set -o pipefail
-- travis_wait bash run_test.sh
+    - set -o pipefail
+    - travis_wait bash run_test.sh

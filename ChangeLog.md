@@ -1,6 +1,12 @@
 Change Log
 ==========
 
+## 3.12.0 (2017-06-14)
+
+## New features
+
+- Support argument as `List` for `setAttributesToRetrieve` and `etAttributesToHighlight`
+
 ## 3.11.0 (2017-05-30)
 
 ## New features
