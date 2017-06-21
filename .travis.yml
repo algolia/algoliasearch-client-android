@@ -13,6 +13,10 @@ env:
   global:
   - ABI=armeabi-v7
   - TAG=google_apis
+  - ANDROID_HOME=/usr/local/android-sdk-24.0.2 # Depends on the cookbooks version used in the VM
+  - TOOLS=${ANDROID_HOME}/tools # PATH order matters, exists more than one emulator script
+  - PATH=${ANDROID_HOME}:${ANDROID_HOME}/emulator:${TOOLS}:${TOOLS}/bin:${ANDROID_HOME}/platform-tools:${PATH}
+
   - secure: DENCjlvzW54U9QH7mWO3LJVLYEiX0Mj9U44QoGQcienflSDlVN1UhAiT7xnCKwWT38B37CzeQlHc541z78vAj+YPzPbebowFW0aiq/LNdFMigsT1j3gLpqrICjylG08i1Ho95FLCOaJSQWZJ5nSd3OceWLLxCYUXtS9E3BuMHGg=
   - secure: HBdvSvplPEJWEu7aij7cA+ZiQt2qmb9+Q8WsUGOJJ1uYIOt/MVHSo0bYYLfk90eFlnJecN+oBi92LCM9PUT3mKIHm9apRsK9os+W/6wIezD+rKVYPfOLZ4uINaFRDjXUJqKB46fzVR54vc4N2QO0+spn7Sv7sXaytYEPwrO6tmo=
   - secure: LwmoZ2AlZHGToVAko19F4Gthw45MBr0LOx9Y9a0AyiAzXr4g6HRx3fB0EsWBC2wL9Yk0cOqd3sahH79SnmomdPgeRANgvpF7udtK3MG84j2H1AmuEwqhWKm8mwYBi+jP0Ayx6PybhApaLlQJ191IUkHTlVB0G80oX1W/ypU2qE0=
