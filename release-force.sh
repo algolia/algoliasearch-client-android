@@ -2,11 +2,7 @@
 
 set -eo pipefail
 
-if [ $# -ne 1 ]; then
-    echo "$0 | A script to release new versions automatically"
-    echo "Usage: $0 VERSION_CODE"
-    exit -1
-fi
+SELF_ROOT=$(cd $(dirname "$0") && pwd)
 
 function call_sed(){
 PATTERN="$1"
@@ -22,35 +18,14 @@ fi
 
 FILE_BUILD_GRADLE="$SELF_ROOT/algoliasearch/common.gradle"
 FILE_API_CLIENT="$SELF_ROOT/algoliasearch/src/main/java/com/algolia/search/saas/Client.java"
-SELF_ROOT=$(cd $(dirname "$0") && pwd)
-VERSION_CODE=$1
 
-set +eo pipefail
-COUNT_DOTS=$(grep -o "\." <<< $VERSION_CODE | wc -l)
-set -eo pipefail
-
-if [ $COUNT_DOTS -ne 2 ]; then
-    echo "$VERSION_CODE is not a valid version code, please use the form X.Y.Z (e.g. v1 = 1.0.0)"
+if [ $# -ne 1 ]; then
+    echo "$0 | A script to release new versions automatically"
+    echo "Usage: $0 VERSION_CODE"
     exit -1
 fi
 
-# Check that the working repository is clean (without any changes, neither staged nor unstaged).
-# An exception is the change log, which should have been edited, but not necessarily committed (we usually commit it
-# along with the version number).
-if [[ ! -z `git status --porcelain | grep -v "ChangeLog.md\|??"` ]]; then
-    echo "ERROR: Working copy not clean! Aborting." 1>&2
-    echo "Please revert or commit any pending changes before releasing." 1>&2
-    exit 1
-fi
-
-# Check that the change log contains information for the new version.
-set +e
-version_in_change_log=$(cat "$SELF_ROOT/ChangeLog.md" | grep -E "^#+" | sed -E 's/^#* ([0-9.]*)\s*.*$/\1/g' | grep -x "$VERSION_CODE")
-set -e
-if [[ -z $version_in_change_log ]]; then
-    echo "Version $VERSION_CODE not found in change log! Aborting." 1>&2
-    exit 2
-fi
+VERSION_CODE=$1
 
 $SELF_ROOT/tools/update-version.sh $VERSION_CODE
 
@@ -80,11 +55,6 @@ done
 
 # Revert flavor to original.
 git checkout $SELF_ROOT/algoliasearch/build.gradle
-
-# Commit to Git... but do *not* push (see below).
-git add .
-git commit -m "Version $VERSION_CODE"
-git tag $VERSION_CODE
 
 echo "SUCCESS!"
 

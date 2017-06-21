@@ -209,7 +209,7 @@ public class Index {
      * Search for some text in a facet values, optionally restricting the returned values to those contained in objects matching other (regular) search criteria.
      *
      * @param facetName The name of the facet to search. It must have been declared in the index's `attributesForFaceting` setting with the `searchable()` modifier.
-     * @param facetText      The text to search for in the facet's values.
+     * @param facetText The text to search for in the facet's values.
      * @param query     An optional query to take extra search parameters into account. There parameters apply to index objects like in a regular search query. Only facet values contained in the matched objects will be returned
      * @param handler   A Completion handler that will be notified of the request's outcome.
      * @return A cancellable request.
@@ -222,7 +222,7 @@ public class Index {
      * Search (asynchronously) for some text in a facet values, optionally restricting the returned values to those contained in objects matching other (regular) search criteria.
      *
      * @param facetName The name of the facet to search. It must have been declared in the index's `attributesForFaceting` setting with the `searchable()` modifier.
-     * @param facetText      The text to search for in the facet's values.
+     * @param facetText The text to search for in the facet's values.
      * @param query     An optional query to take extra search parameters into account. There parameters apply to index objects like in a regular search query. Only facet values contained in the matched objects will be returned
      * @param handler   A Completion handler that will be notified of the request's outcome.
      * @return A cancellable request.
@@ -479,12 +479,31 @@ public class Index {
      * @param taskID            Identifier of the task (as returned by the server).
      * @param completionHandler The listener that will be notified of the request's outcome.
      * @return A cancellable request.
+     *
+     * @deprecated Task IDs are always integers. Please use {@link #waitTaskAsync(int, CompletionHandler)} instead.
      */
     public Request waitTaskAsync(final @NonNull String taskID, @NonNull CompletionHandler completionHandler) {
         return getClient().new AsyncTaskRequest(completionHandler) {
             @NonNull
             @Override protected JSONObject run() throws AlgoliaException {
                 return waitTask(taskID);
+            }
+        }.start();
+    }
+
+    /**
+     * Wait until the publication of a task on the server (helper).
+     * All server tasks are asynchronous. This method helps you check that a task is published.
+     *
+     * @param taskID            Identifier of the task (as returned by the server).
+     * @param completionHandler The listener that will be notified of the request's outcome.
+     * @return A cancellable request.
+     */
+    public Request waitTaskAsync(final int taskID, @NonNull CompletionHandler completionHandler) {
+        return getClient().new AsyncTaskRequest(completionHandler) {
+            @NonNull
+            @Override protected JSONObject run() throws AlgoliaException {
+                return waitTask(Integer.toString(taskID));
             }
         }.start();
     }
@@ -1056,7 +1075,7 @@ public class Index {
     }
 
     /**
-     * Wait the publication of a task on the server.
+     * Waits for the publication of a task on the server.
      * All server task are asynchronous and you can check with this method that the task is published.
      *
      * @param taskID the id of the task returned by server
@@ -1066,9 +1085,20 @@ public class Index {
         return waitTask(taskID, MAX_TIME_MS_TO_WAIT);
     }
 
+    public static final int DEFAULT_SETTINGS_VERSION = 2;
+
     /**
-     * Get settings of this index
+     * Gets the settings of this index.
+     */
+    protected JSONObject getSettings() throws AlgoliaException {
+        return client.getRequest("/1/indexes/" + encodedIndexName + "/settings?getVersion=" + DEFAULT_SETTINGS_VERSION, false);
+    }
+
+
+    /**
+     * Gets the settings of this index for a specific settings format.
      *
+     * @param formatVersion the version of a settings format.
      * @throws AlgoliaException
      */
     protected JSONObject getSettings(int formatVersion) throws AlgoliaException {

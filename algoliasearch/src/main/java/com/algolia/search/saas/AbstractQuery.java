@@ -71,7 +71,7 @@ public abstract class AbstractQuery {
         }
 
         @Override
-        public boolean equals(Object other) {
+        public boolean equals(@Nullable Object other) {
             return other != null && other instanceof LatLng
                     && this.lat == ((LatLng)other).lat && this.lng == ((LatLng)other).lng;
         }
@@ -89,7 +89,7 @@ public abstract class AbstractQuery {
          * @return A `LatLng` instance describing the given geolocation, or `null` if `value` is `null` or does not
          *         represent a valid geolocation.
          */
-        @Nullable public static LatLng parse(String value) {
+        @Nullable public static LatLng parse(@Nullable String value) {
             if (value == null) {
                 return null;
             }
@@ -111,7 +111,7 @@ public abstract class AbstractQuery {
 
     /** Query parameters, as an untyped key-value array. */
     // NOTE: Using a tree map to have parameters sorted by key on output.
-    private Map<String, String> parameters = new TreeMap<>();
+    @NonNull private Map<String, String> parameters = new TreeMap<>();
 
     // ----------------------------------------------------------------------
     // Construction
@@ -136,7 +136,7 @@ public abstract class AbstractQuery {
     // ----------------------------------------------------------------------
 
     @Override
-    public boolean equals(Object other) {
+    public boolean equals(@Nullable Object other) {
         return other != null && other instanceof AbstractQuery && this.parameters.equals(((AbstractQuery)other).parameters);
     }
 
@@ -196,7 +196,7 @@ public abstract class AbstractQuery {
      * Parse a URL query parameter string and store the resulting parameters into this query.
      * @param queryParameters URL query parameter string.
      */
-    protected void parseFrom(@NonNull String queryParameters) {
+    public void parseFrom(@NonNull String queryParameters) {
         try {
             String[] parameters = queryParameters.split("&");
             for (String parameter : parameters) {
@@ -213,7 +213,7 @@ public abstract class AbstractQuery {
         }
     }
 
-    protected static Boolean parseBoolean(String value) {
+    protected static @Nullable Boolean parseBoolean(@Nullable String value) {
         if (value == null) {
             return null;
         }
@@ -224,7 +224,7 @@ public abstract class AbstractQuery {
         return intValue != null && intValue != 0;
     }
 
-    protected static Integer parseInt(String value)  {
+    protected static @Nullable Integer parseInt(@Nullable String value)  {
         if (value == null) {
             return null;
         }
@@ -235,7 +235,7 @@ public abstract class AbstractQuery {
         }
     }
 
-    protected static String buildJSONArray(String[] values) {
+    protected static @NonNull String buildJSONArray(@NonNull String[] values) {
         JSONArray array = new JSONArray();
         for (String value : values) {
             array.put(value);
@@ -243,7 +243,7 @@ public abstract class AbstractQuery {
         return array.toString();
     }
 
-    protected static String[] parseArray(String string) {
+    @Nullable protected static String[] parseArray(@Nullable String string) {
         if (string == null) {
             return null;
         }
@@ -266,14 +266,14 @@ public abstract class AbstractQuery {
         return TextUtils.join(",", values);
     }
 
-    protected static String[] parseCommaArray(String string) {
+    protected static @Nullable String[] parseCommaArray(@Nullable String string) {
         return string == null ? null : string.split(",");
     }
 
     /**
      * @deprecated Please use {@link LatLng#parse(String)} instead.
      */
-    @Nullable public static LatLng parseLatLng(String value) {
+    public static @Nullable LatLng parseLatLng(String value) {
         return LatLng.parse(value);
     }
 

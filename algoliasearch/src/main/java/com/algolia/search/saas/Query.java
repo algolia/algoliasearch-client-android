@@ -251,6 +251,14 @@ public class Query extends AbstractQuery {
     private static final String KEY_ATTRIBUTES_TO_HIGHLIGHT = "attributesToHighlight";
 
     /**
+     * Deprecated, use {@link #setAttributesToHighlight(String...)}
+     */
+    @Deprecated
+    public @NonNull Query setAttributesToHighlight(List<String> attributes) {
+        return set(KEY_ATTRIBUTES_TO_HIGHLIGHT, buildJSONArray((String[]) attributes.toArray()));
+    }
+
+    /**
      * Specify the list of attribute names to highlight. By default indexed
      * attributes are highlighted.
      */
@@ -264,6 +272,14 @@ public class Query extends AbstractQuery {
 
     private static final String KEY_ATTRIBUTES_TO_RETRIEVE = "attributesToRetrieve";
     private static final String KEY_ATTRIBUTES_TO_RETRIEVE_LEGACY = "attributes";
+
+    /**
+     * Deprecated, use {@link #setAttributesToRetrieve(String...)}
+     */
+    @Deprecated
+    public @NonNull Query setAttributesToRetrieve(List<String> attributes) {
+        return set(KEY_ATTRIBUTES_TO_RETRIEVE, buildJSONArray((String[]) attributes.toArray()));
+    }
 
     /**
      * Specify the list of attribute names to retrieve. By default all
@@ -296,6 +312,19 @@ public class Query extends AbstractQuery {
 
     public String[] getAttributesToSnippet() {
         return parseArray(get(KEY_ATTRIBUTES_TO_SNIPPET));
+    }
+
+    private static final String KEY_DISABLE_EXACT_ON_ATTRIBUTES = "disableExactOnAttributes";
+
+    /**
+     * List of attributes on which you want to disable computation of the {@code exact} ranking criterion (must be a subset of the `searchableAttributes` index setting).
+     */
+    public @NonNull Query setDisableExactOnAttributes(String... attributes) {
+        return set(KEY_DISABLE_EXACT_ON_ATTRIBUTES, buildJSONArray(attributes));
+    }
+
+    public String[] getDisableExactOnAttributes() {
+        return parseArray(get(KEY_DISABLE_EXACT_ON_ATTRIBUTES));
     }
 
     private static final String KEY_DISABLE_TYPO_TOLERANCE_ON_ATTRIBUTES = "disableTypoToleranceOnAttributes";
@@ -813,6 +842,24 @@ public class Query extends AbstractQuery {
         }
     }
 
+    private static final String KEY_LENGTH = "length";
+
+    /**
+     * Maximum number of hits to return.
+     * <p>
+     * In most cases, {@link #setPage(Integer) page}/{@link #setHitsPerPage(Integer) hitsPerPage} is the recommended method for pagination.
+     *
+     * @param n the number of hits to return. (Maximum 1000)
+     */
+    public @NonNull Query setLength(Integer n) {
+        return set(KEY_LENGTH, n);
+    }
+
+    public Integer getLength() {
+        return parseInt(get(KEY_LENGTH));
+    }
+
+
     private static final String KEY_MAX_FACET_HITS = "maxFacetHits";
 
     /**
@@ -923,6 +970,22 @@ public class Query extends AbstractQuery {
         return null;
     }
 
+    private static final String KEY_OFFSET = "offset";
+
+    /**
+     * Set the offset of the first hit to return (zero-based).
+     * In most cases, {@link #setPage(Integer) page}/{@link #setHitsPerPage(Integer) hitsPerPage} is the recommended method for pagination.
+     *
+     * @param offset a zero-based offset.
+     */
+    public @NonNull Query setOffset(int offset) {
+        return set(KEY_OFFSET, offset);
+    }
+
+    public Integer getOffset() {
+        return parseInt(get(KEY_OFFSET));
+    }
+
     private static final String KEY_OPTIONAL_WORDS = "optionalWords";
 
     /**
@@ -950,6 +1013,23 @@ public class Query extends AbstractQuery {
 
     public Integer getPage() {
         return parseInt(get(KEY_PAGE));
+    }
+
+    private static final String KEY_PERCENTILE_COMPUTATION = "percentileComputation";
+
+    /**
+     * Whether to include the query in processing time percentile computation.
+     *
+     * @param enabled if {@code true}, the API records the processing time of the search query
+     *                and includes it when computing the 90% and 99% percentiles, available in your
+     *                Algolia dashboard. When `false`, the search query is excluded from percentile computation.
+     */
+    public @NonNull Query setPercentileComputation(boolean enabled) {
+        return set(KEY_PERCENTILE_COMPUTATION, enabled);
+    }
+
+    public Boolean getPercentileComputation() {
+        return parseBoolean(get(KEY_PERCENTILE_COMPUTATION));
     }
 
     private static final String KEY_QUERY = "query";
@@ -1089,6 +1169,22 @@ public class Query extends AbstractQuery {
 
     public Boolean getReplaceSynonymsInHighlight() {
         return parseBoolean(get(KEY_REPLACE_SYNONYMS_IN_HIGHLIGHT));
+    }
+
+    private static final String KEY_RESTRICT_HIGHLIGHT_AND_SNIPPET = "restrictHighlightAndSnippetArrays";
+
+    /**
+     * Restricts arrays in highlight and snippet results to items that matched the query.
+     *
+     * @param restrict if {@code false}, all array items are highlighted/snippeted. When true,
+     *                 only array items that matched at least partially are highlighted/snippeted.
+     */
+    public @NonNull Query setRestrictHighlightAndSnippetArrays(boolean restrict) {
+        return set(KEY_RESTRICT_HIGHLIGHT_AND_SNIPPET, restrict);
+    }
+
+    public Boolean getRestrictHighlightAndSnippetArrays() {
+        return parseBoolean(get(KEY_RESTRICT_HIGHLIGHT_AND_SNIPPET));
     }
 
     private static final String KEY_RESTRICT_SEARCHABLE_ATTRIBUTES = "restrictSearchableAttributes";

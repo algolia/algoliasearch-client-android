@@ -31,3 +31,7 @@ ext {
 }
 
 apply from: "common.gradle"
+
+android {
+    buildToolsVersion BUILD_TOOLS_VERSION
+}
