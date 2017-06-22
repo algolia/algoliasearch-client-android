@@ -24,6 +24,8 @@
 package com.algolia.search.saas;
 
 import android.content.Context;
+import android.os.Handler;
+import android.os.Looper;
 import android.support.annotation.NonNull;
 
 import com.algolia.search.offline.core.LocalIndex;
@@ -71,6 +73,12 @@ public class OfflineClient extends Client
 
     /** Background queue used to run transaction bodies (but not the build). */
     protected ExecutorService transactionExecutorService = Executors.newSingleThreadExecutor();
+
+    /**
+     * Handler used to run mixed online/offline requests.
+     * NOTE: We need a `Handler` instead of an `ExecutorService` because we need to schedule delayed calls.
+     */
+    protected Handler mixedRequestHandler = new Handler(Looper.getMainLooper());
 
     /**
      * Construct a new offline-enabled API client.
