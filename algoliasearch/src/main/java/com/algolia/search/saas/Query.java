@@ -1205,6 +1205,23 @@ public class Query extends AbstractQuery {
         return parseArray(get(KEY_RESTRICT_SEARCHABLE_ATTRIBUTES));
     }
 
+    private static final String KEY_RULE_CONTEXTS = "ruleContexts";
+
+    /**
+     * Set a list of contexts for which rules are enabled.
+     *
+     * Contextual rules matching any of these contexts are eligible, as well as generic rules.
+     * When empty, only generic rules are eligible.
+     * @param ruleContexts one or several contexts.
+     */
+    public @NonNull Query setRuleContexts(String... ruleContexts) {
+        return set(KEY_RULE_CONTEXTS, buildJSONArray(ruleContexts));
+    }
+
+    public @Nullable String[] getRuleContexts() {
+        return parseArray(get(KEY_RULE_CONTEXTS));
+    }
+
     private static final String KEY_SNIPPET_ELLIPSIS_TEXT = "snippetEllipsisText";
 
     /**
@@ -1327,6 +1344,21 @@ public class Query extends AbstractQuery {
         }
         return null;
     }
+
+    private static final String KEY_ENABLE_RULES = "enableRules";
+
+    /**
+     * @param enabled If set to false, rules processing is disabled: no rule will match the query.
+     *                Defaults to true.
+     */
+    public @NonNull Query setEnableRules(Boolean enabled) {
+        return set(KEY_ENABLE_RULES, enabled);
+    }
+
+    public Boolean getEnableRules() {
+        return parseBoolean(get(KEY_ENABLE_RULES));
+    }
+
 
     private static final String KEY_ALTERNATIVES_AS_EXACT = "alternativesAsExact";
 

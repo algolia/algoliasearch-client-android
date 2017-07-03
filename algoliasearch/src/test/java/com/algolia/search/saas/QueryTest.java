@@ -837,6 +837,26 @@ public class QueryTest extends RobolectricTestCase {
         assertTrue("The built query should contain \"" + expected + "\", but contains _" + queryStr + "_.", queryStr.contains(expected));
     }
 
+    @Test
+    public void ruleContexts() {
+        Query query = new Query();
+        assertNull(query.getRuleContexts());
+        query.setRuleContexts("foo", "bar");
+        assertArrayEquals(new String[]{ "foo", "bar" }, query.getRuleContexts());
+        assertEquals("[\"foo\",\"bar\"]", query.get("ruleContexts"));
+        assertArrayEquals(query.getRuleContexts(), Query.parse(query.build()).getRuleContexts());
+    }
+
+    @Test
+    public void enableRules() {
+        Query query = new Query();
+        assertNull(query.getEnableRules());
+        query.setEnableRules(true);
+        assertEquals(Boolean.TRUE, query.getEnableRules());
+        assertEquals("true", query.get("enableRules"));
+        assertEquals(query.getEnableRules(), Query.parse(query.build()).getEnableRules());
+    }
+
 
     @Test
     public void facetingAfterDistinct() {
