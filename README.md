@@ -56,7 +56,7 @@ Add the following dependency to your Gradle build file:
 ```gradle
 dependencies {
     // [...]
-    compile 'com.algolia:algoliasearch-android:3.5'
+    compile 'com.algolia:algoliasearch-android:3.10.1'
 }
 ```
 
