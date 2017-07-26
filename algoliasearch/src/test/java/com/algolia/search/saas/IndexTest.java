@@ -47,6 +47,7 @@ import java.util.UUID;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
@@ -74,7 +75,9 @@ public class IndexTest extends RobolectricTestCase {
     private static boolean didInitIndices = false;
 
     Client client;
+    Client clientWithLongApiKey;
     Index index;
+    Index indexWithLongApiKey;
     String indexName;
 
     List<JSONObject> objects;
@@ -84,9 +87,11 @@ public class IndexTest extends RobolectricTestCase {
     public void setUp() throws Exception {
         super.setUp();
         client = new Client(Helpers.app_id, Helpers.api_key);
+        clientWithLongApiKey = new Client(Helpers.app_id, Helpers.getLongApiKey());
         // WARNING: Robolectric cannot work with custom executors in `AsyncTask`, so we substitute the client's
         // executor with a Robolectric-compliant one.
         Whitebox.setInternalState(client, "searchExecutorService", new RoboExecutorService());
+        Whitebox.setInternalState(clientWithLongApiKey, "searchExecutorService", new RoboExecutorService());
 
         if (!didInitIndices) {
             Index originalIndex = client.getIndex(originalIndexName);
@@ -119,6 +124,7 @@ public class IndexTest extends RobolectricTestCase {
         objects = new ArrayList<>(originalObjects);
         indexName = originalIndexName + countIndices++;
         index = client.getIndex(indexName);
+        indexWithLongApiKey = clientWithLongApiKey.getIndex("some_index_name");
     }
 
     @Override
@@ -141,7 +147,8 @@ public class IndexTest extends RobolectricTestCase {
         final long begin = System.nanoTime();
         // Search with query.
         index.searchAsync(new Query("Francisco"), new AssertCompletionHandler() {
-            @Override public void doRequestCompleted(JSONObject content, AlgoliaException error) {
+            @Override
+            public void doRequestCompleted(JSONObject content, AlgoliaException error) {
                 if (error == null) {
                     assertEquals(1, content.optInt("nbHits"));
                 } else {
@@ -152,6 +159,22 @@ public class IndexTest extends RobolectricTestCase {
 
         final long elapsedMillis = (System.nanoTime() - begin) / 1000000;
         final int waitTimeoutMillis = waitTimeoutSeconds * 1000;
+        assertTrue("The test took longer than given timeout (" + elapsedMillis + " > " + waitTimeoutMillis + ").", elapsedMillis <= waitTimeoutMillis);
+    }
+
+    @Test
+    public void searchAsyncWithVeryLongApiKey() throws Exception {
+        final long begin = System.nanoTime();
+        // Search with query.
+        indexWithLongApiKey.searchAsync(new Query("Francisco"), new AssertCompletionHandler() {
+            @Override
+            public void doRequestCompleted(JSONObject content, AlgoliaException error) {
+                assertNotEquals(494, error.getStatusCode());
+            }
+        });
+
+        final long elapsedMillis = (System.nanoTime() - begin) / 1000000;
+        final int waitTimeoutMillis = Helpers.wait * 1000;
         assertTrue("The test took longer than given timeout (" + elapsedMillis + " > " + waitTimeoutMillis + ").", elapsedMillis <= waitTimeoutMillis);
     }
 
@@ -508,8 +531,7 @@ public class IndexTest extends RobolectricTestCase {
         // Expect failed search after timeout
         final long startTime = System.nanoTime();
         index.searchAsync(new Query(), new AssertCompletionHandler() {
-            @Override
-            public void doRequestCompleted(JSONObject content, AlgoliaException error) {
+            @Override public void doRequestCompleted(JSONObject content, AlgoliaException error) {
                 if (error != null) {
                     final long duration = (System.nanoTime() - startTime) / 1000000;
                     assertTrue("We should hit 4 times the timeout before failing, but test took only " + duration + " ms.", duration > timeout * 4);

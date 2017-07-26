@@ -107,6 +107,9 @@ public abstract class AbstractClient {
     /** This library's version. */
     private final static String version = "3.12.0";
 
+    /** Maximum size for an API key to be sent in the HTTP headers. Bigger keys will go inside the body. */
+    private final static int MAX_API_KEY_LENGTH = 500;
+
     // ----------------------------------------------------------------------
     // Fields
     // ----------------------------------------------------------------------
@@ -545,7 +548,18 @@ public abstract class AbstractClient {
 
                 // set auth headers
                 hostConnection.setRequestProperty("X-Algolia-Application-Id", this.applicationID);
-                hostConnection.setRequestProperty("X-Algolia-API-Key", this.apiKey);
+                // If API key is too big, send it in the request's body (if applicable).
+                if (this.apiKey != null && this.apiKey.length() > MAX_API_KEY_LENGTH && json != null) {
+                    try {
+                        final JSONObject body = new JSONObject(json);
+                        body.put("apiKey", this.apiKey);
+                        json = body.toString();
+                    } catch (JSONException e) {
+                        throw new AlgoliaException("Failed to patch JSON body");
+                    }
+                } else {
+                    hostConnection.setRequestProperty("X-Algolia-API-Key", this.apiKey);
+                }
                 for (Map.Entry<String, String> entry : this.headers.entrySet()) {
                     hostConnection.setRequestProperty(entry.getKey(), entry.getValue());
                 }
