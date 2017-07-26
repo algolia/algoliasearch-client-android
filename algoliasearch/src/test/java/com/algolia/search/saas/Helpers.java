@@ -24,6 +24,7 @@
 package com.algolia.search.saas;
 
 import android.support.annotation.NonNull;
+import java.util.Arrays;
 
 public class Helpers {
     public static String app_id = "%ALGOLIA_APPLICATION_ID%";
@@ -33,6 +34,13 @@ public class Helpers {
     public static String job_number = "%JOB_NUMBER%";
 
     public static int wait = 30;
+
+    static String getLongApiKey() {
+        int n = 65000;
+        char[] chars = new char[n];
+        Arrays.fill(chars, 'c');
+        return new String(chars);
+    }
 
     static String safeIndexName(String name) {
         if (job_number.matches("\\d+\\.\\d+")) {
