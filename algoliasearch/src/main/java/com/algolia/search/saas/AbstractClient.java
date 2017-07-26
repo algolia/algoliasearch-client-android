@@ -398,28 +398,28 @@ public abstract class AbstractClient {
         GET, POST, PUT, DELETE
     }
 
-    protected byte[] getRequestRaw(String url, boolean search) throws AlgoliaException {
-        return _requestRaw(Method.GET, url, null, getReadHostsThatAreUp(), connectTimeout, search ? searchTimeout : readTimeout);
+    protected byte[] getRequestRaw(String url, boolean search, @Nullable RequestOptions requestOptions) throws AlgoliaException {
+        return _requestRaw(Method.GET, url, null, getReadHostsThatAreUp(), connectTimeout, search ? searchTimeout : readTimeout, requestOptions);
     }
 
-    protected JSONObject getRequest(String url, boolean search) throws AlgoliaException {
-        return _request(Method.GET, url, null, getReadHostsThatAreUp(), connectTimeout, search ? searchTimeout : readTimeout);
+    protected JSONObject getRequest(String url, boolean search, @Nullable RequestOptions requestOptions) throws AlgoliaException {
+        return _request(Method.GET, url, null, getReadHostsThatAreUp(), connectTimeout, search ? searchTimeout : readTimeout, requestOptions);
     }
 
-    protected JSONObject deleteRequest(String url) throws AlgoliaException {
-        return _request(Method.DELETE, url, null, getWriteHostsThatAreUp(), connectTimeout, readTimeout);
+    protected JSONObject deleteRequest(String url, @Nullable RequestOptions requestOptions) throws AlgoliaException {
+        return _request(Method.DELETE, url, null, getWriteHostsThatAreUp(), connectTimeout, readTimeout, requestOptions);
     }
 
-    protected JSONObject postRequest(String url, String obj, boolean readOperation) throws AlgoliaException {
-        return _request(Method.POST, url, obj, (readOperation ? getReadHostsThatAreUp() : getWriteHostsThatAreUp()), connectTimeout, (readOperation ? searchTimeout : readTimeout));
+    protected JSONObject postRequest(String url, String obj, boolean readOperation, @Nullable RequestOptions requestOptions) throws AlgoliaException {
+        return _request(Method.POST, url, obj, (readOperation ? getReadHostsThatAreUp() : getWriteHostsThatAreUp()), connectTimeout, (readOperation ? searchTimeout : readTimeout), requestOptions);
     }
 
-    protected byte[] postRequestRaw(String url, String obj, boolean readOperation) throws AlgoliaException {
-        return _requestRaw(Method.POST, url, obj, (readOperation ? getReadHostsThatAreUp() : getWriteHostsThatAreUp()), connectTimeout, (readOperation ? searchTimeout : readTimeout));
+    protected byte[] postRequestRaw(String url, String obj, boolean readOperation, @Nullable RequestOptions requestOptions) throws AlgoliaException {
+        return _requestRaw(Method.POST, url, obj, (readOperation ? getReadHostsThatAreUp() : getWriteHostsThatAreUp()), connectTimeout, (readOperation ? searchTimeout : readTimeout), requestOptions);
     }
 
-    protected JSONObject putRequest(String url, String obj) throws AlgoliaException {
-        return _request(Method.PUT, url, obj, getWriteHostsThatAreUp(), connectTimeout, readTimeout);
+    protected JSONObject putRequest(String url, String obj, @Nullable RequestOptions requestOptions) throws AlgoliaException {
+        return _request(Method.PUT, url, obj, getWriteHostsThatAreUp(), connectTimeout, readTimeout, requestOptions);
     }
 
     /**
@@ -490,9 +490,9 @@ public abstract class AbstractClient {
      * @return a JSONObject containing the resulting data or error
      * @throws AlgoliaException if the request data is not valid json
      */
-    private JSONObject _request(Method m, String url, String json, List<String> hostsArray, int connectTimeout, int readTimeout) throws AlgoliaException {
+    private JSONObject _request(Method m, String url, String json, List<String> hostsArray, int connectTimeout, int readTimeout, @Nullable RequestOptions requestOptions) throws AlgoliaException {
         try {
-            return _getJSONObject(_requestRaw(m, url, json, hostsArray, connectTimeout, readTimeout));
+            return _getJSONObject(_requestRaw(m, url, json, hostsArray, connectTimeout, readTimeout, requestOptions));
         } catch (JSONException e) {
             throw new AlgoliaException("JSON decode error:" + e.getMessage());
         } catch (UnsupportedEncodingException e) {
@@ -512,7 +512,7 @@ public abstract class AbstractClient {
      * @return a JSONObject containing the resulting data or error
      * @throws AlgoliaException in case of connection or data handling error
      */
-    private byte[] _requestRaw(Method m, String url, String json, List<String> hostsArray, int connectTimeout, int readTimeout) throws AlgoliaException {
+    private byte[] _requestRaw(Method m, String url, String json, List<String> hostsArray, int connectTimeout, int readTimeout, @Nullable RequestOptions requestOptions) throws AlgoliaException {
         String requestMethod;
         List<Exception> errors = new ArrayList<>(hostsArray.size());
         // for each host
@@ -546,7 +546,7 @@ public abstract class AbstractClient {
                 hostConnection.setConnectTimeout(connectTimeout);
                 hostConnection.setReadTimeout(readTimeout);
 
-                // set auth headers
+                // Headers
                 hostConnection.setRequestProperty("X-Algolia-Application-Id", this.applicationID);
                 // If API key is too big, send it in the request's body (if applicable).
                 if (this.apiKey != null && this.apiKey.length() > MAX_API_KEY_LENGTH && json != null) {
@@ -560,8 +560,15 @@ public abstract class AbstractClient {
                 } else {
                     hostConnection.setRequestProperty("X-Algolia-API-Key", this.apiKey);
                 }
+                // Client-level headers
                 for (Map.Entry<String, String> entry : this.headers.entrySet()) {
                     hostConnection.setRequestProperty(entry.getKey(), entry.getValue());
+                }
+                // Request-level headers
+                if (requestOptions != null) {
+                    for (Map.Entry<String, String> entry : requestOptions.headers.entrySet()) {
+                        hostConnection.setRequestProperty(entry.getKey(), entry.getValue());
+                    }
                 }
 
                 // set user agent

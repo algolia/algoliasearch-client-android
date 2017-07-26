@@ -524,7 +524,7 @@ public class MirroredIndex extends Index
 
             // Fetch settings.
             {
-                JSONObject settingsJSON = this.getSettings(1);
+                JSONObject settingsJSON = this.getSettings(1, /* requestOptions: */ null);
                 settingsFile = new File(tmpDir, "settings.json");
                 String data = settingsJSON.toString();
                 Writer writer = new OutputStreamWriter(new FileOutputStream(settingsFile), "UTF-8");
@@ -540,7 +540,7 @@ public class MirroredIndex extends Index
                 int retrievedObjects = 0;
                 do {
                     // Make next request.
-                    JSONObject objectsJSON = cursor == null ? this.browse(query.query) : this.browseFrom(cursor);
+                    JSONObject objectsJSON = cursor == null ? this.browse(query.query, /* requestOptions: */ null) : this.browseFrom(cursor, /* requestOptions: */ null);
 
                     // Write result to file.
                     int objectFileNo = objectFiles.size();
@@ -818,19 +818,20 @@ public class MirroredIndex extends Index
      * Search the online API, falling back to the local mirror if enabled in case of error.
      *
      * @param query Search query.
+     * @param requestOptions Request-specific options.
      * @param completionHandler The listener that will be notified of the request's outcome.
      * @return A cancellable request.
      */
     @Override
-    public Request searchAsync(@NonNull Query query, @NonNull CompletionHandler completionHandler) {
+    public Request searchAsync(@NonNull Query query, @Nullable RequestOptions requestOptions, @NonNull CompletionHandler completionHandler) {
         // A non-mirrored index behaves exactly as an online index.
         if (!mirrored) {
-            return super.searchAsync(query, completionHandler);
+            return super.searchAsync(query, requestOptions, completionHandler);
         }
         // A mirrored index launches a mixed offline/online request.
         else {
             final Query queryCopy = new Query(query);
-            return new OnlineOfflineSearchRequest(queryCopy, completionHandler).start();
+            return new OnlineOfflineSearchRequest(queryCopy, requestOptions, completionHandler).start();
         }
     }
 
@@ -843,6 +844,7 @@ public class MirroredIndex extends Index
      * we explicitly synchronize the blocks using a serial dispatch queue specific to this operation.
      */
     private abstract class OnlineOfflineRequest implements Request {
+        private RequestOptions requestOptions;
         private CompletionHandler completionHandler;
         private boolean cancelled = false;
         private Request onlineRequest;
@@ -853,10 +855,11 @@ public class MirroredIndex extends Index
         /**
          * Construct a new mixed online/offline request.
          */
-        public OnlineOfflineRequest(@NonNull CompletionHandler completionHandler) {
+        public OnlineOfflineRequest(@Nullable RequestOptions requestOptions, @NonNull CompletionHandler completionHandler) {
             if (!mirrored) {
                 throw new IllegalStateException("This index is not mirrored");
             }
+            this.requestOptions = requestOptions;
             this.completionHandler = completionHandler;
         }
 
@@ -989,8 +992,8 @@ public class MirroredIndex extends Index
     private class OnlineOfflineSearchRequest extends OnlineOfflineRequest {
         private final Query query;
 
-        public OnlineOfflineSearchRequest(@NonNull Query query, @NonNull CompletionHandler completionHandler) {
-            super(completionHandler);
+        public OnlineOfflineSearchRequest(@NonNull Query query, @Nullable RequestOptions requestOptions, @NonNull CompletionHandler completionHandler) {
+            super(requestOptions, completionHandler);
             this.query = query;
         }
 
@@ -1013,19 +1016,31 @@ public class MirroredIndex extends Index
      * @return A cancellable request.
      */
     public Request searchOnlineAsync(@NonNull Query query, @NonNull final CompletionHandler completionHandler) {
+        return searchOnlineAsync(query, /* requestOptions: */ null, completionHandler);
+    }
+
+    /**
+     * Search the online API.
+     *
+     * @param query Search query.
+     * @param requestOptions Request-specific options.
+     * @param completionHandler The listener that will be notified of the request's outcome.
+     * @return A cancellable request.
+     */
+    public Request searchOnlineAsync(@NonNull Query query, @Nullable final RequestOptions requestOptions, @NonNull final CompletionHandler completionHandler) {
         final Query queryCopy = new Query(query);
         return getClient().new AsyncTaskRequest(completionHandler) {
             @NonNull
             @Override
             protected JSONObject run() throws AlgoliaException {
-                return searchOnline(queryCopy);
+                return searchOnline(queryCopy, requestOptions);
             }
         }.start();
     }
 
-    private JSONObject searchOnline(@NonNull Query query) throws AlgoliaException {
+    private JSONObject searchOnline(@NonNull Query query, @Nullable RequestOptions requestOptions) throws AlgoliaException {
         try {
-            JSONObject content = super.search(query);
+            JSONObject content = super.search(query, requestOptions);
             content.put(JSON_KEY_ORIGIN, JSON_VALUE_ORIGIN_REMOTE);
             return content;
         }
@@ -1067,7 +1082,7 @@ public class MirroredIndex extends Index
     // ----------------------------------------------------------------------
 
     @Override
-    public Request multipleQueriesAsync(@NonNull List<Query> queries, final Client.MultipleQueriesStrategy strategy, @NonNull CompletionHandler completionHandler) {
+    public Request multipleQueriesAsync(@NonNull List<Query> queries, final Client.MultipleQueriesStrategy strategy, @Nullable RequestOptions requestOptions, @NonNull CompletionHandler completionHandler) {
         // A non-mirrored index behaves exactly as an online index.
         if (!mirrored) {
             return super.multipleQueriesAsync(queries, strategy, completionHandler);
@@ -1078,7 +1093,7 @@ public class MirroredIndex extends Index
             for (Query query: queries) {
                 queriesCopy.add(new Query(query));
             }
-            return new OnlineOfflineMultipleQueriesRequest(queriesCopy, strategy, completionHandler).start();
+            return new OnlineOfflineMultipleQueriesRequest(queriesCopy, strategy, requestOptions, completionHandler).start();
         }
     }
 
@@ -1091,6 +1106,19 @@ public class MirroredIndex extends Index
      * @return A cancellable request.
      */
     public Request multipleQueriesOnlineAsync(@NonNull List<Query> queries, final Client.MultipleQueriesStrategy strategy, final @NonNull CompletionHandler completionHandler) {
+        return multipleQueriesAsync(queries, /* requestOptions: */ null, completionHandler);
+    }
+
+    /**
+     * Run multiple queries on this index, explicitly targeting the online API.
+     *
+     * @param queries Queries to run.
+     * @param strategy Strategy to use.
+     * @param requestOptions Request-specific options.
+     * @param completionHandler The listener that will be notified of the request's outcome.
+     * @return A cancellable request.
+     */
+    public Request multipleQueriesOnlineAsync(@NonNull List<Query> queries, final Client.MultipleQueriesStrategy strategy, @Nullable final RequestOptions requestOptions, final @NonNull CompletionHandler completionHandler) {
         final List<Query> queriesCopy = new ArrayList<>(queries.size());
         for (Query query: queries) {
             queriesCopy.add(new Query(query));
@@ -1099,7 +1127,7 @@ public class MirroredIndex extends Index
             @NonNull
             @Override
             protected JSONObject run() throws AlgoliaException {
-                return multipleQueriesOnline(queriesCopy, strategy == null ? null : strategy.toString());
+                return multipleQueriesOnline(queriesCopy, strategy == null ? null : strategy.toString(), requestOptions);
             }
         }.start();
     }
@@ -1134,8 +1162,8 @@ public class MirroredIndex extends Index
         private final List<Query> queries;
         private final Client.MultipleQueriesStrategy strategy;
 
-        public OnlineOfflineMultipleQueriesRequest(@NonNull List<Query> queries, Client.MultipleQueriesStrategy strategy, @NonNull CompletionHandler completionHandler) {
-            super(completionHandler);
+        public OnlineOfflineMultipleQueriesRequest(@NonNull List<Query> queries, Client.MultipleQueriesStrategy strategy, @Nullable RequestOptions requestOptions, @NonNull CompletionHandler completionHandler) {
+            super(requestOptions, completionHandler);
             this.queries = queries;
             this.strategy = strategy;
         }
@@ -1154,9 +1182,9 @@ public class MirroredIndex extends Index
     /**
      * Run multiple queries on this index, explicitly targeting the online API.
      */
-    private JSONObject multipleQueriesOnline(@NonNull List<Query> queries, String strategy) throws AlgoliaException {
+    private JSONObject multipleQueriesOnline(@NonNull List<Query> queries, String strategy, @Nullable RequestOptions requestOptions) throws AlgoliaException {
         try {
-            JSONObject content = super.multipleQueries(queries, strategy);
+            JSONObject content = super.multipleQueries(queries, strategy, requestOptions);
             content.put(JSON_KEY_ORIGIN, JSON_VALUE_ORIGIN_REMOTE);
             return content;
         }
@@ -1250,15 +1278,16 @@ public class MirroredIndex extends Index
      * @param objectID Identifier of the object to retrieve.
      * @param attributesToRetrieve Attributes to retrieve. If `null` or if at least one item is `*`, all retrievable
      *                             attributes will be retrieved.
+     * @param requestOptions Request-specific options.
      * @param completionHandler The listener that will be notified of the request's outcome.
      * @return A cancellable request.
      */
     @Override
-    public Request getObjectAsync(final @NonNull String objectID, final @Nullable List<String> attributesToRetrieve, @NonNull CompletionHandler completionHandler) {
+    public Request getObjectAsync(final @NonNull String objectID, final @Nullable List<String> attributesToRetrieve, @Nullable RequestOptions requestOptions, @NonNull CompletionHandler completionHandler) {
         if (!mirrored) {
-            return super.getObjectAsync(objectID, attributesToRetrieve, completionHandler);
+            return super.getObjectAsync(objectID, attributesToRetrieve, requestOptions, completionHandler);
         } else {
-            return new OnlineOfflineGetObjectRequest(objectID, attributesToRetrieve, completionHandler).start();
+            return new OnlineOfflineGetObjectRequest(objectID, attributesToRetrieve, requestOptions, completionHandler).start();
         }
     }
 
@@ -1266,8 +1295,8 @@ public class MirroredIndex extends Index
         private final String objectID;
         private final List<String> attributesToRetrieve;
 
-        public OnlineOfflineGetObjectRequest(@NonNull String objectID, final @Nullable List<String> attributesToRetrieve, @NonNull CompletionHandler completionHandler) {
-            super(completionHandler);
+        public OnlineOfflineGetObjectRequest(@NonNull String objectID, final @Nullable List<String> attributesToRetrieve, @Nullable RequestOptions requestOptions, @NonNull CompletionHandler completionHandler) {
+            super(requestOptions, completionHandler);
             this.objectID = objectID;
             this.attributesToRetrieve = attributesToRetrieve;
         }
@@ -1293,8 +1322,22 @@ public class MirroredIndex extends Index
      * @return A cancellable request.
      */
     public Request getObjectOnlineAsync(@NonNull final String objectID, final @Nullable List<String> attributesToRetrieve, @NonNull final CompletionHandler completionHandler) {
+        return getObjectOnlineAsync(objectID, attributesToRetrieve, /* requestOptions: */ null, completionHandler);
+    }
+
+    /**
+     * Get an individual object, explicitly targeting the online API, not the offline mirror.
+     *
+     * @param objectID Identifier of the object to retrieve.
+     * @param attributesToRetrieve Attributes to retrieve. If `null` or if at least one item is `*`, all retrievable
+     *                             attributes will be retrieved.
+     * @param requestOptions Request-specific options.
+     * @param completionHandler The listener that will be notified of the request's outcome.
+     * @return A cancellable request.
+     */
+    public Request getObjectOnlineAsync(@NonNull final String objectID, final @Nullable List<String> attributesToRetrieve, @Nullable RequestOptions requestOptions, @NonNull final CompletionHandler completionHandler) {
         // TODO: Cannot perform origin tagging because it could conflict with the object's attributes
-        return super.getObjectAsync(objectID, attributesToRetrieve, completionHandler);
+        return super.getObjectAsync(objectID, attributesToRetrieve, requestOptions, completionHandler);
     }
 
     /**
@@ -1305,7 +1348,7 @@ public class MirroredIndex extends Index
      * @return A cancellable request.
      */
     public Request getObjectOnlineAsync(@NonNull final String objectID, @NonNull final CompletionHandler completionHandler) {
-        return getObjectOnlineAsync(objectID, null, completionHandler);
+        return getObjectOnlineAsync(objectID, /* attributesToRetrieve: */ null, /* requestOptions: */ null, completionHandler);
     }
 
     /**
@@ -1361,15 +1404,16 @@ public class MirroredIndex extends Index
      * @param objectIDs Identifiers of objects to retrieve.
      * @param attributesToRetrieve Attributes to retrieve. If `null` or if at least one item is `*`, all retrievable
      *                             attributes will be retrieved.
+     * @param requestOptions Request-specific options.
      * @param completionHandler The listener that will be notified of the request's outcome.
      * @return A cancellable request.
      */
     @Override
-    public Request getObjectsAsync(final @NonNull List<String> objectIDs, final @Nullable List<String> attributesToRetrieve, @NonNull CompletionHandler completionHandler) {
+    public Request getObjectsAsync(final @NonNull List<String> objectIDs, final @Nullable List<String> attributesToRetrieve, @Nullable RequestOptions requestOptions, @NonNull CompletionHandler completionHandler) {
         if (!mirrored) {
-            return super.getObjectsAsync(objectIDs, attributesToRetrieve, completionHandler);
+            return super.getObjectsAsync(objectIDs, attributesToRetrieve, requestOptions, completionHandler);
         } else {
-            return new OnlineOfflineGetObjectsRequest(objectIDs, attributesToRetrieve, completionHandler).start();
+            return new OnlineOfflineGetObjectsRequest(objectIDs, attributesToRetrieve, requestOptions, completionHandler).start();
         }
     }
 
@@ -1377,8 +1421,8 @@ public class MirroredIndex extends Index
         private final List<String> objectIDs;
         private final List<String> attributesToRetrieve;
 
-        public OnlineOfflineGetObjectsRequest(@NonNull List<String> objectIDs, final @Nullable List<String> attributesToRetrieve, @NonNull CompletionHandler completionHandler) {
-            super(completionHandler);
+        public OnlineOfflineGetObjectsRequest(@NonNull List<String> objectIDs, final @Nullable List<String> attributesToRetrieve, @Nullable RequestOptions requestOptions, @NonNull CompletionHandler completionHandler) {
+            super(requestOptions, completionHandler);
             this.objectIDs = objectIDs;
             this.attributesToRetrieve = attributesToRetrieve;
         }
@@ -1404,11 +1448,25 @@ public class MirroredIndex extends Index
      * @return A cancellable request.
      */
     public Request getObjectsOnlineAsync(@NonNull final List<String> objectIDs, final @Nullable List<String> attributesToRetrieve, @NonNull final CompletionHandler completionHandler) {
+        return getObjectsOnlineAsync(objectIDs, attributesToRetrieve, /* requestOptions: */ null, completionHandler);
+    }
+
+    /**
+     * Get individual objects, explicitly targeting the online API, not the offline mirror.
+     *
+     * @param objectIDs Identifiers of objects to retrieve.
+     * @param attributesToRetrieve Attributes to retrieve. If `null` or if at least one item is `*`, all retrievable
+     *                             attributes will be retrieved.
+     * @param requestOptions Request-specific options.
+     * @param completionHandler The listener that will be notified of the request's outcome.
+     * @return A cancellable request.
+     */
+    public Request getObjectsOnlineAsync(@NonNull final List<String> objectIDs, final @Nullable List<String> attributesToRetrieve, @Nullable final RequestOptions requestOptions, @NonNull final CompletionHandler completionHandler) {
         return getClient().new AsyncTaskRequest(completionHandler) {
             @NonNull
             @Override
             protected JSONObject run() throws AlgoliaException {
-                return getObjectsOnline(objectIDs, attributesToRetrieve);
+                return getObjectsOnline(objectIDs, attributesToRetrieve, requestOptions);
             }
         }.start();
     }
@@ -1421,12 +1479,12 @@ public class MirroredIndex extends Index
      * @return A cancellable request.
      */
     public Request getObjectsOnlineAsync(@NonNull final List<String> objectIDs, @NonNull final CompletionHandler completionHandler) {
-        return getObjectsOnlineAsync(objectIDs, null, completionHandler);
+        return getObjectsOnlineAsync(objectIDs, /* attributesToRetrieve: */ null, /* requestOptions: */ null, completionHandler);
     }
 
-    private JSONObject getObjectsOnline(@NonNull final List<String> objectIDs, final @Nullable List<String> attributesToRetrieve) throws AlgoliaException {
+    private JSONObject getObjectsOnline(@NonNull final List<String> objectIDs, final @Nullable List<String> attributesToRetrieve, @Nullable RequestOptions requestOptions) throws AlgoliaException {
         try {
-            JSONObject content = super.getObjects(objectIDs, attributesToRetrieve);
+            JSONObject content = super.getObjects(objectIDs, attributesToRetrieve, requestOptions);
             // TODO: Factorize origin tagging
             content.put(JSON_KEY_ORIGIN, JSON_VALUE_ORIGIN_REMOTE);
             return content;
@@ -1499,15 +1557,15 @@ public class MirroredIndex extends Index
     // ----------------------------------------------------------------------
 
     @Override
-    public Request searchForFacetValues(@NonNull String facetName, @NonNull String text, @Nullable Query query, @NonNull final CompletionHandler completionHandler) {
+    public Request searchForFacetValuesAsync(@NonNull String facetName, @NonNull String text, @Nullable Query query, @Nullable RequestOptions requestOptions, @NonNull final CompletionHandler completionHandler) {
         // A non-mirrored index behaves exactly as an online index.
         if (!mirrored) {
-            return super.searchForFacetValues(facetName, text, query, completionHandler);
+            return super.searchForFacetValuesAsync(facetName, text, query, requestOptions, completionHandler);
         }
         // A mirrored index launches a mixed offline/online request.
         else {
             final Query queryCopy = query != null ? new Query(query) : null;
-            return new MixedFacetSearchRequest(facetName, text, queryCopy, completionHandler).start();
+            return new MixedFacetSearchRequest(facetName, text, queryCopy, requestOptions, completionHandler).start();
         }
     }
 
@@ -1516,7 +1574,15 @@ public class MirroredIndex extends Index
      * Same parameters as {@link Index#searchForFacetValues(String, String, Query, CompletionHandler)}.
      */
     public Request searchForFacetValuesOnline(@NonNull String facetName, @NonNull String text, @Nullable Query query, @NonNull final CompletionHandler completionHandler) {
-        return super.searchForFacetValues(facetName, text, query, new CompletionHandler() {
+        return searchForFacetValuesOnline(facetName, text, query, /* requestOptions: */ null, completionHandler);
+    }
+
+    /**
+     * Search for facet values, explicitly targeting the online API, not the offline mirror.
+     * Same parameters as {@link Index#searchForFacetValues(String, String, Query, CompletionHandler)}.
+     */
+    public Request searchForFacetValuesOnline(@NonNull String facetName, @NonNull String text, @Nullable Query query, @Nullable RequestOptions requestOptions, @NonNull final CompletionHandler completionHandler) {
+        return super.searchForFacetValuesAsync(facetName, text, query, requestOptions, new CompletionHandler() {
             @Override
             public void requestCompleted(JSONObject content, AlgoliaException error) {
                 try {
@@ -1553,8 +1619,8 @@ public class MirroredIndex extends Index
         private final @NonNull String facetQuery;
         private final Query query;
 
-        public MixedFacetSearchRequest(@NonNull String facetName, @NonNull String facetQuery, @Nullable Query query, @NonNull CompletionHandler completionHandler) {
-            super(completionHandler);
+        public MixedFacetSearchRequest(@NonNull String facetName, @NonNull String facetQuery, @Nullable Query query, @Nullable RequestOptions requestOptions, @NonNull CompletionHandler completionHandler) {
+            super(requestOptions, completionHandler);
             this.facetName = facetName;
             this.facetQuery = facetQuery;
             this.query = query;

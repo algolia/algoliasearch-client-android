@@ -164,15 +164,44 @@ public class Client extends AbstractClient {
     /**
      * List existing indexes.
      *
+     * @param requestOptions Request-specific options.
      * @param completionHandler The listener that will be notified of the request's outcome.
      * @return A cancellable request.
      */
-    public Request listIndexesAsync(@NonNull CompletionHandler completionHandler) {
+    public Request listIndexesAsync(@Nullable final RequestOptions requestOptions, @NonNull CompletionHandler completionHandler) {
         return new AsyncTaskRequest(completionHandler) {
             @NonNull
             @Override
             protected JSONObject run() throws AlgoliaException {
-                return listIndexes();
+                return listIndexes(requestOptions);
+            }
+        }.start();
+    }
+
+    /**
+     * List existing indexes.
+     *
+     * @param completionHandler The listener that will be notified of the request's outcome.
+     * @return A cancellable request.
+     */
+    public Request listIndexesAsync(@NonNull CompletionHandler completionHandler) {
+        return listIndexesAsync(/* requestOptions: */ null, completionHandler);
+    }
+
+    /**
+     * Delete an index.
+     *
+     * @param indexName Name of index to delete.
+     * @param requestOptions Request-specific options.
+     * @param completionHandler The listener that will be notified of the request's outcome.
+     * @return A cancellable request.
+     */
+    public Request deleteIndexAsync(final @NonNull String indexName, @Nullable final RequestOptions requestOptions, CompletionHandler completionHandler) {
+        return new AsyncTaskRequest(completionHandler) {
+            @NonNull
+            @Override
+            protected JSONObject run() throws AlgoliaException {
+                return deleteIndex(indexName, requestOptions);
             }
         }.start();
     }
@@ -185,11 +214,26 @@ public class Client extends AbstractClient {
      * @return A cancellable request.
      */
     public Request deleteIndexAsync(final @NonNull String indexName, CompletionHandler completionHandler) {
+        return deleteIndexAsync(indexName, /* requestOptions: */ null, completionHandler);
+    }
+
+    /**
+     * Move an existing index.
+     * If the destination index already exists, its specific API keys will be preserved and the source index specific
+     * API keys will be added.
+     *
+     * @param srcIndexName Name of index to move.
+     * @param dstIndexName The new index name.
+     * @param requestOptions Request-specific options.
+     * @param completionHandler The listener that will be notified of the request's outcome.
+     * @return A cancellable request.
+     */
+    public Request moveIndexAsync(final @NonNull String srcIndexName, final @NonNull String dstIndexName, @Nullable final RequestOptions requestOptions, CompletionHandler completionHandler) {
         return new AsyncTaskRequest(completionHandler) {
             @NonNull
             @Override
             protected JSONObject run() throws AlgoliaException {
-                return deleteIndex(indexName);
+                return moveIndex(srcIndexName, dstIndexName, requestOptions);
             }
         }.start();
     }
@@ -205,11 +249,26 @@ public class Client extends AbstractClient {
      * @return A cancellable request.
      */
     public Request moveIndexAsync(final @NonNull String srcIndexName, final @NonNull String dstIndexName, CompletionHandler completionHandler) {
+        return moveIndexAsync(srcIndexName, dstIndexName, /* requestOptions: */ null, completionHandler);
+    }
+
+    /**
+     * Copy an existing index.
+     * If the destination index already exists, its specific API keys will be preserved and the source index specific
+     * API keys will be added.
+     *
+     * @param srcIndexName Name of index to copy.
+     * @param dstIndexName The new index name.
+     * @param requestOptions Request-specific options.
+     * @param completionHandler The listener that will be notified of the request's outcome.
+     * @return A cancellable request.
+     */
+    public Request copyIndexAsync(final @NonNull String srcIndexName, final @NonNull String dstIndexName, @Nullable final RequestOptions requestOptions, CompletionHandler completionHandler) {
         return new AsyncTaskRequest(completionHandler) {
             @NonNull
             @Override
             protected JSONObject run() throws AlgoliaException {
-                return moveIndex(srcIndexName, dstIndexName);
+                return copyIndex(srcIndexName, dstIndexName, requestOptions);
             }
         }.start();
     }
@@ -225,13 +284,7 @@ public class Client extends AbstractClient {
      * @return A cancellable request.
      */
     public Request copyIndexAsync(final @NonNull String srcIndexName, final @NonNull String dstIndexName, CompletionHandler completionHandler) {
-        return new AsyncTaskRequest(completionHandler) {
-            @NonNull
-            @Override
-            protected JSONObject run() throws AlgoliaException {
-                return copyIndex(srcIndexName, dstIndexName);
-            }
-        }.start();
+        return copyIndexAsync(srcIndexName, dstIndexName, /* requestOptions: */ null, completionHandler);
     }
 
     /**
@@ -259,15 +312,46 @@ public class Client extends AbstractClient {
      *
      * @param queries The queries to run.
      * @param strategy The strategy to use.
+     * @param requestOptions Request-specific options.
      * @param completionHandler The listener that will be notified of the request's outcome.
      * @return A cancellable request.
      */
-    public Request multipleQueriesAsync(final @NonNull List<IndexQuery> queries, final MultipleQueriesStrategy strategy, @NonNull CompletionHandler completionHandler) {
+    public Request multipleQueriesAsync(final @NonNull List<IndexQuery> queries, final MultipleQueriesStrategy strategy, @Nullable final RequestOptions requestOptions, @NonNull CompletionHandler completionHandler) {
         return new AsyncTaskRequest(completionHandler) {
             @NonNull
             @Override
             protected JSONObject run() throws AlgoliaException {
-                return multipleQueries(queries, strategy == null ? null : strategy.toString());
+                return multipleQueries(queries, strategy == null ? null : strategy.toString(), requestOptions);
+            }
+        }.start();
+    }
+
+    /**
+     * Run multiple queries, potentially targeting multiple indexes, with one API call.
+     *
+     * @param queries The queries to run.
+     * @param strategy The strategy to use.
+     * @param completionHandler The listener that will be notified of the request's outcome.
+     * @return A cancellable request.
+     */
+    public Request multipleQueriesAsync(final @NonNull List<IndexQuery> queries, final MultipleQueriesStrategy strategy, @NonNull CompletionHandler completionHandler) {
+        return multipleQueriesAsync(queries, strategy, /* requestOptions: */ null, completionHandler);
+    }
+
+    /**
+     * Batch operations.
+     *
+     * @param operations List of operations.
+     * @param requestOptions Request-specific options.
+     * @param completionHandler The listener that will be notified of the request's outcome.
+     * @return A cancellable request.
+     */
+    public Request batchAsync(final @NonNull JSONArray operations, @Nullable final RequestOptions requestOptions, CompletionHandler completionHandler) {
+        return new AsyncTaskRequest(completionHandler) {
+            @NonNull
+            @Override
+            protected JSONObject run() throws AlgoliaException {
+                return batch(operations, requestOptions);
             }
         }.start();
     }
@@ -280,13 +364,7 @@ public class Client extends AbstractClient {
      * @return A cancellable request.
      */
     public Request batchAsync(final @NonNull JSONArray operations, CompletionHandler completionHandler) {
-        return new AsyncTaskRequest(completionHandler) {
-            @NonNull
-            @Override
-            protected JSONObject run() throws AlgoliaException {
-                return batch(operations);
-            }
-        }.start();
+        return batchAsync(operations, /* requestOptions: */ null, completionHandler);
     }
 
     // ----------------------------------------------------------------------
@@ -296,23 +374,25 @@ public class Client extends AbstractClient {
     /**
      * List all existing indexes
      *
+     * @param requestOptions Request-specific options.
      * @return a JSON Object in the form:
      * { "items": [ {"name": "contacts", "createdAt": "2013-01-18T15:33:13.556Z"},
      *              {"name": "notes", "createdAt": "2013-01-18T15:33:13.556Z"}]}
      */
-    protected JSONObject listIndexes() throws AlgoliaException {
-        return getRequest("/1/indexes/", false);
+    protected JSONObject listIndexes(@Nullable RequestOptions requestOptions) throws AlgoliaException {
+        return getRequest("/1/indexes/", false, requestOptions);
     }
 
     /**
      * Delete an index
      *
+     * @param requestOptions Request-specific options.
      * @param indexName the name of index to delete
      * @return an object containing a "deletedAt" attribute
      */
-    protected JSONObject deleteIndex(String indexName) throws AlgoliaException {
+    protected JSONObject deleteIndex(String indexName, @Nullable RequestOptions requestOptions) throws AlgoliaException {
         try {
-            return deleteRequest("/1/indexes/" + URLEncoder.encode(indexName, "UTF-8"));
+            return deleteRequest("/1/indexes/" + URLEncoder.encode(indexName, "UTF-8"), requestOptions);
         } catch (UnsupportedEncodingException e) {
             throw new RuntimeException(e);
         }
@@ -323,13 +403,14 @@ public class Client extends AbstractClient {
      *
      * @param srcIndexName the name of index to copy.
      * @param dstIndexName the new index name that will contains a copy of srcIndexName (destination will be overriten if it already exist).
+     * @param requestOptions Request-specific options.
      */
-    protected JSONObject moveIndex(String srcIndexName, String dstIndexName) throws AlgoliaException {
+    protected JSONObject moveIndex(String srcIndexName, String dstIndexName, @Nullable RequestOptions requestOptions) throws AlgoliaException {
         try {
             JSONObject content = new JSONObject();
             content.put("operation", "move");
             content.put("destination", dstIndexName);
-            return postRequest("/1/indexes/" + URLEncoder.encode(srcIndexName, "UTF-8") + "/operation", content.toString(), false);
+            return postRequest("/1/indexes/" + URLEncoder.encode(srcIndexName, "UTF-8") + "/operation", content.toString(), false, requestOptions);
         } catch (UnsupportedEncodingException e) {
             throw new RuntimeException(e);
         } catch (JSONException e) {
@@ -342,13 +423,14 @@ public class Client extends AbstractClient {
      *
      * @param srcIndexName the name of index to copy.
      * @param dstIndexName the new index name that will contains a copy of srcIndexName (destination will be overriten if it already exist).
+     * @param requestOptions Request-specific options.
      */
-    protected JSONObject copyIndex(String srcIndexName, String dstIndexName) throws AlgoliaException {
+    protected JSONObject copyIndex(String srcIndexName, String dstIndexName, @Nullable RequestOptions requestOptions) throws AlgoliaException {
         try {
             JSONObject content = new JSONObject();
             content.put("operation", "copy");
             content.put("destination", dstIndexName);
-            return postRequest("/1/indexes/" + URLEncoder.encode(srcIndexName, "UTF-8") + "/operation", content.toString(), false);
+            return postRequest("/1/indexes/" + URLEncoder.encode(srcIndexName, "UTF-8") + "/operation", content.toString(), false, requestOptions);
         } catch (UnsupportedEncodingException e) {
             throw new RuntimeException(e);
         } catch (JSONException e) {
@@ -356,7 +438,7 @@ public class Client extends AbstractClient {
         }
     }
 
-    protected JSONObject multipleQueries(List<IndexQuery> queries, String strategy) throws AlgoliaException {
+    protected JSONObject multipleQueries(List<IndexQuery> queries, String strategy, @Nullable RequestOptions requestOptions) throws AlgoliaException {
         try {
             JSONArray requests = new JSONArray();
             for (IndexQuery indexQuery : queries) {
@@ -370,7 +452,7 @@ public class Client extends AbstractClient {
             if (strategy != null) {
                 body.put("strategy", strategy);
             }
-            return postRequest(path, body.toString(), true);
+            return postRequest(path, body.toString(), true, requestOptions);
         } catch (JSONException e) {
             throw new AlgoliaException(e.getMessage());
         }
@@ -380,13 +462,14 @@ public class Client extends AbstractClient {
      * Custom batch
      *
      * @param actions the array of actions
+     * @param requestOptions Request-specific options.
      * @throws AlgoliaException if the response is not valid json
      */
-    protected JSONObject batch(JSONArray actions) throws AlgoliaException {
+    protected JSONObject batch(JSONArray actions, @Nullable RequestOptions requestOptions) throws AlgoliaException {
         try {
             JSONObject content = new JSONObject();
             content.put("requests", actions);
-            return postRequest("/1/indexes/*/batch", content.toString(), false);
+            return postRequest("/1/indexes/*/batch", content.toString(), false, requestOptions);
         } catch (JSONException e) {
             throw new AlgoliaException(e.getMessage());
         }
