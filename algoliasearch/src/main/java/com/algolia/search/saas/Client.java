@@ -380,7 +380,7 @@ public class Client extends AbstractClient {
      *              {"name": "notes", "createdAt": "2013-01-18T15:33:13.556Z"}]}
      */
     protected JSONObject listIndexes(@Nullable RequestOptions requestOptions) throws AlgoliaException {
-        return getRequest("/1/indexes/", false, requestOptions);
+        return getRequest("/1/indexes/", /* urlParameters: */ null, false, requestOptions);
     }
 
     /**
@@ -392,7 +392,7 @@ public class Client extends AbstractClient {
      */
     protected JSONObject deleteIndex(String indexName, @Nullable RequestOptions requestOptions) throws AlgoliaException {
         try {
-            return deleteRequest("/1/indexes/" + URLEncoder.encode(indexName, "UTF-8"), requestOptions);
+            return deleteRequest("/1/indexes/" + URLEncoder.encode(indexName, "UTF-8"), /* urlParameters: */ null, requestOptions);
         } catch (UnsupportedEncodingException e) {
             throw new RuntimeException(e);
         }
@@ -410,7 +410,7 @@ public class Client extends AbstractClient {
             JSONObject content = new JSONObject();
             content.put("operation", "move");
             content.put("destination", dstIndexName);
-            return postRequest("/1/indexes/" + URLEncoder.encode(srcIndexName, "UTF-8") + "/operation", content.toString(), false, requestOptions);
+            return postRequest("/1/indexes/" + URLEncoder.encode(srcIndexName, "UTF-8") + "/operation", /* urlParameters: */ null, content.toString(), false, requestOptions);
         } catch (UnsupportedEncodingException e) {
             throw new RuntimeException(e);
         } catch (JSONException e) {
@@ -430,7 +430,7 @@ public class Client extends AbstractClient {
             JSONObject content = new JSONObject();
             content.put("operation", "copy");
             content.put("destination", dstIndexName);
-            return postRequest("/1/indexes/" + URLEncoder.encode(srcIndexName, "UTF-8") + "/operation", content.toString(), false, requestOptions);
+            return postRequest("/1/indexes/" + URLEncoder.encode(srcIndexName, "UTF-8") + "/operation", /* urlParameters: */ null, content.toString(), false, requestOptions);
         } catch (UnsupportedEncodingException e) {
             throw new RuntimeException(e);
         } catch (JSONException e) {
@@ -448,11 +448,10 @@ public class Client extends AbstractClient {
                 );
             }
             JSONObject body = new JSONObject().put("requests", requests);
-            String path = "/1/indexes/*/queries";
             if (strategy != null) {
                 body.put("strategy", strategy);
             }
-            return postRequest(path, body.toString(), true, requestOptions);
+            return postRequest("/1/indexes/*/queries", /* urlParameters: */ null, body.toString(), true, requestOptions);
         } catch (JSONException e) {
             throw new AlgoliaException(e.getMessage());
         }
@@ -469,7 +468,7 @@ public class Client extends AbstractClient {
         try {
             JSONObject content = new JSONObject();
             content.put("requests", actions);
-            return postRequest("/1/indexes/*/batch", content.toString(), false, requestOptions);
+            return postRequest("/1/indexes/*/batch", /* urlParameters: */ null, content.toString(), false, requestOptions);
         } catch (JSONException e) {
             throw new AlgoliaException(e.getMessage());
         }

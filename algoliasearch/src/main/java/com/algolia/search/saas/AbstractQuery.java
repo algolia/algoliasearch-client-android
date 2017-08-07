@@ -113,6 +113,14 @@ public abstract class AbstractQuery {
     // NOTE: Using a tree map to have parameters sorted by key on output.
     @NonNull private Map<String, String> parameters = new TreeMap<>();
 
+    /**
+     * Access the store of query parameters. For internal use only.
+     * @return The parameters in this query.
+     */
+    Map<String, String> getParameters() {
+        return parameters;
+    }
+
     // ----------------------------------------------------------------------
     // Construction
     // ----------------------------------------------------------------------
@@ -167,6 +175,14 @@ public abstract class AbstractQuery {
      * @return A string suitable for use inside the query part of a URL (i.e. after the question mark).
      */
     public @NonNull String build() {
+        return build(parameters);
+    }
+
+    /**
+     * Build a query string from a map of URL parameters.
+     * @return A string suitable for use inside the query part of a URL (i.e. after the question mark).
+     */
+    static @NonNull String build(@NonNull Map<String, String> parameters) {
         StringBuilder stringBuilder = new StringBuilder();
         try {
             for (Map.Entry<String, String> entry : parameters.entrySet()) {

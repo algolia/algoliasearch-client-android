@@ -398,28 +398,28 @@ public abstract class AbstractClient {
         GET, POST, PUT, DELETE
     }
 
-    protected byte[] getRequestRaw(String url, boolean search, @Nullable RequestOptions requestOptions) throws AlgoliaException {
-        return _requestRaw(Method.GET, url, null, getReadHostsThatAreUp(), connectTimeout, search ? searchTimeout : readTimeout, requestOptions);
+    protected byte[] getRequestRaw(@NonNull String url, @Nullable Map<String, String> urlParameters, boolean search, @Nullable RequestOptions requestOptions) throws AlgoliaException {
+        return _requestRaw(Method.GET, url, urlParameters, /* json: */ null, getReadHostsThatAreUp(), connectTimeout, search ? searchTimeout : readTimeout, requestOptions);
     }
 
-    protected JSONObject getRequest(String url, boolean search, @Nullable RequestOptions requestOptions) throws AlgoliaException {
-        return _request(Method.GET, url, null, getReadHostsThatAreUp(), connectTimeout, search ? searchTimeout : readTimeout, requestOptions);
+    protected JSONObject getRequest(@NonNull String url, @Nullable Map<String, String> urlParameters, boolean search, @Nullable RequestOptions requestOptions) throws AlgoliaException {
+        return _request(Method.GET, url, urlParameters, /* json: */ null, getReadHostsThatAreUp(), connectTimeout, search ? searchTimeout : readTimeout, requestOptions);
     }
 
-    protected JSONObject deleteRequest(String url, @Nullable RequestOptions requestOptions) throws AlgoliaException {
-        return _request(Method.DELETE, url, null, getWriteHostsThatAreUp(), connectTimeout, readTimeout, requestOptions);
+    protected JSONObject deleteRequest(@NonNull String url, @Nullable Map<String, String> urlParameters, @Nullable RequestOptions requestOptions) throws AlgoliaException {
+        return _request(Method.DELETE, url, urlParameters, /* json: */ null, getWriteHostsThatAreUp(), connectTimeout, readTimeout, requestOptions);
     }
 
-    protected JSONObject postRequest(String url, String obj, boolean readOperation, @Nullable RequestOptions requestOptions) throws AlgoliaException {
-        return _request(Method.POST, url, obj, (readOperation ? getReadHostsThatAreUp() : getWriteHostsThatAreUp()), connectTimeout, (readOperation ? searchTimeout : readTimeout), requestOptions);
+    protected JSONObject postRequest(@NonNull String url, @Nullable Map<String, String> urlParameters, @Nullable String obj, boolean readOperation, @Nullable RequestOptions requestOptions) throws AlgoliaException {
+        return _request(Method.POST, url, urlParameters, obj, (readOperation ? getReadHostsThatAreUp() : getWriteHostsThatAreUp()), connectTimeout, (readOperation ? searchTimeout : readTimeout), requestOptions);
     }
 
-    protected byte[] postRequestRaw(String url, String obj, boolean readOperation, @Nullable RequestOptions requestOptions) throws AlgoliaException {
-        return _requestRaw(Method.POST, url, obj, (readOperation ? getReadHostsThatAreUp() : getWriteHostsThatAreUp()), connectTimeout, (readOperation ? searchTimeout : readTimeout), requestOptions);
+    protected byte[] postRequestRaw(@NonNull String url, @Nullable Map<String, String> urlParameters, @Nullable String obj, boolean readOperation, @Nullable RequestOptions requestOptions) throws AlgoliaException {
+        return _requestRaw(Method.POST, url, urlParameters, obj, (readOperation ? getReadHostsThatAreUp() : getWriteHostsThatAreUp()), connectTimeout, (readOperation ? searchTimeout : readTimeout), requestOptions);
     }
 
-    protected JSONObject putRequest(String url, String obj, @Nullable RequestOptions requestOptions) throws AlgoliaException {
-        return _request(Method.PUT, url, obj, getWriteHostsThatAreUp(), connectTimeout, readTimeout, requestOptions);
+    protected JSONObject putRequest(@NonNull String url, @Nullable Map<String, String> urlParameters, @NonNull String obj, @Nullable RequestOptions requestOptions) throws AlgoliaException {
+        return _request(Method.PUT, url, urlParameters, obj, getWriteHostsThatAreUp(), connectTimeout, readTimeout, requestOptions);
     }
 
     /**
@@ -482,7 +482,8 @@ public abstract class AbstractClient {
      * Send the query according to parameters and returns its result as a JSONObject
      *
      * @param m              HTTP Method to use
-     * @param url            endpoint URL
+     * @param url            Endpoint URL, *without query string*. The query string is handled by `urlParameters`.
+     * @param urlParameters  URL parameters
      * @param json           optional JSON Object to send
      * @param hostsArray     array of hosts to try successively
      * @param connectTimeout maximum wait time to open connection
@@ -490,9 +491,9 @@ public abstract class AbstractClient {
      * @return a JSONObject containing the resulting data or error
      * @throws AlgoliaException if the request data is not valid json
      */
-    private JSONObject _request(Method m, String url, String json, List<String> hostsArray, int connectTimeout, int readTimeout, @Nullable RequestOptions requestOptions) throws AlgoliaException {
+    private JSONObject _request(@NonNull Method m, @NonNull String url, @Nullable Map<String, String> urlParameters, @Nullable String json, @NonNull List<String> hostsArray, int connectTimeout, int readTimeout, @Nullable RequestOptions requestOptions) throws AlgoliaException {
         try {
-            return _getJSONObject(_requestRaw(m, url, json, hostsArray, connectTimeout, readTimeout, requestOptions));
+            return _getJSONObject(_requestRaw(m, url, urlParameters, json, hostsArray, connectTimeout, readTimeout, requestOptions));
         } catch (JSONException e) {
             throw new AlgoliaException("JSON decode error:" + e.getMessage());
         } catch (UnsupportedEncodingException e) {
@@ -504,15 +505,16 @@ public abstract class AbstractClient {
      * Send the query according to parameters and returns its result as a JSONObject
      *
      * @param m              HTTP Method to use
-     * @param url            endpoint URL
-     * @param json           optional JSON Object to send
+     * @param url            Endpoint URL, *without query string*. The query string is handled by `urlParameters`.
+     * @param urlParameters  URL parameters
+     * @param json           (optional) JSON body
      * @param hostsArray     array of hosts to try successively
      * @param connectTimeout maximum wait time to open connection
      * @param readTimeout    maximum time to read data on socket
      * @return a JSONObject containing the resulting data or error
      * @throws AlgoliaException in case of connection or data handling error
      */
-    private byte[] _requestRaw(Method m, String url, String json, List<String> hostsArray, int connectTimeout, int readTimeout, @Nullable RequestOptions requestOptions) throws AlgoliaException {
+    private byte[] _requestRaw(@NonNull Method m, @NonNull String url, @Nullable Map<String, String> urlParameters, @Nullable String json, @NonNull List<String> hostsArray, int connectTimeout, int readTimeout, @Nullable RequestOptions requestOptions) throws AlgoliaException {
         String requestMethod;
         List<Exception> errors = new ArrayList<>(hostsArray.size());
         // for each host
@@ -536,9 +538,24 @@ public abstract class AbstractClient {
 
             InputStream stream = null;
             HttpURLConnection hostConnection = null;
-            // set URL
             try {
-                URL hostURL = new URL("https://" + host + url);
+                // Compute final URL parameters.
+                final Map<String, String> parameters = new HashMap<>();
+                if (urlParameters != null) {
+                    parameters.putAll(urlParameters);
+                }
+                if (requestOptions != null) {
+                    parameters.putAll(requestOptions.urlParameters);
+                }
+
+                // Build URL.
+                String urlString = "https://" + host + url;
+                if (!parameters.isEmpty()) {
+                    urlString += "?" + AbstractQuery.build(parameters);
+                }
+                URL hostURL = new URL(urlString);
+
+                // Open connection.
                 hostConnection = (HttpURLConnection) hostURL.openConnection();
 
                 //set timeouts

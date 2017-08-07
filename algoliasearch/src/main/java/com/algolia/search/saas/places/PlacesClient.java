@@ -121,7 +121,7 @@ public class PlacesClient extends AbstractClient {
         try {
             JSONObject body = new JSONObject()
                 .put("params", params.build());
-            return postRequest("/1/places/query", body.toString(), true /* readOperation */, /* requestOptions: */ null);
+            return postRequest("/1/places/query", /* urlParameters: */ null, body.toString(), true /* readOperation */, /* requestOptions: */ null);
         }
         catch (JSONException e) {
             throw new RuntimeException(e); // should never happen

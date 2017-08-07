@@ -35,6 +35,7 @@ import org.json.JSONObject;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -299,7 +300,7 @@ public class Index {
                 @NonNull
                 @Override
                 protected JSONObject run() throws AlgoliaException {
-                    return client.postRequest(path, requestBody.toString(), true, requestOptions);
+                    return client.postRequest(path, /* urlParameters: */ null, requestBody.toString(), true, requestOptions);
                 }
             }.start();
         } catch (UnsupportedEncodingException | JSONException e) {
@@ -977,7 +978,7 @@ public class Index {
      * @throws AlgoliaException
      */
     protected JSONObject addObject(JSONObject obj, @Nullable RequestOptions requestOptions) throws AlgoliaException {
-        return client.postRequest("/1/indexes/" + encodedIndexName, obj.toString(), false, requestOptions);
+        return client.postRequest("/1/indexes/" + encodedIndexName, /* urlParameters: */ null, obj.toString(), false, requestOptions);
     }
 
     /**
@@ -991,7 +992,7 @@ public class Index {
      */
     protected JSONObject addObject(JSONObject obj, String objectID, @Nullable RequestOptions requestOptions) throws AlgoliaException {
         try {
-            return client.putRequest("/1/indexes/" + encodedIndexName + "/" + URLEncoder.encode(objectID, "UTF-8"), obj.toString(), requestOptions);
+            return client.putRequest("/1/indexes/" + encodedIndexName + "/" + URLEncoder.encode(objectID, "UTF-8"), /* urlParameters: */ null, obj.toString(), requestOptions);
         } catch (UnsupportedEncodingException e) {
             throw new AlgoliaException(e.getMessage());
         }
@@ -1008,7 +1009,7 @@ public class Index {
         try {
             JSONObject content = new JSONObject();
             content.put("requests", actions);
-            return client.postRequest("/1/indexes/" + encodedIndexName + "/batch", content.toString(), false, requestOptions);
+            return client.postRequest("/1/indexes/" + encodedIndexName + "/batch", /* urlParameters: */ null, content.toString(), false, requestOptions);
         } catch (JSONException e) {
             throw new AlgoliaException(e.getMessage());
         }
@@ -1045,7 +1046,7 @@ public class Index {
      */
     protected JSONObject getObject(String objectID, @Nullable RequestOptions requestOptions) throws AlgoliaException {
         try {
-            return client.getRequest("/1/indexes/" + encodedIndexName + "/" + URLEncoder.encode(objectID, "UTF-8"), false, requestOptions);
+            return client.getRequest("/1/indexes/" + encodedIndexName + "/" + URLEncoder.encode(objectID, "UTF-8"), /* urlParameters: */ null, false, requestOptions);
         } catch (UnsupportedEncodingException e) {
             throw new RuntimeException(e);
         }
@@ -1062,10 +1063,11 @@ public class Index {
     protected JSONObject getObject(String objectID, List<String> attributesToRetrieve, @Nullable RequestOptions requestOptions) throws AlgoliaException {
         try {
             String path = "/1/indexes/" + encodedIndexName + "/" + URLEncoder.encode(objectID, "UTF-8");
+            Map<String, String> urlParameters = new HashMap<>();
             if (attributesToRetrieve != null) {
-                path += encodeAttributes(attributesToRetrieve, true); // includes the query separator (`?`)
+                urlParameters.put("attributesToRetrieve", AbstractQuery.buildCommaArray(attributesToRetrieve.toArray(new String[attributesToRetrieve.size()])));
             }
-            return client.getRequest(path, false, requestOptions);
+            return client.getRequest(path, urlParameters, false, requestOptions);
         } catch (UnsupportedEncodingException e) {
             throw new RuntimeException(e);
         }
@@ -1089,41 +1091,24 @@ public class Index {
      * @param requestOptions Request-specific options.
      * @throws AlgoliaException
      */
-    protected JSONObject getObjects(List<String> objectIDs, List<String> attributesToRetrieve, @Nullable RequestOptions requestOptions) throws AlgoliaException {
+    protected JSONObject getObjects(@NonNull List<String> objectIDs, @Nullable List<String> attributesToRetrieve, @Nullable RequestOptions requestOptions) throws AlgoliaException {
         try {
             JSONArray requests = new JSONArray();
             for (String id : objectIDs) {
                 JSONObject request = new JSONObject();
                 request.put("indexName", this.indexName);
                 request.put("objectID", id);
-                request.put("attributesToRetrieve", encodeAttributes(attributesToRetrieve, false));
+                if (attributesToRetrieve != null) {
+                    request.put("attributesToRetrieve", new JSONArray(attributesToRetrieve));
+                }
                 requests.put(request);
             }
             JSONObject body = new JSONObject();
             body.put("requests", requests);
-            return client.postRequest("/1/indexes/*/objects", body.toString(), true, requestOptions);
-        } catch (JSONException | UnsupportedEncodingException e) {
+            return client.postRequest("/1/indexes/*/objects", /* urlParameters: */ null, body.toString(), true, requestOptions);
+        } catch (JSONException e) {
             throw new AlgoliaException(e.getMessage());
         }
-    }
-
-    @Nullable
-    private String encodeAttributes(List<String> attributesToRetrieve, boolean forURL) throws UnsupportedEncodingException {
-        if (attributesToRetrieve == null) {
-            return null;
-        }
-
-        StringBuilder params = new StringBuilder();
-        if (forURL) {
-            params.append("?attributesToRetrieve=");
-        }
-        for (int i = 0; i < attributesToRetrieve.size(); ++i) {
-            if (i > 0) {
-                params.append(",");
-            }
-            params.append(URLEncoder.encode(attributesToRetrieve.get(i), "UTF-8"));
-        }
-        return params.toString();
     }
 
     /**
@@ -1136,10 +1121,11 @@ public class Index {
     protected JSONObject partialUpdateObject(JSONObject partialObject, String objectID, Boolean createIfNotExists, @Nullable RequestOptions requestOptions) throws AlgoliaException {
         try {
             String path = "/1/indexes/" + encodedIndexName + "/" + URLEncoder.encode(objectID, "UTF-8") + "/partial";
+            Map<String, String> urlParameters = new HashMap<>();
             if (createIfNotExists != null) {
-                path += "?createIfNotExists=" + createIfNotExists.toString();
+                urlParameters.put("createIfNotExists", createIfNotExists.toString());
             }
-            return client.postRequest(path, partialObject.toString(), false, requestOptions);
+            return client.postRequest(path, urlParameters, partialObject.toString(), false, requestOptions);
         } catch (UnsupportedEncodingException e) {
             throw new RuntimeException(e);
         }
@@ -1179,7 +1165,7 @@ public class Index {
      */
     protected JSONObject saveObject(JSONObject object, String objectID, @Nullable RequestOptions requestOptions) throws AlgoliaException {
         try {
-            return client.putRequest("/1/indexes/" + encodedIndexName + "/" + URLEncoder.encode(objectID, "UTF-8"), object.toString(), requestOptions);
+            return client.putRequest("/1/indexes/" + encodedIndexName + "/" + URLEncoder.encode(objectID, "UTF-8"), /* urlParameters: */ null, object.toString(), requestOptions);
         } catch (UnsupportedEncodingException e) {
             throw new RuntimeException(e);
         }
@@ -1221,7 +1207,7 @@ public class Index {
             throw new AlgoliaException("Invalid objectID");
         }
         try {
-            return client.deleteRequest("/1/indexes/" + encodedIndexName + "/" + URLEncoder.encode(objectID, "UTF-8"), requestOptions);
+            return client.deleteRequest("/1/indexes/" + encodedIndexName + "/" + URLEncoder.encode(objectID, "UTF-8"), /* urlParameters: */ null, requestOptions);
         } catch (UnsupportedEncodingException e) {
             throw new RuntimeException(e);
         }
@@ -1331,9 +1317,9 @@ public class Index {
             if (paramsString.length() > 0) {
                 JSONObject body = new JSONObject();
                 body.put("params", paramsString);
-                return client.postRequestRaw("/1/indexes/" + encodedIndexName + "/query", body.toString(), true, requestOptions);
+                return client.postRequestRaw("/1/indexes/" + encodedIndexName + "/query", /* urlParameters: */ null, body.toString(), true, requestOptions);
             } else {
-                return client.getRequestRaw("/1/indexes/" + encodedIndexName, true, requestOptions);
+                return client.getRequestRaw("/1/indexes/" + encodedIndexName, /* urlParameters: */ null, true, requestOptions);
             }
         } catch (JSONException e) {
             throw new RuntimeException(e); // should never happen
@@ -1351,7 +1337,7 @@ public class Index {
     protected JSONObject waitTask(String taskID, long timeToWait) throws AlgoliaException {
         try {
             while (true) {
-                JSONObject obj = client.getRequest("/1/indexes/" + encodedIndexName + "/task/" + URLEncoder.encode(taskID, "UTF-8"), false, /* requestOptions: */ null);
+                JSONObject obj = client.getRequest("/1/indexes/" + encodedIndexName + "/task/" + URLEncoder.encode(taskID, "UTF-8"), /* urlParameters: */ null, false, /* requestOptions: */ null);
                 if (obj.getString("status").equals("published")) {
                     return obj;
                 }
@@ -1388,7 +1374,9 @@ public class Index {
      * @param requestOptions Request-specific options.
      */
     protected JSONObject getSettings(@Nullable RequestOptions requestOptions) throws AlgoliaException {
-        return client.getRequest("/1/indexes/" + encodedIndexName + "/settings?getVersion=" + DEFAULT_SETTINGS_VERSION, false, requestOptions);
+        Map<String, String> urlParameters = new HashMap<>();
+        urlParameters.put("getVersion", Integer.toString(DEFAULT_SETTINGS_VERSION));
+        return client.getRequest("/1/indexes/" + encodedIndexName + "/settings", urlParameters, false, requestOptions);
     }
 
 
@@ -1400,7 +1388,9 @@ public class Index {
      * @throws AlgoliaException
      */
     protected JSONObject getSettings(int formatVersion, @Nullable RequestOptions requestOptions) throws AlgoliaException {
-        return client.getRequest("/1/indexes/" + encodedIndexName + "/settings?getVersion=" + formatVersion, false, requestOptions);
+        Map<String, String> urlParameters = new HashMap<>();
+        urlParameters.put("getVersion", Integer.toString(formatVersion));
+        return client.getRequest("/1/indexes/" + encodedIndexName + "/settings", urlParameters, false, requestOptions);
     }
 
     /**
@@ -1412,8 +1402,9 @@ public class Index {
      * @throws AlgoliaException
      */
     protected JSONObject setSettings(JSONObject settings, boolean forwardToReplicas, @Nullable RequestOptions requestOptions) throws AlgoliaException {
-        final String url = "/1/indexes/" + encodedIndexName + "/settings" + "?forwardToReplicas=" + forwardToReplicas;
-        return client.putRequest(url, settings.toString(), requestOptions);
+        Map<String, String> urlParameters = new HashMap<>();
+        urlParameters.put("forwardToReplicas", Boolean.toString(forwardToReplicas));
+        return client.putRequest("/1/indexes/" + encodedIndexName + "/settings", urlParameters, settings.toString(), requestOptions);
     }
 
     /**
@@ -1423,19 +1414,17 @@ public class Index {
      * @throws AlgoliaException
      */
     protected JSONObject clearIndex(@Nullable RequestOptions requestOptions) throws AlgoliaException {
-        return client.postRequest("/1/indexes/" + encodedIndexName + "/clear", "", false, requestOptions);
+        return client.postRequest("/1/indexes/" + encodedIndexName + "/clear", /* urlParameters: */ null, "", false, requestOptions);
     }
 
     protected JSONObject browse(@NonNull Query query, @Nullable RequestOptions requestOptions) throws AlgoliaException {
-        return client.getRequest("/1/indexes/" + encodedIndexName + "/browse?" + query.build(), true, requestOptions);
+        return client.getRequest("/1/indexes/" + encodedIndexName + "/browse", query.getParameters(), true, requestOptions);
     }
 
     protected JSONObject browseFrom(@NonNull String cursor, @Nullable RequestOptions requestOptions) throws AlgoliaException {
-        try {
-            return client.getRequest("/1/indexes/" + encodedIndexName + "/browse?cursor=" + URLEncoder.encode(cursor, "UTF-8"), true, requestOptions);
-        } catch (UnsupportedEncodingException e) {
-            throw new Error(e); // Should never happen: UTF-8 is always supported.
-        }
+        Map<String, String> urlParameters = new HashMap<>();
+        urlParameters.put("cursor", cursor);
+        return client.getRequest("/1/indexes/" + encodedIndexName + "/browse", urlParameters, true, requestOptions);
     }
 
     /**

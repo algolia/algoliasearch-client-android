@@ -53,6 +53,7 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static org.mockito.Matchers.anyBoolean;
+import static org.mockito.Matchers.anyMap;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.isNull;
 import static org.mockito.Mockito.mock;
@@ -839,7 +840,7 @@ public class IndexTest extends RobolectricTestCase {
         // Given a index, using a client that returns some json on search
         Client mockClient = mock(Client.class);
         Whitebox.setInternalState(index, "client", mockClient);
-        when(mockClient.postRequestRaw(anyString(), anyString(), anyBoolean(), isNull(RequestOptions.class))).thenReturn("{foo:42}".getBytes());
+        when(mockClient.postRequestRaw(anyString(), anyMap(), anyString(), anyBoolean(), isNull(RequestOptions.class))).thenReturn("{foo:42}".getBytes());
 
         // When searching twice separated by waitBetweenSeconds, fires nbTimes requests
         final Query query = new Query("San");
@@ -848,7 +849,7 @@ public class IndexTest extends RobolectricTestCase {
             Thread.sleep(waitBetweenSeconds * 1000);
         }
         index.search(query, /* requestOptions: */ null);
-        verify(mockClient, times(nbTimes)).postRequestRaw(anyString(), anyString(), anyBoolean(), isNull(RequestOptions.class));
+        verify(mockClient, times(nbTimes)).postRequestRaw(anyString(), anyMap(), anyString(), anyBoolean(), isNull(RequestOptions.class));
     }
 
     @Test
