@@ -12,7 +12,6 @@ jdk:
 env:
   global:
   - ABI=armeabi-v7
-  - TAG=google_apis
   - ANDROID_HOME=/usr/local/android-sdk-24.0.2 # Depends on the cookbooks version used in the VM
   - TOOLS=${ANDROID_HOME}/tools # PATH order matters, exists more than one emulator script
   - PATH=${ANDROID_HOME}:${ANDROID_HOME}/emulator:${TOOLS}:${TOOLS}/bin:${ANDROID_HOME}/platform-tools:${PATH}
@@ -22,11 +21,11 @@ env:
   - secure: LwmoZ2AlZHGToVAko19F4Gthw45MBr0LOx9Y9a0AyiAzXr4g6HRx3fB0EsWBC2wL9Yk0cOqd3sahH79SnmomdPgeRANgvpF7udtK3MG84j2H1AmuEwqhWKm8mwYBi+jP0Ayx6PybhApaLlQJ191IUkHTlVB0G80oX1W/ypU2qE0=
   - secure: fEnmnjnqqg6Rgmg9zvc23RzqgPGAYsadbkQDH1SDJ3KQEqC8sCglcYxGWqRkoVPO1oiA6b8uvYt9/bsWX6PIzL67nwPaNroHL7XarSrPwpPsldOpUHfrRX4negLSg5Y0nKJbtnjf7dfVg4nENs5zHrxNtok47iHcbsecuq9ueTM=
   matrix:
-    - API=16
-    - API=19
-    - API=22
-    - API=23
-    - API=25
+    - API=16 TAG=default
+    - API=19 TAG=default
+    - API=22 TAG=default
+    - API=23 TAG=google_apis
+    - API=25 TAG=google_apis
 matrix:
   fast_finish: true
 android:
