@@ -35,12 +35,14 @@ import org.junit.Test;
 import org.mockito.internal.util.reflection.Whitebox;
 import org.robolectric.util.concurrent.RoboExecutorService;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 @SuppressLint("DefaultLocale")
 public class PlacesClientTest extends RobolectricTestCase {
+    public static final String OBJECT_ID_RUE_RIVOLI = "95057362_123324299";
     PlacesClient places;
 
     @Override
@@ -79,5 +81,17 @@ public class PlacesClientTest extends RobolectricTestCase {
                 assertTrue(content.optJSONArray("hits").length() > 0);
             }
         });
+    }
+
+    @Test
+    public void getByObjectIDValid() throws Exception {
+        final JSONObject rivoli = places.getByObjectID(OBJECT_ID_RUE_RIVOLI);
+        assertNotNull(rivoli);
+        assertEquals(OBJECT_ID_RUE_RIVOLI, rivoli.getString("objectID"));
+    }
+
+    @Test(expected = AlgoliaException.class)
+    public void getByObjectIDInvalid() throws Exception {
+        places.getByObjectID("4242424242");
     }
 }
