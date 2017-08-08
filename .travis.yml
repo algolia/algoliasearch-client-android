@@ -11,7 +11,7 @@ jdk:
   - oraclejdk8
 env:
   global:
-  - ABI=armeabi-v7
+  - ABI=armeabi-v7a
   - ANDROID_HOME=/usr/local/android-sdk-24.0.2 # Depends on the cookbooks version used in the VM
   - TOOLS=${ANDROID_HOME}/tools # PATH order matters, exists more than one emulator script
   - PATH=${ANDROID_HOME}:${ANDROID_HOME}/emulator:${TOOLS}:${TOOLS}/bin:${ANDROID_HOME}/platform-tools:${PATH}
