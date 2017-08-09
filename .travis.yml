@@ -49,7 +49,7 @@ before_install:
 before_script:
     # Avoid useless reupload of cache after every build, see https://docs.travis-ci.com/user/languages/android
     - rm -f $HOME/.gradle/caches/modules-2/modules-2.lock
-    - sdkmanager "$EMULATOR"
+    - yes | sdkmanager "$EMULATOR"
       # Create Android Virtual Device with current config, saying no to custom build
     - echo no | avdmanager create avd -n test -k $EMULATOR -f --abi $ABI --tag $TAG
       # Run emulator and wait until it is ready, then send KEYCODE_MENU to unlock the phone
