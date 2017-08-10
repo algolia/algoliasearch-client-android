@@ -127,4 +127,14 @@ public class PlacesClient extends AbstractClient {
             throw new RuntimeException(e); // should never happen
         }
     }
+
+    /**
+     * Get a place by its objectID.
+     * @param objectID the record's identifier.
+     * @return the corresponding record.
+     * @throws AlgoliaException when the given objectID does not exist.
+     */
+    public JSONObject getByObjectID(@NonNull String objectID) throws AlgoliaException {
+        return getRequest("/1/places/" + objectID, false);
+    }
 }
