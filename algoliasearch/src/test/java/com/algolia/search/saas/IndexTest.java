@@ -1226,13 +1226,38 @@ public class IndexTest extends RobolectricTestCase {
     }
 
     @Test
-    public void requestOptions() throws Exception {
+    public void requestOptionsHeaders() throws Exception {
         // Override the API key in the request options and check that we get an authentication error.
         client.listIndexesAsync(new RequestOptions().setHeader("X-Algolia-API-Key", "ThisAPIKeyIsNotValid"), new AssertCompletionHandler() {
             @Override
             public void doRequestCompleted(JSONObject content, AlgoliaException error) {
                 assertNotNull(error);
                 assertEquals(403, error.getStatusCode());
+            }
+        });
+    }
+
+    @Test
+    public void requestOptionsUrlParameters() throws Exception {
+        // Listing indices without options should return at least one item.
+        client.listIndexesAsync(new AssertCompletionHandler() {
+            @Override
+            public void doRequestCompleted(JSONObject content, AlgoliaException error) {
+                assertNull(error);
+                assertNotNull(content);
+                assertNotNull(content.optJSONArray("items"));
+                assertTrue(content.optJSONArray("items").length() > 0);
+            }
+        });
+
+        // Listing indices with a `page` URL parameter very high should return no items.
+        client.listIndexesAsync(new RequestOptions().setUrlParameter("page", "666"), new AssertCompletionHandler() {
+            @Override
+            public void doRequestCompleted(JSONObject content, AlgoliaException error) {
+                assertNull(error);
+                assertNotNull(content);
+                assertNotNull(content.optJSONArray("items"));
+                assertTrue(content.optJSONArray("items").length() == 0);
             }
         });
     }
