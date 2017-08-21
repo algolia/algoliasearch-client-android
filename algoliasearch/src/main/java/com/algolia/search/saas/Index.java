@@ -479,7 +479,6 @@ public class Index {
      * @param taskID            Identifier of the task (as returned by the server).
      * @param completionHandler The listener that will be notified of the request's outcome.
      * @return A cancellable request.
-     *
      * @deprecated Task IDs are always integers. Please use {@link #waitTaskAsync(int, CompletionHandler)} instead.
      */
     public Request waitTaskAsync(final @NonNull String taskID, @NonNull CompletionHandler completionHandler) {
@@ -541,11 +540,12 @@ public class Index {
     }
 
     /**
-     * Delete all objects matching a query (helper).
+     * Delete all objects matching a query (helper) using browse and deleteObjects.
      *
      * @param query             The query that objects to delete must match.
      * @param completionHandler The listener that will be notified of the request's outcome.
      * @return A cancellable request.
+     * @deprecated use {@link Index#deleteByAsync(Query, CompletionHandler)} instead.
      */
     public Request deleteByQueryAsync(@NonNull Query query, CompletionHandler completionHandler) {
         final Query queryCopy = new Query(query);
@@ -554,6 +554,23 @@ public class Index {
             @Override protected JSONObject run() throws AlgoliaException {
                 deleteByQuery(queryCopy);
                 return new JSONObject();
+            }
+        }.start();
+    }
+
+    /**
+     * Delete all objects matching a query (helper).
+     *
+     * @param query             The query that objects to delete must match.
+     * @param completionHandler The listener that will be notified of the request's outcome.
+     * @return A cancellable request.
+     */
+    public Request deleteByAsync(@NonNull Query query, CompletionHandler completionHandler) {
+        final Query queryCopy = new Query(query);
+        return getClient().new AsyncTaskRequest(completionHandler) {
+            @NonNull
+            @Override protected JSONObject run() throws AlgoliaException {
+                return deleteBy(queryCopy);
             }
         }.start();
     }
@@ -960,11 +977,13 @@ public class Index {
     }
 
     /**
-     * Delete all objects matching a query
+     * Delete all objects matching a query using browse and deleteObjects.
      *
      * @param query the query string
      * @throws AlgoliaException
+     * @deprecated use {@link Index#deleteBy(Query)} instead.
      */
+    @Deprecated
     protected void deleteByQuery(@NonNull Query query) throws AlgoliaException {
         try {
             boolean hasMore;
@@ -987,6 +1006,21 @@ public class Index {
             while (hasMore);
         } catch (JSONException e) {
             throw new AlgoliaException(e.getMessage());
+        }
+    }
+
+    /**
+     * Delete all records matching the query.
+     *
+     * @param query the query string
+     * @throws AlgoliaException
+     */
+    protected JSONObject deleteBy(@NonNull Query query) throws AlgoliaException {
+        try {
+            return client.postRequest("/1/indexes/" + indexName + "/deleteByQuery", new JSONObject().put("params", query.build()).toString(), false);
+        } catch (JSONException e) {
+            e.printStackTrace();
+            return null;
         }
     }
 
