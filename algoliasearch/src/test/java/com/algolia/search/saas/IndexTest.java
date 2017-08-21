@@ -784,6 +784,41 @@ public class IndexTest extends RobolectricTestCase {
     }
 
     @Test
+    public void deleteByAsync() throws Exception {
+        addDummyObjects(3000);
+        final Query query = new Query().setNumericFilters(new JSONArray().put("dummy < 1500"));
+        index.deleteByAsync(query, new AssertCompletionHandler() {
+            @Override
+            public void doRequestCompleted(JSONObject content, AlgoliaException error) {
+                if (error == null) {
+                    int taskID = content.optInt("taskID");
+                    index.waitTaskAsync(taskID, new AssertCompletionHandler() {
+                        @Override
+                        public void doRequestCompleted(JSONObject content, AlgoliaException error) {
+                            assertNull(error);
+                            index.browseAsync(query, new AssertCompletionHandler() {
+                                @Override
+                                public void doRequestCompleted(JSONObject content, AlgoliaException error) {
+                                    if (error == null) {
+                                        // There should not remain any object matching the query.
+                                        assertNotNull(content.optJSONArray("hits"));
+                                        assertEquals(0, content.optJSONArray("hits").length());
+                                        assertNull(content.optString("cursor", null));
+                                    } else {
+                                        fail("Fail inner: " + error.getMessage());
+                                    }
+                                }
+                            });
+                        }
+                    });
+                } else {
+                    fail("Fail outer: " + error.getMessage());
+                }
+            }
+        });
+    }
+
+    @Test
     public void error404() throws Exception {
         Index unknownIndex = client.getIndex("doesnotexist");
         unknownIndex.searchAsync(new Query(), new AssertCompletionHandler() {
