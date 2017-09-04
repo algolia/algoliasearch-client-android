@@ -135,6 +135,6 @@ public class PlacesClient extends AbstractClient {
      * @throws AlgoliaException when the given objectID does not exist.
      */
     public JSONObject getByObjectID(@NonNull String objectID) throws AlgoliaException {
-        return getRequest("/1/places/" + objectID, false);
+        return getRequest("/1/places/" + objectID, /* urlParameters: */ null, false, /* requestOptions: */ null)    ;
     }
 }
