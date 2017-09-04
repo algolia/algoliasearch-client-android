@@ -78,9 +78,10 @@ public abstract class AbstractClient {
 
         @Override
         public boolean equals(Object object) {
-            if (!(object instanceof LibraryVersion))
+            if (!(object instanceof LibraryVersion)) {
                 return false;
-            LibraryVersion other = (LibraryVersion)object;
+            }
+            LibraryVersion other = (LibraryVersion) object;
             return this.name.equals(other.name) && this.version.equals(other.version);
         }
 
@@ -150,7 +151,8 @@ public abstract class AbstractClient {
     protected ExecutorService searchExecutorService = Executors.newFixedThreadPool(4);
 
     /** Executor used to run completion handlers. By default, runs on the main thread. */
-    protected @NonNull Executor completionExecutor = new HandlerExecutor(new Handler(Looper.getMainLooper()));
+    protected @NonNull
+    Executor completionExecutor = new HandlerExecutor(new Handler(Looper.getMainLooper()));
 
     protected Map<String, WeakReference<Object>> indices = new HashMap<>();
 
@@ -162,19 +164,21 @@ public abstract class AbstractClient {
      * Create a new client.
      *
      * @param applicationID [optional] The application ID.
-     * @param apiKey [optional] A valid API key for the service.
-     * @param readHosts List of hosts for read operations.
-     * @param writeHosts List of hosts for write operations.
+     * @param apiKey        [optional] A valid API key for the service.
+     * @param readHosts     List of hosts for read operations.
+     * @param writeHosts    List of hosts for write operations.
      */
     protected AbstractClient(@Nullable String applicationID, @Nullable String apiKey, @Nullable String[] readHosts, @Nullable String[] writeHosts) {
         this.applicationID = applicationID;
         this.apiKey = apiKey;
         this.addUserAgent(new LibraryVersion("Algolia for Android", version));
         this.addUserAgent(new LibraryVersion("Android", Build.VERSION.RELEASE));
-        if (readHosts != null)
+        if (readHosts != null) {
             setReadHosts(readHosts);
-        if (writeHosts != null)
+        }
+        if (writeHosts != null) {
             setWriteHosts(writeHosts);
+        }
     }
 
     // ----------------------------------------------------------------------
@@ -446,6 +450,7 @@ public abstract class AbstractClient {
 
     /**
      * Reads the InputStream into a byte array
+     *
      * @param stream the InputStream to read
      * @return the stream's content as a byte[]
      * @throws AlgoliaException if the stream can't be read or flushed
@@ -640,12 +645,10 @@ public abstract class AbstractClient {
                 }
                 return rawResponse;
 
-            }
-            catch (JSONException e) { // fatal
+            } catch (JSONException e) { // fatal
                 consumeQuietly(hostConnection);
                 throw new AlgoliaException("Invalid JSON returned by server", e);
-            }
-            catch (UnsupportedEncodingException e) { // fatal
+            } catch (UnsupportedEncodingException e) { // fatal
                 consumeQuietly(hostConnection);
                 throw new AlgoliaException("Invalid encoding returned by server", e);
             } catch (IOException e) { // host error, continue on the next host
@@ -699,6 +702,7 @@ public abstract class AbstractClient {
 
     /**
      * Get the hosts that are not considered down in a given list.
+     *
      * @param hosts a list of hosts whose {@link HostStatus} will be checked.
      * @return the hosts considered up, or all hosts if none is known to be reachable.
      */
@@ -729,7 +733,7 @@ public abstract class AbstractClient {
          * Construct a new request with the specified completion handler, executing on the client's search executor,
          * and calling the completion handler on the client's completion executor.
          *
-         * @param completionHandler  The completion handler to be notified of results. May be null if the caller omitted it.
+         * @param completionHandler The completion handler to be notified of results. May be null if the caller omitted it.
          */
         protected AsyncTaskRequest(@Nullable CompletionHandler completionHandler) {
             this(completionHandler, searchExecutorService);
@@ -739,8 +743,8 @@ public abstract class AbstractClient {
          * Construct a new request with the specified completion handler, executing on the specified executor, and
          * calling the completion handler on the client's completion executor.
          *
-         * @param completionHandler  The completion handler to be notified of results. May be null if the caller omitted it.
-         * @param requestExecutor    Executor on which to execute the request.
+         * @param completionHandler The completion handler to be notified of results. May be null if the caller omitted it.
+         * @param requestExecutor   Executor on which to execute the request.
          */
         protected AsyncTaskRequest(@Nullable CompletionHandler completionHandler, @NonNull Executor requestExecutor) {
             super(completionHandler, requestExecutor, completionExecutor);
