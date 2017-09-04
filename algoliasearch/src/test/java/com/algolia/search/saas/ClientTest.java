@@ -57,7 +57,7 @@ public class ClientTest extends RobolectricTestCase {
 
     @Test
     public void testIndexReuse() throws Exception {
-        Map<String, WeakReference<Index>> indices = (Map<String, WeakReference<Index>>)Whitebox.getInternalState(client, "indices");
+        Map<String, WeakReference<Index>> indices = (Map<String, WeakReference<Index>>) Whitebox.getInternalState(client, "indices");
         final String indexName = "name";
 
         // Ask for the same index twice and check that it is re-used.
@@ -77,5 +77,19 @@ public class ClientTest extends RobolectricTestCase {
         System.gc();
         assertNull(indices.get(indexName).get());
         */
+    }
+
+    @Test
+    public void testUniqueAgent() {
+        client.addUserAgent(new AbstractClient.LibraryVersion("foo", "bar"));
+        client.addUserAgent(new AbstractClient.LibraryVersion("foo", "bar"));
+        final AbstractClient.LibraryVersion[] userAgents = client.getUserAgents();
+        int found = 0;
+        for (int i = 0; i < userAgents.length; i++) {
+            if ("foo".equals(userAgents[i].name)) {
+                found++;
+            }
+        }
+        assertEquals("There should be only one foo user agent.", 1, found);
     }
 }

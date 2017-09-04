@@ -60,7 +60,7 @@ public class BrowseIteratorTest extends RobolectricTestCase {
         for (int i = 0; i < 1500; ++i) {
             objects.add(new JSONObject(String.format("{\"dummy\": %d}", i)));
         }
-        JSONObject task = index.addObjects(new JSONArray(objects));
+        JSONObject task = index.addObjects(new JSONArray(objects), /* requestOptions: */ null);
         index.waitTask(task.getString("taskID"));
 
         JSONArray objectIDs = task.getJSONArray("objectIDs");
@@ -72,7 +72,7 @@ public class BrowseIteratorTest extends RobolectricTestCase {
 
     @Override
     public void tearDown() throws Exception {
-        client.deleteIndex(indexName);
+        client.deleteIndex(indexName, /* requestOptions: */ null);
     }
 
     @Test

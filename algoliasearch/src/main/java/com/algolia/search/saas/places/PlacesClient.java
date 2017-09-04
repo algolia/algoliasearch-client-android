@@ -121,10 +121,20 @@ public class PlacesClient extends AbstractClient {
         try {
             JSONObject body = new JSONObject()
                 .put("params", params.build());
-            return postRequest("/1/places/query", body.toString(), true /* readOperation */);
+            return postRequest("/1/places/query", /* urlParameters: */ null, body.toString(), true /* readOperation */, /* requestOptions: */ null);
         }
         catch (JSONException e) {
             throw new RuntimeException(e); // should never happen
         }
+    }
+
+    /**
+     * Get a place by its objectID.
+     * @param objectID the record's identifier.
+     * @return the corresponding record.
+     * @throws AlgoliaException when the given objectID does not exist.
+     */
+    public JSONObject getByObjectID(@NonNull String objectID) throws AlgoliaException {
+        return getRequest("/1/places/" + objectID, /* urlParameters: */ null, false, /* requestOptions: */ null)    ;
     }
 }

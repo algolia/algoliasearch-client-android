@@ -53,7 +53,9 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static org.mockito.Matchers.anyBoolean;
+import static org.mockito.Matchers.anyMap;
 import static org.mockito.Matchers.anyString;
+import static org.mockito.Matchers.isNull;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -95,13 +97,13 @@ public class IndexTest extends RobolectricTestCase {
 
         if (!didInitIndices) {
             Index originalIndex = client.getIndex(originalIndexName);
-            client.deleteIndex(originalIndexName);
+            client.deleteIndex(originalIndexName, /* requestOptions: */ null);
 
             originalObjects = new ArrayList<>();
             originalObjects.add(new JSONObject("{\"city\": \"San Francisco\", \"state\": \"CA\"}"));
             originalObjects.add(new JSONObject("{\"city\": \"San José\", \"state\": \"CA\"}"));
 
-            JSONObject task = originalIndex.addObjects(new JSONArray(originalObjects));
+            JSONObject task = originalIndex.addObjects(new JSONArray(originalObjects), /* requestOptions: */ null);
             originalIndex.waitTask(task.getString("taskID"));
 
             JSONArray objectIDs = task.getJSONArray("objectIDs");
@@ -114,8 +116,8 @@ public class IndexTest extends RobolectricTestCase {
 
             for (int i = 0; i < COUNT_TEST_INDICES; i++) {
                 final String iterIndexName = originalIndexName + i;
-                client.deleteIndex(iterIndexName);
-                task = client.copyIndex(originalIndexName, iterIndexName);
+                client.deleteIndex(iterIndexName, /* requestOptions: */ null);
+                task = client.copyIndex(originalIndexName, iterIndexName, /* requestOptions: */ null);
             }
             originalIndex.waitTask(task.getString("taskID"));
         }
@@ -130,7 +132,7 @@ public class IndexTest extends RobolectricTestCase {
     @Override
     public void tearDown() {
         try {
-            client.deleteIndex(indexName);
+            client.deleteIndex(indexName, /* requestOptions: */ null);
         }
         catch (AlgoliaException e) {
             fail(e.getMessage());
@@ -181,7 +183,7 @@ public class IndexTest extends RobolectricTestCase {
     @Test
     public void searchDisjunctiveFacetingAsync() throws Exception {
         // Set index settings.
-        JSONObject setSettingsResult = index.setSettings(new JSONObject("{\"attributesForFaceting\": [\"brand\", \"category\"]}"));
+        JSONObject setSettingsResult = index.setSettings(new JSONObject("{\"attributesForFaceting\": [\"brand\", \"category\"]}"), /* forwardToReplicas: */ false, /* requestOptions: */ null);
         index.waitTask(setSettingsResult.getString("taskID"));
 
         // Empty query
@@ -209,7 +211,7 @@ public class IndexTest extends RobolectricTestCase {
         objects.add(new JSONObject("{\"name\": \"Platinum Phone Cover\", \"brand\": \"Samsung\", \"category\": \"accessory\",\"stars\":2}"));
         objects.add(new JSONObject("{\"name\": \"Lame Phone\", \"brand\": \"Whatever\", \"category\": \"device\",\"stars\":1}"));
         objects.add(new JSONObject("{\"name\": \"Lame Phone cover\", \"brand\": \"Whatever\", \"category\": \"accessory\",\"stars\":1}"));
-        JSONObject task = index.addObjects(new JSONArray(objects));
+        JSONObject task = index.addObjects(new JSONArray(objects), /* requestOptions: */ null);
         index.waitTask(task.getString("taskID"));
 
         final Query query = new Query("phone").setFacets("brand", "category", "stars");
@@ -239,7 +241,7 @@ public class IndexTest extends RobolectricTestCase {
     @Test
     public void disjunctiveFacetingAsync2() throws Exception {
         // Set index settings.
-        JSONObject setSettingsResult = index.setSettings(new JSONObject("{\"attributesForFaceting\":[\"city\", \"stars\", \"facilities\"]}"));
+        JSONObject setSettingsResult = index.setSettings(new JSONObject("{\"attributesForFaceting\":[\"city\", \"stars\", \"facilities\"]}"), /* forwardToReplicas: */ false, /* requestOptions: */ null);
         index.waitTask(setSettingsResult.getString("taskID"));
 
         // Add objects.
@@ -248,7 +250,7 @@ public class IndexTest extends RobolectricTestCase {
                 .put(new JSONObject("{\"name\":\"Hotel B\", \"stars\":\"*\", \"facilities\":[\"wifi\"], \"city\":\"Paris\"}"))
                 .put(new JSONObject("{\"name\":\"Hotel C\", \"stars\":\"**\", \"facilities\":[\"bath\"], \"city\":\"San Fancisco\"}"))
                 .put(new JSONObject("{\"name\":\"Hotel D\", \"stars\":\"****\", \"facilities\":[\"spa\"], \"city\":\"Paris\"}"))
-                .put(new JSONObject("{\"name\":\"Hotel E\", \"stars\":\"****\", \"facilities\":[\"spa\"], \"city\":\"New York\"}")));
+                .put(new JSONObject("{\"name\":\"Hotel E\", \"stars\":\"****\", \"facilities\":[\"spa\"], \"city\":\"New York\"}")), /* requestOptions: */ null);
         index.waitTask(addObjectsResult.getString("taskID"));
 
         // Search.
@@ -572,7 +574,7 @@ public class IndexTest extends RobolectricTestCase {
         client.setReadTimeout(1000);
 
         Long start = System.currentTimeMillis();
-        assertNotNull("listIndexes() should return.", client.listIndexes());
+        assertNotNull("listIndexes() should return.", client.listIndexes(/* requestOptions: */ null));
         final long totalMillis = System.currentTimeMillis() - start;
         assertTrue(String.format("The test ran longer than expected (%d > %dms).", totalMillis, maxMillis), totalMillis <= maxMillis);
     }
@@ -604,7 +606,7 @@ public class IndexTest extends RobolectricTestCase {
         client.setReadTimeout(1000);
 
         Long start = System.currentTimeMillis();
-        assertNotNull("listIndexes() should return.", client.listIndexes());
+        assertNotNull("listIndexes() should return.", client.listIndexes(/* requestOptions: */ null));
         long end = System.currentTimeMillis() - start;
         assertTrue("The test ran longer than expected (" + end + "ms > 2s)", end < 2 * 1000);
     }
@@ -692,7 +694,7 @@ public class IndexTest extends RobolectricTestCase {
         }
 
         // Add objects.
-        JSONObject task = index.addObjects(new JSONArray(objects));
+        JSONObject task = index.addObjects(new JSONArray(objects), /* requestOptions: */ null);
         index.waitTask(task.getString("taskID"));
     }
 
@@ -873,16 +875,16 @@ public class IndexTest extends RobolectricTestCase {
         // Given a index, using a client that returns some json on search
         Client mockClient = mock(Client.class);
         Whitebox.setInternalState(index, "client", mockClient);
-        when(mockClient.postRequestRaw(anyString(), anyString(), anyBoolean())).thenReturn("{foo:42}".getBytes());
+        when(mockClient.postRequestRaw(anyString(), anyMap(), anyString(), anyBoolean(), isNull(RequestOptions.class))).thenReturn("{foo:42}".getBytes());
 
         // When searching twice separated by waitBetweenSeconds, fires nbTimes requests
         final Query query = new Query("San");
-        index.search(query);
+        index.search(query, /* requestOptions: */ null);
         if (waitBetweenSeconds > 0) {
             Thread.sleep(waitBetweenSeconds * 1000);
         }
-        index.search(query);
-        verify(mockClient, times(nbTimes)).postRequestRaw(anyString(), anyString(), anyBoolean());
+        index.search(query, /* requestOptions: */ null);
+        verify(mockClient, times(nbTimes)).postRequestRaw(anyString(), anyMap(), anyString(), anyBoolean(), isNull(RequestOptions.class));
     }
 
     @Test
@@ -935,9 +937,9 @@ public class IndexTest extends RobolectricTestCase {
     @Test
     public void getObjectAttributes() throws AlgoliaException {
         for (String id : ids) {
-            JSONObject object = index.getObject(id);
+            JSONObject object = index.getObject(id, /* requestOptions: */ null);
             assertEquals("The retrieved object should have 3 attributes.", 3, object.names().length()); // 2 attributes + `objectID`
-            object = index.getObject(id, Collections.singletonList("city"));
+            object = index.getObject(id, Collections.singletonList("city"), /* requestOptions: */ null);
             assertEquals("The retrieved object should have 2 attributes.", 2, object.names().length()); // 1 attribute + `objectID`
             assertNotNull("The retrieved object should have an `objectID` attribute.", object.optString("objectID", null));
             assertNotNull("The retrieved object should have a `city` attribute.", object.optString("city", null));
@@ -952,7 +954,7 @@ public class IndexTest extends RobolectricTestCase {
                 JSONObject object = results.getJSONObject(i);
                 assertEquals("The retrieved object should have 3 attributes.", 3, object.names().length()); // 2 attributes + `objectID`
             }
-            results = index.getObjects(ids, Collections.singletonList("city")).getJSONArray("results");
+            results = index.getObjects(ids, Collections.singletonList("city"), /* requestOptions: */ null).getJSONArray("results");
             for (int i = 0; i < results.length(); i++) {
                 JSONObject object = results.getJSONObject(i);
                 assertEquals("The retrieved object should have 2 attributes.", 2, object.names().length()); // 1 attribute + `objectID`
@@ -1139,7 +1141,9 @@ public class IndexTest extends RobolectricTestCase {
         final JSONObject setSettingsTask = index.setSettings(new JSONObject()
                 .put("attributesForFaceting", new JSONArray()
                         .put("searchable(series)")
-                        .put("kind"))
+                        .put("kind")),
+                /* forwardToReplicas: */ false,
+                /* requestOptions: */ null
         );
 
         final JSONObject addObjectsResult = index.addObjects(new JSONArray()
@@ -1172,7 +1176,8 @@ public class IndexTest extends RobolectricTestCase {
                         .put("name", "Calvin")
                         .put("kind", new JSONArray().put("human"))
                         .put("born", 1985)
-                        .put("series", "Calvin & Hobbes"))
+                        .put("series", "Calvin & Hobbes")),
+                /* requestOptions: */ null
         );
 
         index.waitTask(setSettingsTask.getString("taskID"));
@@ -1253,6 +1258,43 @@ public class IndexTest extends RobolectricTestCase {
         // Expect host to be up again after the delay has passed
         Thread.sleep(delay);
         assertTrue("A host that has failed should be considered up once the delay is over.", client.isUpOrCouldBeRetried(randomHostName));
+    }
+
+    @Test
+    public void requestOptionsHeaders() throws Exception {
+        // Override the API key in the request options and check that we get an authentication error.
+        client.listIndexesAsync(new RequestOptions().setHeader("X-Algolia-API-Key", "ThisAPIKeyIsNotValid"), new AssertCompletionHandler() {
+            @Override
+            public void doRequestCompleted(JSONObject content, AlgoliaException error) {
+                assertNotNull(error);
+                assertEquals(403, error.getStatusCode());
+            }
+        });
+    }
+
+    @Test
+    public void requestOptionsUrlParameters() throws Exception {
+        // Listing indices without options should return at least one item.
+        client.listIndexesAsync(new AssertCompletionHandler() {
+            @Override
+            public void doRequestCompleted(JSONObject content, AlgoliaException error) {
+                assertNull(error);
+                assertNotNull(content);
+                assertNotNull(content.optJSONArray("items"));
+                assertTrue(content.optJSONArray("items").length() > 0);
+            }
+        });
+
+        // Listing indices with a `page` URL parameter very high should return no items.
+        client.listIndexesAsync(new RequestOptions().setUrlParameter("page", "666"), new AssertCompletionHandler() {
+            @Override
+            public void doRequestCompleted(JSONObject content, AlgoliaException error) {
+                assertNull(error);
+                assertNotNull(content);
+                assertNotNull(content.optJSONArray("items"));
+                assertTrue(content.optJSONArray("items").length() == 0);
+            }
+        });
     }
 
     private String getRandomString() {

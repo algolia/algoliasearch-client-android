@@ -78,9 +78,10 @@ public abstract class AbstractClient {
 
         @Override
         public boolean equals(Object object) {
-            if (!(object instanceof LibraryVersion))
+            if (!(object instanceof LibraryVersion)) {
                 return false;
-            LibraryVersion other = (LibraryVersion)object;
+            }
+            LibraryVersion other = (LibraryVersion) object;
             return this.name.equals(other.name) && this.version.equals(other.version);
         }
 
@@ -150,7 +151,8 @@ public abstract class AbstractClient {
     protected ExecutorService searchExecutorService = Executors.newFixedThreadPool(4);
 
     /** Executor used to run completion handlers. By default, runs on the main thread. */
-    protected @NonNull Executor completionExecutor = new HandlerExecutor(new Handler(Looper.getMainLooper()));
+    protected @NonNull
+    Executor completionExecutor = new HandlerExecutor(new Handler(Looper.getMainLooper()));
 
     protected Map<String, WeakReference<Object>> indices = new HashMap<>();
 
@@ -162,19 +164,21 @@ public abstract class AbstractClient {
      * Create a new client.
      *
      * @param applicationID [optional] The application ID.
-     * @param apiKey [optional] A valid API key for the service.
-     * @param readHosts List of hosts for read operations.
-     * @param writeHosts List of hosts for write operations.
+     * @param apiKey        [optional] A valid API key for the service.
+     * @param readHosts     List of hosts for read operations.
+     * @param writeHosts    List of hosts for write operations.
      */
     protected AbstractClient(@Nullable String applicationID, @Nullable String apiKey, @Nullable String[] readHosts, @Nullable String[] writeHosts) {
         this.applicationID = applicationID;
         this.apiKey = apiKey;
         this.addUserAgent(new LibraryVersion("Algolia for Android", version));
         this.addUserAgent(new LibraryVersion("Android", Build.VERSION.RELEASE));
-        if (readHosts != null)
+        if (readHosts != null) {
             setReadHosts(readHosts);
-        if (writeHosts != null)
+        }
+        if (writeHosts != null) {
             setWriteHosts(writeHosts);
+        }
     }
 
     // ----------------------------------------------------------------------
@@ -322,7 +326,9 @@ public abstract class AbstractClient {
      * @param userAgent The library to add.
      */
     public void addUserAgent(@NonNull LibraryVersion userAgent) {
-        userAgents.add(userAgent);
+        if (!userAgents.contains(userAgent)) {
+            userAgents.add(userAgent);
+        }
         updateUserAgents();
     }
 
@@ -398,28 +404,28 @@ public abstract class AbstractClient {
         GET, POST, PUT, DELETE
     }
 
-    protected byte[] getRequestRaw(String url, boolean search) throws AlgoliaException {
-        return _requestRaw(Method.GET, url, null, getReadHostsThatAreUp(), connectTimeout, search ? searchTimeout : readTimeout);
+    protected byte[] getRequestRaw(@NonNull String url, @Nullable Map<String, String> urlParameters, boolean search, @Nullable RequestOptions requestOptions) throws AlgoliaException {
+        return _requestRaw(Method.GET, url, urlParameters, /* json: */ null, getReadHostsThatAreUp(), connectTimeout, search ? searchTimeout : readTimeout, requestOptions);
     }
 
-    protected JSONObject getRequest(String url, boolean search) throws AlgoliaException {
-        return _request(Method.GET, url, null, getReadHostsThatAreUp(), connectTimeout, search ? searchTimeout : readTimeout);
+    protected JSONObject getRequest(@NonNull String url, @Nullable Map<String, String> urlParameters, boolean search, @Nullable RequestOptions requestOptions) throws AlgoliaException {
+        return _request(Method.GET, url, urlParameters, /* json: */ null, getReadHostsThatAreUp(), connectTimeout, search ? searchTimeout : readTimeout, requestOptions);
     }
 
-    protected JSONObject deleteRequest(String url) throws AlgoliaException {
-        return _request(Method.DELETE, url, null, getWriteHostsThatAreUp(), connectTimeout, readTimeout);
+    protected JSONObject deleteRequest(@NonNull String url, @Nullable Map<String, String> urlParameters, @Nullable RequestOptions requestOptions) throws AlgoliaException {
+        return _request(Method.DELETE, url, urlParameters, /* json: */ null, getWriteHostsThatAreUp(), connectTimeout, readTimeout, requestOptions);
     }
 
-    protected JSONObject postRequest(String url, String obj, boolean readOperation) throws AlgoliaException {
-        return _request(Method.POST, url, obj, (readOperation ? getReadHostsThatAreUp() : getWriteHostsThatAreUp()), connectTimeout, (readOperation ? searchTimeout : readTimeout));
+    protected JSONObject postRequest(@NonNull String url, @Nullable Map<String, String> urlParameters, @Nullable String obj, boolean readOperation, @Nullable RequestOptions requestOptions) throws AlgoliaException {
+        return _request(Method.POST, url, urlParameters, obj, (readOperation ? getReadHostsThatAreUp() : getWriteHostsThatAreUp()), connectTimeout, (readOperation ? searchTimeout : readTimeout), requestOptions);
     }
 
-    protected byte[] postRequestRaw(String url, String obj, boolean readOperation) throws AlgoliaException {
-        return _requestRaw(Method.POST, url, obj, (readOperation ? getReadHostsThatAreUp() : getWriteHostsThatAreUp()), connectTimeout, (readOperation ? searchTimeout : readTimeout));
+    protected byte[] postRequestRaw(@NonNull String url, @Nullable Map<String, String> urlParameters, @Nullable String obj, boolean readOperation, @Nullable RequestOptions requestOptions) throws AlgoliaException {
+        return _requestRaw(Method.POST, url, urlParameters, obj, (readOperation ? getReadHostsThatAreUp() : getWriteHostsThatAreUp()), connectTimeout, (readOperation ? searchTimeout : readTimeout), requestOptions);
     }
 
-    protected JSONObject putRequest(String url, String obj) throws AlgoliaException {
-        return _request(Method.PUT, url, obj, getWriteHostsThatAreUp(), connectTimeout, readTimeout);
+    protected JSONObject putRequest(@NonNull String url, @Nullable Map<String, String> urlParameters, @NonNull String obj, @Nullable RequestOptions requestOptions) throws AlgoliaException {
+        return _request(Method.PUT, url, urlParameters, obj, getWriteHostsThatAreUp(), connectTimeout, readTimeout, requestOptions);
     }
 
     /**
@@ -444,6 +450,7 @@ public abstract class AbstractClient {
 
     /**
      * Reads the InputStream into a byte array
+     *
      * @param stream the InputStream to read
      * @return the stream's content as a byte[]
      * @throws AlgoliaException if the stream can't be read or flushed
@@ -482,7 +489,8 @@ public abstract class AbstractClient {
      * Send the query according to parameters and returns its result as a JSONObject
      *
      * @param m              HTTP Method to use
-     * @param url            endpoint URL
+     * @param url            Endpoint URL, *without query string*. The query string is handled by `urlParameters`.
+     * @param urlParameters  URL parameters
      * @param json           optional JSON Object to send
      * @param hostsArray     array of hosts to try successively
      * @param connectTimeout maximum wait time to open connection
@@ -490,9 +498,9 @@ public abstract class AbstractClient {
      * @return a JSONObject containing the resulting data or error
      * @throws AlgoliaException if the request data is not valid json
      */
-    private JSONObject _request(Method m, String url, String json, List<String> hostsArray, int connectTimeout, int readTimeout) throws AlgoliaException {
+    private JSONObject _request(@NonNull Method m, @NonNull String url, @Nullable Map<String, String> urlParameters, @Nullable String json, @NonNull List<String> hostsArray, int connectTimeout, int readTimeout, @Nullable RequestOptions requestOptions) throws AlgoliaException {
         try {
-            return _getJSONObject(_requestRaw(m, url, json, hostsArray, connectTimeout, readTimeout));
+            return _getJSONObject(_requestRaw(m, url, urlParameters, json, hostsArray, connectTimeout, readTimeout, requestOptions));
         } catch (JSONException e) {
             throw new AlgoliaException("JSON decode error:" + e.getMessage());
         } catch (UnsupportedEncodingException e) {
@@ -504,15 +512,16 @@ public abstract class AbstractClient {
      * Send the query according to parameters and returns its result as a JSONObject
      *
      * @param m              HTTP Method to use
-     * @param url            endpoint URL
-     * @param json           optional JSON Object to send
+     * @param url            Endpoint URL, *without query string*. The query string is handled by `urlParameters`.
+     * @param urlParameters  URL parameters
+     * @param json           (optional) JSON body
      * @param hostsArray     array of hosts to try successively
      * @param connectTimeout maximum wait time to open connection
      * @param readTimeout    maximum time to read data on socket
      * @return a JSONObject containing the resulting data or error
      * @throws AlgoliaException in case of connection or data handling error
      */
-    private byte[] _requestRaw(Method m, String url, String json, List<String> hostsArray, int connectTimeout, int readTimeout) throws AlgoliaException {
+    private byte[] _requestRaw(@NonNull Method m, @NonNull String url, @Nullable Map<String, String> urlParameters, @Nullable String json, @NonNull List<String> hostsArray, int connectTimeout, int readTimeout, @Nullable RequestOptions requestOptions) throws AlgoliaException {
         String requestMethod;
         List<Exception> errors = new ArrayList<>(hostsArray.size());
         // for each host
@@ -536,9 +545,24 @@ public abstract class AbstractClient {
 
             InputStream stream = null;
             HttpURLConnection hostConnection = null;
-            // set URL
             try {
-                URL hostURL = new URL("https://" + host + url);
+                // Compute final URL parameters.
+                final Map<String, String> parameters = new HashMap<>();
+                if (urlParameters != null) {
+                    parameters.putAll(urlParameters);
+                }
+                if (requestOptions != null) {
+                    parameters.putAll(requestOptions.urlParameters);
+                }
+
+                // Build URL.
+                String urlString = "https://" + host + url;
+                if (!parameters.isEmpty()) {
+                    urlString += "?" + AbstractQuery.build(parameters);
+                }
+                URL hostURL = new URL(urlString);
+
+                // Open connection.
                 hostConnection = (HttpURLConnection) hostURL.openConnection();
 
                 //set timeouts
@@ -546,7 +570,7 @@ public abstract class AbstractClient {
                 hostConnection.setConnectTimeout(connectTimeout);
                 hostConnection.setReadTimeout(readTimeout);
 
-                // set auth headers
+                // Headers
                 hostConnection.setRequestProperty("X-Algolia-Application-Id", this.applicationID);
                 // If API key is too big, send it in the request's body (if applicable).
                 if (this.apiKey != null && this.apiKey.length() > MAX_API_KEY_LENGTH && json != null) {
@@ -560,8 +584,15 @@ public abstract class AbstractClient {
                 } else {
                     hostConnection.setRequestProperty("X-Algolia-API-Key", this.apiKey);
                 }
+                // Client-level headers
                 for (Map.Entry<String, String> entry : this.headers.entrySet()) {
                     hostConnection.setRequestProperty(entry.getKey(), entry.getValue());
+                }
+                // Request-level headers
+                if (requestOptions != null) {
+                    for (Map.Entry<String, String> entry : requestOptions.headers.entrySet()) {
+                        hostConnection.setRequestProperty(entry.getKey(), entry.getValue());
+                    }
                 }
 
                 // set user agent
@@ -614,12 +645,10 @@ public abstract class AbstractClient {
                 }
                 return rawResponse;
 
-            }
-            catch (JSONException e) { // fatal
+            } catch (JSONException e) { // fatal
                 consumeQuietly(hostConnection);
                 throw new AlgoliaException("Invalid JSON returned by server", e);
-            }
-            catch (UnsupportedEncodingException e) { // fatal
+            } catch (UnsupportedEncodingException e) { // fatal
                 consumeQuietly(hostConnection);
                 throw new AlgoliaException("Invalid encoding returned by server", e);
             } catch (IOException e) { // host error, continue on the next host
@@ -673,6 +702,7 @@ public abstract class AbstractClient {
 
     /**
      * Get the hosts that are not considered down in a given list.
+     *
      * @param hosts a list of hosts whose {@link HostStatus} will be checked.
      * @return the hosts considered up, or all hosts if none is known to be reachable.
      */
@@ -703,7 +733,7 @@ public abstract class AbstractClient {
          * Construct a new request with the specified completion handler, executing on the client's search executor,
          * and calling the completion handler on the client's completion executor.
          *
-         * @param completionHandler  The completion handler to be notified of results. May be null if the caller omitted it.
+         * @param completionHandler The completion handler to be notified of results. May be null if the caller omitted it.
          */
         protected AsyncTaskRequest(@Nullable CompletionHandler completionHandler) {
             this(completionHandler, searchExecutorService);
@@ -713,8 +743,8 @@ public abstract class AbstractClient {
          * Construct a new request with the specified completion handler, executing on the specified executor, and
          * calling the completion handler on the client's completion executor.
          *
-         * @param completionHandler  The completion handler to be notified of results. May be null if the caller omitted it.
-         * @param requestExecutor    Executor on which to execute the request.
+         * @param completionHandler The completion handler to be notified of results. May be null if the caller omitted it.
+         * @param requestExecutor   Executor on which to execute the request.
          */
         protected AsyncTaskRequest(@Nullable CompletionHandler completionHandler, @NonNull Executor requestExecutor) {
             super(completionHandler, requestExecutor, completionExecutor);
