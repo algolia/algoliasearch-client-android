@@ -322,7 +322,9 @@ public abstract class AbstractClient {
      * @param userAgent The library to add.
      */
     public void addUserAgent(@NonNull LibraryVersion userAgent) {
-        userAgents.add(userAgent);
+        if (!userAgents.contains(userAgent)) {
+            userAgents.add(userAgent);
+        }
         updateUserAgents();
     }
 
