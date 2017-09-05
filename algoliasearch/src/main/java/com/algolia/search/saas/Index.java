@@ -759,6 +759,7 @@ public class Index {
      * @param query             The query that objects to delete must match.
      * @param requestOptions Request-specific options.
      * @param completionHandler The listener that will be notified of the request's outcome.
+     * @deprecated use {@link Index#deleteByAsync(Query, CompletionHandler)} instead.
      * @return A cancellable request.
      */
     public Request deleteByQueryAsync(@NonNull Query query, @Nullable final RequestOptions requestOptions, CompletionHandler completionHandler) {
