@@ -85,8 +85,8 @@ public class ClientTest extends RobolectricTestCase {
         client.addUserAgent(new AbstractClient.LibraryVersion("foo", "bar"));
         final AbstractClient.LibraryVersion[] userAgents = client.getUserAgents();
         int found = 0;
-        for (int i = 0; i < userAgents.length; i++) {
-            if ("foo".equals(userAgents[i].name)) {
+        for (AbstractClient.LibraryVersion userAgent : userAgents) {
+            if ("foo".equals(userAgent.name)) {
                 found++;
             }
         }
