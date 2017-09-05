@@ -84,10 +84,10 @@ dependencies {
     testCompile "org.robolectric:robolectric:3.1.2"
 
     // PowerMock brings in the mockito dependency
-    testCompile "org.powermock:powermock-module-junit4:1.6.1"
+    testCompile "org.powermock:powermock-module-junit4:1.6.4"
     testCompile "org.powermock:powermock-module-junit4-rule:1.6.1"
-    testCompile "org.powermock:powermock-classloading-xstream:1.6.1"
-    testCompile "org.powermock:powermock-api-mockito:1.6.1"
+    testCompile "org.powermock:powermock-classloading-xstream:1.6.4"
+    testCompile "org.powermock:powermock-api-mockito:1.6.4"
 
     javadoc "com.android.support:support-annotations:$APPCOMPAT_VERSION"
 }
