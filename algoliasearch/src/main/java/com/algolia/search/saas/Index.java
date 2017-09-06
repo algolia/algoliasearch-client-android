@@ -113,7 +113,7 @@ public class Index {
      * Search inside this index (asynchronously).
      *
      * @param query             Search parameters. May be null to use an empty query.
-     * @param requestOptions Request-specific options.
+     * @param requestOptions    Request-specific options.
      * @param completionHandler The listener that will be notified of the request's outcome.
      * @return A cancellable request.
      */
@@ -141,7 +141,7 @@ public class Index {
     /**
      * Search inside this index (synchronously).
      *
-     * @param query Search parameters.
+     * @param query          Search parameters.
      * @param requestOptions Request-specific options.
      * @return Search results.
      */
@@ -165,7 +165,7 @@ public class Index {
      *
      * @param queries           The queries to run.
      * @param strategy          The strategy to use.
-     * @param requestOptions Request-specific options.
+     * @param requestOptions    Request-specific options.
      * @param completionHandler The listener that will be notified of the request's outcome.
      * @return A cancellable request.
      */
@@ -199,7 +199,7 @@ public class Index {
     /**
      * Search inside this index synchronously.
      *
-     * @param query Search parameters.
+     * @param query          Search parameters.
      * @param requestOptions Request-specific options.
      * @return Search results.
      */
@@ -213,7 +213,7 @@ public class Index {
      * @param query             The query.
      * @param disjunctiveFacets List of disjunctive facets.
      * @param refinements       The current refinements, mapping facet names to a list of values.
-     * @param requestOptions Request-specific options.
+     * @param requestOptions    Request-specific options.
      * @param completionHandler The listener that will be notified of the request's outcome.
      * @return A cancellable request.
      */
@@ -254,12 +254,11 @@ public class Index {
     /**
      * Search (asynchronously) for some text in a facet values.
      *
-     * @deprecated Please use {@link #searchForFacetValuesAsync(String, String, CompletionHandler)} instead.
-     *
      * @param facetName The name of the facet to search. It must have been declared in the index's `attributesForFaceting` setting with the `searchable()` modifier.
      * @param text      The text to search for in the facet's values.
      * @param handler   A Completion handler that will be notified of the request's outcome.
      * @return A cancellable request.
+     * @deprecated Please use {@link #searchForFacetValuesAsync(String, String, CompletionHandler)} instead.
      */
     public Request searchForFacetValues(@NonNull String facetName, @NonNull String text, @NonNull final CompletionHandler handler) {
         return searchForFacetValuesAsync(facetName, text, /* requestOptions: */ null, handler);
@@ -281,11 +280,11 @@ public class Index {
     /**
      * Search for some text in a facet values, optionally restricting the returned values to those contained in objects matching other (regular) search criteria.
      *
-     * @param facetName The name of the facet to search. It must have been declared in the index's `attributesForFaceting` setting with the `searchable()` modifier.
-     * @param facetText The text to search for in the facet's values.
-     * @param query     An optional query to take extra search parameters into account. There parameters apply to index objects like in a regular search query. Only facet values contained in the matched objects will be returned
+     * @param facetName      The name of the facet to search. It must have been declared in the index's `attributesForFaceting` setting with the `searchable()` modifier.
+     * @param facetText      The text to search for in the facet's values.
+     * @param query          An optional query to take extra search parameters into account. There parameters apply to index objects like in a regular search query. Only facet values contained in the matched objects will be returned
      * @param requestOptions Request-specific options.
-     * @param handler   A Completion handler that will be notified of the request's outcome.
+     * @param handler        A Completion handler that will be notified of the request's outcome.
      * @return A cancellable request.
      */
     public Request searchForFacetValuesAsync(@NonNull String facetName, @NonNull String facetText, @Nullable Query query, @Nullable final RequestOptions requestOptions, @NonNull final CompletionHandler handler) {
@@ -311,13 +310,12 @@ public class Index {
     /**
      * Search (asynchronously) for some text in a facet values, optionally restricting the returned values to those contained in objects matching other (regular) search criteria.
      *
-     * @deprecated Please use {@link #searchForFacetValuesAsync(String, String, Query, CompletionHandler)} instead.
-     *
      * @param facetName The name of the facet to search. It must have been declared in the index's `attributesForFaceting` setting with the `searchable()` modifier.
      * @param facetText The text to search for in the facet's values.
      * @param query     An optional query to take extra search parameters into account. There parameters apply to index objects like in a regular search query. Only facet values contained in the matched objects will be returned
      * @param handler   A Completion handler that will be notified of the request's outcome.
      * @return A cancellable request.
+     * @deprecated Please use {@link #searchForFacetValuesAsync(String, String, Query, CompletionHandler)} instead.
      */
     public Request searchForFacetValues(@NonNull String facetName, @NonNull String facetText, @Nullable Query query, @NonNull final CompletionHandler handler) {
         return searchForFacetValuesAsync(facetName, facetText, query, handler);
@@ -373,7 +371,7 @@ public class Index {
      *
      * @param object            The object to add.
      * @param objectID          Identifier that you want to assign this object.
-     * @param requestOptions Request-specific options.
+     * @param requestOptions    Request-specific options.
      * @param completionHandler The listener that will be notified of the request's outcome.
      * @return A cancellable request.
      */
@@ -390,7 +388,7 @@ public class Index {
      * Add several objects to this index (asynchronously).
      *
      * @param objects           Objects to add.
-     * @param requestOptions Request-specific options.
+     * @param requestOptions    Request-specific options.
      * @param completionHandler The listener that will be notified of the request's outcome.
      * @return A cancellable request.
      */
@@ -431,7 +429,7 @@ public class Index {
      *
      * @param object            New version of the object to update.
      * @param objectID          Identifier of the object to update.
-     * @param requestOptions Request-specific options.
+     * @param requestOptions    Request-specific options.
      * @param completionHandler The listener that will be notified of the request's outcome.
      * @return A cancellable request.
      */
@@ -459,7 +457,7 @@ public class Index {
      * Update several objects (asynchronously).
      *
      * @param objects           Objects to update. Each object must contain an <code>objectID</code> attribute.
-     * @param requestOptions Request-specific options.
+     * @param requestOptions    Request-specific options.
      * @param completionHandler The listener that will be notified of the request's outcome.
      * @return A cancellable request.
      */
@@ -507,7 +505,7 @@ public class Index {
      * @param partialObject     New value/operations for the object.
      * @param objectID          Identifier of object to be updated.
      * @param createIfNotExists Whether the object should be created if it does not exist already.
-     * @param requestOptions Request-specific options.
+     * @param requestOptions    Request-specific options.
      * @param completionHandler The listener that will be notified of the request's outcome.
      * @return A cancellable request.
      */
@@ -555,7 +553,7 @@ public class Index {
      * @param partialObjects    New values/operations for the objects. Each object must contain an <code>objectID</code>
      *                          attribute.
      * @param createIfNotExists Whether objects should be created if they do not exist already.
-     * @param requestOptions Request-specific options.
+     * @param requestOptions    Request-specific options.
      * @param completionHandler The listener that will be notified of the request's outcome.
      * @return A cancellable request.
      */
@@ -596,7 +594,7 @@ public class Index {
      *
      * @param objectID             Identifier of the object to retrieve.
      * @param attributesToRetrieve List of attributes to retrieve.
-     * @param requestOptions Request-specific options.
+     * @param requestOptions       Request-specific options.
      * @param completionHandler    The listener that will be notified of the request's outcome.
      * @return A cancellable request.
      */
@@ -637,7 +635,7 @@ public class Index {
      *
      * @param objectIDs            Identifiers of objects to retrieve.
      * @param attributesToRetrieve List of attributes to retrieve.
-     * @param requestOptions Request-specific options.
+     * @param requestOptions       Request-specific options.
      * @param completionHandler    The listener that will be notified of the request's outcome.
      * @return A cancellable request.
      */
@@ -717,7 +715,7 @@ public class Index {
      * Delete an object from this index (asynchronously).
      *
      * @param objectID          Identifier of the object to delete.
-     * @param requestOptions Request-specific options.
+     * @param requestOptions    Request-specific options.
      * @param completionHandler The listener that will be notified of the request's outcome.
      * @return A cancellable request.
      */
@@ -745,7 +743,7 @@ public class Index {
      * Delete several objects from this index (asynchronously).
      *
      * @param objectIDs         Identifiers of objects to delete.
-     * @param requestOptions Request-specific options.
+     * @param requestOptions    Request-specific options.
      * @param completionHandler The listener that will be notified of the request's outcome.
      * @return A cancellable request.
      */
@@ -774,10 +772,10 @@ public class Index {
      * Delete all objects matching a query (helper).
      *
      * @param query             The query that objects to delete must match.
-     * @param requestOptions Request-specific options.
+     * @param requestOptions    Request-specific options.
      * @param completionHandler The listener that will be notified of the request's outcome.
-     * @deprecated use {@link Index#deleteByAsync(Query, CompletionHandler)} instead.
      * @return A cancellable request.
+     * @deprecated use {@link Index#deleteByAsync(Query, CompletionHandler)} instead.
      */
     public Request deleteByQueryAsync(@NonNull Query query, @Nullable final RequestOptions requestOptions, CompletionHandler completionHandler) {
         final Query queryCopy = new Query(query);
@@ -820,7 +818,7 @@ public class Index {
     /**
      * Get this index's settings (asynchronously).
      *
-     * @param requestOptions Request-specific options.
+     * @param requestOptions    Request-specific options.
      * @param completionHandler The listener that will be notified of the request's outcome.
      * @return A cancellable request.
      */
@@ -854,7 +852,7 @@ public class Index {
      * list of supported settings.
      *
      * @param settings          New settings.
-     * @param requestOptions Request-specific options.
+     * @param requestOptions    Request-specific options.
      * @param completionHandler The listener that will be notified of the request's outcome.
      * @return A cancellable request.
      */
@@ -888,7 +886,7 @@ public class Index {
      * cursor.
      *
      * @param query             The query parameters for the browse.
-     * @param requestOptions Request-specific options.
+     * @param requestOptions    Request-specific options.
      * @param completionHandler The listener that will be notified of the request's outcome.
      * @return A cancellable request.
      */
@@ -921,7 +919,7 @@ public class Index {
      * the index has been reached.
      *
      * @param cursor            The cursor of the next page to retrieve.
-     * @param requestOptions Request-specific options.
+     * @param requestOptions    Request-specific options.
      * @param completionHandler The listener that will be notified of the request's outcome.
      * @return A cancellable request.
      */
@@ -947,7 +945,7 @@ public class Index {
     /**
      * Clear this index.
      *
-     * @param requestOptions Request-specific options.
+     * @param requestOptions    Request-specific options.
      * @param completionHandler The listener that will be notified of the request's outcome.
      * @return A cancellable request.
      */
@@ -1008,7 +1006,7 @@ public class Index {
     /**
      * Add an object in this index
      *
-     * @param obj the object to add.
+     * @param obj            the object to add.
      * @param requestOptions Request-specific options.
      * @throws AlgoliaException
      */
@@ -1019,9 +1017,9 @@ public class Index {
     /**
      * Add an object in this index
      *
-     * @param obj      the object to add.
-     * @param objectID an objectID you want to attribute to this object
-     *                 (if the attribute already exist the old object will be overwrite)
+     * @param obj            the object to add.
+     * @param objectID       an objectID you want to attribute to this object
+     *                       (if the attribute already exist the old object will be overwrite)
      * @param requestOptions Request-specific options.
      * @throws AlgoliaException
      */
@@ -1036,7 +1034,7 @@ public class Index {
     /**
      * Custom batch
      *
-     * @param actions the array of actions
+     * @param actions        the array of actions
      * @param requestOptions Request-specific options.
      * @throws AlgoliaException
      */
@@ -1053,7 +1051,7 @@ public class Index {
     /**
      * Add several objects
      *
-     * @param inputArray contains an array of objects to add.
+     * @param inputArray     contains an array of objects to add.
      * @param requestOptions Request-specific options.
      * @throws AlgoliaException
      */
@@ -1075,7 +1073,7 @@ public class Index {
     /**
      * Get an object from this index
      *
-     * @param objectID the unique identifier of the object to retrieve
+     * @param objectID       the unique identifier of the object to retrieve
      * @param requestOptions Request-specific options.
      * @throws AlgoliaException
      */
@@ -1092,7 +1090,7 @@ public class Index {
      *
      * @param objectID             the unique identifier of the object to retrieve
      * @param attributesToRetrieve contains the list of attributes to retrieve.
-     * @param requestOptions Request-specific options.
+     * @param requestOptions       Request-specific options.
      * @throws AlgoliaException
      */
     protected JSONObject getObject(String objectID, List<String> attributesToRetrieve, @Nullable RequestOptions requestOptions) throws AlgoliaException {
@@ -1123,7 +1121,7 @@ public class Index {
      *
      * @param objectIDs            the array of unique identifier of objects to retrieve
      * @param attributesToRetrieve contains the list of attributes to retrieve.
-     * @param requestOptions Request-specific options.
+     * @param requestOptions       Request-specific options.
      * @throws AlgoliaException
      */
     protected JSONObject getObjects(@NonNull List<String> objectIDs, @Nullable List<String> attributesToRetrieve, @Nullable RequestOptions requestOptions) throws AlgoliaException {
@@ -1149,7 +1147,7 @@ public class Index {
     /**
      * Update partially an object (only update attributes passed in argument)
      *
-     * @param partialObject the object attributes to override
+     * @param partialObject  the object attributes to override
      * @param requestOptions Request-specific options.
      * @throws AlgoliaException
      */
@@ -1169,7 +1167,7 @@ public class Index {
     /**
      * Partially Override the content of several objects
      *
-     * @param inputArray the array of objects to update (each object must contains an objectID attribute)
+     * @param inputArray     the array of objects to update (each object must contains an objectID attribute)
      * @param requestOptions Request-specific options.
      * @throws AlgoliaException
      */
@@ -1194,7 +1192,7 @@ public class Index {
     /**
      * Override the content of object
      *
-     * @param object the object to save
+     * @param object         the object to save
      * @param requestOptions Request-specific options.
      * @throws AlgoliaException
      */
@@ -1209,7 +1207,7 @@ public class Index {
     /**
      * Override the content of several objects
      *
-     * @param inputArray contains an array of objects to update (each object must contains an objectID attribute)
+     * @param inputArray     contains an array of objects to update (each object must contains an objectID attribute)
      * @param requestOptions Request-specific options.
      * @throws AlgoliaException
      */
@@ -1233,7 +1231,7 @@ public class Index {
     /**
      * Delete an object from the index
      *
-     * @param objectID the unique identifier of object to delete
+     * @param objectID       the unique identifier of object to delete
      * @param requestOptions Request-specific options.
      * @throws AlgoliaException
      */
@@ -1251,7 +1249,7 @@ public class Index {
     /**
      * Delete several objects
      *
-     * @param objects the array of objectIDs to delete
+     * @param objects        the array of objectIDs to delete
      * @param requestOptions Request-specific options.
      * @throws AlgoliaException
      */
@@ -1275,7 +1273,7 @@ public class Index {
     /**
      * Delete all objects matching a query using browse and deleteObjects.
      *
-     * @param query the query string
+     * @param query          the query string
      * @param requestOptions Request-specific options.
      * @throws AlgoliaException
      * @deprecated use {@link Index#deleteBy(Query)} instead.
@@ -1324,8 +1322,8 @@ public class Index {
     /**
      * Search inside the index
      *
-     * @return a JSONObject containing search results
      * @param requestOptions Request-specific options.
+     * @return a JSONObject containing search results
      * @throws AlgoliaException
      */
     protected JSONObject search(@Nullable Query query, @Nullable RequestOptions requestOptions) throws AlgoliaException {
@@ -1355,8 +1353,8 @@ public class Index {
     /**
      * Search inside the index
      *
-     * @return a byte array containing search results
      * @param requestOptions Request-specific options.
+     * @return a byte array containing search results
      * @throws AlgoliaException
      */
     protected byte[] searchRaw(@Nullable Query query, @Nullable RequestOptions requestOptions) throws AlgoliaException {
@@ -1435,7 +1433,7 @@ public class Index {
     /**
      * Gets the settings of this index for a specific settings format.
      *
-     * @param formatVersion the version of a settings format.
+     * @param formatVersion  the version of a settings format.
      * @param requestOptions Request-specific options.
      * @throws AlgoliaException
      */
@@ -1450,7 +1448,7 @@ public class Index {
      *
      * @param settings          the settings object.
      * @param forwardToReplicas if true, the new settings will be forwarded to replica indices.
-     * @param requestOptions Request-specific options.
+     * @param requestOptions    Request-specific options.
      * @throws AlgoliaException
      */
     protected JSONObject setSettings(JSONObject settings, boolean forwardToReplicas, @Nullable RequestOptions requestOptions) throws AlgoliaException {
@@ -1483,8 +1481,8 @@ public class Index {
      * Run multiple queries on this index with one API call.
      * A variant of {@link Client#multipleQueries(List, String, RequestOptions)} where all queries target this index.
      *
-     * @param queries  Queries to run.
-     * @param strategy Strategy to use.
+     * @param queries        Queries to run.
+     * @param strategy       Strategy to use.
      * @param requestOptions Request-specific options.
      * @return The JSON results returned by the server.
      * @throws AlgoliaException
