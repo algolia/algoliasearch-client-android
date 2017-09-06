@@ -657,7 +657,6 @@ public class Index {
      * @param taskID            Identifier of the task (as returned by the server).
      * @param completionHandler The listener that will be notified of the request's outcome.
      * @return A cancellable request.
-     * @deprecated Task IDs are always integers. Please use {@link #waitTaskAsync(int, CompletionHandler)} instead.
      */
     public Request waitTaskAsync(final @NonNull String taskID, @NonNull CompletionHandler completionHandler) {
         return getClient().new AsyncTaskRequest(completionHandler) {
@@ -675,6 +674,24 @@ public class Index {
      * @param taskID            Identifier of the task (as returned by the server).
      * @param completionHandler The listener that will be notified of the request's outcome.
      * @return A cancellable request.
+     */
+    public Request waitTaskAsync(final long taskID, @NonNull CompletionHandler completionHandler) {
+        return getClient().new AsyncTaskRequest(completionHandler) {
+            @NonNull
+            @Override protected JSONObject run() throws AlgoliaException {
+                return waitTask(Long.toString(taskID));
+            }
+        }.start();
+    }
+
+    /**
+     * Wait until the publication of a task on the server (helper).
+     * All server tasks are asynchronous. This method helps you check that a task is published.
+     *
+     * @param taskID            Identifier of the task (as returned by the server).
+     * @param completionHandler The listener that will be notified of the request's outcome.
+     * @return A cancellable request.
+     * @deprecated Task IDs are not always integers. Please use {@link #waitTaskAsync(String, CompletionHandler)} instead.
      */
     public Request waitTaskAsync(final int taskID, @NonNull CompletionHandler completionHandler) {
         return getClient().new AsyncTaskRequest(completionHandler) {
