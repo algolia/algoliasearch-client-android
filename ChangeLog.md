@@ -7,6 +7,12 @@ Change Log
 
 - Remove broken `waitTask(int)` in favor of `waitTask(long)`
 
+## 3.12.1 (2017-07-26)
+
+### Bug fixes
+
+- Avoid passing large API keys inside HTTP headers
+
 ## 3.12.0 (2017-06-14)
 
 ## New features
