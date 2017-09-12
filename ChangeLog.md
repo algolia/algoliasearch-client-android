@@ -1,6 +1,10 @@
 Change Log
 ==========
 
+## 3.13.1 (2017-09-12)
+
+- Meta-release merging 3.12.1 branch with master
+
 ## 3.13.0 (2017-09-12)
 
 ## Bug fixes
