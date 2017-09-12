@@ -1,6 +1,12 @@
 Change Log
 ==========
 
+## 3.13.0 (2017-09-12)
+
+## Bug fixes
+
+- Remove broken `waitTask(int)` in favor of `waitTask(long)`
+
 ## 3.12.0 (2017-06-14)
 
 ## New features
