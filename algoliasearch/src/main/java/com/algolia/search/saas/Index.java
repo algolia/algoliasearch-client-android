@@ -1378,7 +1378,9 @@ public class Index {
                 } catch (InterruptedException e) {
                     continue;
                 }
-                timeToWait *= 2;
+
+                final long newTimeout = timeToWait * 2;
+                timeToWait = (newTimeout <= 0 || newTimeout >= MAX_TIME_MS_TO_WAIT) ? MAX_TIME_MS_TO_WAIT : newTimeout;
             }
         } catch (JSONException e) {
             throw new AlgoliaException(e.getMessage());
