@@ -1294,7 +1294,7 @@ public class Index {
      */
     protected JSONObject deleteBy(@NonNull Query query) throws AlgoliaException {
         try {
-            return client.postRequest("/1/indexes/" + indexName + "/deleteByQuery", query.getParameters(), new JSONObject().put("params", query.build()).toString(), false, /* requestOptions: */ null);
+            return client.postRequest("/1/indexes/" + encodedIndexName + "/deleteByQuery", query.getParameters(), new JSONObject().put("params", query.build()).toString(), false, /* requestOptions: */ null);
         } catch (JSONException e) {
             e.printStackTrace();
             return null;
