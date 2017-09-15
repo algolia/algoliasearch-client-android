@@ -38,7 +38,7 @@ public class IndexQuery {
     }
 
     public IndexQuery(@NonNull Index index, @NonNull Query query)  {
-        this.indexName = index.getIndexName();
+        this.indexName = index.getRawIndexName();
         this.query = query;
     }
 

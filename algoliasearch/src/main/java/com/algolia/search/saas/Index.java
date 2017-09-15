@@ -53,8 +53,8 @@ public class Index {
     /** The client to which this index belongs. */
     private Client client;
 
-    /** This index's name. */
-    private String indexName;
+    /** This index's name, <b>not URL-encoded</b>. */
+    private String rawIndexName;
 
     /** This index's name, URL-encoded. Cached for optimization. */
     private String encodedIndexName;
@@ -72,11 +72,11 @@ public class Index {
     // Initialization
     // ----------------------------------------------------------------------
 
-    protected Index(@NonNull Client client, @NonNull String indexName) {
+    protected Index(@NonNull Client client, @NonNull String rawIndexName) {
         try {
             this.client = client;
-            this.encodedIndexName = URLEncoder.encode(indexName, "UTF-8");
-            this.indexName = indexName;
+            this.encodedIndexName = URLEncoder.encode(rawIndexName, "UTF-8");
+            this.rawIndexName = rawIndexName;
         } catch (UnsupportedEncodingException e) {
             throw new RuntimeException(e); // should never happen, as UTF-8 is always supported
         }
@@ -87,11 +87,11 @@ public class Index {
     // ----------------------------------------------------------------------
 
     @Override public String toString() {
-        return String.format("%s{%s}", this.getClass().getSimpleName(), getIndexName());
+        return String.format("%s{%s}", this.getClass().getSimpleName(), getRawIndexName());
     }
 
-    public String getIndexName() {
-        return indexName;
+    public String getRawIndexName() {
+        return rawIndexName;
     }
 
     public Client getClient() {
@@ -1111,7 +1111,7 @@ public class Index {
             JSONArray requests = new JSONArray();
             for (String id : objectIDs) {
                 JSONObject request = new JSONObject();
-                request.put("indexName", this.indexName);
+                request.put("indexName", this.rawIndexName);
                 request.put("objectID", id);
                 if (attributesToRetrieve != null) {
                     request.put("attributesToRetrieve", new JSONArray(attributesToRetrieve));
