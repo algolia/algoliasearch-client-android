@@ -1236,6 +1236,23 @@ public class Query extends AbstractQuery {
         return get(KEY_SNIPPET_ELLIPSIS_TEXT);
     }
 
+    public static final String KEY_SORT_FACET_VALUES_BY = "sortFacetValuesBy";
+
+
+    /**
+     * When using {@link #setFacets}, Algolia retrieves a list of matching facet values for each faceted attribute.
+     * This parameter controls how the facet values are sorted within each faceted attribute.
+     * @param sortFacetValueBy supported options are `count` (sort by decreasing count) and `alpha` (sort by increasing alphabetical order)
+     * @return This instance (used to chain calls).
+     */
+    public @NonNull Query setSortFacetValuesBy(String sortFacetValueBy) {
+        return set(KEY_SORT_FACET_VALUES_BY, sortFacetValueBy);
+    }
+
+    public String getSortFacetValuesBy() {
+        return get(KEY_SORT_FACET_VALUES_BY);
+    }
+
     private static final String KEY_SYNONYMS = "synonyms";
 
     /**

@@ -278,6 +278,18 @@ public class QueryTest extends RobolectricTestCase {
         assertEquals(query.getAnalytics(), Query.parse(query.build()).getAnalytics());
     }
 
+
+    @Test
+    public void sortFacetValuesBy() {
+        Query query = new Query();
+        assertNull(query.getSortFacetValuesBy());
+        query.setSortFacetValuesBy("count");
+        assertEquals("count", query.getSortFacetValuesBy());
+        assertEquals("count", query.get("sortFacetValuesBy"));
+        Query query2 = Query.parse(query.build());
+        assertEquals(query.getSortFacetValuesBy(), query2.getSortFacetValuesBy());
+    }
+
     @Test
     public void synonyms() {
         Query query = new Query();
