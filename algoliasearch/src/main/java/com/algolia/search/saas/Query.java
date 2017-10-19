@@ -82,6 +82,21 @@ public class Query extends AbstractQuery {
         MULTI_WORDS_SYNONYM
     }
 
+    public enum SortFacetValuesBy {
+        ALPHA {
+            @Override
+            public String toString() {
+                return "alpha";
+            }
+        },
+        COUNT {
+            @Override
+            public String toString() {
+                return "count";
+            }
+        }
+    }
+
     // ----------------------------------------------------------------------
     // Construction
     // ----------------------------------------------------------------------
@@ -1209,9 +1224,10 @@ public class Query extends AbstractQuery {
 
     /**
      * Set a list of contexts for which rules are enabled.
-     *
+     * <p>
      * Contextual rules matching any of these contexts are eligible, as well as generic rules.
      * When empty, only generic rules are eligible.
+     *
      * @param ruleContexts one or several contexts.
      */
     public @NonNull Query setRuleContexts(String... ruleContexts) {
@@ -1234,6 +1250,24 @@ public class Query extends AbstractQuery {
 
     public @Nullable String getSnippetEllipsisText() {
         return get(KEY_SNIPPET_ELLIPSIS_TEXT);
+    }
+
+    public static final String KEY_SORT_FACET_VALUES_BY = "sortFacetValuesBy";
+
+
+    /**
+     * When using {@link #setFacets}, Algolia retrieves a list of matching facet values for each faceted attribute.
+     * This parameter controls how the facet values are sorted within each faceted attribute.
+     *
+     * @param order supported options are `count` (sort by decreasing count) and `alpha` (sort by increasing alphabetical order)
+     * @return This instance (used to chain calls).
+     */
+    public @NonNull Query setSortFacetValuesBy(SortFacetValuesBy order) {
+        return set(KEY_SORT_FACET_VALUES_BY, order.toString());
+    }
+
+    public String getSortFacetValuesBy() {
+        return get(KEY_SORT_FACET_VALUES_BY);
     }
 
     private static final String KEY_SYNONYMS = "synonyms";
