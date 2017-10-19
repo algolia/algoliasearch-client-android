@@ -83,8 +83,18 @@ public class Query extends AbstractQuery {
     }
 
     public enum SortFacetValuesBy {
-        COUNT,
-        ALPHA
+        ALPHA {
+            @Override
+            public String toString() {
+                return "alpha";
+            }
+        },
+        COUNT {
+            @Override
+            public String toString() {
+                return "count";
+            }
+        }
     }
 
     // ----------------------------------------------------------------------
@@ -1214,9 +1224,10 @@ public class Query extends AbstractQuery {
 
     /**
      * Set a list of contexts for which rules are enabled.
-     *
+     * <p>
      * Contextual rules matching any of these contexts are eligible, as well as generic rules.
      * When empty, only generic rules are eligible.
+     *
      * @param ruleContexts one or several contexts.
      */
     public @NonNull Query setRuleContexts(String... ruleContexts) {
@@ -1252,14 +1263,7 @@ public class Query extends AbstractQuery {
      * @return This instance (used to chain calls).
      */
     public @NonNull Query setSortFacetValuesBy(SortFacetValuesBy order) {
-        switch (order) {
-            case ALPHA:
-                return set(KEY_SORT_FACET_VALUES_BY, "alpha");
-            case COUNT:
-                return set(KEY_SORT_FACET_VALUES_BY, "count");
-            default:
-                throw new IllegalArgumentException("The given sortFacetValuesBy is not valid, see Query.SortFacetValuesBy.");
-        }
+        return set(KEY_SORT_FACET_VALUES_BY, order.toString());
     }
 
     public String getSortFacetValuesBy() {
