@@ -82,6 +82,11 @@ public class Query extends AbstractQuery {
         MULTI_WORDS_SYNONYM
     }
 
+    public enum SortFacetValuesBy {
+        COUNT,
+        ALPHA
+    }
+
     // ----------------------------------------------------------------------
     // Construction
     // ----------------------------------------------------------------------
@@ -1242,11 +1247,19 @@ public class Query extends AbstractQuery {
     /**
      * When using {@link #setFacets}, Algolia retrieves a list of matching facet values for each faceted attribute.
      * This parameter controls how the facet values are sorted within each faceted attribute.
-     * @param sortFacetValueBy supported options are `count` (sort by decreasing count) and `alpha` (sort by increasing alphabetical order)
+     *
+     * @param order supported options are `count` (sort by decreasing count) and `alpha` (sort by increasing alphabetical order)
      * @return This instance (used to chain calls).
      */
-    public @NonNull Query setSortFacetValuesBy(String sortFacetValueBy) {
-        return set(KEY_SORT_FACET_VALUES_BY, sortFacetValueBy);
+    public @NonNull Query setSortFacetValuesBy(SortFacetValuesBy order) {
+        switch (order) {
+            case ALPHA:
+                return set(KEY_SORT_FACET_VALUES_BY, "alpha");
+            case COUNT:
+                return set(KEY_SORT_FACET_VALUES_BY, "count");
+            default:
+                throw new IllegalArgumentException("The given sortFacetValuesBy is not valid, see Query.SortFacetValuesBy.");
+        }
     }
 
     public String getSortFacetValuesBy() {
