@@ -41,6 +41,12 @@ android {
         versionName PUBLISH_VERSION
     }
     buildTypes {
+        all {
+            buildConfigField "String", "ALGOLIA_APPLICATION_ID", "\"$System.env.ALGOLIA_APPLICATION_ID\""
+            buildConfigField "String", "ALGOLIA_API_KEY", "\"$System.env.ALGOLIA_API_KEY\""
+            buildConfigField "String", "PLACES_APPLICATION_ID", "\"$System.env.PLACES_APPLICATION_ID\""
+            buildConfigField "String", "PLACES_API_KEY", "\"$System.env.PLACES_API_KEY\""
+        }
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'

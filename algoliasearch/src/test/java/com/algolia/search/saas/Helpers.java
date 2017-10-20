@@ -24,14 +24,17 @@
 package com.algolia.search.saas;
 
 import android.support.annotation.NonNull;
+
+import com.algolia.search.saas.android.BuildConfig;
+
 import java.util.Arrays;
+import java.util.UUID;
 
 public class Helpers {
-    public static String app_id = "%ALGOLIA_APPLICATION_ID%";
-    public static String api_key = "%ALGOLIA_API_KEY%";
-    public static String PLACES_APP_ID = "%PLACES_APPLICATION_ID%";
-    public static String PLACES_API_KEY = "%PLACES_API_KEY%";
-    public static String job_number = "%JOB_NUMBER%";
+    public static String app_id = BuildConfig.APPLICATION_ID;
+    public static String api_key = BuildConfig.ALGOLIA_API_KEY;
+    public static String PLACES_APP_ID = BuildConfig.PLACES_APPLICATION_ID;
+    public static String PLACES_API_KEY = BuildConfig.PLACES_API_KEY;
 
     public static int wait = 30;
 
@@ -43,10 +46,7 @@ public class Helpers {
     }
 
     static String safeIndexName(String name) {
-        if (job_number.matches("\\d+\\.\\d+")) {
-            name = String.format("%s_travis-%s", name, job_number);
-        }
-        return name;
+        return name + UUID.randomUUID();
     }
 
     /**
