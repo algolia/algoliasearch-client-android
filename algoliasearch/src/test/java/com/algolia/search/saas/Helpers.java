@@ -36,7 +36,7 @@ public class Helpers {
     public static String PLACES_APP_ID = BuildConfig.PLACES_APPLICATION_ID;
     public static String PLACES_API_KEY = BuildConfig.PLACES_API_KEY;
 
-    public static int wait = 30;
+    public static int wait = 35;
 
     static String getLongApiKey() {
         int n = 65000;
