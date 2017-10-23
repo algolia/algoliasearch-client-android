@@ -94,8 +94,18 @@ public class Query extends AbstractQuery {
             public String toString() {
                 return "count";
             }
+        };
+
+        public static SortFacetValuesBy fromString(String string) {
+            for (SortFacetValuesBy value : SortFacetValuesBy.values()) {
+                if (value.toString().equals(string)) {
+                    return value;
+                }
+            }
+            return null;
         }
     }
+
 
     // ----------------------------------------------------------------------
     // Construction
@@ -1254,7 +1264,6 @@ public class Query extends AbstractQuery {
 
     public static final String KEY_SORT_FACET_VALUES_BY = "sortFacetValuesBy";
 
-
     /**
      * When using {@link #setFacets}, Algolia retrieves a list of matching facet values for each faceted attribute.
      * This parameter controls how the facet values are sorted within each faceted attribute.
@@ -1266,8 +1275,8 @@ public class Query extends AbstractQuery {
         return set(KEY_SORT_FACET_VALUES_BY, order.toString());
     }
 
-    public String getSortFacetValuesBy() {
-        return get(KEY_SORT_FACET_VALUES_BY);
+    public SortFacetValuesBy getSortFacetValuesBy() {
+        return SortFacetValuesBy.fromString(get(KEY_SORT_FACET_VALUES_BY));
     }
 
     private static final String KEY_SYNONYMS = "synonyms";
