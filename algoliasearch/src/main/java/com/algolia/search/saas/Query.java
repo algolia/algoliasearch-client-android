@@ -49,37 +49,150 @@ import java.util.List;
 public class Query extends AbstractQuery {
     public enum QueryType {
         /** All query words are interpreted as prefixes. */
-        PREFIX_ALL,
+        PREFIX_ALL {
+            @Override public String toString() {
+                return "prefixAll";
+            }
+        },
         /** Only the last word is interpreted as a prefix. */
-        PREFIX_LAST,
+        PREFIX_LAST {
+            @Override public String toString() {
+                return "prefixLast";
+            }
+        },
         /** No query word is interpreted as a prefix. This option is not recommended. */
-        PREFIX_NONE
+        PREFIX_NONE {
+            @Override public String toString() {
+                return "prefixNone";
+            }
+        };
+
+        public static QueryType fromString(String string) {
+            for (QueryType value : QueryType.values()) {
+                if (value.toString().equals(string)) {
+                    return value;
+                }
+            }
+            return null;
+        }
     }
 
     public enum RemoveWordsIfNoResults {
-        LAST_WORDS,
-        FIRST_WORDS,
-        NONE,
-        ALL_OPTIONAL
+        LAST_WORDS {
+            @Override public String toString() {
+                return "lastWords";
+            }
+        },
+        FIRST_WORDS {
+            @Override public String toString() {
+                return "firstWords";
+            }
+        },
+        ALL_OPTIONAL {
+            @Override public String toString() {
+                return "allOptional";
+            }
+        },
+        NONE {
+            @Override public String toString() {
+                return "none";
+            }
+        };
+
+        public static RemoveWordsIfNoResults fromString(String string) {
+            for (RemoveWordsIfNoResults value : RemoveWordsIfNoResults.values()) {
+                if (value.toString().equals(string)) {
+                    return value;
+                }
+            }
+            return null;
+        }
     }
 
     public enum TypoTolerance {
-        TRUE,
-        FALSE,
-        MIN,
-        STRICT
+        TRUE {
+            @Override public String toString() {
+                return "true";
+            }
+        },
+        FALSE {
+            @Override public String toString() {
+                return "false";
+            }
+        },
+        MIN {
+            @Override public String toString() {
+                return "min";
+            }
+        },
+        STRICT {
+            @Override public String toString() {
+                return "strict";
+            }
+        };
+
+        public static TypoTolerance fromString(String string) {
+            for (TypoTolerance value : TypoTolerance.values()) {
+                if (value.toString().equals(string)) {
+                    return value;
+                }
+            }
+            return null;
+        }
     }
 
     public enum ExactOnSingleWordQuery {
-        NONE,
-        ATTRIBUTE,
-        WORD
+        NONE {
+            @Override public String toString() {
+                return "none";
+            }
+        },
+        WORD {
+            @Override public String toString() {
+                return "word";
+            }
+        },
+        ATTRIBUTE {
+            @Override public String toString() {
+                return "attribute";
+            }
+        };
+
+        public static ExactOnSingleWordQuery fromString(String string) {
+            for (ExactOnSingleWordQuery value : ExactOnSingleWordQuery.values()) {
+                if (value.toString().equals(string)) {
+                    return value;
+                }
+            }
+            return null;
+        }
     }
 
     public enum AlternativesAsExact {
-        IGNORE_PLURALS,
-        SINGLE_WORD_SYNONYM,
-        MULTI_WORDS_SYNONYM
+        IGNORE_PLURALS {
+            @Override public String toString() {
+                return "ignorePlurals";
+            }
+        },
+        SINGLE_WORD_SYNONYM {
+            @Override public String toString() {
+                return "singleWordSynonym";
+            }
+        },
+        MULTI_WORDS_SYNONYM {
+            @Override public String toString() {
+                return "multiWordsSynonym";
+            }
+        };
+
+        public static AlternativesAsExact fromString(String string) {
+            for (AlternativesAsExact value : AlternativesAsExact.values()) {
+                if (value.toString().equals(string)) {
+                    return value;
+                }
+            }
+            return null;
+        }
     }
 
     public enum SortFacetValuesBy {
@@ -1076,37 +1189,13 @@ public class Query extends AbstractQuery {
      * Select how the query words are interpreted:
      */
     public @NonNull Query setQueryType(@Nullable QueryType type) {
-        if (type == null) {
-            set(KEY_QUERY_TYPE, null);
-        } else {
-            switch (type) {
-                case PREFIX_LAST:
-                    set(KEY_QUERY_TYPE, "prefixLast");
-                    break;
-                case PREFIX_NONE:
-                    set(KEY_QUERY_TYPE, "prefixNone");
-                    break;
-                case PREFIX_ALL:
-                    set(KEY_QUERY_TYPE, "prefixAll");
-                    break;
-            }
-        }
+        set(KEY_QUERY_TYPE, type == null ? null : type.toString());
         return this;
     }
 
     public @Nullable QueryType getQueryType() {
         String value = get(KEY_QUERY_TYPE);
-        if (value != null) {
-            switch (value) {
-                case "prefixLast":
-                    return QueryType.PREFIX_LAST;
-                case "prefixNone":
-                    return QueryType.PREFIX_NONE;
-                case "prefixAll":
-                    return QueryType.PREFIX_ALL;
-            }
-        }
-        return null;
+        return value == null ? null : QueryType.fromString(value);
     }
 
     private static final String KEY_REMOVE_STOP_WORDS = "removeStopWords";
@@ -1143,42 +1232,13 @@ public class Query extends AbstractQuery {
      * Select the strategy to adopt when a query does not return any result.
      */
     public @NonNull Query setRemoveWordsIfNoResults(@Nullable RemoveWordsIfNoResults type) {
-        if (type == null) {
-            set(KEY_REMOVE_WORDS_IF_NO_RESULT, null);
-        } else {
-            switch (type) {
-                case LAST_WORDS:
-                    set(KEY_REMOVE_WORDS_IF_NO_RESULT, "lastWords");
-                    break;
-                case FIRST_WORDS:
-                    set(KEY_REMOVE_WORDS_IF_NO_RESULT, "firstWords");
-                    break;
-                case ALL_OPTIONAL:
-                    set(KEY_REMOVE_WORDS_IF_NO_RESULT, "allOptional");
-                    break;
-                case NONE:
-                    set(KEY_REMOVE_WORDS_IF_NO_RESULT, "none");
-                    break;
-            }
-        }
+        set(KEY_REMOVE_WORDS_IF_NO_RESULT, type == null ? null : type.toString());
         return this;
     }
 
     public @Nullable RemoveWordsIfNoResults getRemoveWordsIfNoResults() {
         String value = get(KEY_REMOVE_WORDS_IF_NO_RESULT);
-        if (value != null) {
-            switch (value) {
-                case "lastWords":
-                    return RemoveWordsIfNoResults.LAST_WORDS;
-                case "firstWords":
-                    return RemoveWordsIfNoResults.FIRST_WORDS;
-                case "allOptional":
-                    return RemoveWordsIfNoResults.ALL_OPTIONAL;
-                case "none":
-                    return RemoveWordsIfNoResults.NONE;
-            }
-        }
-        return null;
+        return value == null ? null : RemoveWordsIfNoResults.fromString(value);
     }
 
     private static final String KEY_REPLACE_SYNONYMS_IN_HIGHLIGHT = "replaceSynonymsInHighlight";
@@ -1314,78 +1374,25 @@ public class Query extends AbstractQuery {
     private static final String KEY_TYPO_TOLERANCE = "typoTolerance";
 
     public @NonNull Query setTypoTolerance(@Nullable TypoTolerance type) {
-        if (type == null) {
-            set(KEY_TYPO_TOLERANCE, null);
-        } else {
-            switch (type) {
-                case FALSE:
-                    set(KEY_TYPO_TOLERANCE, "false");
-                    break;
-                case MIN:
-                    set(KEY_TYPO_TOLERANCE, "min");
-                    break;
-                case STRICT:
-                    set(KEY_TYPO_TOLERANCE, "strict");
-                    break;
-                case TRUE:
-                    set(KEY_TYPO_TOLERANCE, "true");
-                    break;
-            }
-        }
+        set(KEY_TYPO_TOLERANCE, type == null ? null : type.toString());
         return this;
     }
 
     public @Nullable TypoTolerance getTypoTolerance() {
         String value = get(KEY_TYPO_TOLERANCE);
-        if (value != null) {
-            switch (value) {
-                case "false":
-                    return TypoTolerance.FALSE;
-                case "min":
-                    return TypoTolerance.MIN;
-                case "strict":
-                    return TypoTolerance.STRICT;
-                case "true":
-                    return TypoTolerance.TRUE;
-            }
-        }
-        return null;
+        return value == null ? null : TypoTolerance.fromString(value);
     }
 
     private static final String KEY_EXACT_ON_SINGLE_WORD_QUERY = "exactOnSingleWordQuery";
 
     public @NonNull Query setExactOnSingleWordQuery(@Nullable ExactOnSingleWordQuery type) {
-        if (type == null) {
-            set(KEY_EXACT_ON_SINGLE_WORD_QUERY, null);
-        } else {
-            switch (type) {
-                case NONE:
-                    set(KEY_EXACT_ON_SINGLE_WORD_QUERY, "none");
-                    break;
-                case WORD:
-                    set(KEY_EXACT_ON_SINGLE_WORD_QUERY, "word");
-                    break;
-                case ATTRIBUTE:
-                    set(KEY_EXACT_ON_SINGLE_WORD_QUERY, "attribute");
-                    break;
-            }
-        }
+        set(KEY_EXACT_ON_SINGLE_WORD_QUERY, type == null ? null : type.toString());
         return this;
     }
 
     public @Nullable ExactOnSingleWordQuery getExactOnSingleWordQuery() {
         String value = get(KEY_EXACT_ON_SINGLE_WORD_QUERY);
-        if (value != null) {
-            switch (value) {
-                case "none":
-                    return ExactOnSingleWordQuery.NONE;
-                case "word":
-                    return ExactOnSingleWordQuery.WORD;
-                case "attribute":
-                    return ExactOnSingleWordQuery.ATTRIBUTE;
-            }
-        }
-        return null;
+        return value == null ? null : ExactOnSingleWordQuery.fromString(value);
     }
 
     private static final String KEY_ENABLE_RULES = "enableRules";
@@ -1411,20 +1418,9 @@ public class Query extends AbstractQuery {
         } else {
             List<String> stringList = new ArrayList<>(types.length);
             for (AlternativesAsExact type : types) {
-                switch (type) {
-                    case IGNORE_PLURALS:
-                        stringList.add("ignorePlurals");
-                        break;
-                    case MULTI_WORDS_SYNONYM:
-                        stringList.add("multiWordsSynonym");
-                        break;
-                    case SINGLE_WORD_SYNONYM:
-                        stringList.add("singleWordSynonym");
-                        break;
-                }
+                stringList.add(type.toString());
             }
-            String alternatives = TextUtils.join(",", stringList);
-            set(KEY_ALTERNATIVES_AS_EXACT, alternatives);
+            set(KEY_ALTERNATIVES_AS_EXACT, TextUtils.join(",", stringList));
         }
         return this;
     }
@@ -1439,18 +1435,7 @@ public class Query extends AbstractQuery {
         AlternativesAsExact[] alternatives = new AlternativesAsExact[stringList.length];
 
         for (int i = 0, stringListLength = stringList.length; i < stringListLength; i++) {
-            String alternative = stringList[i];
-            switch (alternative) {
-                case "ignorePlurals":
-                    alternatives[i] = AlternativesAsExact.IGNORE_PLURALS;
-                    break;
-                case "multiWordsSynonym":
-                    alternatives[i] = AlternativesAsExact.MULTI_WORDS_SYNONYM;
-                    break;
-                case "singleWordSynonym":
-                    alternatives[i] = AlternativesAsExact.SINGLE_WORD_SYNONYM;
-                    break;
-            }
+            alternatives[i] = AlternativesAsExact.fromString(stringList[i]);
         }
         return alternatives;
     }
