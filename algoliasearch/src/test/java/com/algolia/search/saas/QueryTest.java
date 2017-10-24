@@ -284,10 +284,10 @@ public class QueryTest extends RobolectricTestCase {
         Query query = new Query();
         assertNull(query.getSortFacetValuesBy());
         query.setSortFacetValuesBy(Query.SortFacetValuesBy.COUNT);
-        assertEquals("count", query.getSortFacetValuesBy());
+        assertEquals(Query.SortFacetValuesBy.COUNT, query.getSortFacetValuesBy());
         assertEquals("count", query.get("sortFacetValuesBy"));
         query.setSortFacetValuesBy(Query.SortFacetValuesBy.ALPHA);
-        assertEquals("alpha", query.getSortFacetValuesBy());
+        assertEquals(Query.SortFacetValuesBy.ALPHA, query.getSortFacetValuesBy());
         assertEquals("alpha", query.get("sortFacetValuesBy"));
         Query query2 = Query.parse(query.build());
         assertEquals(query.getSortFacetValuesBy(), query2.getSortFacetValuesBy());
