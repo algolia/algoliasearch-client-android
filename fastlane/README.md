@@ -35,6 +35,11 @@ xcode-select --install
 fastlane android test
 ```
 Runs all the tests
+### android deploy
+```
+fastlane android deploy
+```
+Deploy the library. Available options: type:major|minor|patch optional: branch:YOUR_BRANCH test:true|false (default true)
 
 ----
 

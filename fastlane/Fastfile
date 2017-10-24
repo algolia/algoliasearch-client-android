@@ -24,7 +24,7 @@ platform :android do
     )
   end
 
-  desc "Deploy the library. Available options: type:major|minor|patch optional: branch:YOUR_BRANCH"
+  desc "Deploy the library. Available options: type:major|minor|patch optional: branch:YOUR_BRANCH test:true|false (default true)"
   lane :deploy do |options|
     branch = options[:branch] || "master"
     prepare_git(branch)
@@ -32,6 +32,15 @@ platform :android do
       task: "assemble",
       build_type: "Release"
     )
+
+    testFlag = options[:test] || true
+
+    if testFlag then
+      gradle(
+        task: "test",
+        build_type: "Release"
+      )
+    end
   end
 
 end
