@@ -39,7 +39,7 @@ Runs all the tests
 ```
 fastlane android deploy
 ```
-Deploy the library. Available options: type:major|minor|patch optional: branch:YOUR_BRANCH test:true|false (default true)
+Deploy the library. Available options: type:major|minor|patch optional: branch:YOUR_BRANCH notest:true|false (default false)
 
 ----
 
