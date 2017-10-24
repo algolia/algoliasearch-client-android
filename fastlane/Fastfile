@@ -23,6 +23,23 @@ platform :android do
       build_type: "Release"
     )
   end
+
+  desc "Deploy the library. Available options: type:major|minor|patch optional: branch:YOUR_BRANCH"
+  lane :deploy do |options|
+    branch = options[:branch] || "master"
+    prepare_git(branch)
+    gradle(
+      task: "assemble",
+      build_type: "Release"
+    )
+  end
+
+end
+
+def prepare_git(branch)
+  ensure_git_status_clean
+  ensure_git_branch(branch:branch)
+  git_pull
 end
 
 
