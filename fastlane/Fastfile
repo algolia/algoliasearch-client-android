@@ -28,22 +28,24 @@ platform :android do
   desc "Deploy the library. Available options: type:major|minor|patch optional: branch:YOUR_BRANCH notest:true|false (default false)"
   lane :deploy do |options|
     branch = options[:branch] || "master"
-    # prepare_git(branch)
-    # gradle(
-    #   task: "assemble",
-    #   build_type: "Release"
-    # )
+    #prepare_git(branch)
+    
+    gradle(
+      task: "assembleOnline",
+      build_type: "Release"
+    )
 
     # if !options[:notest] then
     #   gradle(
-    #     task: "test",
+    #     task: "testOnline",
     #     build_type: "Release"
     # )
     #end
-    increment_version_name(
-      bump_type: options[:type],
-      app_project_dir: "algoliasearch"
-    )
+    new_build_number = increment_version_name(
+                          bump_type: options[:type],
+                          app_project_dir: "algoliasearch"
+                      )
+
   end
 
 end
