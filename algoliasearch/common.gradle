@@ -25,8 +25,6 @@ apply plugin: 'com.android.library'
 
 ext {
     PUBLISH_GROUP_ID = rootProject.properties["PUBLISH_GROUP_ID"] ?: "com.algolia"
-    // NOTE: This is the official version number used during publication.
-    PUBLISH_VERSION = '3.13.1'
     APPCOMPAT_VERSION = '25.3.0'
     BUILD_TOOLS_VERSION = '25.0.2'
 }
@@ -38,9 +36,15 @@ android {
         minSdkVersion 10
         targetSdkVersion 25
         versionCode 1
-        versionName PUBLISH_VERSION
+        versionName '4.0.0'
     }
     buildTypes {
+        all {
+            buildConfigField "String", "ALGOLIA_APPLICATION_ID", "\"$System.env.ALGOLIA_APPLICATION_ID\""
+            buildConfigField "String", "ALGOLIA_API_KEY", "\"$System.env.ALGOLIA_API_KEY\""
+            buildConfigField "String", "PLACES_APPLICATION_ID", "\"$System.env.PLACES_APPLICATION_ID\""
+            buildConfigField "String", "PLACES_API_KEY", "\"$System.env.PLACES_API_KEY\""
+        }
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
@@ -116,6 +120,13 @@ task javadocJar(type: Jar, dependsOn: javadoc) {
     from javadoc.destinationDir
 }
 
+// Logging the tests
+tasks.withType(Test) {
+    testLogging {
+        events "started", "passed", "skipped", "failed"
+    }
+}
+
 // Maven publishing
 // ----------------
 
@@ -179,7 +190,7 @@ def editPom(pom) {
     // POM metadata.
     pom.groupId = PUBLISH_GROUP_ID
     pom.artifactId = PUBLISH_ARTIFACT_ID
-    pom.version = PUBLISH_VERSION
+    pom.version = "${android.defaultConfig.versionName}"
     pom.project {
         name PUBLISH_NAME
         packaging 'aar'
