@@ -24,18 +24,20 @@
 package com.algolia.search.saas.helpers;
 
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
 import com.algolia.search.saas.AlgoliaException;
 import com.algolia.search.saas.CompletionHandler;
 import com.algolia.search.saas.Index;
 import com.algolia.search.saas.Query;
 import com.algolia.search.saas.Request;
+import com.algolia.search.saas.RequestOptions;
 
 import org.json.JSONObject;
 
 /**
  * Iterator to browse all index content.
- *
+ * <p>
  * This helper takes care of chaining API requests and calling back the handler block with the results, until:
  * - the end of the index has been reached;
  * - an error has been encountered;
@@ -51,8 +53,8 @@ public class BrowseIterator {
          * Called at each batch of results.
          *
          * @param iterator The iterator where the results originate from.
-         * @param result The results (in case of success).
-         * @param error The error (in case of error).
+         * @param result   The results (in case of success).
+         * @param error    The error (in case of error).
          */
         public void handleBatch(@NonNull BrowseIterator iterator, JSONObject result, AlgoliaException error);
     }
@@ -65,6 +67,9 @@ public class BrowseIterator {
 
     /** Listener. */
     private BrowseIteratorHandler handler;
+
+    /** Eventual request-specific options */
+    private @Nullable RequestOptions requestOptions;
 
     /** Cursor to use for the next call, if any. */
     private String cursor;
@@ -82,14 +87,28 @@ public class BrowseIterator {
      * Construct a new browse iterator.
      * NOTE: The iteration does not start automatically. You have to call `start()` explicitly.
      *
-     * @param index The index to be browsed.
-     * @param query The query used to filter the results.
+     * @param index   The index to be browsed.
+     * @param query   The query used to filter the results.
      * @param handler Handler called for each batch of results.
      */
     public BrowseIterator(@NonNull Index index, @NonNull Query query, @NonNull BrowseIteratorHandler handler) {
+        this(index, query, null, handler);
+    }
+
+    /**
+     * Construct a new browse iterator.
+     * NOTE: The iteration does not start automatically. You have to call `start()` explicitly.
+     *
+     * @param index          The index to be browsed.
+     * @param query          The query used to filter the results.
+     * @param requestOptions Request-specific options.
+     * @param handler        Handler called for each batch of results.
+     */
+    public BrowseIterator(@NonNull Index index, @NonNull Query query, @Nullable RequestOptions requestOptions, @NonNull BrowseIteratorHandler handler) {
         this.index = index;
         this.query = query;
         this.handler = handler;
+        this.requestOptions = requestOptions;
     }
 
     /**
@@ -100,7 +119,7 @@ public class BrowseIterator {
             throw new IllegalStateException();
         }
         started = true;
-        request = index.browseAsync(query, completionHandler);
+        request = index.browseAsync(query, requestOptions, completionHandler);
     }
 
     /**
@@ -109,8 +128,9 @@ public class BrowseIterator {
      * The listener will not be called after the iteration has been cancelled.
      */
     public void cancel() {
-        if (cancelled)
+        if (cancelled) {
             return;
+        }
         request.cancel();
         request = null;
         cancelled = true;
@@ -131,7 +151,7 @@ public class BrowseIterator {
         if (!hasNext()) {
             throw new IllegalStateException();
         }
-        request = index.browseFromAsync(cursor, completionHandler);
+        request = index.browseFromAsync(cursor, requestOptions, completionHandler);
     }
 
     private CompletionHandler completionHandler = new CompletionHandler() {
