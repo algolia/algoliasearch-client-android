@@ -28,7 +28,7 @@ ext {
     // NOTE: This is the official version number used during publication.
     PUBLISH_VERSION = '3.13.1'
     APPCOMPAT_VERSION = '25.3.0'
-    BUILD_TOOLS_VERSION = '25.0.2'
+    BUILD_TOOLS_VERSION = '25.0.3'
 }
 
 android {
