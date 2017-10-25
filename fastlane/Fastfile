@@ -11,8 +11,9 @@
 
 # This is the minimum version number required.
 # Update this, if you use features of a newer version
-fastlane_version "2.61.0"
 
+actions_path 'actions/'
+fastlane_version "2.61.0"
 default_platform :android
 
 platform :android do
@@ -27,19 +28,22 @@ platform :android do
   desc "Deploy the library. Available options: type:major|minor|patch optional: branch:YOUR_BRANCH notest:true|false (default false)"
   lane :deploy do |options|
     branch = options[:branch] || "master"
-    prepare_git(branch)
-    gradle(
-      task: "assemble",
-      build_type: "Release"
-    )
+    # prepare_git(branch)
+    # gradle(
+    #   task: "assemble",
+    #   build_type: "Release"
+    # )
 
-    puts options[:notest] 
-    if !options[:notest] then
-      gradle(
-        task: "test",
-        build_type: "Release"
-      )
-    end
+    # if !options[:notest] then
+    #   gradle(
+    #     task: "test",
+    #     build_type: "Release"
+    # )
+    #end
+    increment_version_name(
+      bump_type: options[:type],
+      app_project_dir: "algoliasearch"
+    )
   end
 
 end

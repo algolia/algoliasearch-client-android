@@ -25,8 +25,6 @@ apply plugin: 'com.android.library'
 
 ext {
     PUBLISH_GROUP_ID = rootProject.properties["PUBLISH_GROUP_ID"] ?: "com.algolia"
-    // NOTE: This is the official version number used during publication.
-    PUBLISH_VERSION = '3.13.1'
     APPCOMPAT_VERSION = '25.3.0'
     BUILD_TOOLS_VERSION = '25.0.2'
 }
@@ -38,7 +36,7 @@ android {
         minSdkVersion 10
         targetSdkVersion 25
         versionCode 1
-        versionName PUBLISH_VERSION
+        versionName '3.13.1'
     }
     buildTypes {
         all {
@@ -192,7 +190,7 @@ def editPom(pom) {
     // POM metadata.
     pom.groupId = PUBLISH_GROUP_ID
     pom.artifactId = PUBLISH_ARTIFACT_ID
-    pom.version = PUBLISH_VERSION
+    pom.version = "${android.defaultConfig.versionName}"
     pom.project {
         name PUBLISH_NAME
         packaging 'aar'
