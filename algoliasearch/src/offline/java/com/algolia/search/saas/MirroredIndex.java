@@ -306,7 +306,7 @@ public class MirroredIndex extends Index
     private synchronized void ensureLocalIndex()
     {
         if (localIndex == null) {
-            localIndex = new LocalIndex(getClient().getRootDataDir().getAbsolutePath(), getClient().getApplicationID(), getIndexName());
+            localIndex = new LocalIndex(getClient().getRootDataDir().getAbsolutePath(), getClient().getApplicationID(), getRawIndexName());
         }
     }
 
@@ -322,7 +322,7 @@ public class MirroredIndex extends Index
 
     private File getDataDir()
     {
-        return new File(new File(getClient().getRootDataDir(), getClient().getApplicationID()), getIndexName());
+        return new File(new File(getClient().getRootDataDir(), getClient().getApplicationID()), getRawIndexName());
     }
 
     private File getSettingsFile()
@@ -1201,7 +1201,7 @@ public class MirroredIndex extends Index
         if (!mirrored) {
             throw new IllegalStateException("Cannot run offline search on a non-mirrored index");
         }
-        return new MultipleQueryEmulator(this.getIndexName()) {
+        return new MultipleQueryEmulator(this.getRawIndexName()) {
             @Override
             protected JSONObject singleQuery(@NonNull Query query) throws AlgoliaException {
                 return _searchOffline(query);

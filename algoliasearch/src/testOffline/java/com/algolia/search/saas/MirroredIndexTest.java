@@ -111,7 +111,7 @@ public class MirroredIndexTest extends OfflineTestBase  {
 
     private void populate(final @NonNull MirroredIndex index, final @NonNull SyncCompletionHandler completionHandler) {
         // Delete the index.
-        client.deleteIndexAsync(index.getIndexName(), new AssertCompletionHandler() {
+        client.deleteIndexAsync(index.getRawIndexName(), new AssertCompletionHandler() {
             @Override
             public void doRequestCompleted(JSONObject content, AlgoliaException error) {
                 assertNull(error);
