@@ -634,6 +634,23 @@ public class Index {
      * Get several objects from this index (asynchronously), optionally restricting the retrieved content (asynchronously).
      *
      * @param objectIDs            Identifiers of objects to retrieve.
+     * @param requestOptions       Request-specific options.
+     * @param completionHandler    The listener that will be notified of the request's outcome.
+     * @return A cancellable request.
+     */
+    public Request getObjectsAsync(final @NonNull List<String> objectIDs, @Nullable final RequestOptions requestOptions, @Nullable CompletionHandler completionHandler) {
+        return getClient().new AsyncTaskRequest(completionHandler) {
+            @NonNull
+            @Override protected JSONObject run() throws AlgoliaException {
+                return getObjects(objectIDs, null, requestOptions);
+            }
+        }.start();
+    }
+
+    /**
+     * Get several objects from this index (asynchronously), optionally restricting the retrieved content (asynchronously).
+     *
+     * @param objectIDs            Identifiers of objects to retrieve.
      * @param attributesToRetrieve List of attributes to retrieve.
      * @param requestOptions       Request-specific options.
      * @param completionHandler    The listener that will be notified of the request's outcome.
