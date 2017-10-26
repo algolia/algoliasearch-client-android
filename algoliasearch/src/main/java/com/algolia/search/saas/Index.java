@@ -634,6 +634,23 @@ public class Index {
      * Get several objects from this index (asynchronously), optionally restricting the retrieved content (asynchronously).
      *
      * @param objectIDs            Identifiers of objects to retrieve.
+     * @param requestOptions       Request-specific options.
+     * @param completionHandler    The listener that will be notified of the request's outcome.
+     * @return A cancellable request.
+     */
+    public Request getObjectsAsync(final @NonNull List<String> objectIDs, @Nullable final RequestOptions requestOptions, @Nullable CompletionHandler completionHandler) {
+        return getClient().new AsyncTaskRequest(completionHandler) {
+            @NonNull
+            @Override protected JSONObject run() throws AlgoliaException {
+                return getObjects(objectIDs, null, requestOptions);
+            }
+        }.start();
+    }
+
+    /**
+     * Get several objects from this index (asynchronously), optionally restricting the retrieved content (asynchronously).
+     *
+     * @param objectIDs            Identifiers of objects to retrieve.
      * @param attributesToRetrieve List of attributes to retrieve.
      * @param requestOptions       Request-specific options.
      * @param completionHandler    The listener that will be notified of the request's outcome.
@@ -777,14 +794,25 @@ public class Index {
      * @param completionHandler The listener that will be notified of the request's outcome.
      * @return A cancellable request.
      */
-    public Request deleteByAsync(@NonNull Query query, CompletionHandler completionHandler) {
+    public Request deleteByAsync(@NonNull Query query, @Nullable final RequestOptions requestOptions, @Nullable CompletionHandler completionHandler) {
         final Query queryCopy = new Query(query);
         return getClient().new AsyncTaskRequest(completionHandler) {
             @NonNull
             @Override protected JSONObject run() throws AlgoliaException {
-                return deleteBy(queryCopy);
+                return deleteBy(queryCopy, requestOptions);
             }
         }.start();
+    }
+
+    /**
+     * Delete all objects matching a query (helper).
+     *
+     * @param query             The query that objects to delete must match.
+     * @param completionHandler The listener that will be notified of the request's outcome.
+     * @return A cancellable request.
+     */
+    public Request deleteByAsync(@NonNull Query query, @Nullable CompletionHandler completionHandler) {
+        return deleteByAsync(query, null, completionHandler);
     }
 
     /**
@@ -1293,8 +1321,19 @@ public class Index {
      * @throws AlgoliaException
      */
     protected JSONObject deleteBy(@NonNull Query query) throws AlgoliaException {
+        return deleteBy(query, null);
+    }
+
+    /**
+     * Delete all records matching the query.
+     *
+     * @param query the query string
+     * @throws AlgoliaException
+     *
+     */
+    protected JSONObject deleteBy(@NonNull Query query, RequestOptions requestOptions) throws AlgoliaException {
         try {
-            return client.postRequest("/1/indexes/" + encodedIndexName + "/deleteByQuery", query.getParameters(), new JSONObject().put("params", query.build()).toString(), false, /* requestOptions: */ null);
+            return client.postRequest("/1/indexes/" + encodedIndexName + "/deleteByQuery", query.getParameters(), new JSONObject().put("params", query.build()).toString(), false, requestOptions);
         } catch (JSONException e) {
             e.printStackTrace();
             return null;
