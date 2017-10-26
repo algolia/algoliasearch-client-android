@@ -1,7 +1,7 @@
 branches:
   only:
     - master
-osx_image: xcode9
+
 sudo: required
 dist: precise # require Precise infrastructure: fully virtualized, 7.5GB RAM
 
@@ -42,7 +42,6 @@ cache:
     - $HOME/.gradle/wrapper
 install: true    
 before_script:
-- gem update fastlane
 # Avoid useless reupload of cache after every build, see https://docs.travis-ci.com/user/languages/android
 - rm -f $HOME/.gradle/caches/modules-2/modules-2.lock
 # Create Android Virtual Device with current config, saying no to custom build
@@ -54,4 +53,4 @@ before_script:
 
 script:
 - set -o pipefail
-- fastlane android test
+- travis_wait bash run_test.sh
