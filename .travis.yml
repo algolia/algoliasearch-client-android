@@ -49,6 +49,7 @@ before_script:
 - emulator -avd test -no-skin -no-window &
 - android-wait-for-emulator
 - adb shell input keyevent 82 &
+- gem update fastlane
 script:
 - set -o pipefail
-- travis_wait bash run_test.sh
+- fastlane android test

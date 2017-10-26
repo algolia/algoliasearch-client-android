@@ -1,0 +1,49 @@
+# Customise this file, documentation can be found here:
+# https://docs.fastlane.tools/actions/
+# All available actions: https://docs.fastlane.tools/actions
+# can also be listed using the `fastlane actions` command
+
+# Change the syntax highlighting to Ruby
+# All lines starting with a # are ignored when running `fastlane`
+
+# If you want to automatically update fastlane if a new version is available:
+# update_fastlane
+
+# This is the minimum version number required.
+# Update this, if you use features of a newer version
+
+actions_path 'actions/'
+fastlane_version "2.61.0"
+default_platform :android
+
+platform :android do
+  desc "Runs all the tests"
+  lane :test do
+    gradle(
+      task: "test",
+      build_type: "Release"
+    )
+  end
+
+  #desc "Deploy the library. Available options: type:major|minor|patch optional: branch:YOUR_BRANCH notest:true|false (default false)"
+  desc "Deploy the library. Available options: optional: branch:YOUR_BRANCH (default master)"
+  lane :deploy do |options|
+    branch = options[:branch] || "master"
+    prepare_git(branch)
+    sh("./release.sh")
+  end
+
+end
+
+def prepare_git(branch)
+  ensure_git_status_clean
+  ensure_git_branch(branch:branch)
+  git_pull
+end
+
+
+# More information about multiple platforms in fastlane: https://github.com/fastlane/fastlane/blob/master/fastlane/docs/Platforms.md
+# All available actions: https://docs.fastlane.tools/actions
+
+# fastlane reports which actions are used. No personal data is recorded. 
+# Learn more at https://github.com/fastlane/fastlane#metrics
