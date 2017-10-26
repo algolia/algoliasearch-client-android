@@ -42,6 +42,7 @@ cache:
     - $HOME/.gradle/wrapper
 install: true    
 before_script:
+- gem update fastlane
 # Avoid useless reupload of cache after every build, see https://docs.travis-ci.com/user/languages/android
 - rm -f $HOME/.gradle/caches/modules-2/modules-2.lock
 # Create Android Virtual Device with current config, saying no to custom build
@@ -50,7 +51,7 @@ before_script:
 - emulator -avd test -no-skin -no-window &
 - android-wait-for-emulator
 - adb shell input keyevent 82 &
-- gem update fastlane
+
 script:
 - set -o pipefail
 - fastlane android test
