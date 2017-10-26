@@ -1,7 +1,7 @@
 branches:
   only:
     - master
-
+osx_image: xcode9
 sudo: required
 dist: precise # require Precise infrastructure: fully virtualized, 7.5GB RAM
 
