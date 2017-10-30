@@ -3,9 +3,6 @@
 set -e
 set -o pipefail
 
-FILE=algoliasearch/src/test/java/com/algolia/search/saas/Helpers.java
-export FILE
-
 my_travis_retry() {
     local result=0
     local count=1
@@ -43,6 +40,4 @@ if ! [[ $TRAVIS_JOB_NUMBER && ${TRAVIS_JOB_NUMBER-_} ]]; then
 fi
 
 echo "Running Android test..."
-./setup_tests.sh
 $RETRY ./gradlew testRelease
-./teardown_tests.sh

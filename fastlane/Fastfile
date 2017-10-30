@@ -1,0 +1,29 @@
+
+actions_path 'actions/'
+fastlane_version "2.61.0"
+default_platform :android
+
+platform :android do
+  desc "Runs all the tests"
+  lane :test do
+    gradle(
+      task: "test",
+      build_type: "Release"
+    )
+  end
+
+  #desc "Deploy the library. Available options: type:major|minor|patch optional: branch:YOUR_BRANCH notest:true|false (default false)"
+  desc "Deploy the library. Available options: optional: branch:YOUR_BRANCH (default master)"
+  lane :deploy do |options|
+    branch = options[:branch] || "master"
+    prepare_git(branch)
+    sh("./release.sh")
+  end
+
+end
+
+def prepare_git(branch)
+  ensure_git_status_clean
+  ensure_git_branch(branch:branch)
+  git_pull
+end
