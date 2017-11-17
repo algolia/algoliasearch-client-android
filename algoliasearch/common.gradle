@@ -28,15 +28,15 @@ ext {
     // NOTE: This is the official version number used during publication.
     PUBLISH_VERSION = '3.13.1'
     APPCOMPAT_VERSION = '25.3.0'
-    BUILD_TOOLS_VERSION = '25.0.2'
+    BUILD_TOOLS_VERSION = '26.0.2'
 }
 
 android {
-    compileSdkVersion 25
+    compileSdkVersion 26
     buildToolsVersion BUILD_TOOLS_VERSION
     defaultConfig {
         minSdkVersion 10
-        targetSdkVersion 25
+        targetSdkVersion 26
         versionCode 1
         versionName PUBLISH_VERSION
     }
