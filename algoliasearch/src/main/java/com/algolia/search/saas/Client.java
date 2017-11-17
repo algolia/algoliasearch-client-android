@@ -65,11 +65,11 @@ public class Client extends AbstractClient {
 
     /**
      * Create a new Algolia Search client targeting the default hosts.
-     *
+     * <p>
      * NOTE: This is the recommended way to initialize a client is most use cases.
      *
      * @param applicationID The application ID (available in your Algolia Dashboard).
-     * @param apiKey A valid API key for the service.
+     * @param apiKey        A valid API key for the service.
      */
     public Client(@NonNull String applicationID, @NonNull String apiKey) {
         this(applicationID, apiKey, null);
@@ -77,12 +77,12 @@ public class Client extends AbstractClient {
 
     /**
      * Create a new Algolia Search client with explicit hosts to target.
-     *
+     * <p>
      * NOTE: In most use cases, you should the default hosts. See {@link Client#Client(String, String)}.
      *
      * @param applicationID The application ID (available in your Algolia Dashboard).
-     * @param apiKey A valid API key for the service.
-     * @param hosts An explicit list of hosts to target, or null to use the default hosts.
+     * @param apiKey        A valid API key for the service.
+     * @param hosts         An explicit list of hosts to target, or null to use the default hosts.
      */
     public Client(@NonNull String applicationID, @NonNull String apiKey, @Nullable String[] hosts) {
         super(applicationID, apiKey, hosts, hosts);
@@ -131,7 +131,6 @@ public class Client extends AbstractClient {
      *
      * @param indexName The name of the index.
      * @return A new proxy to the specified index.
-     *
      * @deprecated You should now use {@link #getIndex(String)}, which re-uses instances with the same name.
      */
     public Index initIndex(@NonNull String indexName) {
@@ -148,7 +147,7 @@ public class Client extends AbstractClient {
         Index index = null;
         WeakReference<Object> existingIndex = indices.get(indexName);
         if (existingIndex != null) {
-            index = (Index)existingIndex.get();
+            index = (Index) existingIndex.get();
         }
         if (index == null) {
             index = new Index(this, indexName);
@@ -164,7 +163,7 @@ public class Client extends AbstractClient {
     /**
      * List existing indexes.
      *
-     * @param requestOptions Request-specific options.
+     * @param requestOptions    Request-specific options.
      * @param completionHandler The listener that will be notified of the request's outcome.
      * @return A cancellable request.
      */
@@ -191,8 +190,8 @@ public class Client extends AbstractClient {
     /**
      * Delete an index.
      *
-     * @param indexName Name of index to delete.
-     * @param requestOptions Request-specific options.
+     * @param indexName         Name of index to delete.
+     * @param requestOptions    Request-specific options.
      * @param completionHandler The listener that will be notified of the request's outcome.
      * @return A cancellable request.
      */
@@ -209,7 +208,7 @@ public class Client extends AbstractClient {
     /**
      * Delete an index.
      *
-     * @param indexName Name of index to delete.
+     * @param indexName         Name of index to delete.
      * @param completionHandler The listener that will be notified of the request's outcome.
      * @return A cancellable request.
      */
@@ -222,9 +221,9 @@ public class Client extends AbstractClient {
      * If the destination index already exists, its specific API keys will be preserved and the source index specific
      * API keys will be added.
      *
-     * @param srcIndexName Name of index to move.
-     * @param dstIndexName The new index name.
-     * @param requestOptions Request-specific options.
+     * @param srcIndexName      Name of index to move.
+     * @param dstIndexName      The new index name.
+     * @param requestOptions    Request-specific options.
      * @param completionHandler The listener that will be notified of the request's outcome.
      * @return A cancellable request.
      */
@@ -243,8 +242,8 @@ public class Client extends AbstractClient {
      * If the destination index already exists, its specific API keys will be preserved and the source index specific
      * API keys will be added.
      *
-     * @param srcIndexName Name of index to move.
-     * @param dstIndexName The new index name.
+     * @param srcIndexName      Name of index to move.
+     * @param dstIndexName      The new index name.
      * @param completionHandler The listener that will be notified of the request's outcome.
      * @return A cancellable request.
      */
@@ -310,9 +309,9 @@ public class Client extends AbstractClient {
     /**
      * Run multiple queries, potentially targeting multiple indexes, with one API call.
      *
-     * @param queries The queries to run.
-     * @param strategy The strategy to use.
-     * @param requestOptions Request-specific options.
+     * @param queries           The queries to run.
+     * @param strategy          The strategy to use.
+     * @param requestOptions    Request-specific options.
      * @param completionHandler The listener that will be notified of the request's outcome.
      * @return A cancellable request.
      */
@@ -329,8 +328,8 @@ public class Client extends AbstractClient {
     /**
      * Run multiple queries, potentially targeting multiple indexes, with one API call.
      *
-     * @param queries The queries to run.
-     * @param strategy The strategy to use.
+     * @param queries           The queries to run.
+     * @param strategy          The strategy to use.
      * @param completionHandler The listener that will be notified of the request's outcome.
      * @return A cancellable request.
      */
@@ -341,8 +340,8 @@ public class Client extends AbstractClient {
     /**
      * Batch operations.
      *
-     * @param operations List of operations.
-     * @param requestOptions Request-specific options.
+     * @param operations        List of operations.
+     * @param requestOptions    Request-specific options.
      * @param completionHandler The listener that will be notified of the request's outcome.
      * @return A cancellable request.
      */
@@ -359,7 +358,7 @@ public class Client extends AbstractClient {
     /**
      * Batch operations.
      *
-     * @param operations List of operations.
+     * @param operations        List of operations.
      * @param completionHandler The listener that will be notified of the request's outcome.
      * @return A cancellable request.
      */
@@ -377,7 +376,7 @@ public class Client extends AbstractClient {
      * @param requestOptions Request-specific options.
      * @return a JSON Object in the form:
      * { "items": [ {"name": "contacts", "createdAt": "2013-01-18T15:33:13.556Z"},
-     *              {"name": "notes", "createdAt": "2013-01-18T15:33:13.556Z"}]}
+     * {"name": "notes", "createdAt": "2013-01-18T15:33:13.556Z"}]}
      */
     protected JSONObject listIndexes(@Nullable RequestOptions requestOptions) throws AlgoliaException {
         return getRequest("/1/indexes/", /* urlParameters: */ null, false, requestOptions);
@@ -387,7 +386,7 @@ public class Client extends AbstractClient {
      * Delete an index
      *
      * @param requestOptions Request-specific options.
-     * @param indexName the name of index to delete
+     * @param indexName      the name of index to delete
      * @return an object containing a "deletedAt" attribute
      */
     protected JSONObject deleteIndex(String indexName, @Nullable RequestOptions requestOptions) throws AlgoliaException {
@@ -401,8 +400,8 @@ public class Client extends AbstractClient {
     /**
      * Move an existing index.
      *
-     * @param srcIndexName the name of index to copy.
-     * @param dstIndexName the new index name that will contains a copy of srcIndexName (destination will be overriten if it already exist).
+     * @param srcIndexName   the name of index to copy.
+     * @param dstIndexName   the new index name that will contains a copy of srcIndexName (destination will be overriten if it already exist).
      * @param requestOptions Request-specific options.
      */
     protected JSONObject moveIndex(String srcIndexName, String dstIndexName, @Nullable RequestOptions requestOptions) throws AlgoliaException {
@@ -460,7 +459,7 @@ public class Client extends AbstractClient {
     /**
      * Custom batch
      *
-     * @param actions the array of actions
+     * @param actions        the array of actions
      * @param requestOptions Request-specific options.
      * @throws AlgoliaException if the response is not valid json
      */

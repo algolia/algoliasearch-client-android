@@ -133,8 +133,7 @@ public class IndexTest extends RobolectricTestCase {
     public void tearDown() {
         try {
             client.deleteIndex(indexName, /* requestOptions: */ null);
-        }
-        catch (AlgoliaException e) {
+        } catch (AlgoliaException e) {
             fail(e.getMessage());
         }
         AssertCompletionHandler.checkAllHandlers();
@@ -1079,8 +1078,8 @@ public class IndexTest extends RobolectricTestCase {
     public void partialUpdateObjectsNoCreate() throws Exception {
         final List<String> newIds = Arrays.asList("unknown", "none");
         final JSONArray partialObjects = new JSONArray()
-            .put(new JSONObject().put("objectID", newIds.get(0)).put("city", "Paris"))
-            .put(new JSONObject().put("objectID", newIds.get(1)).put("city", "Berlin"));
+                .put(new JSONObject().put("objectID", newIds.get(0)).put("city", "Paris"))
+                .put(new JSONObject().put("objectID", newIds.get(1)).put("city", "Berlin"));
 
         index.partialUpdateObjectsAsync(partialObjects, false, new AssertCompletionHandler() {
             @Override
@@ -1139,44 +1138,44 @@ public class IndexTest extends RobolectricTestCase {
     @Test
     public void searchForFacFacetValues() throws Exception {
         final JSONObject setSettingsTask = index.setSettings(new JSONObject()
-                .put("attributesForFaceting", new JSONArray()
-                        .put("searchable(series)")
-                        .put("kind")),
+                        .put("attributesForFaceting", new JSONArray()
+                                .put("searchable(series)")
+                                .put("kind")),
                 /* forwardToReplicas: */ false,
                 /* requestOptions: */ null
         );
 
         final JSONObject addObjectsResult = index.addObjects(new JSONArray()
-                .put(new JSONObject()
-                        .put("objectID", "1")
-                        .put("name", "Snoopy")
-                        .put("kind", new JSONArray().put("dog").put("animal"))
-                        .put("born", 1950)
-                        .put("series", "Peanuts"))
-                .put(new JSONObject()
-                        .put("objectID", "2")
-                        .put("name", "Woodstock")
-                        .put("kind", new JSONArray().put("bird").put("animal"))
-                        .put("born", 1960)
-                        .put("series", "Peanuts"))
-                .put(new JSONObject()
-                        .put("objectID", "3")
-                        .put("name", "Charlie Brown")
-                        .put("kind", new JSONArray().put("human"))
-                        .put("born", 1950)
-                        .put("series", "Peanuts"))
-                .put(new JSONObject()
-                        .put("objectID", "4")
-                        .put("name", "Hobbes")
-                        .put("kind", new JSONArray().put("tiger").put("animal").put("teddy"))
-                        .put("born", 1985)
-                        .put("series", "Calvin & Hobbes"))
-                .put(new JSONObject()
-                        .put("objectID", "5")
-                        .put("name", "Calvin")
-                        .put("kind", new JSONArray().put("human"))
-                        .put("born", 1985)
-                        .put("series", "Calvin & Hobbes")),
+                        .put(new JSONObject()
+                                .put("objectID", "1")
+                                .put("name", "Snoopy")
+                                .put("kind", new JSONArray().put("dog").put("animal"))
+                                .put("born", 1950)
+                                .put("series", "Peanuts"))
+                        .put(new JSONObject()
+                                .put("objectID", "2")
+                                .put("name", "Woodstock")
+                                .put("kind", new JSONArray().put("bird").put("animal"))
+                                .put("born", 1960)
+                                .put("series", "Peanuts"))
+                        .put(new JSONObject()
+                                .put("objectID", "3")
+                                .put("name", "Charlie Brown")
+                                .put("kind", new JSONArray().put("human"))
+                                .put("born", 1950)
+                                .put("series", "Peanuts"))
+                        .put(new JSONObject()
+                                .put("objectID", "4")
+                                .put("name", "Hobbes")
+                                .put("kind", new JSONArray().put("tiger").put("animal").put("teddy"))
+                                .put("born", 1985)
+                                .put("series", "Calvin & Hobbes"))
+                        .put(new JSONObject()
+                                .put("objectID", "5")
+                                .put("name", "Calvin")
+                                .put("kind", new JSONArray().put("human"))
+                                .put("born", 1985)
+                                .put("series", "Calvin & Hobbes")),
                 /* requestOptions: */ null
         );
 
