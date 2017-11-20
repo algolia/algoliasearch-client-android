@@ -335,6 +335,6 @@ public class PlacesQuery extends AbstractQuery {
     @Override
     public @NonNull
     PlacesQuery set(@NonNull String name, @Nullable Object value) {
-        return (PlacesQuery)super.set(name, value);
+        return (PlacesQuery) super.set(name, value);
     }
 }

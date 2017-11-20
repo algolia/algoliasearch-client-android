@@ -42,7 +42,7 @@ import static org.junit.Assert.fail;
 
 @SuppressLint("DefaultLocale")
 public class PlacesClientTest extends RobolectricTestCase {
-    public static final String OBJECT_ID_RUE_RIVOLI = "95057362_123324299";
+    public static final String OBJECT_ID_RUE_RIVOLI = "afd71bb8613f70ca495d8996923b5fd5";
     PlacesClient places;
 
     @Override
