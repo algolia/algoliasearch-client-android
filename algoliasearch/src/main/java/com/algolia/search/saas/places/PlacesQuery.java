@@ -56,6 +56,7 @@ public class PlacesQuery extends AbstractQuery {
 
     /**
      * Clone an existing query.
+     *
      * @param other The query to be cloned.
      */
     public PlacesQuery(@NonNull PlacesQuery other) {
@@ -137,6 +138,7 @@ public class PlacesQuery extends AbstractQuery {
 
     /**
      * Get the current radius for around latitude/longitude queries.
+     *
      * @return Query.RADIUS_ALL if set to 'all'.
      */
     public Integer getAroundRadius() {
@@ -268,7 +270,7 @@ public class PlacesQuery extends AbstractQuery {
 
     /**
      * Restrict the search results to a single language.
-     * You can pass two letters country codes ([ISO 639-1](https://en.wikipedia.org/wiki/List_of_ISO_639-1_codes)).
+     * You can pass two letters country codes (<a href="https://en.wikipedia.org/wiki/List_of_ISO_639-1_codes">ISO 639-1</a>).
      *
      * @param language The language used to return the results, or `null` to use all available languages.
      * @return This query.
@@ -285,7 +287,8 @@ public class PlacesQuery extends AbstractQuery {
 
     /**
      * Restrict the search results to a specific list of countries.
-     * You can pass two letters country codes ([ISO 3166-1](https://en.wikipedia.org/wiki/ISO_3166-1#Officially_assigned_code_elements)).
+     * You can pass two letters country codes (<a href="https://en.wikipedia.org/wiki/ISO_3166-1#Officially_assigned_code_elements">ISO 3166-1</a>).
+     * <p>
      * Default: Search on the whole planet.
      *
      * @param countries The countries to restrict the search to, or `null` to search on the whole planet.
@@ -305,6 +308,7 @@ public class PlacesQuery extends AbstractQuery {
 
     /**
      * Parse a query object from a URL query parameter string.
+     *
      * @param queryParameters URL query parameter string.
      * @return The parsed query object.
      */
@@ -322,7 +326,8 @@ public class PlacesQuery extends AbstractQuery {
     /**
      * Set a parameter in an untyped fashion.
      * This low-level accessor is intended to access parameters that this client does not yet support.
-     * @param name The parameter's name.
+     *
+     * @param name  The parameter's name.
      * @param value The parameter's value, or null to remove it.
      *              It will first be converted to a String by the `toString()` method.
      * @return This instance (used to chain calls).
@@ -330,6 +335,6 @@ public class PlacesQuery extends AbstractQuery {
     @Override
     public @NonNull
     PlacesQuery set(@NonNull String name, @Nullable Object value) {
-        return (PlacesQuery)super.set(name, value);
+        return (PlacesQuery) super.set(name, value);
     }
 }
