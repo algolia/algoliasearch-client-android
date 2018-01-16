@@ -33,8 +33,11 @@ ext {
 apply from: "common.gradle"
 
 android {
+    flavorDimensions "main"
     productFlavors {
-        offline
+        offline {
+            dimension "main"
+        }
     }
     defaultPublishConfig "offlineRelease"
 }
