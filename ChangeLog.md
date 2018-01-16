@@ -1,5 +1,18 @@
 Change Log
 ==========
+<a name=""></a>
+# 3.14.0 [Changes](https://github.com/algolia/algoliasearch-client-android/compare/3.13.1...3.14.0) (2018-01-16)
+
+### Bug Fixes
+
+* **deleteBy:** Use encoded index name ([b5a8ab7](https://github.com/algolia/algoliasearch-client-android/commit/b5a8ab7))
+* rename getIndexName to getRawIndexName in the offline flavor ([091008a](https://github.com/algolia/algoliasearch-client-android/commit/091008a))
+* **Index:** missing request options methods (#458) ([e081acd](https://github.com/algolia/algoliasearch-client-android/commit/e081acd))
+
+
+### Features
+
+* **Query:** implement sortFacetValuesBy (#450) ([fc406b8](https://github.com/algolia/algoliasearch-client-android/commit/fc406b8))
 
 ## 3.13.1 (2017-09-12)
 

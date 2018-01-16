@@ -106,7 +106,7 @@ public abstract class AbstractClient {
     // ----------------------------------------------------------------------
 
     /** This library's version. */
-    private final static String version = "3.13.1";
+    private final static String version = "3.14.0";
 
     /** Maximum size for an API key to be sent in the HTTP headers. Bigger keys will go inside the body. */
     private final static int MAX_API_KEY_LENGTH = 500;
