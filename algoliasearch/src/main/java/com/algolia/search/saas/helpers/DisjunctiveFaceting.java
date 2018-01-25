@@ -37,6 +37,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -54,7 +55,7 @@ public abstract class DisjunctiveFaceting {
      * @param completionHandler Completion handler to be notified of results.
      * @return A cancellable request.
      */
-    abstract protected Request multipleQueriesAsync(@NonNull List<Query> queries, @NonNull CompletionHandler completionHandler);
+    abstract protected Request multipleQueriesAsync(@NonNull Collection<Query> queries, @NonNull CompletionHandler completionHandler);
 
     /**
      * Perform a search with disjunctive facets, generating as many queries as number of disjunctive facets.
@@ -65,7 +66,7 @@ public abstract class DisjunctiveFaceting {
      * @param completionHandler The listener that will be notified of the request's outcome.
      * @return A cancellable request.
      */
-    public Request searchDisjunctiveFacetingAsync(@NonNull Query query, @NonNull final List<String> disjunctiveFacets, @NonNull final Map<String, List<String>> refinements, @NonNull final CompletionHandler completionHandler) {
+    public <T extends Collection<String>> Request searchDisjunctiveFacetingAsync(@NonNull Query query, @NonNull final Collection<String> disjunctiveFacets, @NonNull final Map<String, T> refinements, @NonNull final CompletionHandler completionHandler) {
         final List<Query> queries = computeDisjunctiveFacetingQueries(query, disjunctiveFacets, refinements);
         return multipleQueriesAsync(queries, new CompletionHandler() {
             @Override
@@ -90,10 +91,10 @@ public abstract class DisjunctiveFaceting {
      * @param refinements       Map representing the current refinements
      * @return The disjunctive refinements
      */
-    static private @NonNull Map<String, List<String>> computeDisjunctiveRefinements(@NonNull List<String> disjunctiveFacets, @NonNull Map<String, List<String>> refinements)
+    static private @NonNull <T extends Collection<String>> Map<String, T> computeDisjunctiveRefinements(@NonNull Collection<String> disjunctiveFacets, @NonNull Map<String, T> refinements)
     {
-        Map<String, List<String>> disjunctiveRefinements = new HashMap<>();
-        for (Map.Entry<String, List<String>> elt : refinements.entrySet()) {
+        Map<String, T> disjunctiveRefinements = new HashMap<>();
+        for (Map.Entry<String, T> elt : refinements.entrySet()) {
             if (disjunctiveFacets.contains(elt.getKey())) {
                 disjunctiveRefinements.put(elt.getKey(), elt.getValue());
             }
@@ -109,9 +110,9 @@ public abstract class DisjunctiveFaceting {
      * @param refinements       The current refinements, mapping facet names to a list of values.
      * @return A list of queries suitable for {@link Index#multipleQueries}.
      */
-    static private @NonNull List<Query> computeDisjunctiveFacetingQueries(@NonNull Query query, @NonNull List<String> disjunctiveFacets, @NonNull Map<String, List<String>> refinements) {
+    static private @NonNull <T extends Collection<String>> List<Query> computeDisjunctiveFacetingQueries(@NonNull Query query, @NonNull Collection<String> disjunctiveFacets, @NonNull Map<String, T> refinements) {
         // Retain only refinements corresponding to the disjunctive facets.
-        Map<String, List<String>> disjunctiveRefinements = computeDisjunctiveRefinements(disjunctiveFacets, refinements);
+        Map<String, ? extends Collection<String>> disjunctiveRefinements = computeDisjunctiveRefinements(disjunctiveFacets, refinements);
 
         // build queries
         // TODO: Refactor using JSON array notation: safer and clearer.
@@ -119,7 +120,7 @@ public abstract class DisjunctiveFaceting {
         // hits + regular facets query
         StringBuilder filters = new StringBuilder();
         boolean first_global = true;
-        for (Map.Entry<String, List<String>> elt : refinements.entrySet()) {
+        for (Map.Entry<String, T> elt : refinements.entrySet()) {
             StringBuilder or = new StringBuilder();
             or.append("(");
             boolean first = true;
@@ -155,7 +156,7 @@ public abstract class DisjunctiveFaceting {
         for (String disjunctiveFacet : disjunctiveFacets) {
             filters = new StringBuilder();
             first_global = true;
-            for (Map.Entry<String, List<String>> elt : refinements.entrySet()) {
+            for (Map.Entry<String, T> elt : refinements.entrySet()) {
                 if (disjunctiveFacet.equals(elt.getKey())) {
                     continue;
                 }
@@ -205,9 +206,9 @@ public abstract class DisjunctiveFaceting {
      * @return The aggregated results.
      * @throws AlgoliaException
      */
-    static private JSONObject aggregateDisjunctiveFacetingResults(@NonNull JSONObject answers, @NonNull List<String> disjunctiveFacets, @NonNull Map<String, List<String>> refinements) throws AlgoliaException
+    static private <T extends Collection<String>> JSONObject aggregateDisjunctiveFacetingResults(@NonNull JSONObject answers, @NonNull Collection<String> disjunctiveFacets, @NonNull Map<String, T> refinements) throws AlgoliaException
     {
-        Map<String, List<String>> disjunctiveRefinements = computeDisjunctiveRefinements(disjunctiveFacets, refinements);
+        Map<String, T> disjunctiveRefinements = computeDisjunctiveRefinements(disjunctiveFacets, refinements);
 
         // aggregate answers
         // first answer stores the hits + regular facets

@@ -35,6 +35,7 @@ import org.json.JSONObject;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -169,7 +170,7 @@ public class Index {
      * @param completionHandler The listener that will be notified of the request's outcome.
      * @return A cancellable request.
      */
-    public Request multipleQueriesAsync(final @NonNull List<Query> queries, final Client.MultipleQueriesStrategy strategy, @Nullable final RequestOptions requestOptions, @Nullable CompletionHandler completionHandler) {
+    public Request multipleQueriesAsync(final @NonNull Collection<Query> queries, final Client.MultipleQueriesStrategy strategy, @Nullable final RequestOptions requestOptions, @Nullable CompletionHandler completionHandler) {
         final List<Query> queriesCopy = new ArrayList<>(queries.size());
         for (Query query : queries) {
             queriesCopy.add(new Query(query));
@@ -192,7 +193,7 @@ public class Index {
      * @param completionHandler The listener that will be notified of the request's outcome.
      * @return A cancellable request.
      */
-    public Request multipleQueriesAsync(final @NonNull List<Query> queries, final Client.MultipleQueriesStrategy strategy, @Nullable CompletionHandler completionHandler) {
+    public Request multipleQueriesAsync(final @NonNull Collection<Query> queries, final Client.MultipleQueriesStrategy strategy, @Nullable CompletionHandler completionHandler) {
         return multipleQueriesAsync(queries, strategy, /* requestOptions: */ null, completionHandler);
     }
 
@@ -217,10 +218,10 @@ public class Index {
      * @param completionHandler The listener that will be notified of the request's outcome.
      * @return A cancellable request.
      */
-    public Request searchDisjunctiveFacetingAsync(@NonNull Query query, @NonNull final List<String> disjunctiveFacets, @NonNull final Map<String, List<String>> refinements, @Nullable final RequestOptions requestOptions, @NonNull final CompletionHandler completionHandler) {
+    public Request searchDisjunctiveFacetingAsync(@NonNull Query query, @NonNull final Collection<String> disjunctiveFacets, @NonNull final Map<String, ? extends Collection<String>> refinements, @Nullable final RequestOptions requestOptions, @NonNull final CompletionHandler completionHandler) {
         return new DisjunctiveFaceting() {
             @Override
-            protected Request multipleQueriesAsync(@NonNull List<Query> queries, @Nullable CompletionHandler completionHandler) {
+            protected Request multipleQueriesAsync(@NonNull Collection<Query> queries, @Nullable CompletionHandler completionHandler) {
                 return Index.this.multipleQueriesAsync(queries, null, requestOptions, completionHandler);
             }
         }.searchDisjunctiveFacetingAsync(query, disjunctiveFacets, refinements, completionHandler);
@@ -235,7 +236,7 @@ public class Index {
      * @param completionHandler The listener that will be notified of the request's outcome.
      * @return A cancellable request.
      */
-    public Request searchDisjunctiveFacetingAsync(@NonNull Query query, @NonNull final List<String> disjunctiveFacets, @NonNull final Map<String, List<String>> refinements, @NonNull final CompletionHandler completionHandler) {
+    public Request searchDisjunctiveFacetingAsync(@NonNull Query query, @NonNull final Collection<String> disjunctiveFacets, @NonNull final Map<String, ? extends Collection<String>> refinements, @NonNull final CompletionHandler completionHandler) {
         return searchDisjunctiveFacetingAsync(query, disjunctiveFacets, refinements, /* requestOptions: */ null, completionHandler);
     }
 
@@ -585,7 +586,7 @@ public class Index {
      * @param completionHandler    The listener that will be notified of the request's outcome.
      * @return A cancellable request.
      */
-    public Request getObjectAsync(final @NonNull String objectID, final List<String> attributesToRetrieve, @Nullable CompletionHandler completionHandler) {
+    public Request getObjectAsync(final @NonNull String objectID, final Collection<String> attributesToRetrieve, @Nullable CompletionHandler completionHandler) {
         return getObjectAsync(objectID, attributesToRetrieve, /* requestOptions: */ null, completionHandler);
     }
 
@@ -598,7 +599,7 @@ public class Index {
      * @param completionHandler    The listener that will be notified of the request's outcome.
      * @return A cancellable request.
      */
-    public Request getObjectAsync(final @NonNull String objectID, final List<String> attributesToRetrieve, @Nullable final RequestOptions requestOptions, @Nullable CompletionHandler completionHandler) {
+    public Request getObjectAsync(final @NonNull String objectID, final Collection<String> attributesToRetrieve, @Nullable final RequestOptions requestOptions, @Nullable CompletionHandler completionHandler) {
         return getClient().new AsyncTaskRequest(completionHandler) {
             @NonNull
             @Override protected JSONObject run() throws AlgoliaException {
@@ -614,7 +615,7 @@ public class Index {
      * @param completionHandler The listener that will be notified of the request's outcome.
      * @return A cancellable request.
      */
-    public Request getObjectsAsync(final @NonNull List<String> objectIDs, @Nullable CompletionHandler completionHandler) {
+    public Request getObjectsAsync(final @NonNull Collection<String> objectIDs, @Nullable CompletionHandler completionHandler) {
         return getObjectsAsync(objectIDs, /* attributesToRetrieve: */ null, /* requestOptions: */ null, completionHandler);
     }
 
@@ -626,7 +627,7 @@ public class Index {
      * @param completionHandler    The listener that will be notified of the request's outcome.
      * @return A cancellable request.
      */
-    public Request getObjectsAsync(final @NonNull List<String> objectIDs, final List<String> attributesToRetrieve, @Nullable CompletionHandler completionHandler) {
+    public Request getObjectsAsync(final @NonNull Collection<String> objectIDs, final List<String> attributesToRetrieve, @Nullable CompletionHandler completionHandler) {
         return getObjectsAsync(objectIDs, attributesToRetrieve, /* requestOptions: */ null, completionHandler);
     }
 
@@ -638,7 +639,7 @@ public class Index {
      * @param completionHandler    The listener that will be notified of the request's outcome.
      * @return A cancellable request.
      */
-    public Request getObjectsAsync(final @NonNull List<String> objectIDs, @Nullable final RequestOptions requestOptions, @Nullable CompletionHandler completionHandler) {
+    public Request getObjectsAsync(final @NonNull Collection<String> objectIDs, @Nullable final RequestOptions requestOptions, @Nullable CompletionHandler completionHandler) {
         return getClient().new AsyncTaskRequest(completionHandler) {
             @NonNull
             @Override protected JSONObject run() throws AlgoliaException {
@@ -656,7 +657,7 @@ public class Index {
      * @param completionHandler    The listener that will be notified of the request's outcome.
      * @return A cancellable request.
      */
-    public Request getObjectsAsync(final @NonNull List<String> objectIDs, final List<String> attributesToRetrieve, @Nullable final RequestOptions requestOptions, @Nullable CompletionHandler completionHandler) {
+    public Request getObjectsAsync(final @NonNull Collection<String> objectIDs, final Collection<String> attributesToRetrieve, @Nullable final RequestOptions requestOptions, @Nullable CompletionHandler completionHandler) {
         return getClient().new AsyncTaskRequest(completionHandler) {
             @NonNull
             @Override protected JSONObject run() throws AlgoliaException {
@@ -734,7 +735,7 @@ public class Index {
      * @param completionHandler The listener that will be notified of the request's outcome.
      * @return A cancellable request.
      */
-    public Request deleteObjectsAsync(final @NonNull List<String> objectIDs, @Nullable CompletionHandler completionHandler) {
+    public Request deleteObjectsAsync(final @NonNull Collection<String> objectIDs, @Nullable CompletionHandler completionHandler) {
         return deleteObjectsAsync(objectIDs, /* requestOptions: */ null, completionHandler);
     }
 
@@ -746,7 +747,7 @@ public class Index {
      * @param completionHandler The listener that will be notified of the request's outcome.
      * @return A cancellable request.
      */
-    public Request deleteObjectsAsync(final @NonNull List<String> objectIDs, @Nullable final RequestOptions requestOptions, @Nullable CompletionHandler completionHandler) {
+    public Request deleteObjectsAsync(final @NonNull Collection<String> objectIDs, @Nullable final RequestOptions requestOptions, @Nullable CompletionHandler completionHandler) {
         return getClient().new AsyncTaskRequest(completionHandler) {
             @NonNull
             @Override protected JSONObject run() throws AlgoliaException {
@@ -1103,7 +1104,7 @@ public class Index {
      * @param requestOptions       Request-specific options.
      * @throws AlgoliaException
      */
-    protected JSONObject getObject(String objectID, List<String> attributesToRetrieve, @Nullable RequestOptions requestOptions) throws AlgoliaException {
+    protected JSONObject getObject(String objectID, Collection<String> attributesToRetrieve, @Nullable RequestOptions requestOptions) throws AlgoliaException {
         try {
             String path = "/1/indexes/" + encodedIndexName + "/" + URLEncoder.encode(objectID, "UTF-8");
             Map<String, String> urlParameters = new HashMap<>();
@@ -1122,7 +1123,7 @@ public class Index {
      * @param objectIDs the array of unique identifier of objects to retrieve
      * @throws AlgoliaException
      */
-    protected JSONObject getObjects(List<String> objectIDs) throws AlgoliaException {
+    protected JSONObject getObjects(Collection<String> objectIDs) throws AlgoliaException {
         return getObjects(objectIDs, /* attributesToRetrieve: */ null, /* requestOptions: */ null);
     }
 
@@ -1134,7 +1135,7 @@ public class Index {
      * @param requestOptions       Request-specific options.
      * @throws AlgoliaException
      */
-    protected JSONObject getObjects(@NonNull List<String> objectIDs, @Nullable List<String> attributesToRetrieve, @Nullable RequestOptions requestOptions) throws AlgoliaException {
+    protected JSONObject getObjects(@NonNull Collection<String> objectIDs, @Nullable Collection<String> attributesToRetrieve, @Nullable RequestOptions requestOptions) throws AlgoliaException {
         try {
             JSONArray requests = new JSONArray();
             for (String id : objectIDs) {
@@ -1263,7 +1264,7 @@ public class Index {
      * @param requestOptions Request-specific options.
      * @throws AlgoliaException
      */
-    protected JSONObject deleteObjects(List<String> objects, @Nullable RequestOptions requestOptions) throws AlgoliaException {
+    protected JSONObject deleteObjects(Collection<String> objects, @Nullable RequestOptions requestOptions) throws AlgoliaException {
         try {
             JSONArray array = new JSONArray();
             for (String id : objects) {
@@ -1510,7 +1511,7 @@ public class Index {
      * @return The JSON results returned by the server.
      * @throws AlgoliaException
      */
-    protected JSONObject multipleQueries(@NonNull List<Query> queries, String strategy, @Nullable RequestOptions requestOptions) throws AlgoliaException {
+    protected JSONObject multipleQueries(@NonNull Collection<Query> queries, String strategy, @Nullable RequestOptions requestOptions) throws AlgoliaException {
         List<IndexQuery> requests = new ArrayList<>(queries.size());
         for (Query query : queries) {
             requests.add(new IndexQuery(this, query));
