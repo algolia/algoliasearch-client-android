@@ -56,7 +56,7 @@ public class BrowseIterator {
          * @param result   The results (in case of success).
          * @param error    The error (in case of error).
          */
-        public void handleBatch(@NonNull BrowseIterator iterator, JSONObject result, AlgoliaException error);
+        void handleBatch(@NonNull BrowseIterator iterator, JSONObject result, AlgoliaException error);
     }
 
     /** The index being browsed. */
