@@ -10,7 +10,7 @@ import java.util.concurrent.TimeUnit;
  */
 class ExpiringCache<K, V> {
     public static final TimeUnit expirationTimeUnit = TimeUnit.SECONDS;
-    public static final int defaultExpirationTimeout = 2;
+    public static final int defaultExpirationTimeout = 120;
     public static final int defaultMaxSize = 64;
     public final int expirationTimeout; // Time after which a cache entry is invalidated
 
