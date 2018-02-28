@@ -27,7 +27,7 @@ ext {
     PUBLISH_GROUP_ID = rootProject.properties["PUBLISH_GROUP_ID"] ?: "com.algolia"
     // NOTE: This is the official version number used during publication.
     PUBLISH_VERSION = '3.14.0'
-    APPCOMPAT_VERSION = '25.3.0'
+    APPCOMPAT_VERSION = '26.1.0'
     BUILD_TOOLS_VERSION = '26.0.2'
 }
 
@@ -35,7 +35,7 @@ android {
     compileSdkVersion 26
     buildToolsVersion BUILD_TOOLS_VERSION
     defaultConfig {
-        minSdkVersion 10
+        minSdkVersion 14
         targetSdkVersion 26
         versionCode 1
         versionName PUBLISH_VERSION
