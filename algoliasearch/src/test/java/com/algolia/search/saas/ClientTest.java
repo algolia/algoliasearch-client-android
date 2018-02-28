@@ -27,7 +27,7 @@ import android.annotation.SuppressLint;
 
 import org.junit.Test;
 import org.mockito.internal.util.reflection.Whitebox;
-import org.robolectric.util.concurrent.RoboExecutorService;
+import org.robolectric.android.util.concurrent.RoboExecutorService;
 
 import java.lang.ref.WeakReference;
 import java.util.Map;
