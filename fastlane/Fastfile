@@ -16,10 +16,13 @@ platform :android do
   desc "Deploy the library. Available options: optional: branch:YOUR_BRANCH (default master)"
   lane :deploy do |options|
     branch = options[:branch] || "master"
+    notest = options[:notest] || false
+    if notest == false
+        test()
+    end
     prepare_git(branch, false)
     sh("./release.sh")
   end
-
 end
 
 def prepare_git(branch, ensure_clean=true)
@@ -30,5 +33,4 @@ def prepare_git(branch, ensure_clean=true)
   if ensure_clean
     ensure_git_status_clean(show_uncommitted_changes:true)
   end
-  exit
 end
