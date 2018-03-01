@@ -13,15 +13,30 @@ platform :android do
   end
 
   #desc "Deploy the library. Available options: type:major|minor|patch optional: branch:YOUR_BRANCH notest:true|false (default false)"
-  desc "Deploy the library. Available options: optional: branch:YOUR_BRANCH (default master)"
+  desc "Deploy the library. Available options: type:major|minor|patch optional: branch:YOUR_BRANCH (default master) notest:true|false (default false)"
   lane :deploy do |options|
+    # Arguments handling
     branch = options[:branch] || "master"
     notest = options[:notest] || false
+    type = options[:type]
+    UI.user_error!("You need to specify a type.") unless type != nil
+    UI.user_error!("Type #{type} is not a valid type (patch/minor/major") unless ["major","minor","patch"].include? type
+
+    # Version handling
+    current_version = get_version_name(
+      gradle_file_path:"algoliasearch/common.gradle",
+      ext_constant_name:"PUBLISH_VERSION"
+    ).tr("'", "")
+    puts "Current version: #{current_version}"
+    version_number = increment_sem_ver(current_version, type)
+    puts "Incremented version: #{version_number}"
+
+    # Tests / deployment
     if notest == false
         test()
     end
     prepare_git(branch, false)
-    sh("./release.sh")
+    sh("cd .. && ./release.sh #{version_number}")
   end
 end
 
@@ -33,4 +48,25 @@ def prepare_git(branch, ensure_clean=true)
   if ensure_clean
     ensure_git_status_clean(show_uncommitted_changes:true)
   end
+end
+
+def increment_sem_ver(sem_ver, increment_type = "patch")
+  if not (/\d+\.\d+\.\d+/).match(sem_ver)
+    raise "Your semantic version must match the format 'X.X.X'."
+  end
+  if not ["patch", "minor", "major"].include?(increment_type)
+    raise "Only 'patch', 'minor', and 'major' are supported increment types."
+  end
+
+  major, minor, patch = sem_ver.split(".")
+  case increment_type
+    when "patch"
+      patch = patch.to_i + 1
+    when "minor"
+      minor = minor.to_i + 1
+    when "major"
+      major = major.to_i + 1
+  end
+
+  return "#{major}.#{minor}.#{patch}"
 end
