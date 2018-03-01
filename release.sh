@@ -8,18 +8,6 @@ if [ $# -ne 1 ]; then
     exit -1
 fi
 
-function call_sed(){
-PATTERN="$1"
-FILENAME="$2"
-
-# Mac needs a space between sed's inplace flag and extension
-if [ "$(uname)" == "Darwin" ]; then
-    sed -E -i '' "$PATTERN" "$FILENAME"
-else
-    sed -E -i "$PATTERN" "$FILENAME"
-fi
-}
-
 FILE_BUILD_GRADLE="$SELF_ROOT/algoliasearch/common.gradle"
 FILE_API_CLIENT="$SELF_ROOT/algoliasearch/src/main/java/com/algolia/search/saas/Client.java"
 SELF_ROOT=$(cd $(dirname "$0") && pwd)
