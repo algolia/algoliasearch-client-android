@@ -46,4 +46,3 @@ VERSION_CODE=$1
 
 echo "Updating version number to $VERSION_CODE..."
 call_sed "s/(PUBLISH_VERSION =) '.*'/\1 '$VERSION_CODE'/" $FILE_BUILD_GRADLE
-call_sed "s/(private final static String version =) \".*\"/\1 \"$VERSION_CODE\"/" $FILE_API_CLIENT
