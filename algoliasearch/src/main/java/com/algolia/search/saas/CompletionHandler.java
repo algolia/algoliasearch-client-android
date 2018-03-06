@@ -39,5 +39,5 @@ public interface CompletionHandler {
      * @param content Content that was returned by the API (in case of success).
      * @param error Error that was encountered (in case of failure).
      */
-    public void requestCompleted(JSONObject content, AlgoliaException error);
+    void requestCompleted(JSONObject content, AlgoliaException error);
 }

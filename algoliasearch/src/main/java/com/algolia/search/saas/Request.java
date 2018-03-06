@@ -61,19 +61,19 @@ public interface Request
      * case, cancelling never carries "undo" semantics.
      * </p>
      */
-    public void cancel();
+     void cancel();
 
     /**
      * Test if this request is still running.
      *
      * @return true if completed or cancelled, false if still running.
      */
-    public boolean isFinished();
+     boolean isFinished();
 
     /**
      * Test if this request has been cancelled.
      *
      * @return true if cancelled, false otherwise.
      */
-    public boolean isCancelled();
+     boolean isCancelled();
 }
