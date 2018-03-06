@@ -1,7 +1,13 @@
 Change Log
 ==========
-<a name=""></a>
-# 3.14.0 [Changes](https://github.com/algolia/algoliasearch-client-android/compare/3.13.1...3.14.0) (2018-01-16)
+## 3.14.1 [Changes](https://github.com/algolia/algoliasearch-client-android/compare/3.14.0...3.14.1) (2018-03-01)
+
+### Bug Fixes
+
+* **searchCache:** Change search cache from 2s to 120s ([3114474](https://github.com/algolia/algoliasearch-client-android/commit/3114474))
+
+
+## 3.14.0 [Changes](https://github.com/algolia/algoliasearch-client-android/compare/3.13.1...3.14.0) (2018-01-16)
 
 ### Bug Fixes
 

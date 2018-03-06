@@ -30,7 +30,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.mockito.internal.util.reflection.Whitebox;
 import org.robolectric.RuntimeEnvironment;
-import org.robolectric.util.concurrent.RoboExecutorService;
+import org.robolectric.android.util.concurrent.RoboExecutorService;
 
 import java.util.HashMap;
 import java.util.Map;

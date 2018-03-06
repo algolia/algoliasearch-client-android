@@ -33,7 +33,7 @@ import com.algolia.search.saas.RobolectricTestCase;
 import org.json.JSONObject;
 import org.junit.Test;
 import org.mockito.internal.util.reflection.Whitebox;
-import org.robolectric.util.concurrent.RoboExecutorService;
+import org.robolectric.android.util.concurrent.RoboExecutorService;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;

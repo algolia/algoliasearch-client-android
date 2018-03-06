@@ -29,6 +29,7 @@ import android.os.Looper;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
+import com.algolia.search.saas.android.BuildConfig;
 import com.algolia.search.saas.helpers.HandlerExecutor;
 
 import org.json.JSONException;
@@ -106,7 +107,7 @@ public abstract class AbstractClient {
     // ----------------------------------------------------------------------
 
     /** This library's version. */
-    private final static String version = "3.14.0";
+    private final static String version = BuildConfig.VERSION_NAME;
 
     /** Maximum size for an API key to be sent in the HTTP headers. Bigger keys will go inside the body. */
     private final static int MAX_API_KEY_LENGTH = 500;

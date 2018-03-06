@@ -24,8 +24,10 @@
 package com.algolia.search.saas;
 
 import android.support.annotation.NonNull;
-import java.util.Arrays;
+
 import com.algolia.search.saas.android.BuildConfig;
+
+import java.util.Arrays;
 import java.util.UUID;
 
 public class Helpers {
