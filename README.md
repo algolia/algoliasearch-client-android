@@ -1,7 +1,11 @@
 # Algolia Search API Client for Android
 
-[Algolia Search](https://www.algolia.com) is a hosted full-text, numerical, and faceted search engine capable of delivering realtime results from the first keystroke.
-The **Algolia Search API Client for Android** lets you easily use the [Algolia Search REST API](https://www.algolia.com/doc/rest-api/search) from your Android code.
+[Algolia Search](https://www.algolia.com) is a hosted full-text, numerical,
+and faceted search engine capable of delivering realtime results from the first keystroke.
+
+The **Algolia Search API Client for Android** lets
+you easily use the [Algolia Search REST API](https://www.algolia.com/doc/rest-api/search) from
+your Android code.
 
 [![Build Status](https://travis-ci.org/algolia/algoliasearch-client-android.svg?branch=master)](https://travis-ci.org/algolia/algoliasearch-client-android) [![GitHub version](https://badge.fury.io/gh/algolia%2Falgoliasearch-client-android.svg)](http://badge.fury.io/gh/algolia%2Falgoliasearch-client-android)
 _Note: If you were using **version 2.x** of our Android client, read the [migration guide to version 3.x](https://github.com/algolia/algoliasearch-client-android/wiki/Migration-guide-to-version-3.x)._
@@ -10,12 +14,14 @@ _Note: If you were using **version 2.x** of our Android client, read the [migrat
 You can browse the automatically generated [reference documentation](https://community.algolia.com/algoliasearch-client-android/).
 (See also the [offline-enabled version](https://community.algolia.com/algoliasearch-client-android/offline/).)
 
-This project is open-source under the [MIT License](./LICENSE).
+This project is open-source under the [MIT License](https://github.com/algolia/algoliasearch-client-android/blob/master/LICENSE).
+
 
 
 ## Contributing
 
 [Your contributions](https://github.com/algolia/algoliasearch-client-android/pull/new) are welcome! Please use our [formatting configuration](https://github.com/algolia/CodingStyle#android) to keep the coding style consistent.
+
 
 
 ## API Documentation
@@ -26,6 +32,7 @@ You can find the full reference on [Algolia's website](https://www.algolia.com/d
 ## Table of Contents
 
 
+
 1. **[Contributing](#contributing)**
 
 
@@ -34,7 +41,6 @@ You can find the full reference on [Algolia's website](https://www.algolia.com/d
 
 1. **[Quick Start](#quick-start)**
 
-    * [Initialize the client](#initialize-the-client)
 
 1. **[Push data](#push-data)**
 
@@ -45,16 +51,16 @@ You can find the full reference on [Algolia's website](https://www.algolia.com/d
 1. **[Search](#search)**
 
 
-1. **[Search UI](#search-ui)**
-
-    * [index.html](#indexhtml)
+1. **[List of available methods](#list-of-available-methods)**
 
 
+1. **[Getting Help](#getting-help)**
 
+
+1. **[List of available methods](#list-of-available-methods)**
 
 
 # Getting Started
-
 
 
 
@@ -65,7 +71,8 @@ Add the following dependency to your `Gradle` build file:
 ```gradle
 dependencies {
     // [...]
-    compile 'com.algolia:algoliasearch-android:3.10.1'
+    compile 'com.algolia:algoliasearch-android:3.+'
+    // This will automatically update to the latest v3 release when you build your project.
 }
 ```
 
@@ -148,80 +155,81 @@ index.searchAsync(new Query("california paint"), completionHandler);
 index.searchAsync(new Query("jimmie paint"), completionHandler);
 ```
 
-## Search UI
 
-**Warning:** If you are building a web application, you may be more interested in using one of our
-[frontend search UI libraries](https://www.algolia.com/doc/guides/search-ui/search-libraries/)
 
-The following example shows how to build a front-end search quickly using
-[InstantSearch.js](https://community.algolia.com/instantsearch.js/)
 
-### index.html
+## List of available methods
 
-```html
-<!doctype html>
-<head>
-  <meta charset="UTF-8">
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/instantsearch.js/1/instantsearch.min.css">
-</head>
-<body>
-  <header>
-    <div>
-       <input id="search-input" placeholder="Search for products">
-       <!-- We use a specific placeholder in the input to guides users in their search. -->
-    
-  </header>
-  <main>
-      
-      
-  </main>
 
-  <script type="text/html" id="hit-template">
-    
-      <p class="hit-name">{{{_highlightResult.firstname.value}}} {{{_highlightResult.lastname.value}}}</p>
-    
-  </script>
 
-  <script src="https://cdn.jsdelivr.net/instantsearch.js/1/instantsearch.min.js"></script>
-  <script src="app.js"></script>
-</body>
-```
 
-### app.js
 
-```js
-var search = instantsearch({
-  // Replace with your own values
-  appId: 'YourApplicationID',
-  apiKey: 'YourSearchOnlyAPIKey', // search only API key, no ADMIN key
-  indexName: 'contacts',
-  urlSync: true
-});
 
-search.addWidget(
-  instantsearch.widgets.searchBox({
-    container: '#search-input'
-  })
-);
 
-search.addWidget(
-  instantsearch.widgets.hits({
-    container: '#hits',
-    hitsPerPage: 10,
-    templates: {
-      item: document.getElementById('hit-template').innerHTML,
-      empty: "We didn't find any results for the search <em>\"{{query}}\"</em>"
-    }
-  })
-);
+### Search
 
-search.start();
-```
+- [Search an index](https://algolia.com/doc/api-reference/api-methods/search/?language=android)
+- [Search for facet values](https://algolia.com/doc/api-reference/api-methods/search-for-facet-values/?language=android)
+- [Search multiple indexes](https://algolia.com/doc/api-reference/api-methods/multiple-queries/?language=android)
+- [Browse an index](https://algolia.com/doc/api-reference/api-methods/browse/?language=android)
+
+
+
+
+
+### Indexing
+
+- [Add objects](https://algolia.com/doc/api-reference/api-methods/add-objects/?language=android)
+- [Update objects](https://algolia.com/doc/api-reference/api-methods/update-objects/?language=android)
+- [Partial update objects](https://algolia.com/doc/api-reference/api-methods/partial-update-objects/?language=android)
+- [Delete objects](https://algolia.com/doc/api-reference/api-methods/delete-objects/?language=android)
+- [Delete by query](https://algolia.com/doc/api-reference/api-methods/delete-by-query/?language=android)
+- [Get objects](https://algolia.com/doc/api-reference/api-methods/get-objects/?language=android)
+- [Custom batch](https://algolia.com/doc/api-reference/api-methods/batch/?language=android)
+- [Wait for operations](https://algolia.com/doc/api-reference/api-methods/wait-task/?language=android)
+
+
+
+
+
+### Settings
+
+- [Get settings](https://algolia.com/doc/api-reference/api-methods/get-settings/?language=android)
+- [Set settings](https://algolia.com/doc/api-reference/api-methods/set-settings/?language=android)
+
+
+
+
+
+### Manage indices
+
+- [List indexes](https://algolia.com/doc/api-reference/api-methods/list-indices/?language=android)
+- [Delete index](https://algolia.com/doc/api-reference/api-methods/delete-index/?language=android)
+- [Copy index](https://algolia.com/doc/api-reference/api-methods/copy-index/?language=android)
+- [Move index](https://algolia.com/doc/api-reference/api-methods/move-index/?language=android)
+- [Clear index](https://algolia.com/doc/api-reference/api-methods/clear-index/?language=android)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 ## Getting Help
 
 - **Need help**? Ask a question to the [Algolia Community](https://discourse.algolia.com/) or on [Stack Overflow](http://stackoverflow.com/questions/tagged/algolia).
 - **Found a bug?** You can open a [GitHub issue](https://github.com/algolia/algoliasearch-client-android/issues).
-
-
 
