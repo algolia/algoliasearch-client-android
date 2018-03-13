@@ -572,6 +572,7 @@ public abstract class AbstractClient {
                 hostConnection.setReadTimeout(readTimeout);
 
                 // Headers
+                hostConnection.setRequestProperty("Accept-Encoding", "gzip");
                 hostConnection.setRequestProperty("X-Algolia-Application-Id", this.applicationID);
                 // If API key is too big, send it in the request's body (if applicable).
                 if (this.apiKey != null && this.apiKey.length() > MAX_API_KEY_LENGTH && json != null) {
