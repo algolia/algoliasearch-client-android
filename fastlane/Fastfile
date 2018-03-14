@@ -1,3 +1,4 @@
+fastlane_require "increment_semver"
 
 actions_path 'actions/'
 fastlane_version "2.61.0"
@@ -28,7 +29,7 @@ platform :android do
       ext_constant_name:"PUBLISH_VERSION"
     ).tr("'", "")
     puts "Current version: #{current_version}"
-    version_number = increment_sem_ver(current_version, type)
+    version_number = increment_semver(current_version, type)
     puts "Incremented version: #{version_number}"
 
     # Tests / deployment
@@ -48,25 +49,4 @@ def prepare_git(branch, ensure_clean=true)
   if ensure_clean
     ensure_git_status_clean(show_uncommitted_changes:true)
   end
-end
-
-def increment_sem_ver(sem_ver, increment_type = "patch")
-  if not (/\d+\.\d+\.\d+/).match(sem_ver)
-    raise "Your semantic version must match the format 'X.X.X'."
-  end
-  if not ["patch", "minor", "major"].include?(increment_type)
-    raise "Only 'patch', 'minor', and 'major' are supported increment types."
-  end
-
-  major, minor, patch = sem_ver.split(".")
-  case increment_type
-    when "patch"
-      patch = patch.to_i + 1
-    when "minor"
-      minor = minor.to_i + 1
-    when "major"
-      major = major.to_i + 1
-  end
-
-  return "#{major}.#{minor}.#{patch}"
 end
