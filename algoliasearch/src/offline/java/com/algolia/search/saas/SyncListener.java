@@ -35,7 +35,7 @@ public interface SyncListener
      * Synchronization has just started.
      * @param index The synchronizing index.
      */
-    public void syncDidStart(MirroredIndex index);
+    void syncDidStart(MirroredIndex index);
 
     /**
      * Synchronization has just finished.
@@ -43,5 +43,5 @@ public interface SyncListener
      * @param error Null if success, otherwise indicates the error.
      * @param stats Statistics about the sync.
      */
-    public void syncDidFinish(MirroredIndex index, Throwable error, MirroredIndex.SyncStats stats);
+    void syncDidFinish(MirroredIndex index, Throwable error, MirroredIndex.SyncStats stats);
 }
