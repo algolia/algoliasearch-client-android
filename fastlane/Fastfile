@@ -13,7 +13,6 @@ platform :android do
     )
   end
 
-  #desc "Deploy the library. Available options: type:major|minor|patch optional: branch:YOUR_BRANCH notest:true|false (default false)"
   desc "Deploy the library. Available options: type:major|minor|patch optional: branch:YOUR_BRANCH (default master) notest:true|false (default false)"
   lane :deploy do |options|
     # Arguments handling
@@ -30,7 +29,7 @@ platform :android do
     ).tr("'", "")
     puts "Current version: #{current_version}"
     version_number = increment_semver(current_version, type)
-    puts "Incremented version: #{version_number}"
+    puts "New version: #{version_number}"
 
     # Tests / deployment
     if notest == false
