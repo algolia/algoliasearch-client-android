@@ -101,7 +101,7 @@ dependencies {
 // Javadoc
 // -------
 
-apply plugin: 'ch.raffael.pegdown-doclet'
+//apply plugin: 'ch.raffael.pegdown-doclet'
 
 // Compile docs.
 task javadoc(type: Javadoc) {

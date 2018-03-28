@@ -50,7 +50,7 @@ import java.util.Map;
  * modify mutable arguments after they have been passed (unless explicitly noted).
  * </p>
  */
-public class Index {
+public class Index extends Searchable {
     /** The client to which this index belongs. */
     private Client client;
 
@@ -126,17 +126,6 @@ public class Index {
                 return search(queryCopy, requestOptions);
             }
         }.start();
-    }
-
-    /**
-     * Search inside this index (asynchronously).
-     *
-     * @param query             Search parameters. May be null to use an empty query.
-     * @param completionHandler The listener that will be notified of the request's outcome.
-     * @return A cancellable request.
-     */
-    public Request searchAsync(@Nullable Query query, @Nullable CompletionHandler completionHandler) {
-        return searchAsync(query, /* requestOptions: */ null, completionHandler);
     }
 
     /**
@@ -218,6 +207,7 @@ public class Index {
      * @param completionHandler The listener that will be notified of the request's outcome.
      * @return A cancellable request.
      */
+    @Override
     public Request searchDisjunctiveFacetingAsync(@NonNull Query query, @NonNull final Collection<String> disjunctiveFacets, @NonNull final Map<String, ? extends Collection<String>> refinements, @Nullable final RequestOptions requestOptions, @NonNull final CompletionHandler completionHandler) {
         return new DisjunctiveFaceting() {
             @Override
@@ -288,6 +278,7 @@ public class Index {
      * @param handler        A Completion handler that will be notified of the request's outcome.
      * @return A cancellable request.
      */
+    @Override
     public Request searchForFacetValuesAsync(@NonNull String facetName, @NonNull String facetText, @Nullable Query query, @Nullable final RequestOptions requestOptions, @NonNull final CompletionHandler handler) {
         try {
             final String path = "/1/indexes/" + getEncodedIndexName() + "/facets/" + URLEncoder.encode(facetName, "UTF-8") + "/query";
