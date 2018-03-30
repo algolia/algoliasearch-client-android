@@ -31,7 +31,6 @@ import java.util.Map;
 
 /***
  * A searchable source of data
- * TODO: Get rid of request
  */
 public abstract class Searchable {
 	/**
