@@ -1,4 +1,4 @@
-#!/usr/bin/env ksh
+#!/usr/bin/env bash
 # ============================================================================ #
 # UPDATE VERSION                                                               #
 # ============================================================================ #
@@ -27,10 +27,7 @@ function call_sed
 
 function usage
 {
-    cat <<#EOF
-    Usage:
-        $SELF_NAME <version_no>
-    EOF
+    echo "Usage: $SELF_NAME <version_no>"
 }
 
 PROJECT_ROOT=`cd "$SELF_ROOT/.." && pwd`

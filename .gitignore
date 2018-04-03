@@ -56,3 +56,7 @@ fastlane/screenshots
 # scan temporary files
 fastlane/test_output/
 fastlane/README.md
+
+#npm
+node_modules/
+.bundle/

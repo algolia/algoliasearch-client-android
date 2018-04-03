@@ -31,21 +31,69 @@ platform :android do
     version_number = increment_semver(current_version, type)
     puts "New version: #{version_number}"
 
+    ensure_git_status_clean(show_uncommitted_changes:true)
+
+    # Changelog handling
+    changes = sh("conventional-changelog --preset angular --output-unreleased", log:false)
+    changes_lines = changes.split(/\n+/)[2..-1] # Remove header
+    changes_lines[0].gsub!(/^#.*(\([^v]+)v(.*)$/, "## #{version_number} \[Changes\]\\1#{version_number}\\2\n")
+    changes = changes_lines.join("\n")
+    puts "Changes: #{changes}"
+    file_edit("../CHANGELOG.md", /^(# Changelog\n+)/, "\\1\n#{changes}\n")
+
     # Tests / deployment
     if notest == false
         test()
     end
-    prepare_git(branch, false)
+    # prepare_git(branch, true)
+
+    masterHash = sh("git rev-parse origin/master")
+    headHash = sh("git rev-parse HEAD")
+    
+    if masterHash != headHash 
+      #raise "Error: Master and Head Hashes do not match, meaning that we are probably not on Master and therefore can't deploy"
+    end
+
+    sh("git checkout master")
+    sh("git stash")
+    git_pull
+    has_stash = sh("git stash list")
+    if has_stash.include? version_number
+      sh("git stash pop")
+    end
+
     sh("cd .. && ./release.sh #{version_number}")
+
+    #post_github_release(version_number, changes)
+
   end
 end
 
 def prepare_git(branch, ensure_clean=true)
-  ensure_git_branch(branch:branch)
-  sh("git stash")
+  masterHash = sh("git rev-parse origin/master")
+  headHash = sh("git rev-parse HEAD")
+  
+  if masterHash != headHash 
+    raise "Error: Master and Head Hashes do not match, meaning that we are probably not on Master and therefore can't deploy"
+  end
+  sh("git checkout master")
+
   git_pull
-  sh("git stash pop")
   if ensure_clean
     ensure_git_status_clean(show_uncommitted_changes:true)
+  end
+end
+
+def file_edit(filename, regexp, replacement)
+  Tempfile.open(".#{File.basename(filename)}", File.dirname(filename)) do |tempfile|
+    File.open(filename).each do |line|
+      tempfile.puts line.gsub(regexp, replacement)
+    end
+    tempfile.fdatasync
+    tempfile.close
+    stat = File.stat(filename)
+    FileUtils.chown stat.uid, stat.gid, tempfile.path
+    FileUtils.chmod stat.mode, tempfile.path
+    FileUtils.mv tempfile.path, filename
   end
 end

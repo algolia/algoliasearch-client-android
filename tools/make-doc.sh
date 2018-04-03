@@ -1,4 +1,4 @@
-#!/usr/bin/env ksh
+#!/usr/bin/env bash
 
 set -e # fail on first error
 
