@@ -25,7 +25,7 @@ fi
 # Check that the working repository is clean (without any changes, neither staged nor unstaged).
 # An exception is the change log, which should have been edited, but not necessarily committed (we usually commit it
 # along with the version number).
-if [[ ! -z `git status --porcelain | grep -v "ChangeLog.md\|??"` ]]; then
+if [[ ! -z `git status --porcelain | grep -v "CHANGELOG.md\|??"` ]]; then
     echo "ERROR: Working copy not clean! Aborting." 1>&2
     echo "Please revert or commit any pending changes before releasing." 1>&2
     exit 1
@@ -33,7 +33,7 @@ fi
 
 # Check that the change log contains information for the new version.
 set +e
-version_in_change_log=$(cat "$SELF_ROOT/ChangeLog.md" | grep -E "^#+" | sed -E 's/^#* ([0-9.]*)\s*.*$/\1/g' | grep -x "$VERSION_CODE")
+version_in_change_log=$(cat "$SELF_ROOT/CHANGELOG.md" | grep -E "^#+" | sed -E 's/^#* ([0-9.]*)\s*.*$/\1/g' | grep -x "$VERSION_CODE")
 set -e
 if [[ -z $version_in_change_log ]]; then
     echo "Version $VERSION_CODE not found in change log! Aborting." 1>&2
@@ -58,8 +58,8 @@ do
     fi
     # Dump the contents that has been published, just for the sake of manual checking.
     $SELF_ROOT/tools/dump-local-mvnrep.sh $module_name
-    echo "-------------------- Testing publication --------------------"
-    $SELF_ROOT/tools/test-publication.sh $module_name $VERSION_CODE
+#    echo "-------------------- Testing publication --------------------"
+#    $SELF_ROOT/tools/test-publication.sh $module_name $VERSION_CODE
 
     # Perform the actual publication.
     echo "-------------------- Publishing remotely --------------------"

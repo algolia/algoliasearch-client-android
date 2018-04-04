@@ -36,7 +36,7 @@ platform :android do
     # Changelog handling
     changes = sh("conventional-changelog --preset angular --output-unreleased", log:false)
     changes_lines = changes.split(/\n+/)[2..-1] # Remove header
-    changes_lines[0].gsub!(/^#.*(\([^v]+)v(.*)$/, "## #{version_number} \[Changes\]\\1#{version_number}\\2\n")
+    changes_lines[0] = "## #{version_number}"
     changes = changes_lines.join("\n")
     puts "Changes: #{changes}"
     file_edit("../CHANGELOG.md", /^(# Changelog\n+)/, "\\1\n#{changes}\n")
@@ -57,10 +57,8 @@ platform :android do
     sh("git checkout master")
     sh("git stash")
     git_pull
-    has_stash = sh("git stash list")
-    if has_stash.include? version_number
-      sh("git stash pop")
-    end
+    sh("git stash pop")
+    
 
     sh("cd .. && ./release.sh #{version_number}")
 

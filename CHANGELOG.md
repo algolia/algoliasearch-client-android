@@ -1,4 +1,4 @@
-Changelog
+# Changelog
 
 ## 3.14.1 [Changes](https://github.com/algolia/algoliasearch-client-android/compare/3.14.0...3.14.1) (2018-03-01)
 
