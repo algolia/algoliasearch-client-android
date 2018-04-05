@@ -34,4 +34,4 @@ if [[ $FLAVOR != "online" && $FLAVOR != "offline" ]]; then
 fi
 
 # Do it!
-ln -sfh "build-$FLAVOR.gradle" "$SELF_ROOT/algoliasearch/build.gradle"
+ln -sf "build-$FLAVOR.gradle" "$SELF_ROOT/algoliasearch/build.gradle"
