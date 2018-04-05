@@ -43,6 +43,7 @@ import java.io.UnsupportedEncodingException;
 import java.io.Writer;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashSet;
@@ -1082,7 +1083,7 @@ public class MirroredIndex extends Index
     // ----------------------------------------------------------------------
 
     @Override
-    public Request multipleQueriesAsync(@NonNull List<Query> queries, final Client.MultipleQueriesStrategy strategy, @Nullable RequestOptions requestOptions, @NonNull CompletionHandler completionHandler) {
+    public Request multipleQueriesAsync(@NonNull Collection<Query> queries, final Client.MultipleQueriesStrategy strategy, @Nullable RequestOptions requestOptions, @NonNull CompletionHandler completionHandler) {
         // A non-mirrored index behaves exactly as an online index.
         if (!mirrored) {
             return super.multipleQueriesAsync(queries, strategy, completionHandler);
@@ -1283,11 +1284,11 @@ public class MirroredIndex extends Index
      * @return A cancellable request.
      */
     @Override
-    public Request getObjectAsync(final @NonNull String objectID, final @Nullable List<String> attributesToRetrieve, @Nullable RequestOptions requestOptions, @NonNull CompletionHandler completionHandler) {
+    public Request getObjectAsync(final @NonNull String objectID, final @Nullable Collection<String> attributesToRetrieve, @Nullable RequestOptions requestOptions, @NonNull CompletionHandler completionHandler) {
         if (!mirrored) {
             return super.getObjectAsync(objectID, attributesToRetrieve, requestOptions, completionHandler);
         } else {
-            return new OnlineOfflineGetObjectRequest(objectID, attributesToRetrieve, requestOptions, completionHandler).start();
+            return new OnlineOfflineGetObjectRequest(objectID, new ArrayList(attributesToRetrieve), requestOptions, completionHandler).start();
         }
     }
 
@@ -1409,11 +1410,11 @@ public class MirroredIndex extends Index
      * @return A cancellable request.
      */
     @Override
-    public Request getObjectsAsync(final @NonNull List<String> objectIDs, final @Nullable List<String> attributesToRetrieve, @Nullable RequestOptions requestOptions, @NonNull CompletionHandler completionHandler) {
+    public Request getObjectsAsync(final @NonNull Collection<String> objectIDs, final @Nullable Collection<String> attributesToRetrieve, @Nullable RequestOptions requestOptions, @NonNull CompletionHandler completionHandler) {
         if (!mirrored) {
             return super.getObjectsAsync(objectIDs, attributesToRetrieve, requestOptions, completionHandler);
         } else {
-            return new OnlineOfflineGetObjectsRequest(objectIDs, attributesToRetrieve, requestOptions, completionHandler).start();
+            return new OnlineOfflineGetObjectsRequest(new ArrayList(objectIDs), new ArrayList(attributesToRetrieve), requestOptions, completionHandler).start();
         }
     }
 

@@ -974,8 +974,8 @@ public class OfflineIndex {
     public Request searchDisjunctiveFacetingAsync(@NonNull Query query, @NonNull final List<String> disjunctiveFacets, @NonNull final Map<String, List<String>> refinements, @NonNull final CompletionHandler completionHandler) {
         return new DisjunctiveFaceting() {
             @Override
-            protected Request multipleQueriesAsync(@NonNull List<Query> queries, @NonNull CompletionHandler completionHandler) {
-                return OfflineIndex.this.multipleQueriesAsync(queries, null, completionHandler);
+            protected Request multipleQueriesAsync(@NonNull Collection<Query> queries, @NonNull CompletionHandler completionHandler) {
+                return OfflineIndex.this.multipleQueriesAsync(new ArrayList(queries), null, completionHandler);
             }
         }.searchDisjunctiveFacetingAsync(query, disjunctiveFacets, refinements, completionHandler);
     }
