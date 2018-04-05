@@ -1,5 +1,7 @@
 # Changelog
 
+## 3.20.0
+
 ## 3.19.0
 * **AbstractClient:** Accept gzip Encoding ([#539](https://github.com/algolia/algoliasearch-client-android/issues/539)) ([691bc12](https://github.com/algolia/algoliasearch-client-android/commit/691bc12))
 * **offline:** Implement the collections for offline @Override methods ([f64f9f2](https://github.com/algolia/algoliasearch-client-android/commit/f64f9f2))
