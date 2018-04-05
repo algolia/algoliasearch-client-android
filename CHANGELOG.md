@@ -1,5 +1,25 @@
 # Changelog
 
+## 3.18.0
+* **AbstractClient:** Accept gzip Encoding ([#539](https://github.com/algolia/algoliasearch-client-android/issues/539)) ([691bc12](https://github.com/algolia/algoliasearch-client-android/commit/691bc12))
+* **release:** Fix the release process ([a36508e](https://github.com/algolia/algoliasearch-client-android/commit/a36508e))
+* **release:** Fix the release process ([d008c49](https://github.com/algolia/algoliasearch-client-android/commit/d008c49))
+* **release:** Fix the release process ([dc843d7](https://github.com/algolia/algoliasearch-client-android/commit/dc843d7))
+* **release:** Use system env for sonatype ([4476a1e](https://github.com/algolia/algoliasearch-client-android/commit/4476a1e))
+### Features
+* **custombackend:** Move Index to implement Searchable protocol ([#541](https://github.com/algolia/algoliasearch-client-android/issues/541)) ([713d2ce](https://github.com/algolia/algoliasearch-client-android/commit/713d2ce))
+* **fastlane:** Auto increment version based on deploy type ([a962792](https://github.com/algolia/algoliasearch-client-android/commit/a962792))
+
+## 3.17.0
+* **AbstractClient:** Accept gzip Encoding ([#539](https://github.com/algolia/algoliasearch-client-android/issues/539)) ([691bc12](https://github.com/algolia/algoliasearch-client-android/commit/691bc12))
+* **release:** Fix the release process ([a36508e](https://github.com/algolia/algoliasearch-client-android/commit/a36508e))
+* **release:** Fix the release process ([d008c49](https://github.com/algolia/algoliasearch-client-android/commit/d008c49))
+* **release:** Fix the release process ([dc843d7](https://github.com/algolia/algoliasearch-client-android/commit/dc843d7))
+* **release:** Use system env for sonatype ([2ec39de](https://github.com/algolia/algoliasearch-client-android/commit/2ec39de))
+### Features
+* **custombackend:** Move Index to implement Searchable protocol ([#541](https://github.com/algolia/algoliasearch-client-android/issues/541)) ([713d2ce](https://github.com/algolia/algoliasearch-client-android/commit/713d2ce))
+* **fastlane:** Auto increment version based on deploy type ([a962792](https://github.com/algolia/algoliasearch-client-android/commit/a962792))
+
 ## 3.14.1 [Changes](https://github.com/algolia/algoliasearch-client-android/compare/3.14.0...3.14.1) (2018-03-01)
 
 ### Bug Fixes
