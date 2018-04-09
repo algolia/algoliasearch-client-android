@@ -64,7 +64,8 @@ do
     # Perform the actual publication.
     echo "-------------------- Publishing remotely --------------------"
     $SELF_ROOT/gradlew uploadArchives
-    $SELF_ROOT/gradlew closeAndPromoteRepository
+    $SELF_ROOT/gradlew closeRepository
+    $SELF_ROOT/gradlew promoteRepository
 done
 
 # Revert flavor to original.
