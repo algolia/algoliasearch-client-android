@@ -29,5 +29,5 @@ else
     touch $GRADLE_PROPERTIES
 fi
 
-add_signing()
+add_signing
 gpg --import bitrise-secret.key
