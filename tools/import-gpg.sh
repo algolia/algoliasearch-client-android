@@ -15,8 +15,7 @@ EOF
 
 if [ ! -d $GRADLE_FOLDER ]
 then
-    echo "Fatal error: no $GRADLE_FOLDER"
-    exit 1
+    mkdir $GRADLE_FOLDER
 fi
 
 if [ -e $GRADLE_PROPERTIES ]
