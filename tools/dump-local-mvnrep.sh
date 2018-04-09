@@ -20,29 +20,35 @@ if [ $# -lt 1 ]; then
     exit
 fi
 
+if [ "$(uname)" == "Darwin" ]; then
+    XARGS_REPLACE=-J
+else
+    XARGS_REPLACE=-I
+fi
+
 # Dump the module with the specified name.
 dumpModule()
 {
     module_name="$1"
-    
+
     echo "================================================================================"
     echo "Module: $module_name"
     echo "================================================================================"
     echo "Code"
     echo "--------------------------------------------------------------------------------"
-    ls "$COM_ALGOLIA_DIR/$module_name/$VERSION/$module_name"-*.aar | sort | tail -n 1 | xargs -J % \
+    ls "$COM_ALGOLIA_DIR/$module_name/$VERSION/$module_name"-*.aar | sort | tail -n 1 | xargs $XARGS_REPLACE % \
     unzip -p % classes.jar > "$TMP_DIR/tmp.zip"; unzip -l "$TMP_DIR/tmp.zip"
 
     echo "--------------------------------------------------------------------------------"
     echo "Javadoc"
     echo "--------------------------------------------------------------------------------"
-    ls "$COM_ALGOLIA_DIR/$module_name/$VERSION/$module_name"-*-javadoc.jar | sort | tail -n 1 | xargs -J % \
+    ls "$COM_ALGOLIA_DIR/$module_name/$VERSION/$module_name"-*-javadoc.jar | sort | tail -n 1 | xargs $XARGS_REPLACE % \
     unzip -l %
 
     echo "--------------------------------------------------------------------------------"
     echo "POM"
     echo "--------------------------------------------------------------------------------"
-    ls "$COM_ALGOLIA_DIR/$module_name/$VERSION/$module_name"-*.pom | sort | tail -n 1 | xargs -J % \
+    ls "$COM_ALGOLIA_DIR/$module_name/$VERSION/$module_name"-*.pom | sort | tail -n 1 | xargs $XARGS_REPLACE % \
     cat %
 }
 
