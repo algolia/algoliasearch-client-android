@@ -64,6 +64,7 @@ do
     # Perform the actual publication.
     echo "-------------------- Publishing remotely --------------------"
     $SELF_ROOT/gradlew uploadArchives
+    $SELF_ROOT/gradlew closeAndPromoteRepository
 done
 
 # Revert flavor to original.
@@ -75,17 +76,4 @@ git commit -m "Version $VERSION_CODE"
 git tag $VERSION_CODE
 
 echo "SUCCESS!"
-
-# NOTE: We don't automatically publish nor Git push. Why?
-# - We cannot be sure what the state of the staging repository was at the beginning of the script. So publishing
-#   without controlling it manually is risky.
-# - We don't want to push to Git before the release is actually available on Maven Central, which can take a few hours
-#   after the staging repository has been promoted.
-#
-cat <<EOF
-Next steps:
-- Check the staging repository on Sonatype.
-- If everything is OK: close, release and drop the staging repository.
-- Git commit.
-- When the release is available on Maven Central: Git push.
-EOF
+# TODO: git push
