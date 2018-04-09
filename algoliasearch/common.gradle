@@ -29,6 +29,9 @@ ext {
     PUBLISH_VERSION = '3.20.0'
     APPCOMPAT_VERSION = '26.1.0'
     BUILD_TOOLS_VERSION = '26.0.2'
+
+    nexus_username = project.hasProperty('nexusUsername') ? project['nexusUsername'] : "\"$System.env.NEXUS_USERNAME\""
+    nexus_password = project.hasProperty('nexusPassword') ? project['nexusPassword'] : "\"$System.env.NEXUS_PASSWORD\""
 }
 
 android {
@@ -146,20 +149,13 @@ uploadArchives {
             MavenDeployment deployment -> signing.signPom(deployment)
         }
         editPom(pom)
-
         // Maven Central repository.
         repository(url: "https://oss.sonatype.org/service/local/staging/deploy/maven2/") {
-            authentication(
-                    userName: project.hasProperty('nexusUsername') ? project['nexusUsername'] : "\"$System.env.NEXUS_USERNAME\"",
-                    password: project.hasProperty('nexusPassword') ? project['nexusPassword'] : "\"$System.env.NEXUS_PASSWORD\""
-            )
+            authentication(userName: nexus_username, password: nexus_password)
         }
         // Maven Central snapshot repository.
         snapshotRepository(url: "https://oss.sonatype.org/content/repositories/snapshots/") {
-            authentication(
-                    userName: project.hasProperty('nexusUsername') ? project['nexusUsername'] : "\"$System.env.NEXUS_USERNAME\"",
-                    password: project.hasProperty('nexusPassword') ? project['nexusPassword'] : "\"$System.env.NEXUS_PASSWORD\""
-            )
+            authentication(userName: nexus_username, password: nexus_password)
         }
     }
 }
