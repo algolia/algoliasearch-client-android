@@ -1,5 +1,7 @@
 # Changelog
 
+## 3.20.2
+
 ## 3.20.1
 * **dump-local-mvnrep:** Portable xargs call ([1030879](https://github.com/algolia/algoliasearch-client-android/commit/1030879))
 
