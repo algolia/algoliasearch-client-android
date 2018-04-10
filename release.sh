@@ -67,6 +67,7 @@ do
 done
 
 $SELF_ROOT/gradlew closeRepository
+sleep 10
 $SELF_ROOT/gradlew promoteRepository
 # Revert flavor to original.
 git checkout $SELF_ROOT/algoliasearch/build.gradle
