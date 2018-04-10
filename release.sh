@@ -64,10 +64,10 @@ do
     # Perform the actual publication.
     echo "-------------------- Publishing remotely --------------------"
     $SELF_ROOT/gradlew uploadArchives
-    $SELF_ROOT/gradlew closeRepository
-    $SELF_ROOT/gradlew promoteRepository
 done
 
+$SELF_ROOT/gradlew closeRepository
+$SELF_ROOT/gradlew promoteRepository
 # Revert flavor to original.
 git checkout $SELF_ROOT/algoliasearch/build.gradle
 
