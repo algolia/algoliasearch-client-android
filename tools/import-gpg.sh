@@ -7,6 +7,7 @@ add_signing() {
     echo "Adding bitrise key to gradle properties..."
     cat > $GRADLE_PROPERTIES << EOF
 signing.keyId=9719DC41
+signing.password=
 signing.secretKeyRingFile=$KEY_PATH
 EOF
     echo "New gradle properties:"
