@@ -76,10 +76,10 @@ $SELF_ROOT/gradlew promoteRepository
 # Revert flavor to original.
 git checkout $SELF_ROOT/algoliasearch/build.gradle
 
-# Commit to Git... but do *not* push (see below).
+# Commit to git and push to GitHub
 git add .
 git commit -m "Version $VERSION_CODE"
 git tag $VERSION_CODE
 
 echo "SUCCESS!"
-# TODO: git push
+git push
