@@ -14,6 +14,11 @@ EOF
     cat $GRADLE_PROPERTIES
 }
 
+if ! dpkg -l gnupg | grep -q gnupg; then
+    echo "No gnupg* found. Installing gnupg2..."
+    apt install gnupg2
+fi
+
 if [ ! -d $GRADLE_FOLDER ]
 then
     mkdir $GRADLE_FOLDER
