@@ -97,7 +97,8 @@ def file_edit(filename, regexp, replacement)
 end
 
 def post_github_release(version, changes, token=ENV['GITHUB_TOKEN'])
+  puts "Creating release on GitHub..."
   release_changes = changes.gsub(/^## #{version} /m, "## ").gsub("\n", "\\n")
   json=%Q[{"tag_name": "#{version}","target_commitish": "master","name": "#{version}","body": "#{release_changes}","draft": false,"prerelease": false}]
-  sh(%{curl --data '#{json}' https://api.github.com/repos/algolia/instantsearch-android/releases?access_token=#{token}})
+  sh(%{curl --data '#{json}' https://api.github.com/repos/algolia/algoliasearch-client-android/releases?access_token=#{token}})
 end
