@@ -49,8 +49,8 @@ platform :android do
 
     masterHash = sh("git rev-parse origin/master")
     headHash = sh("git rev-parse HEAD")
-    
-    if masterHash != headHash 
+
+    if masterHash != headHash
       #raise "Error: Master and Head Hashes do not match, meaning that we are probably not on Master and therefore can't deploy"
     end
 
@@ -58,11 +58,11 @@ platform :android do
     sh("git stash")
     git_pull
     sh("git stash pop")
-    
+
 
     sh("cd .. && ./release.sh #{version_number}")
 
-    #post_github_release(version_number, changes)
+    post_github_release(version_number, changes)
 
   end
 end
@@ -70,8 +70,8 @@ end
 def prepare_git(branch, ensure_clean=true)
   masterHash = sh("git rev-parse origin/master")
   headHash = sh("git rev-parse HEAD")
-  
-  if masterHash != headHash 
+
+  if masterHash != headHash
     raise "Error: Master and Head Hashes do not match, meaning that we are probably not on Master and therefore can't deploy"
   end
   sh("git checkout master")
@@ -94,4 +94,10 @@ def file_edit(filename, regexp, replacement)
     FileUtils.chmod stat.mode, tempfile.path
     FileUtils.mv tempfile.path, filename
   end
+end
+
+def post_github_release(version, changes, token=ENV['GITHUB_TOKEN'])
+  release_changes = changes.gsub(/^## #{version} /m, "## ").gsub("\n", "\\n")
+  json=%Q[{"tag_name": "#{version}","target_commitish": "master","name": "#{version}","body": "#{release_changes}","draft": false,"prerelease": false}]
+  sh(%{curl --data '#{json}' https://api.github.com/repos/algolia/instantsearch-android/releases?access_token=#{token}})
 end
