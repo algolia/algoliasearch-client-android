@@ -1,5 +1,8 @@
 # Changelog
 
+## 3.20.5
+* **deploy:** post GitHub release ([4091d39](https://github.com/algolia/algoliasearch-client-android/commit/4091d39))
+
 ## 3.20.4
 
 ## 3.20.3
