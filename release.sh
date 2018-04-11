@@ -66,8 +66,10 @@ do
     $SELF_ROOT/gradlew uploadArchives
 done
 
+echo "Closing..."
 $SELF_ROOT/gradlew closeRepository
-sleep 10
+sleep 15
+echo "Promoting..."
 $SELF_ROOT/gradlew promoteRepository
 # Revert flavor to original.
 git checkout $SELF_ROOT/algoliasearch/build.gradle
