@@ -14,11 +14,16 @@ EOF
     cat $GRADLE_PROPERTIES
 }
 
-if ! dpkg -l gnupg | grep -q gnupg; then
+# Install gnupg2 if missing
+if ! gpg --version > /dev/null; then
     echo "No gnupg* found. Installing gnupg2..."
     apt install gnupg2
 fi
 
+# Install conventional-changelog-cli if missing
+npm list -g conventional-changelog-cli || npm install -g conventional-changelog-cli
+
+# Setup gradle properties for gpg signing artifacts
 if [ ! -d $GRADLE_FOLDER ]
 then
     mkdir $GRADLE_FOLDER
