@@ -147,7 +147,6 @@ uploadArchives {
         // Don't forget to sign the POM (which is automatically generated).
         beforeDeployment {
             MavenDeployment deployment -> signing.signPom(deployment)
-            println "Ready to deploy with $nexus_username:$nexus_password ..."
         }
         editPom(pom)
         // Maven Central repository.
