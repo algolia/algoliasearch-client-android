@@ -68,7 +68,9 @@ done
 
 echo "Closing..."
 $SELF_ROOT/gradlew closeRepository
-sleep 15
+echo "Sleeping 70s to ensure close completes before promoting."
+# Example from closing logs: started Wednesday, April 11, 2018 16:03:05, stopped 16:04:03
+sleep 70
 echo "Promoting..."
 $SELF_ROOT/gradlew promoteRepository
 # Revert flavor to original.
