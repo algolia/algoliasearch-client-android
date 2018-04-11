@@ -30,8 +30,8 @@ ext {
     APPCOMPAT_VERSION = '26.1.0'
     BUILD_TOOLS_VERSION = '26.0.2'
 
-    nexus_username = "\"$System.env.NEXUS_USERNAME\""
-    nexus_password = "\"$System.env.NEXUS_PASSWORD\""
+    nexus_username = System.getenv("NEXUS_USERNAME")
+    nexus_password = System.getenv("NEXUS_PASSWORD")
 }
 
 android {
