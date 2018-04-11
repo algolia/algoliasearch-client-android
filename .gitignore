@@ -60,3 +60,4 @@ fastlane/README.md
 #npm
 node_modules/
 .bundle/
+bitrise.yml
