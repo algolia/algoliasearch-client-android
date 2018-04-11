@@ -28,8 +28,8 @@ if [ -e $GRADLE_PROPERTIES ]
 then
     if grep -q "signing." $GRADLE_PROPERTIES
     then
-        echo "Fatal error: the gradle properties already have a signing profile"
-        exit 2
+        echo "The gradle properties already have a signing profile, leaving untouched."
+        exit 0
     fi
 else
     touch $GRADLE_PROPERTIES
