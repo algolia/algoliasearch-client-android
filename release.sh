@@ -9,9 +9,9 @@ if [ $# -ne 1 ]; then
 fi
 
 FILE_BUILD_GRADLE="$SELF_ROOT/algoliasearch/common.gradle"
-FILE_API_CLIENT="$SELF_ROOT/algoliasearch/src/main/java/com/algolia/search/saas/Client.java"
 SELF_ROOT=$(cd $(dirname "$0") && pwd)
 VERSION_CODE=$1
+CHANGELOG="CHANGELOG.md"
 
 set +eo pipefail
 COUNT_DOTS=$(grep -o "\." <<< $VERSION_CODE | wc -l)
@@ -25,22 +25,43 @@ fi
 # Check that the working repository is clean (without any changes, neither staged nor unstaged).
 # An exception is the change log, which should have been edited, but not necessarily committed (we usually commit it
 # along with the version number).
-if [[ ! -z `git status --porcelain | grep -v "CHANGELOG.md\|??"` ]]; then
+if [[ ! -z `git status --porcelain | grep -v "$CHANGELOG"` ]]; then
     echo "ERROR: Working copy not clean! Aborting." 1>&2
     echo "Please revert or commit any pending changes before releasing." 1>&2
+    echo "Changes: $(git status)"
     exit 1
 fi
 
 # Check that the change log contains information for the new version.
 set +e
-version_in_change_log=$(cat "$SELF_ROOT/CHANGELOG.md" | grep -E "^#+" | sed -E 's/^#* ([0-9.]*)\s*.*$/\1/g' | grep -x "$VERSION_CODE")
+version_in_change_log=$(cat "$SELF_ROOT/$CHANGELOG" | grep -E "^#+" | sed -E 's/^#* ([0-9.]*)\s*.*$/\1/g' | grep -x "$VERSION_CODE")
 set -e
 if [[ -z $version_in_change_log ]]; then
     echo "Version $VERSION_CODE not found in change log! Aborting." 1>&2
     exit 2
 fi
 
-$SELF_ROOT/tools/update-version.sh $VERSION_CODE
+# Only release on master (for manual runs, cannot happen through fastlane)
+currentBranch=$(git rev-parse --abbrev-ref HEAD)
+if [ "$currentBranch" != 'master' ]; then
+  printf "Release: You must be on master\\n"
+  exit 1
+fi
+
+function call_sed(){
+PATTERN="$1"
+FILENAME="$2"
+
+# Mac needs a space between sed's inplace flag and extension
+if [ "$(uname)" == "Darwin" ]; then
+    sed -E -i '' "$PATTERN" "$FILENAME"
+else
+    sed -E -i "$PATTERN" "$FILENAME"
+fi
+}
+
+echo "Updating version number to $VERSION_CODE..."
+call_sed "s/VERSION = '.*'/VERSION = '$VERSION_CODE'/" "$FILE_BUILD_GRADLE"
 
 for flavor in online offline
 do
@@ -76,10 +97,16 @@ $SELF_ROOT/gradlew promoteRepository
 # Revert flavor to original.
 git checkout $SELF_ROOT/algoliasearch/build.gradle
 
+# Commit to git
+set +e # don\'t crash if already committed
+git add .
+git commit -m "chore(release): Version $VERSION_CODE [ci skip]"
+set -e
 # Commit to git and push to GitHub
 git add .
 git commit -m "Version $VERSION_CODE"
 git tag $VERSION_CODE
 
 echo "Release complete! Pushing to GitHub"
-git push --tags
+git push origin $VERSION_CODE HEAD
+
