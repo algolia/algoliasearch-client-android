@@ -8,8 +8,8 @@ if [ $# -ne 1 ]; then
     exit -1
 fi
 
-FILE_BUILD_GRADLE="$SELF_ROOT/algoliasearch/common.gradle"
 SELF_ROOT=$(cd $(dirname "$0") && pwd)
+FILE_BUILD_GRADLE="$SELF_ROOT/algoliasearch/common.gradle"
 VERSION_CODE=$1
 CHANGELOG="CHANGELOG.md"
 
