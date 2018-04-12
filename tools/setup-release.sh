@@ -89,7 +89,7 @@ EOF
         echo "No repository was currently open."
     else
         echo "Existing repository to close: $MVN_REPO_ID"
-        mvn nexus-staging:drop -DstagingRepositoryId=$MVN_REPO_ID
+        mvn --settings=mvn-settings.xml nexus-staging:drop -DstagingRepositoryId=$MVN_REPO_ID
     fi
 
     echo "Removing maven-related files..."
