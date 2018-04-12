@@ -81,5 +81,5 @@ git add .
 git commit -m "Version $VERSION_CODE"
 git tag $VERSION_CODE
 
-echo "SUCCESS!"
-git push
+echo "Release complete! Pushing to GitHub"
+git push --follow-tags
