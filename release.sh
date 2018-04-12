@@ -61,7 +61,7 @@ fi
 }
 
 echo "Updating version number to $VERSION_CODE..."
-call_sed "s/VERSION = '.*'/VERSION = '$VERSION_CODE'/" "$FILE_BUILD_GRADLE"
+call_sed "s/PUBLISH_VERSION = '.*'/VERSION = '$VERSION_CODE'/" "$FILE_BUILD_GRADLE"
 
 for flavor in online offline
 do
