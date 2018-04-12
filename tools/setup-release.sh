@@ -84,14 +84,19 @@ EOF
 </settings>
 EOF
 
-    MVN_REPO_ID=`mvn --settings mvn-settings.xml nexus-staging:rc-list | grep comalgolia | cut -d' ' -f 2`
-    if test -z $MVN_REPO_ID; then
-        echo "No repository was currently open."
-    else
-        echo "Existing repository to close: $MVN_REPO_ID"
-        mvn --settings=mvn-settings.xml nexus-staging:drop -DstagingRepositoryId=$MVN_REPO_ID
-    fi
-
+    MVN_REPO_ID=firsttry
+    while test -z $MVN_REPO_ID #TODO: Avoid do while by getting every ID from the next call
+        MVN_REPO_ID=`mvn --settings mvn-settings.xml nexus-staging:rc-list | grep comalgolia | cut -d' ' -f 2`
+        if test -z $MVN_REPO_ID; then
+            echo "No repository was currently open."
+            break;
+        else
+            echo "Existing repository to close: $MVN_REPO_ID"
+            mvn --settings=mvn-settings.xml nexus-staging:drop -DstagingRepositoryId=$MVN_REPO_ID
+        fi
+    do
+        :
+    done
     echo "Removing maven-related files..."
     rm pom.xml
     rm mvn-settings.xml
