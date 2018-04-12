@@ -22,7 +22,7 @@ platform :android do
     UI.user_error!("You need to specify a type.") unless type != nil
     UI.user_error!("Type #{type} is not a valid type (patch/minor/major") unless ["major","minor","patch"].include? type
 
-    # Version handling
+    # Compute next version number
     current_version = get_version_name(
       gradle_file_path:"algoliasearch/common.gradle",
       ext_constant_name:"PUBLISH_VERSION"
@@ -31,9 +31,12 @@ platform :android do
     version_number = increment_semver(current_version, type)
     puts "New version: #{version_number}"
 
+    # Checkout master
     ensure_git_status_clean(show_uncommitted_changes:true)
+    sh("git checkout master")
+    git_pull
 
-    # Changelog handling
+    # Generate changelog updates
     changes = sh("conventional-changelog --preset angular --output-unreleased", log:false)
     changes_lines = changes.split(/\n+/)[2..-1] # Remove header
     changes_lines[0] = "## #{version_number}"
@@ -45,25 +48,18 @@ platform :android do
     if notest == false
         test()
     end
-    # prepare_git(branch, true)
 
+    #TODO: Does this make sense if we checkout master on line 36?
     masterHash = sh("git rev-parse origin/master")
     headHash = sh("git rev-parse HEAD")
-
     if masterHash != headHash
-      #raise "Error: Master and Head Hashes do not match, meaning that we are probably not on Master and therefore can't deploy"
+      raise "Error: master and HEAD hashes do not match, meaning that we are probably not on master and therefore can't deploy"
     end
 
-    sh("git checkout master")
-    sh("git stash")
-    git_pull
-    sh("git stash pop")
-
-
+    # Release the new version
     sh("cd .. && ./release.sh #{version_number}")
-
+    # Post the changes via GitHub Release API
     post_github_release(version_number, changes)
-
   end
 end
 
