@@ -97,15 +97,9 @@ $SELF_ROOT/gradlew promoteRepository
 # Revert flavor to original.
 git checkout $SELF_ROOT/algoliasearch/build.gradle
 
-# Commit to git
-set +e # don\'t crash if already committed
-git add .
-git commit -m "chore(release): Version $VERSION_CODE [ci skip]"
-set -e
 # Commit to git and push to GitHub
 git add .
-git commit -m "Version $VERSION_CODE"
-git tag $VERSION_CODE
+git commit -m "chore(release): Version $VERSION_CODE [ci skip]"
 
 echo "Release complete! Pushing to GitHub"
 git push origin $VERSION_CODE HEAD
