@@ -1,6 +1,5 @@
 {
   "name": "algoliasearch-client-android",
-  "version": "1.0.0",
   "description": "[Algolia Search](https://www.algolia.com) is a hosted full-text, numerical, and faceted search engine capable of delivering realtime results from the first keystroke.",
   "directories": {
     "doc": "doc"
