@@ -17,6 +17,7 @@ setup_gradle_signing() {
     GRADLE_FOLDER=~/.gradle/
     GRADLE_PROPERTIES=$GRADLE_FOLDER/gradle.properties
     KEY_PATH=`pwd`/tools/bitrise-secret.key
+    KEY_ID=9719DC41
 
     if [ ! -d $GRADLE_FOLDER ]
     then
@@ -36,13 +37,14 @@ setup_gradle_signing() {
 
     echo "Adding bitrise key to gradle properties..."
     cat > $GRADLE_PROPERTIES << EOF
-signing.keyId=9719DC41
+signing.keyId=$KEY_ID
 signing.password=
 signing.secretKeyRingFile=$KEY_PATH
 EOF
     echo "New gradle properties:"
     cat $GRADLE_PROPERTIES
     gpg --import $KEY_PATH
+    git config user.signingkey $KEY_ID
 }
 
 # Maven drop repository handling TODO: Remove if alternative https://issues.sonatype.org/browse/OSSRH-39124
