@@ -7,10 +7,7 @@ default_platform :android
 platform :android do
   desc "Runs all the tests"
   lane :test do
-    gradle(
-      task: "test",
-      build_type: "Release"
-    )
+    gradle(task: "clean test", build_type: "Release")
   end
 
   desc "Deploy the library. Available options: type:major|minor|patch optional: branch:YOUR_BRANCH (default master) notest:true|false (default false)"
@@ -31,10 +28,8 @@ platform :android do
     version_number = increment_semver(current_version, type)
     puts "New version: #{version_number}"
 
-    # Checkout master
-    ensure_git_status_clean(show_uncommitted_changes:true)
-    sh("git checkout master")
-    git_pull
+    # Ensure branch is master & WC clean, then pull changes
+    prepare_git()
 
     # Generate changelog updates
     changes = sh("conventional-changelog --preset angular --output-unreleased", log:false)
@@ -49,7 +44,6 @@ platform :android do
         test()
     end
 
-    #TODO: Does this make sense if we checkout master on line 36?
     masterHash = sh("git rev-parse origin/master")
     headHash = sh("git rev-parse HEAD")
     if masterHash != headHash
@@ -72,6 +66,7 @@ def prepare_git(branch, ensure_clean=true)
 
   if masterHash != headHash
     raise "Error: Master and Head Hashes do not match, meaning that we are probably not on Master and therefore can't deploy"
+    #TODO: Does it make sense to checkout master if we raise error when HEAD != master?
   end
   sh("git checkout master")
 
