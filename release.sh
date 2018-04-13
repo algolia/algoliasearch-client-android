@@ -102,5 +102,6 @@ git add .
 git commit -m "chore(release): Version $VERSION_CODE [ci skip]"
 
 echo "Release complete! Pushing to GitHub"
+git tag "$VERSION_CODE" -s -m "v$VERSION_CODE"
 git push origin $VERSION_CODE HEAD
 
