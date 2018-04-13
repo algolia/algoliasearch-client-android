@@ -138,7 +138,7 @@ artifacts {
 
 // Sign all the archives artifacts.
 signing {
-    required { gradle.taskGraph.hasTask("signArchives") }
+    required { project.hasProperty("group")? project.property("group") != "com.github.algolia" : true}
     sign configurations.archives
 }
 
