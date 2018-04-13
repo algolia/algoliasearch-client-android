@@ -58,6 +58,8 @@ platform :android do
 
     # Release the new version
     sh("cd .. && ./release.sh #{version_number}")
+    # Confirm the tag now exists
+    sh("git ls-remote --tags origin | grep #{version_number} -q")
     # Post the changes via GitHub Release API
     post_github_release(version_number, changes)
   end
