@@ -61,7 +61,8 @@ platform :android do
     # Post the changes via GitHub Release API
     post_github_release(version_number, changes)
     # Remove temporary version tags
-    sh("git tag --delete minor major patch ; git push --delete minor major patch | true")
+    sh("git tag --delete minor major patch | true")
+    sh("git push origin :refs/tag/patch :refs/tag/minor :refs/tag/major")
   end
 end
 
