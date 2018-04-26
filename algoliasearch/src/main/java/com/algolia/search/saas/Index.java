@@ -1025,7 +1025,7 @@ public class Index extends Searchable {
      * @param requestOptions Request-specific options.
      * @throws AlgoliaException
      */
-    protected JSONObject addObject(JSONObject obj, String objectID, @Nullable RequestOptions requestOptions) throws AlgoliaException {
+    public JSONObject addObject(JSONObject obj, String objectID, @Nullable RequestOptions requestOptions) throws AlgoliaException {
         try {
             return client.putRequest("/1/indexes/" + encodedIndexName + "/" + URLEncoder.encode(objectID, "UTF-8"), /* urlParameters: */ null, obj.toString(), requestOptions);
         } catch (UnsupportedEncodingException e) {
@@ -1057,7 +1057,7 @@ public class Index extends Searchable {
      * @param requestOptions Request-specific options.
      * @throws AlgoliaException
      */
-    protected JSONObject addObjects(JSONArray inputArray, @Nullable RequestOptions requestOptions) throws AlgoliaException {
+    public JSONObject addObjects(JSONArray inputArray, @Nullable RequestOptions requestOptions) throws AlgoliaException {
         try {
             JSONArray array = new JSONArray();
             for (int n = 0; n < inputArray.length(); n++) {
@@ -1079,7 +1079,7 @@ public class Index extends Searchable {
      * @param requestOptions Request-specific options.
      * @throws AlgoliaException
      */
-    protected JSONObject getObject(String objectID, @Nullable RequestOptions requestOptions) throws AlgoliaException {
+    public JSONObject getObject(String objectID, @Nullable RequestOptions requestOptions) throws AlgoliaException {
         try {
             return client.getRequest("/1/indexes/" + encodedIndexName + "/" + URLEncoder.encode(objectID, "UTF-8"), /* urlParameters: */ null, false, requestOptions);
         } catch (UnsupportedEncodingException e) {
@@ -1095,7 +1095,7 @@ public class Index extends Searchable {
      * @param requestOptions       Request-specific options.
      * @throws AlgoliaException
      */
-    protected JSONObject getObject(String objectID, Collection<String> attributesToRetrieve, @Nullable RequestOptions requestOptions) throws AlgoliaException {
+    public JSONObject getObject(String objectID, Collection<String> attributesToRetrieve, @Nullable RequestOptions requestOptions) throws AlgoliaException {
         try {
             String path = "/1/indexes/" + encodedIndexName + "/" + URLEncoder.encode(objectID, "UTF-8");
             Map<String, String> urlParameters = new HashMap<>();
@@ -1114,7 +1114,7 @@ public class Index extends Searchable {
      * @param objectIDs the array of unique identifier of objects to retrieve
      * @throws AlgoliaException
      */
-    protected JSONObject getObjects(Collection<String> objectIDs) throws AlgoliaException {
+    public JSONObject getObjects(Collection<String> objectIDs) throws AlgoliaException {
         return getObjects(objectIDs, /* attributesToRetrieve: */ null, /* requestOptions: */ null);
     }
 
@@ -1126,7 +1126,7 @@ public class Index extends Searchable {
      * @param requestOptions       Request-specific options.
      * @throws AlgoliaException
      */
-    protected JSONObject getObjects(@NonNull Collection<String> objectIDs, @Nullable Collection<String> attributesToRetrieve, @Nullable RequestOptions requestOptions) throws AlgoliaException {
+    public JSONObject getObjects(@NonNull Collection<String> objectIDs, @Nullable Collection<String> attributesToRetrieve, @Nullable RequestOptions requestOptions) throws AlgoliaException {
         try {
             JSONArray requests = new JSONArray();
             for (String id : objectIDs) {
@@ -1153,7 +1153,7 @@ public class Index extends Searchable {
      * @param requestOptions Request-specific options.
      * @throws AlgoliaException
      */
-    protected JSONObject partialUpdateObject(JSONObject partialObject, String objectID, Boolean createIfNotExists, @Nullable RequestOptions requestOptions) throws AlgoliaException {
+    public JSONObject partialUpdateObject(JSONObject partialObject, String objectID, Boolean createIfNotExists, @Nullable RequestOptions requestOptions) throws AlgoliaException {
         try {
             String path = "/1/indexes/" + encodedIndexName + "/" + URLEncoder.encode(objectID, "UTF-8") + "/partial";
             Map<String, String> urlParameters = new HashMap<>();
@@ -1173,7 +1173,7 @@ public class Index extends Searchable {
      * @param requestOptions Request-specific options.
      * @throws AlgoliaException
      */
-    protected JSONObject partialUpdateObjects(JSONArray inputArray, boolean createIfNotExists, @Nullable RequestOptions requestOptions) throws AlgoliaException {
+    public JSONObject partialUpdateObjects(JSONArray inputArray, boolean createIfNotExists, @Nullable RequestOptions requestOptions) throws AlgoliaException {
         try {
             final String action = createIfNotExists ? "partialUpdateObject" : "partialUpdateObjectNoCreate";
             JSONArray array = new JSONArray();
@@ -1198,7 +1198,7 @@ public class Index extends Searchable {
      * @param requestOptions Request-specific options.
      * @throws AlgoliaException
      */
-    protected JSONObject saveObject(JSONObject object, String objectID, @Nullable RequestOptions requestOptions) throws AlgoliaException {
+    public JSONObject saveObject(JSONObject object, String objectID, @Nullable RequestOptions requestOptions) throws AlgoliaException {
         try {
             return client.putRequest("/1/indexes/" + encodedIndexName + "/" + URLEncoder.encode(objectID, "UTF-8"), /* urlParameters: */ null, object.toString(), requestOptions);
         } catch (UnsupportedEncodingException e) {
@@ -1213,7 +1213,7 @@ public class Index extends Searchable {
      * @param requestOptions Request-specific options.
      * @throws AlgoliaException
      */
-    protected JSONObject saveObjects(JSONArray inputArray, @Nullable RequestOptions requestOptions) throws AlgoliaException {
+    public JSONObject saveObjects(JSONArray inputArray, @Nullable RequestOptions requestOptions) throws AlgoliaException {
         try {
             JSONArray array = new JSONArray();
             for (int n = 0; n < inputArray.length(); n++) {
@@ -1237,7 +1237,7 @@ public class Index extends Searchable {
      * @param requestOptions Request-specific options.
      * @throws AlgoliaException
      */
-    protected JSONObject deleteObject(String objectID, @Nullable RequestOptions requestOptions) throws AlgoliaException {
+    public JSONObject deleteObject(String objectID, @Nullable RequestOptions requestOptions) throws AlgoliaException {
         if (objectID.length() == 0) {
             throw new AlgoliaException("Invalid objectID");
         }
@@ -1255,7 +1255,7 @@ public class Index extends Searchable {
      * @param requestOptions Request-specific options.
      * @throws AlgoliaException
      */
-    protected JSONObject deleteObjects(Collection<String> objects, @Nullable RequestOptions requestOptions) throws AlgoliaException {
+    public JSONObject deleteObjects(Collection<String> objects, @Nullable RequestOptions requestOptions) throws AlgoliaException {
         try {
             JSONArray array = new JSONArray();
             for (String id : objects) {
@@ -1281,7 +1281,7 @@ public class Index extends Searchable {
      * @deprecated use {@link Index#deleteBy(Query)} instead.
      */
     @Deprecated
-    protected void deleteByQuery(@NonNull Query query, @Nullable RequestOptions requestOptions) throws AlgoliaException {
+    public void deleteByQuery(@NonNull Query query, @Nullable RequestOptions requestOptions) throws AlgoliaException {
         try {
             boolean hasMore;
             do {
@@ -1312,7 +1312,7 @@ public class Index extends Searchable {
      * @param query the query string
      * @throws AlgoliaException
      */
-    protected JSONObject deleteBy(@NonNull Query query) throws AlgoliaException {
+    public JSONObject deleteBy(@NonNull Query query) throws AlgoliaException {
         return deleteBy(query, null);
     }
 
@@ -1323,7 +1323,7 @@ public class Index extends Searchable {
      * @throws AlgoliaException
      *
      */
-    protected JSONObject deleteBy(@NonNull Query query, RequestOptions requestOptions) throws AlgoliaException {
+    public JSONObject deleteBy(@NonNull Query query, RequestOptions requestOptions) throws AlgoliaException {
         try {
             return client.postRequest("/1/indexes/" + encodedIndexName + "/deleteByQuery", query.getParameters(), new JSONObject().put("params", query.build()).toString(), false, requestOptions);
         } catch (JSONException e) {
@@ -1339,7 +1339,7 @@ public class Index extends Searchable {
      * @return a JSONObject containing search results
      * @throws AlgoliaException
      */
-    protected JSONObject search(@Nullable Query query, @Nullable RequestOptions requestOptions) throws AlgoliaException {
+    public JSONObject search(@Nullable Query query, @Nullable RequestOptions requestOptions) throws AlgoliaException {
         if (query == null) {
             query = new Query();
         }
@@ -1397,7 +1397,7 @@ public class Index extends Searchable {
      * @param timeToWait time to sleep seed
      * @throws AlgoliaException
      */
-    protected JSONObject waitTask(String taskID, long timeToWait) throws AlgoliaException {
+    public JSONObject waitTask(String taskID, long timeToWait) throws AlgoliaException {
         try {
             while (true) {
                 JSONObject obj = client.getRequest("/1/indexes/" + encodedIndexName + "/task/" + URLEncoder.encode(taskID, "UTF-8"), /* urlParameters: */ null, false, /* requestOptions: */ null);
@@ -1427,7 +1427,7 @@ public class Index extends Searchable {
      * @param taskID the id of the task returned by server
      * @throws AlgoliaException
      */
-    protected JSONObject waitTask(String taskID) throws AlgoliaException {
+    public JSONObject waitTask(String taskID) throws AlgoliaException {
         return waitTask(taskID, MAX_TIME_MS_TO_WAIT);
     }
 
@@ -1438,7 +1438,7 @@ public class Index extends Searchable {
      *
      * @param requestOptions Request-specific options.
      */
-    protected JSONObject getSettings(@Nullable RequestOptions requestOptions) throws AlgoliaException {
+    public JSONObject getSettings(@Nullable RequestOptions requestOptions) throws AlgoliaException {
         Map<String, String> urlParameters = new HashMap<>();
         urlParameters.put("getVersion", Integer.toString(DEFAULT_SETTINGS_VERSION));
         return client.getRequest("/1/indexes/" + encodedIndexName + "/settings", urlParameters, false, requestOptions);
@@ -1452,7 +1452,7 @@ public class Index extends Searchable {
      * @param requestOptions Request-specific options.
      * @throws AlgoliaException
      */
-    protected JSONObject getSettings(int formatVersion, @Nullable RequestOptions requestOptions) throws AlgoliaException {
+    public JSONObject getSettings(int formatVersion, @Nullable RequestOptions requestOptions) throws AlgoliaException {
         Map<String, String> urlParameters = new HashMap<>();
         urlParameters.put("getVersion", Integer.toString(formatVersion));
         return client.getRequest("/1/indexes/" + encodedIndexName + "/settings", urlParameters, false, requestOptions);
@@ -1466,7 +1466,7 @@ public class Index extends Searchable {
      * @param requestOptions    Request-specific options.
      * @throws AlgoliaException
      */
-    protected JSONObject setSettings(JSONObject settings, boolean forwardToReplicas, @Nullable RequestOptions requestOptions) throws AlgoliaException {
+    public JSONObject setSettings(JSONObject settings, boolean forwardToReplicas, @Nullable RequestOptions requestOptions) throws AlgoliaException {
         Map<String, String> urlParameters = new HashMap<>();
         urlParameters.put("forwardToReplicas", Boolean.toString(forwardToReplicas));
         return client.putRequest("/1/indexes/" + encodedIndexName + "/settings", urlParameters, settings.toString(), requestOptions);
@@ -1478,7 +1478,7 @@ public class Index extends Searchable {
      * @param requestOptions Request-specific options.
      * @throws AlgoliaException
      */
-    protected JSONObject clearIndex(@Nullable RequestOptions requestOptions) throws AlgoliaException {
+    public JSONObject clearIndex(@Nullable RequestOptions requestOptions) throws AlgoliaException {
         return client.postRequest("/1/indexes/" + encodedIndexName + "/clear", /* urlParameters: */ null, "", false, requestOptions);
     }
 
