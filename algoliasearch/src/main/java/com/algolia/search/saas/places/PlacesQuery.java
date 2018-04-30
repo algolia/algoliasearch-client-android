@@ -50,7 +50,7 @@ public class PlacesQuery extends AbstractQuery {
      *
      * @param query Full text query.
      */
-    public PlacesQuery(String query) {
+    public PlacesQuery(CharSequence query) {
         setQuery(query);
     }
 
@@ -73,7 +73,7 @@ public class PlacesQuery extends AbstractQuery {
      * Set the full text query.
      */
     public @NonNull
-    PlacesQuery setQuery(String query) {
+    PlacesQuery setQuery(CharSequence query) {
         return set(KEY_QUERY, query);
     }
 
