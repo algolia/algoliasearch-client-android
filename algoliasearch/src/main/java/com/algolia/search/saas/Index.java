@@ -1012,7 +1012,7 @@ public class Index extends Searchable {
      * @param requestOptions Request-specific options.
      * @throws AlgoliaException
      */
-    protected JSONObject addObject(JSONObject obj, @Nullable RequestOptions requestOptions) throws AlgoliaException {
+    public JSONObject addObject(JSONObject obj, @Nullable RequestOptions requestOptions) throws AlgoliaException {
         return client.postRequest("/1/indexes/" + encodedIndexName, /* urlParameters: */ null, obj.toString(), false, requestOptions);
     }
 
