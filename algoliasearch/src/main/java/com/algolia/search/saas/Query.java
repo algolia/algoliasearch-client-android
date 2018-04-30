@@ -235,7 +235,7 @@ public class Query extends AbstractQuery {
      *
      * @param query Query text.
      */
-    public Query(String query) {
+    public Query(CharSequence query) {
         setQuery(query);
     }
 
@@ -1175,7 +1175,7 @@ public class Query extends AbstractQuery {
     /**
      * Set the full text query
      */
-    public @NonNull Query setQuery(String query) {
+    public @NonNull Query setQuery(CharSequence query) {
         return set(KEY_QUERY, query);
     }
 
