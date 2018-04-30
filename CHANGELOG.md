@@ -1,5 +1,11 @@
 # Changelog
 
+## 3.21.11
+* **Index:** expose addObject(obj, requestOptions) ([7fe0102](https://github.com/algolia/algoliasearch-client-android/commit/7fe0102))
+* **Query:** Accept any CharSequence ([#543](https://github.com/algolia/algoliasearch-client-android/issues/543)) ([1ea875b](https://github.com/algolia/algoliasearch-client-android/commit/1ea875b))
+### Features
+* **Index:** Expose sync methods ([#544](https://github.com/algolia/algoliasearch-client-android/issues/544)) ([59f9c5d](https://github.com/algolia/algoliasearch-client-android/commit/59f9c5d))
+
 ## 3.20.11
 
 ## 3.20.10
