@@ -111,7 +111,7 @@ public class Index extends Searchable {
     // ------
 
     /**
-     * Search inside this index (asynchronously).
+     * Searches inside this index (asynchronously).
      *
      * @param query             Search parameters. May be null to use an empty query.
      * @param requestOptions    Request-specific options.
@@ -129,7 +129,7 @@ public class Index extends Searchable {
     }
 
     /**
-     * Search inside this index (synchronously).
+     * Searches inside this index (synchronously).
      *
      * @param query          Search parameters.
      * @param requestOptions Request-specific options.
@@ -140,7 +140,7 @@ public class Index extends Searchable {
     }
 
     /**
-     * Search inside this index (synchronously).
+     * Searches inside this index (synchronously).
      *
      * @return Search results.
      */
@@ -187,7 +187,7 @@ public class Index extends Searchable {
     }
 
     /**
-     * Search inside this index synchronously.
+     * Searches inside this index synchronously.
      *
      * @param query          Search parameters.
      * @param requestOptions Request-specific options.
@@ -231,7 +231,7 @@ public class Index extends Searchable {
     }
 
     /**
-     * Search (asynchronously) for some text in a facet values.
+     * Searches (asynchronously) for some text in a facet values.
      *
      * @param facetName The name of the facet to search. It must have been declared in the index's `attributesForFaceting` setting with the `searchable()` modifier.
      * @param text      The text to search for in the facet's values.
@@ -243,7 +243,7 @@ public class Index extends Searchable {
     }
 
     /**
-     * Search (asynchronously) for some text in a facet values.
+     * Searches (asynchronously) for some text in a facet values.
      *
      * @param facetName The name of the facet to search. It must have been declared in the index's `attributesForFaceting` setting with the `searchable()` modifier.
      * @param text      The text to search for in the facet's values.
@@ -256,7 +256,7 @@ public class Index extends Searchable {
     }
 
     /**
-     * Search for some text in a facet values, optionally restricting the returned values to those contained in objects matching other (regular) search criteria.
+     * Searches for some text in a facet values, optionally restricting the returned values to those contained in objects matching other (regular) search criteria.
      *
      * @param facetName The name of the facet to search. It must have been declared in the index's `attributesForFaceting` setting with the `searchable()` modifier.
      * @param facetText The text to search for in the facet's values.
@@ -269,7 +269,7 @@ public class Index extends Searchable {
     }
 
     /**
-     * Search for some text in a facet values, optionally restricting the returned values to those contained in objects matching other (regular) search criteria.
+     * Searches for some text in a facet values, optionally restricting the returned values to those contained in objects matching other (regular) search criteria.
      *
      * @param facetName      The name of the facet to search. It must have been declared in the index's `attributesForFaceting` setting with the `searchable()` modifier.
      * @param facetText      The text to search for in the facet's values.
@@ -300,7 +300,7 @@ public class Index extends Searchable {
     }
 
     /**
-     * Search (asynchronously) for some text in a facet values, optionally restricting the returned values to those contained in objects matching other (regular) search criteria.
+     * Searches (asynchronously) for some text in a facet values, optionally restricting the returned values to those contained in objects matching other (regular) search criteria.
      *
      * @param facetName The name of the facet to search. It must have been declared in the index's `attributesForFaceting` setting with the `searchable()` modifier.
      * @param facetText The text to search for in the facet's values.
@@ -317,7 +317,7 @@ public class Index extends Searchable {
     // --------------
 
     /**
-     * Add an object to this index (asynchronously).
+     * Adds an object to this index (asynchronously).
      * <p>
      * WARNING: For performance reasons, the arguments are not cloned. Since the method is executed in the background,
      * you should not modify the object after it has been passed.
@@ -337,7 +337,7 @@ public class Index extends Searchable {
     }
 
     /**
-     * Add an object to this index, assigning it the specified object ID (asynchronously).
+     * Adds an object to this index, assigning it the specified object ID (asynchronously).
      * If an object already exists with the same object ID, the existing object will be overwritten.
      * <p>
      * WARNING: For performance reasons, the arguments are not cloned. Since the method is executed in the background,
@@ -354,7 +354,7 @@ public class Index extends Searchable {
     }
 
     /**
-     * Add an object to this index, assigning it the specified object ID (asynchronously).
+     * Adds an object to this index, assigning it the specified object ID (asynchronously).
      * If an object already exists with the same object ID, the existing object will be overwritten.
      * <p>
      * WARNING: For performance reasons, the arguments are not cloned. Since the method is executed in the background,
@@ -377,7 +377,7 @@ public class Index extends Searchable {
     }
 
     /**
-     * Add several objects to this index (asynchronously).
+     * Adds several objects to this index (asynchronously).
      *
      * @param objects           Objects to add.
      * @param requestOptions    Request-specific options.
@@ -394,7 +394,7 @@ public class Index extends Searchable {
     }
 
     /**
-     * Add several objects to this index (asynchronously).
+     * Adds several objects to this index (asynchronously).
      *
      * @param objects           Objects to add.
      * @param completionHandler The listener that will be notified of the request's outcome.
@@ -559,7 +559,7 @@ public class Index extends Searchable {
     }
 
     /**
-     * Get an object from this index (asynchronously).
+     * Gets an object from this index (asynchronously).
      *
      * @param objectID          Identifier of the object to retrieve.
      * @param completionHandler The listener that will be notified of the request's outcome.
@@ -570,7 +570,7 @@ public class Index extends Searchable {
     }
 
     /**
-     * Get an object from this index, optionally restricting the retrieved content (asynchronously).
+     * Gets an object from this index, optionally restricting the retrieved content (asynchronously).
      *
      * @param objectID             Identifier of the object to retrieve.
      * @param attributesToRetrieve List of attributes to retrieve.
@@ -582,7 +582,7 @@ public class Index extends Searchable {
     }
 
     /**
-     * Get an object from this index, optionally restricting the retrieved content (asynchronously).
+     * Gets an object from this index, optionally restricting the retrieved content (asynchronously).
      *
      * @param objectID             Identifier of the object to retrieve.
      * @param attributesToRetrieve List of attributes to retrieve.
@@ -600,7 +600,7 @@ public class Index extends Searchable {
     }
 
     /**
-     * Get several objects from this index (asynchronously).
+     * Gets several objects from this index (asynchronously).
      *
      * @param objectIDs         Identifiers of objects to retrieve.
      * @param completionHandler The listener that will be notified of the request's outcome.
@@ -611,7 +611,7 @@ public class Index extends Searchable {
     }
 
     /**
-     * Get several objects from this index (asynchronously), optionally restricting the retrieved content (asynchronously).
+     * Gets several objects from this index (asynchronously), optionally restricting the retrieved content (asynchronously).
      *
      * @param objectIDs            Identifiers of objects to retrieve.
      * @param attributesToRetrieve List of attributes to retrieve.
@@ -623,7 +623,7 @@ public class Index extends Searchable {
     }
 
     /**
-     * Get several objects from this index (asynchronously), optionally restricting the retrieved content (asynchronously).
+     * Gets several objects from this index (asynchronously), optionally restricting the retrieved content (asynchronously).
      *
      * @param objectIDs            Identifiers of objects to retrieve.
      * @param requestOptions       Request-specific options.
@@ -640,7 +640,7 @@ public class Index extends Searchable {
     }
 
     /**
-     * Get several objects from this index (asynchronously), optionally restricting the retrieved content (asynchronously).
+     * Gets several objects from this index (asynchronously), optionally restricting the retrieved content (asynchronously).
      *
      * @param objectIDs            Identifiers of objects to retrieve.
      * @param attributesToRetrieve List of attributes to retrieve.
@@ -692,7 +692,7 @@ public class Index extends Searchable {
     }
 
     /**
-     * Delete an object from this index (asynchronously).
+     * Deletes an object from this index (asynchronously).
      *
      * @param objectID          Identifier of the object to delete.
      * @param completionHandler The listener that will be notified of the request's outcome.
@@ -703,7 +703,7 @@ public class Index extends Searchable {
     }
 
     /**
-     * Delete an object from this index (asynchronously).
+     * Deletes an object from this index (asynchronously).
      *
      * @param objectID          Identifier of the object to delete.
      * @param requestOptions    Request-specific options.
@@ -720,7 +720,7 @@ public class Index extends Searchable {
     }
 
     /**
-     * Delete several objects from this index (asynchronously).
+     * Deletes several objects from this index (asynchronously).
      *
      * @param objectIDs         Identifiers of objects to delete.
      * @param completionHandler The listener that will be notified of the request's outcome.
@@ -731,7 +731,7 @@ public class Index extends Searchable {
     }
 
     /**
-     * Delete several objects from this index (asynchronously).
+     * Deletes several objects from this index (asynchronously).
      *
      * @param objectIDs         Identifiers of objects to delete.
      * @param requestOptions    Request-specific options.
@@ -748,7 +748,7 @@ public class Index extends Searchable {
     }
 
     /**
-     * Delete all objects matching a query (helper) using browse and deleteObjects.
+     * Deletes all objects matching a query (helper) using browse and deleteObjects.
      *
      * @param query             The query that objects to delete must match.
      * @param completionHandler The listener that will be notified of the request's outcome.
@@ -760,7 +760,7 @@ public class Index extends Searchable {
     }
 
     /**
-     * Delete all objects matching a query (helper).
+     * Deletes all objects matching a query (helper).
      *
      * @param query             The query that objects to delete must match.
      * @param requestOptions    Request-specific options.
@@ -780,7 +780,7 @@ public class Index extends Searchable {
     }
 
     /**
-     * Delete all objects matching a query (helper).
+     * Deletes all objects matching a query (helper).
      *
      * @param query             The query that objects to delete must match.
      * @param completionHandler The listener that will be notified of the request's outcome.
@@ -797,7 +797,7 @@ public class Index extends Searchable {
     }
 
     /**
-     * Delete all objects matching a query (helper).
+     * Deletes all objects matching a query (helper).
      *
      * @param query             The query that objects to delete must match.
      * @param completionHandler The listener that will be notified of the request's outcome.
@@ -808,7 +808,7 @@ public class Index extends Searchable {
     }
 
     /**
-     * Get this index's settings (asynchronously).
+     * Gets this index's settings (asynchronously).
      *
      * @param completionHandler The listener that will be notified of the request's outcome.
      * @return A cancellable request.
@@ -818,7 +818,7 @@ public class Index extends Searchable {
     }
 
     /**
-     * Get this index's settings (asynchronously).
+     * Gets this index's settings (asynchronously).
      *
      * @param requestOptions    Request-specific options.
      * @param completionHandler The listener that will be notified of the request's outcome.
@@ -1006,7 +1006,7 @@ public class Index extends Searchable {
     // ----------------------------------------------------------------------
 
     /**
-     * Add an object in this index
+     * Adds an object in this index.
      *
      * @param obj            the object to add.
      * @param requestOptions Request-specific options.
@@ -1017,7 +1017,7 @@ public class Index extends Searchable {
     }
 
     /**
-     * Add an object in this index
+     * Adds an object in this index.
      *
      * @param obj            the object to add.
      * @param objectID       an objectID you want to attribute to this object
@@ -1034,7 +1034,7 @@ public class Index extends Searchable {
     }
 
     /**
-     * Custom batch
+     * Custom batch.
      *
      * @param actions        the array of actions
      * @param requestOptions Request-specific options.
@@ -1051,7 +1051,7 @@ public class Index extends Searchable {
     }
 
     /**
-     * Add several objects
+     * Adds several objects.
      *
      * @param inputArray     contains an array of objects to add.
      * @param requestOptions Request-specific options.
@@ -1073,7 +1073,7 @@ public class Index extends Searchable {
     }
 
     /**
-     * Get an object from this index
+     * Gets an object from this index.
      *
      * @param objectID       the unique identifier of the object to retrieve
      * @param requestOptions Request-specific options.
@@ -1088,7 +1088,7 @@ public class Index extends Searchable {
     }
 
     /**
-     * Get an object from this index
+     * Gets an object from this index.
      *
      * @param objectID             the unique identifier of the object to retrieve
      * @param attributesToRetrieve contains the list of attributes to retrieve.
@@ -1109,7 +1109,7 @@ public class Index extends Searchable {
     }
 
     /**
-     * Get several objects from this index
+     * Gets several objects from this index.
      *
      * @param objectIDs the array of unique identifier of objects to retrieve
      * @throws AlgoliaException
@@ -1119,7 +1119,7 @@ public class Index extends Searchable {
     }
 
     /**
-     * Get several objects from this index
+     * Gets several objects from this index.
      *
      * @param objectIDs            the array of unique identifier of objects to retrieve
      * @param attributesToRetrieve contains the list of attributes to retrieve.
@@ -1147,7 +1147,7 @@ public class Index extends Searchable {
     }
 
     /**
-     * Update partially an object (only update attributes passed in argument)
+     * Update partially an object (only update attributes passed in argument).
      *
      * @param partialObject  the object attributes to override
      * @param requestOptions Request-specific options.
@@ -1167,7 +1167,7 @@ public class Index extends Searchable {
     }
 
     /**
-     * Partially Override the content of several objects
+     * Partially Override the content of several objects.
      *
      * @param inputArray     the array of objects to update (each object must contains an objectID attribute)
      * @param requestOptions Request-specific options.
@@ -1192,7 +1192,7 @@ public class Index extends Searchable {
     }
 
     /**
-     * Override the content of object
+     * Override the content of object.
      *
      * @param object         the object to save
      * @param requestOptions Request-specific options.
@@ -1207,7 +1207,7 @@ public class Index extends Searchable {
     }
 
     /**
-     * Override the content of several objects
+     * Override the content of several objects.
      *
      * @param inputArray     contains an array of objects to update (each object must contains an objectID attribute)
      * @param requestOptions Request-specific options.
@@ -1231,7 +1231,7 @@ public class Index extends Searchable {
     }
 
     /**
-     * Delete an object from the index
+     * Deletes an object from the index.
      *
      * @param objectID       the unique identifier of object to delete
      * @param requestOptions Request-specific options.
@@ -1249,7 +1249,7 @@ public class Index extends Searchable {
     }
 
     /**
-     * Delete several objects
+     * Deletes several objects.
      *
      * @param objects        the array of objectIDs to delete
      * @param requestOptions Request-specific options.
@@ -1273,7 +1273,7 @@ public class Index extends Searchable {
     }
 
     /**
-     * Delete all objects matching a query using browse and deleteObjects.
+     * Deletes all objects matching a query using browse and deleteObjects.
      *
      * @param query          the query string
      * @param requestOptions Request-specific options.
@@ -1307,7 +1307,7 @@ public class Index extends Searchable {
     }
 
     /**
-     * Delete all records matching the query.
+     * Deletes all records matching the query.
      *
      * @param query the query string
      * @throws AlgoliaException
@@ -1317,7 +1317,7 @@ public class Index extends Searchable {
     }
 
     /**
-     * Delete all records matching the query.
+     * Deletes all records matching the query.
      *
      * @param query the query string
      * @throws AlgoliaException
@@ -1333,7 +1333,7 @@ public class Index extends Searchable {
     }
 
     /**
-     * Search inside the index
+     * Searches inside the index.
      *
      * @param requestOptions Request-specific options.
      * @return a JSONObject containing search results
@@ -1364,7 +1364,7 @@ public class Index extends Searchable {
     }
 
     /**
-     * Search inside the index
+     * Searches inside the index.
      *
      * @param requestOptions Request-specific options.
      * @return a byte array containing search results
@@ -1473,7 +1473,7 @@ public class Index extends Searchable {
     }
 
     /**
-     * Delete the index content without removing settings and index specific API keys.
+     * Deletes the index content without removing settings and index specific API keys.
      *
      * @param requestOptions Request-specific options.
      * @throws AlgoliaException
