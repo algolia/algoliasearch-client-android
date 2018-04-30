@@ -28,7 +28,7 @@ ext {
     // NOTE: This is the official version number used during publication.
     PUBLISH_VERSION = '3.20.11'
     APPCOMPAT_VERSION = '26.1.0'
-    BUILD_TOOLS_VERSION = '26.0.2'
+    BUILD_TOOLS_VERSION = '27.0.3'
 
     nexus_username = System.getenv("NEXUS_USERNAME")
     nexus_password = System.getenv("NEXUS_PASSWORD")
