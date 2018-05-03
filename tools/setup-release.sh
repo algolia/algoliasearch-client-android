@@ -47,7 +47,7 @@ EOF
     git config user.signingkey $KEY_ID
 }
 
-# Maven drop repository handling TODO: Remove if alternative https://issues.sonatype.org/browse/OSSRH-39124
+# Maven drop repository handling TODO: Try alternative https://issues.sonatype.org/browse/OSSRH-39124
 drop_open_repo() {
     echo "Creating minimal pom to use nexus maven plugin"
     cat > pom.xml << EOF
@@ -93,7 +93,7 @@ EOF
             echo "No repository was currently open."
             break;
         else
-            echo "Existing repository to close: $MVN_REPO_ID"
+            echo "Existing repository to drop: $MVN_REPO_ID"
             mvn --settings=mvn-settings.xml nexus-staging:drop -DstagingRepositoryId=$MVN_REPO_ID
         fi
     do
