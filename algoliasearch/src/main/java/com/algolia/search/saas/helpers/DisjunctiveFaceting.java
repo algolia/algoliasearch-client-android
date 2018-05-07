@@ -115,84 +115,52 @@ public abstract class DisjunctiveFaceting {
         Map<String, ? extends Collection<String>> disjunctiveRefinements = filterDisjunctiveRefinements(disjunctiveFacets, refinements);
 
         // build queries
-        // TODO: Refactor using JSON array notation: safer and clearer.
         List<Query> queries = new ArrayList<>();
-        // hits + regular facets query
-        StringBuilder filters = new StringBuilder();
-        boolean first_global = true;
+
+        // first query: hits + regular facets
+        JSONArray facetFilters = new JSONArray();
         for (Map.Entry<String, T> elt : refinements.entrySet()) {
-            StringBuilder or = new StringBuilder();
-            or.append("(");
-            boolean first = true;
+            JSONArray orFilters = new JSONArray();
+
             for (String val : elt.getValue()) {
+                // When already refined facet, or with existing refinements
                 if (disjunctiveRefinements.containsKey(elt.getKey())) {
-                    // disjunctive refinements are ORed
-                    if (!first) {
-                        or.append(',');
-                    }
-                    first = false;
-                    or.append(String.format("%s:%s", elt.getKey(), val));
+                    orFilters.put(formatFilter(elt, val));
                 } else {
-                    if (!first_global) {
-                        filters.append(',');
-                    }
-                    first_global = false;
-                    filters.append(String.format("%s:%s", elt.getKey(), val));
+                    facetFilters.put(formatFilter(elt, val));
                 }
             }
             // Add or
             if (disjunctiveRefinements.containsKey(elt.getKey())) {
-                or.append(')');
-                if (!first_global) {
-                    filters.append(',');
-                }
-                first_global = false;
-                filters.append(or.toString());
+                facetFilters.put(orFilters);
             }
         }
 
-        queries.add(new Query(query).set("facetFilters", filters.toString()));
+        queries.add(new Query(query).setFacetFilters(facetFilters));
         // one query per disjunctive facet (use all refinements but the current one + hitsPerPage=1 + single facet
         for (String disjunctiveFacet : disjunctiveFacets) {
-            filters = new StringBuilder();
-            first_global = true;
+            facetFilters = new JSONArray();
             for (Map.Entry<String, T> elt : refinements.entrySet()) {
                 if (disjunctiveFacet.equals(elt.getKey())) {
                     continue;
                 }
-                StringBuilder or = new StringBuilder();
-                or.append("(");
-                boolean first = true;
+                JSONArray orFilters = new JSONArray();
                 for (String val : elt.getValue()) {
                     if (disjunctiveRefinements.containsKey(elt.getKey())) {
-                        // disjunctive refinements are ORed
-                        if (!first) {
-                            or.append(',');
-                        }
-                        first = false;
-                        or.append(String.format("%s:%s", elt.getKey(), val));
+                        orFilters.put(formatFilter(elt, val));
                     } else {
-                        if (!first_global) {
-                            filters.append(',');
-                        }
-                        first_global = false;
-                        filters.append(String.format("%s:%s", elt.getKey(), val));
+                        facetFilters.put(formatFilter(elt, val));
                     }
                 }
                 // Add or
                 if (disjunctiveRefinements.containsKey(elt.getKey())) {
-                    or.append(')');
-                    if (!first_global) {
-                        filters.append(',');
-                    }
-                    first_global = false;
-                    filters.append(or.toString());
+                    facetFilters.put(orFilters);
                 }
             }
             String[] facets = new String[]{disjunctiveFacet};
             queries.add(new Query(query).setHitsPerPage(0).setAnalytics(false)
                     .setAttributesToRetrieve().setAttributesToHighlight().setAttributesToSnippet()
-                    .setFacets(facets).set("facetFilters", filters.toString()));
+                    .setFacets(facets).setFacetFilters(facetFilters));
         }
         return queries;
     }
