@@ -91,7 +91,7 @@ public abstract class DisjunctiveFaceting {
      * @param refinements       Map representing the current refinements
      * @return The disjunctive refinements
      */
-    static private @NonNull <T extends Collection<String>> Map<String, T> computeDisjunctiveRefinements(@NonNull Collection<String> disjunctiveFacets, @NonNull Map<String, T> refinements)
+    static private @NonNull <T extends Collection<String>> Map<String, T> filterDisjunctiveRefinements(@NonNull Collection<String> disjunctiveFacets, @NonNull Map<String, T> refinements)
     {
         Map<String, T> disjunctiveRefinements = new HashMap<>();
         for (Map.Entry<String, T> elt : refinements.entrySet()) {
@@ -112,7 +112,7 @@ public abstract class DisjunctiveFaceting {
      */
     static private @NonNull <T extends Collection<String>> List<Query> computeDisjunctiveFacetingQueries(@NonNull Query query, @NonNull Collection<String> disjunctiveFacets, @NonNull Map<String, T> refinements) {
         // Retain only refinements corresponding to the disjunctive facets.
-        Map<String, ? extends Collection<String>> disjunctiveRefinements = computeDisjunctiveRefinements(disjunctiveFacets, refinements);
+        Map<String, ? extends Collection<String>> disjunctiveRefinements = filterDisjunctiveRefinements(disjunctiveFacets, refinements);
 
         // build queries
         // TODO: Refactor using JSON array notation: safer and clearer.
@@ -197,6 +197,10 @@ public abstract class DisjunctiveFaceting {
         return queries;
     }
 
+    private static <T extends Collection<String>> String formatFilter(Map.Entry<String, T> refinement, String value) {
+        return String.format("%s:%s", refinement.getKey(), value);
+    }
+
     /**
      * Aggregate results from multiple queries into disjunctive faceting results.
      *
@@ -208,7 +212,7 @@ public abstract class DisjunctiveFaceting {
      */
     static private <T extends Collection<String>> JSONObject aggregateDisjunctiveFacetingResults(@NonNull JSONObject answers, @NonNull Collection<String> disjunctiveFacets, @NonNull Map<String, T> refinements) throws AlgoliaException
     {
-        Map<String, T> disjunctiveRefinements = computeDisjunctiveRefinements(disjunctiveFacets, refinements);
+        Map<String, T> disjunctiveRefinements = filterDisjunctiveRefinements(disjunctiveFacets, refinements);
 
         // aggregate answers
         // first answer stores the hits + regular facets
