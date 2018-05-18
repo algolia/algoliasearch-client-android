@@ -95,6 +95,7 @@ end
 def post_github_release(version, changes, token=ENV['GITHUB_TOKEN'])
   puts "Creating release on GitHub..."
   release_changes = changes.gsub(/^## #{version} /m, "## ").gsub("\n", "\\n")
+  url = "https://api.github.com/repos/algolia/algoliasearch-client-android/releases?access_token=#{token}"
   result = HTTParty.post(url, :body => {
     :tag_name => version,
     :target_commitish => "master",
