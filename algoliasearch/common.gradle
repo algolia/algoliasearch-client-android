@@ -26,7 +26,7 @@ apply plugin: 'com.android.library'
 ext {
     PUBLISH_GROUP_ID = rootProject.properties["PUBLISH_GROUP_ID"] ?: "com.algolia"
     // NOTE: This is the official version number used during publication.
-    PUBLISH_VERSION = '3.21.12'
+    PUBLISH_VERSION = '3.21.13'
     APPCOMPAT_VERSION = '26.1.0'
     BUILD_TOOLS_VERSION = '27.0.3'
 
