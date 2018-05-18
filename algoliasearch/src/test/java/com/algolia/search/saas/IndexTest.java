@@ -210,13 +210,15 @@ public class IndexTest extends RobolectricTestCase {
         objects.add(new JSONObject("{\"name\": \"Platinum Phone Cover\", \"brand\": \"Samsung\", \"category\": \"accessory\",\"stars\":2}"));
         objects.add(new JSONObject("{\"name\": \"Lame Phone\", \"brand\": \"Whatever\", \"category\": \"device\",\"stars\":1}"));
         objects.add(new JSONObject("{\"name\": \"Lame Phone cover\", \"brand\": \"Whatever\", \"category\": \"accessory\",\"stars\":1}"));
+        // Testing commas and quotes in facet values
+        objects.add(new JSONObject("{\"name\": \"Symbols Phone\", \"brand\": \"Commas' voice, Ltd\", \"category\": \"device\",\"stars\":2}"));
         JSONObject task = index.addObjects(new JSONArray(objects), /* requestOptions: */ null);
         index.waitTask(task.getString("taskID"));
 
         final Query query = new Query("phone").setFacets("brand", "category", "stars");
         final List<String> disjunctiveFacets = Collections.singletonList("brand");
         final Map<String, List<String>> refinements = new HashMap<>();
-        refinements.put("brand", Arrays.asList("Apple", "Samsung")); // disjunctive facet
+        refinements.put("brand", Arrays.asList("Apple", "Samsung", "Commas' voice, Ltd")); // disjunctive facet
         refinements.put("category", Collections.singletonList("device")); // conjunctive facet
         index.searchDisjunctiveFacetingAsync(query, disjunctiveFacets, refinements, new AssertCompletionHandler() {
             @Override
@@ -224,7 +226,7 @@ public class IndexTest extends RobolectricTestCase {
                 if (error != null) {
                     fail(error.getMessage());
                 } else {
-                    assertEquals(3, content.optInt("nbHits"));
+                    assertEquals(4, content.optInt("nbHits"));
                     JSONObject disjunctiveFacetsResult = content.optJSONObject("disjunctiveFacets");
                     assertNotNull(disjunctiveFacetsResult);
                     JSONObject brandFacetCounts = disjunctiveFacetsResult.optJSONObject("brand");
@@ -232,6 +234,7 @@ public class IndexTest extends RobolectricTestCase {
                     assertEquals(2, brandFacetCounts.optInt("Apple"));
                     assertEquals(1, brandFacetCounts.optInt("Samsung"));
                     assertEquals(1, brandFacetCounts.optInt("Whatever"));
+                    assertEquals(1, brandFacetCounts.optInt("Commas' voice, Ltd"));
                 }
             }
         });
