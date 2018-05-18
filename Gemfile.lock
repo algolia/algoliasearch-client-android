@@ -80,6 +80,8 @@ GEM
     highline (1.7.10)
     http-cookie (1.0.3)
       domain_name (~> 0.5)
+    httparty (0.16.2)
+      multi_xml (>= 0.5.2)
     httpclient (2.8.3)
     increment_semver (0.0.1)
     json (2.1.0)
@@ -148,6 +150,7 @@ PLATFORMS
 DEPENDENCIES
   fastlane
   fastlane-plugin-get_version_name
+  httparty
   increment_semver
 
 BUNDLED WITH
