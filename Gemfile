@@ -5,6 +5,7 @@ git_source(:github) {|repo_name| "https://github.com/#{repo_name}" }
 
 # gem "rails"
 gem "fastlane"
+gem "httparty"
 gem "increment_semver"
 
 plugins_path = File.join(File.dirname(__FILE__), 'fastlane', 'Pluginfile')
