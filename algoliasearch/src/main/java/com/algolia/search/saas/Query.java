@@ -48,21 +48,30 @@ import java.util.List;
 @SuppressWarnings("WeakerAccess") // Enums & Methods are voluntarily public
 public class Query extends AbstractQuery {
     public enum QueryType {
-        /** All query words are interpreted as prefixes. */
+        /**
+         * All query words are interpreted as prefixes.
+         */
         PREFIX_ALL {
-            @Override public String toString() {
+            @Override
+            public String toString() {
                 return "prefixAll";
             }
         },
-        /** Only the last word is interpreted as a prefix. */
+        /**
+         * Only the last word is interpreted as a prefix.
+         */
         PREFIX_LAST {
-            @Override public String toString() {
+            @Override
+            public String toString() {
                 return "prefixLast";
             }
         },
-        /** No query word is interpreted as a prefix. This option is not recommended. */
+        /**
+         * No query word is interpreted as a prefix. This option is not recommended.
+         */
         PREFIX_NONE {
-            @Override public String toString() {
+            @Override
+            public String toString() {
                 return "prefixNone";
             }
         };
@@ -79,22 +88,26 @@ public class Query extends AbstractQuery {
 
     public enum RemoveWordsIfNoResults {
         LAST_WORDS {
-            @Override public String toString() {
+            @Override
+            public String toString() {
                 return "lastWords";
             }
         },
         FIRST_WORDS {
-            @Override public String toString() {
+            @Override
+            public String toString() {
                 return "firstWords";
             }
         },
         ALL_OPTIONAL {
-            @Override public String toString() {
+            @Override
+            public String toString() {
                 return "allOptional";
             }
         },
         NONE {
-            @Override public String toString() {
+            @Override
+            public String toString() {
                 return "none";
             }
         };
@@ -111,22 +124,26 @@ public class Query extends AbstractQuery {
 
     public enum TypoTolerance {
         TRUE {
-            @Override public String toString() {
+            @Override
+            public String toString() {
                 return "true";
             }
         },
         FALSE {
-            @Override public String toString() {
+            @Override
+            public String toString() {
                 return "false";
             }
         },
         MIN {
-            @Override public String toString() {
+            @Override
+            public String toString() {
                 return "min";
             }
         },
         STRICT {
-            @Override public String toString() {
+            @Override
+            public String toString() {
                 return "strict";
             }
         };
@@ -143,17 +160,20 @@ public class Query extends AbstractQuery {
 
     public enum ExactOnSingleWordQuery {
         NONE {
-            @Override public String toString() {
+            @Override
+            public String toString() {
                 return "none";
             }
         },
         WORD {
-            @Override public String toString() {
+            @Override
+            public String toString() {
                 return "word";
             }
         },
         ATTRIBUTE {
-            @Override public String toString() {
+            @Override
+            public String toString() {
                 return "attribute";
             }
         };
@@ -170,17 +190,20 @@ public class Query extends AbstractQuery {
 
     public enum AlternativesAsExact {
         IGNORE_PLURALS {
-            @Override public String toString() {
+            @Override
+            public String toString() {
                 return "ignorePlurals";
             }
         },
         SINGLE_WORD_SYNONYM {
-            @Override public String toString() {
+            @Override
+            public String toString() {
                 return "singleWordSynonym";
             }
         },
         MULTI_WORDS_SYNONYM {
-            @Override public String toString() {
+            @Override
+            public String toString() {
                 return "multiWordsSynonym";
             }
         };
@@ -265,7 +288,8 @@ public class Query extends AbstractQuery {
      * symbol. For example search -engine will retrieve records containing
      * search but not engine.
      */
-    public @NonNull Query setAdvancedSyntax(Boolean enabled) {
+    public @NonNull
+    Query setAdvancedSyntax(Boolean enabled) {
         return set(KEY_ADVANCED_SYNTAX, enabled);
     }
 
@@ -279,7 +303,8 @@ public class Query extends AbstractQuery {
      * @param enabled If set to false, disable typo-tolerance on numeric tokens.
      *                Defaults to true.
      */
-    public @NonNull Query setAllowTyposOnNumericTokens(Boolean enabled) {
+    public @NonNull
+    Query setAllowTyposOnNumericTokens(Boolean enabled) {
         return set(KEY_ALLOW_TYPOS_ON_NUMERIC_TOKENS, enabled);
     }
 
@@ -293,7 +318,8 @@ public class Query extends AbstractQuery {
      * @param enabled If set to false, this query will not be taken into account in
      *                analytics feature. Defaults to true.
      */
-    public @NonNull Query setAnalytics(Boolean enabled) {
+    public @NonNull
+    Query setAnalytics(Boolean enabled) {
         return set(KEY_ANALYTICS, enabled);
     }
 
@@ -306,7 +332,8 @@ public class Query extends AbstractQuery {
     /**
      * @param tags Set the analytics tags identifying the query
      */
-    public @NonNull Query setAnalyticsTags(String... tags) {
+    public @NonNull
+    Query setAnalyticsTags(String... tags) {
         return set(KEY_ANALYTICS_TAGS, buildJSONArray(tags));
     }
 
@@ -319,7 +346,8 @@ public class Query extends AbstractQuery {
     /**
      * Search for entries around a given latitude/longitude.
      */
-    public @NonNull Query setAroundLatLng(@Nullable LatLng location) {
+    public @NonNull
+    Query setAroundLatLng(@Nullable LatLng location) {
         if (location == null) {
             return set(KEY_AROUND_LAT_LNG, null);
         } else {
@@ -327,7 +355,8 @@ public class Query extends AbstractQuery {
         }
     }
 
-    public @Nullable LatLng getAroundLatLng() {
+    public @Nullable
+    LatLng getAroundLatLng() {
         return LatLng.parse(get(KEY_AROUND_LAT_LNG));
     }
 
@@ -337,7 +366,8 @@ public class Query extends AbstractQuery {
      * Search for entries around the latitude/longitude of user (using IP
      * geolocation)
      */
-    public @NonNull Query setAroundLatLngViaIP(Boolean enabled) {
+    public @NonNull
+    Query setAroundLatLngViaIP(Boolean enabled) {
         return set(KEY_AROUND_LAT_LNG_VIA_IP, enabled);
     }
 
@@ -350,7 +380,8 @@ public class Query extends AbstractQuery {
     /**
      * Change the radius or around latitude/longitude query
      */
-    public @NonNull Query setAroundPrecision(Integer precision) {
+    public @NonNull
+    Query setAroundPrecision(Integer precision) {
         return set(KEY_AROUND_PRECISION, precision);
     }
 
@@ -366,7 +397,8 @@ public class Query extends AbstractQuery {
      *
      * @param radius the radius to set, or Query.RADIUS_ALL to disable stopping at a specific radius.
      */
-    public @NonNull Query setAroundRadius(Integer radius) {
+    public @NonNull
+    Query setAroundRadius(Integer radius) {
         if (radius == Query.RADIUS_ALL) {
             return set(KEY_AROUND_RADIUS, "all");
         }
@@ -392,7 +424,8 @@ public class Query extends AbstractQuery {
      * Deprecated, use {@link #setAttributesToHighlight(String...)}
      */
     @Deprecated
-    public @NonNull Query setAttributesToHighlight(List<String> attributes) {
+    public @NonNull
+    Query setAttributesToHighlight(List<String> attributes) {
         return set(KEY_ATTRIBUTES_TO_HIGHLIGHT, buildJSONArray((String[]) attributes.toArray()));
     }
 
@@ -400,7 +433,8 @@ public class Query extends AbstractQuery {
      * Specify the list of attribute names to highlight. By default indexed
      * attributes are highlighted.
      */
-    public @NonNull Query setAttributesToHighlight(String... attributes) {
+    public @NonNull
+    Query setAttributesToHighlight(String... attributes) {
         return set(KEY_ATTRIBUTES_TO_HIGHLIGHT, buildJSONArray(attributes));
     }
 
@@ -415,7 +449,8 @@ public class Query extends AbstractQuery {
      * Deprecated, use {@link #setAttributesToRetrieve(String...)}
      */
     @Deprecated
-    public @NonNull Query setAttributesToRetrieve(List<String> attributes) {
+    public @NonNull
+    Query setAttributesToRetrieve(List<String> attributes) {
         return set(KEY_ATTRIBUTES_TO_RETRIEVE, buildJSONArray((String[]) attributes.toArray()));
     }
 
@@ -423,7 +458,8 @@ public class Query extends AbstractQuery {
      * Specify the list of attribute names to retrieve. By default all
      * attributes are retrieved.
      */
-    public @NonNull Query setAttributesToRetrieve(String... attributes) {
+    public @NonNull
+    Query setAttributesToRetrieve(String... attributes) {
         return set(KEY_ATTRIBUTES_TO_RETRIEVE, buildJSONArray(attributes));
     }
 
@@ -444,7 +480,8 @@ public class Query extends AbstractQuery {
      * words to return (syntax is 'attributeName:nbWords'). By default no
      * snippet is computed.
      */
-    public @NonNull Query setAttributesToSnippet(String... attributes) {
+    public @NonNull
+    Query setAttributesToSnippet(String... attributes) {
         return set(KEY_ATTRIBUTES_TO_SNIPPET, buildJSONArray(attributes));
     }
 
@@ -457,7 +494,8 @@ public class Query extends AbstractQuery {
     /**
      * List of attributes on which you want to disable computation of the {@code exact} ranking criterion (must be a subset of the `searchableAttributes` index setting).
      */
-    public @NonNull Query setDisableExactOnAttributes(String... attributes) {
+    public @NonNull
+    Query setDisableExactOnAttributes(String... attributes) {
         return set(KEY_DISABLE_EXACT_ON_ATTRIBUTES, buildJSONArray(attributes));
     }
 
@@ -470,7 +508,8 @@ public class Query extends AbstractQuery {
     /**
      * List of attributes on which you want to disable typo tolerance (must be a subset of the `searchableAttributes` index setting).
      */
-    public @NonNull Query setDisableTypoToleranceOnAttributes(String... attributes) {
+    public @NonNull
+    Query setDisableTypoToleranceOnAttributes(String... attributes) {
         return set(KEY_DISABLE_TYPO_TOLERANCE_ON_ATTRIBUTES, buildJSONArray(attributes));
     }
 
@@ -488,7 +527,8 @@ public class Query extends AbstractQuery {
      * @param nbHitsToKeep Specify the maximum number of hits to keep for each distinct
      *                     value
      */
-    public @NonNull Query setDistinct(Integer nbHitsToKeep) {
+    public @NonNull
+    Query setDistinct(Integer nbHitsToKeep) {
         return set(KEY_DISTINCT, nbHitsToKeep);
     }
 
@@ -504,7 +544,8 @@ public class Query extends AbstractQuery {
      * setting can be used in this parameter. You can also use `*` to perform
      * faceting on all attributes specified in **attributesForFaceting**.
      */
-    public @NonNull Query setFacets(String... facets) {
+    public @NonNull
+    Query setFacets(String... facets) {
         return set(KEY_FACETS, buildJSONArray(facets));
     }
 
@@ -519,7 +560,8 @@ public class Query extends AbstractQuery {
      *
      * @deprecated Use {@link Query#setFilters(String)} instead.
      */
-    public @NonNull Query setFacetFilters(JSONArray filters) {
+    public @NonNull
+    Query setFacetFilters(JSONArray filters) {
         return set(KEY_FACET_FILTERS, filters);
     }
 
@@ -528,7 +570,8 @@ public class Query extends AbstractQuery {
      *
      * @deprecated Use {@link Query#getFilters()} instead.
      */
-    public @Nullable JSONArray getFacetFilters() {
+    public @Nullable
+    JSONArray getFacetFilters() {
         try {
             String value = get(KEY_FACET_FILTERS);
             if (value != null) {
@@ -542,7 +585,8 @@ public class Query extends AbstractQuery {
 
     private static final String KEY_FACETING_AFTER_DISTINCT = "facetingAfterDistinct";
 
-    public @Nullable Boolean getFacetingAfterDistinct() {
+    public @Nullable
+    Boolean getFacetingAfterDistinct() {
         return parseBoolean(get(KEY_FACETING_AFTER_DISTINCT));
     }
 
@@ -552,7 +596,8 @@ public class Query extends AbstractQuery {
      * @param enabled if {@code true}, facets will be computed after de-duplication is applied.
      * @see <a href="https://www.algolia.com/doc/api-client/android/parameters/#facetingafterdistinct">facetingAfterDistinct's documentation</a>
      */
-    public @NonNull Query setFacetingAfterDistinct(Boolean enabled) {
+    public @NonNull
+    Query setFacetingAfterDistinct(Boolean enabled) {
         return set(KEY_FACETING_AFTER_DISTINCT, enabled);
     }
 
@@ -567,7 +612,8 @@ public class Query extends AbstractQuery {
      * @param filters a string following the given syntax.
      * @return the {@link Query} for chaining.
      */
-    public @NonNull Query setFilters(String filters) {
+    public @NonNull
+    Query setFilters(String filters) {
         return set(KEY_FILTERS, filters);
     }
 
@@ -576,7 +622,8 @@ public class Query extends AbstractQuery {
      *
      * @return a String with this query's filters.
      */
-    public @Nullable String getFilters() {
+    public @Nullable
+    String getFilters() {
         return get(KEY_FILTERS);
     }
 
@@ -586,7 +633,8 @@ public class Query extends AbstractQuery {
      * if set, the result hits will contain ranking information in _rankingInfo
      * attribute.
      */
-    public @NonNull Query setGetRankingInfo(Boolean enabled) {
+    public @NonNull
+    Query setGetRankingInfo(Boolean enabled) {
         return set(KEY_GET_RANKING_INFO, enabled);
     }
 
@@ -596,21 +644,25 @@ public class Query extends AbstractQuery {
 
     private static final String KEY_HIGHLIGHT_POST_TAG = "highlightPostTag";
 
-    public @NonNull Query setHighlightPostTag(String tag) {
+    public @NonNull
+    Query setHighlightPostTag(String tag) {
         return set(KEY_HIGHLIGHT_POST_TAG, tag);
     }
 
-    public @Nullable String getHighlightPostTag() {
+    public @Nullable
+    String getHighlightPostTag() {
         return get(KEY_HIGHLIGHT_POST_TAG);
     }
 
     private static final String KEY_HIGHLIGHT_PRE_TAG = "highlightPreTag";
 
-    public @NonNull Query setHighlightPreTag(String tag) {
+    public @NonNull
+    Query setHighlightPreTag(String tag) {
         return set(KEY_HIGHLIGHT_PRE_TAG, tag);
     }
 
-    public @Nullable String getHighlightPreTag() {
+    public @Nullable
+    String getHighlightPreTag() {
         return get(KEY_HIGHLIGHT_PRE_TAG);
     }
 
@@ -619,7 +671,8 @@ public class Query extends AbstractQuery {
     /**
      * Set the number of hits per page. Defaults to 10.
      */
-    public @NonNull Query setHitsPerPage(Integer nbHitsPerPage) {
+    public @NonNull
+    Query setHitsPerPage(Integer nbHitsPerPage) {
         return set(KEY_HITS_PER_PAGE, nbHitsPerPage);
     }
 
@@ -634,11 +687,16 @@ public class Query extends AbstractQuery {
      * Can represent either a boolean or a list of language codes, see https://www.algolia.com/doc/faq/searching/how-does-ignoreplurals-work.
      */
     public static final class IgnorePlurals {
-        /** Whether plurals are ignored. */
+        /**
+         * Whether plurals are ignored.
+         */
         public final boolean enabled;
 
-        /** A list containing every active language's code. When {@code null}, all supported languages are be used. */
-        public @Nullable final List<String> languageCodes;
+        /**
+         * A list containing every active language's code. When {@code null}, all supported languages are be used.
+         */
+        public @Nullable
+        final List<String> languageCodes;
 
         /**
          * Construct an IgnorePlurals object for a boolean value.
@@ -688,7 +746,8 @@ public class Query extends AbstractQuery {
             }
         }
 
-        static @NonNull IgnorePlurals parse(@Nullable String s) {
+        static @NonNull
+        IgnorePlurals parse(@Nullable String s) {
             if (s == null || s.length() == 0 || s.equals("null")) {
                 return new IgnorePlurals(false);
             } else if ("true".equals(s) || "false".equals(s)) {
@@ -746,7 +805,8 @@ public class Query extends AbstractQuery {
      * If set to true, plural won't be considered as a typo (for example
      * car/cars will be considered as equals). Defaults to false.
      */
-    public @NonNull Query setIgnorePlurals(boolean enabled) {
+    public @NonNull
+    Query setIgnorePlurals(boolean enabled) {
         return set(KEY_IGNORE_PLURALS, enabled);
     }
 
@@ -754,7 +814,8 @@ public class Query extends AbstractQuery {
      * A list of language codes for which plural won't be considered as a typo (for example
      * car/cars will be considered as equals). If empty or null, this disables the feature.
      */
-    public @NonNull Query setIgnorePlurals(@Nullable Collection<String> languageISOCodes) {
+    public @NonNull
+    Query setIgnorePlurals(@Nullable Collection<String> languageISOCodes) {
         return set(KEY_IGNORE_PLURALS, new IgnorePlurals(languageISOCodes));
     }
 
@@ -762,11 +823,13 @@ public class Query extends AbstractQuery {
      * One or several language codes for which plural won't be considered as a typo (for example
      * car/cars will be considered as equals). If empty or null, this disables the feature.
      */
-    public @NonNull Query setIgnorePlurals(@Nullable String... languageISOCodes) {
+    public @NonNull
+    Query setIgnorePlurals(@Nullable String... languageISOCodes) {
         return set(KEY_IGNORE_PLURALS, new IgnorePlurals(languageISOCodes));
     }
 
-    public @NonNull IgnorePlurals getIgnorePlurals() {
+    public @NonNull
+    IgnorePlurals getIgnorePlurals() {
         return IgnorePlurals.parse(get(KEY_IGNORE_PLURALS));
     }
 
@@ -804,7 +867,8 @@ public class Query extends AbstractQuery {
      * Search for entries inside one area or the union of several areas
      * defined by the two extreme points of a rectangle.
      */
-    public @NonNull Query setInsideBoundingBox(@Nullable GeoRect... boxes) {
+    public @NonNull
+    Query setInsideBoundingBox(@Nullable GeoRect... boxes) {
         if (boxes == null) {
             set(KEY_INSIDE_BOUNDING_BOX, null);
         } else {
@@ -826,7 +890,8 @@ public class Query extends AbstractQuery {
         return this;
     }
 
-    public @Nullable GeoRect[] getInsideBoundingBox() {
+    public @Nullable
+    GeoRect[] getInsideBoundingBox() {
         try {
             String value = get(KEY_INSIDE_BOUNDING_BOX);
             if (value != null) {
@@ -876,7 +941,8 @@ public class Query extends AbstractQuery {
             this.points = other.points;
         }
 
-        @Override public boolean equals(Object o) {
+        @Override
+        public boolean equals(Object o) {
             if (this == o) {
                 return true;
             }
@@ -888,11 +954,13 @@ public class Query extends AbstractQuery {
             return Arrays.equals(points, polygon.points);
         }
 
-        @Override public int hashCode() {
+        @Override
+        public int hashCode() {
             return Arrays.hashCode(points);
         }
 
-        @Override public String toString() {
+        @Override
+        public String toString() {
             StringBuilder sb = new StringBuilder();
             for (LatLng point : points) {
                 if (sb.length() != 0) {
@@ -905,7 +973,8 @@ public class Query extends AbstractQuery {
             return sb.toString();
         }
 
-        public static @Nullable Polygon parse(String value) {
+        public static @Nullable
+        Polygon parse(String value) {
             if (value != null) {
                 String[] fields = value.split(",");
                 if (fields.length % 2 == 0 && fields.length / 2 >= 3) {
@@ -928,7 +997,8 @@ public class Query extends AbstractQuery {
     /**
      * Search for entries inside a given area defined by the points of a polygon.
      */
-    public @NonNull Query setInsidePolygon(@Nullable LatLng... points) {
+    public @NonNull
+    Query setInsidePolygon(@Nullable LatLng... points) {
         set(KEY_INSIDE_POLYGON, points == null ? null : new Polygon(points).toString());
         return this;
     }
@@ -936,7 +1006,8 @@ public class Query extends AbstractQuery {
     /**
      * Search for entries inside a given area defined by several polygons.
      */
-    public @NonNull Query setInsidePolygon(@Nullable Polygon... polygons) {
+    public @NonNull
+    Query setInsidePolygon(@Nullable Polygon... polygons) {
         String insidePolygon = null;
         if (polygons == null) {
             insidePolygon = null;
@@ -958,7 +1029,8 @@ public class Query extends AbstractQuery {
         return this;
     }
 
-    public @Nullable Polygon[] getInsidePolygon() {
+    public @Nullable
+    Polygon[] getInsidePolygon() {
         try {
             String value = get(KEY_INSIDE_POLYGON);
             Polygon[] polygons;
@@ -989,7 +1061,8 @@ public class Query extends AbstractQuery {
      *
      * @param n the number of hits to return. (Maximum 1000)
      */
-    public @NonNull Query setLength(Integer n) {
+    public @NonNull
+    Query setLength(Integer n) {
         return set(KEY_LENGTH, n);
     }
 
@@ -1003,7 +1076,8 @@ public class Query extends AbstractQuery {
     /**
      * Limit the number of facet values returned for each facet.
      */
-    public @NonNull Query setMaxFacetHits(Integer n) {
+    public @NonNull
+    Query setMaxFacetHits(Integer n) {
         return set(KEY_MAX_FACET_HITS, n);
     }
 
@@ -1016,7 +1090,8 @@ public class Query extends AbstractQuery {
     /**
      * Limit the number of facet values returned for each facet.
      */
-    public @NonNull Query setMaxValuesPerFacet(Integer n) {
+    public @NonNull
+    Query setMaxValuesPerFacet(Integer n) {
         return set(KEY_MAX_VALUES_PER_FACET, n);
     }
 
@@ -1030,7 +1105,8 @@ public class Query extends AbstractQuery {
      * Specify the minimum number of characters in a query word to accept one
      * typo in this word. Defaults to 3.
      */
-    public @NonNull Query setMinimumAroundRadius(Integer minimumAroundRadius) {
+    public @NonNull
+    Query setMinimumAroundRadius(Integer minimumAroundRadius) {
         return set(KEY_MINIMUM_AROUND_RADIUS, minimumAroundRadius);
     }
 
@@ -1044,7 +1120,8 @@ public class Query extends AbstractQuery {
      * Specify the minimum number of characters in a query word to accept one
      * typo in this word. Defaults to 3.
      */
-    public @NonNull Query setMinProximity(Integer nbChars) {
+    public @NonNull
+    Query setMinProximity(Integer nbChars) {
         return set(KEY_MIN_PROXIMITY, nbChars);
     }
 
@@ -1058,7 +1135,8 @@ public class Query extends AbstractQuery {
      * Specify the minimum number of characters in a query word to accept one
      * typo in this word. Defaults to 3.
      */
-    public @NonNull Query setMinWordSizefor1Typo(Integer nbChars) {
+    public @NonNull
+    Query setMinWordSizefor1Typo(Integer nbChars) {
         return set(KEY_MIN_WORD_SIZE_FOR_1_TYPO, nbChars);
     }
 
@@ -1072,7 +1150,8 @@ public class Query extends AbstractQuery {
      * Specify the minimum number of characters in a query word to accept one
      * typo in this word. Defaults to 3.
      */
-    public @NonNull Query setMinWordSizefor2Typos(Integer nbChars) {
+    public @NonNull
+    Query setMinWordSizefor2Typos(Integer nbChars) {
         return set(KEY_MIN_WORD_SIZE_FOR_2_TYPOS, nbChars);
     }
 
@@ -1087,7 +1166,8 @@ public class Query extends AbstractQuery {
      *
      * @deprecated Use {@link Query#setFilters(String)} instead.
      */
-    public @NonNull Query setNumericFilters(JSONArray filters) {
+    public @NonNull
+    Query setNumericFilters(JSONArray filters) {
         return set(KEY_NUMERIC_FILTERS, filters);
     }
 
@@ -1096,7 +1176,8 @@ public class Query extends AbstractQuery {
      *
      * @deprecated Use {@link Query#getFilters()} instead.
      */
-    public @Nullable JSONArray getNumericFilters() {
+    public @Nullable
+    JSONArray getNumericFilters() {
         try {
             String value = get(KEY_NUMERIC_FILTERS);
             if (value != null) {
@@ -1116,7 +1197,8 @@ public class Query extends AbstractQuery {
      *
      * @param offset a zero-based offset.
      */
-    public @NonNull Query setOffset(int offset) {
+    public @NonNull
+    Query setOffset(int offset) {
         return set(KEY_OFFSET, offset);
     }
 
@@ -1127,12 +1209,13 @@ public class Query extends AbstractQuery {
     private static final String KEY_OPTIONAL_WORDS = "optionalWords";
 
     /**
-     * Set the list of words that should be considered as optional when found in
+     * Set a list of words that should be considered as optional when found in
      * the query.
      *
-     * @param words The list of optional words, comma separated.
+     * @param words The list of optional words.
      */
-    public @NonNull Query setOptionalWords(String... words) {
+    public @NonNull
+    Query setOptionalWords(String... words) {
         return set(KEY_OPTIONAL_WORDS, buildJSONArray(words));
     }
 
@@ -1140,12 +1223,29 @@ public class Query extends AbstractQuery {
         return parseArray(get(KEY_OPTIONAL_WORDS));
     }
 
+    private static final String KEY_OPTIONAL_FILTERS = "optionalFilters";
+
+    /**
+     * Set a list of filters for ranking purposes, to rank higher records that contain the filter(s).
+     *
+     * @param filters The list of optional filters.
+     */
+    public @NonNull
+    Query setOptionalFilters(String... filters) {
+        return set(KEY_OPTIONAL_FILTERS, buildJSONArray(filters));
+    }
+
+    public String[] getOptionalFilters() {
+        return parseArray(get(KEY_OPTIONAL_FILTERS));
+    }
+
     private static final String KEY_PAGE = "page";
 
     /**
      * Set the page to retrieve (zero base). Defaults to 0.
      */
-    public @NonNull Query setPage(Integer page) {
+    public @NonNull
+    Query setPage(Integer page) {
         return set(KEY_PAGE, page);
     }
 
@@ -1162,7 +1262,8 @@ public class Query extends AbstractQuery {
      *                and includes it when computing the 90% and 99% percentiles, available in your
      *                Algolia dashboard. When `false`, the search query is excluded from percentile computation.
      */
-    public @NonNull Query setPercentileComputation(boolean enabled) {
+    public @NonNull
+    Query setPercentileComputation(boolean enabled) {
         return set(KEY_PERCENTILE_COMPUTATION, enabled);
     }
 
@@ -1175,11 +1276,13 @@ public class Query extends AbstractQuery {
     /**
      * Set the full text query
      */
-    public @NonNull Query setQuery(CharSequence query) {
+    public @NonNull
+    Query setQuery(CharSequence query) {
         return set(KEY_QUERY, query);
     }
 
-    public @Nullable String getQuery() {
+    public @Nullable
+    String getQuery() {
         return get(KEY_QUERY);
     }
 
@@ -1188,12 +1291,14 @@ public class Query extends AbstractQuery {
     /**
      * Select how the query words are interpreted:
      */
-    public @NonNull Query setQueryType(@Nullable QueryType type) {
+    public @NonNull
+    Query setQueryType(@Nullable QueryType type) {
         set(KEY_QUERY_TYPE, type == null ? null : type.toString());
         return this;
     }
 
-    public @Nullable QueryType getQueryType() {
+    public @Nullable
+    QueryType getQueryType() {
         String value = get(KEY_QUERY_TYPE);
         return value == null ? null : QueryType.fromString(value);
     }
@@ -1207,14 +1312,16 @@ public class Query extends AbstractQuery {
      * @param removeStopWords Boolean: enable or disable all 41 supported languages,
      *                        String: comma separated list of languages you have in your record (using language iso code).
      */
-    public @NonNull Query setRemoveStopWords(Object removeStopWords) throws AlgoliaException {
+    public @NonNull
+    Query setRemoveStopWords(Object removeStopWords) throws AlgoliaException {
         if (removeStopWords instanceof Boolean || removeStopWords instanceof String) {
             return set(KEY_REMOVE_STOP_WORDS, removeStopWords);
         }
         throw new AlgoliaException("removeStopWords should be a Boolean or a String.");
     }
 
-    public @Nullable Object getRemoveStopWords() {
+    public @Nullable
+    Object getRemoveStopWords() {
         final String value = get(KEY_REMOVE_STOP_WORDS);
         if (value == null) {
             return null;
@@ -1231,12 +1338,14 @@ public class Query extends AbstractQuery {
     /**
      * Select the strategy to adopt when a query does not return any result.
      */
-    public @NonNull Query setRemoveWordsIfNoResults(@Nullable RemoveWordsIfNoResults type) {
+    public @NonNull
+    Query setRemoveWordsIfNoResults(@Nullable RemoveWordsIfNoResults type) {
         set(KEY_REMOVE_WORDS_IF_NO_RESULT, type == null ? null : type.toString());
         return this;
     }
 
-    public @Nullable RemoveWordsIfNoResults getRemoveWordsIfNoResults() {
+    public @Nullable
+    RemoveWordsIfNoResults getRemoveWordsIfNoResults() {
         String value = get(KEY_REMOVE_WORDS_IF_NO_RESULT);
         return value == null ? null : RemoveWordsIfNoResults.fromString(value);
     }
@@ -1248,7 +1357,8 @@ public class Query extends AbstractQuery {
      *                replaced by the matched synonym in highlight result. Default
      *                to true.
      */
-    public @NonNull Query setReplaceSynonymsInHighlight(Boolean enabled) {
+    public @NonNull
+    Query setReplaceSynonymsInHighlight(Boolean enabled) {
         return set(KEY_REPLACE_SYNONYMS_IN_HIGHLIGHT, enabled);
     }
 
@@ -1264,7 +1374,8 @@ public class Query extends AbstractQuery {
      * @param restrict if {@code false}, all array items are highlighted/snippeted. When true,
      *                 only array items that matched at least partially are highlighted/snippeted.
      */
-    public @NonNull Query setRestrictHighlightAndSnippetArrays(boolean restrict) {
+    public @NonNull
+    Query setRestrictHighlightAndSnippetArrays(boolean restrict) {
         return set(KEY_RESTRICT_HIGHLIGHT_AND_SNIPPET, restrict);
     }
 
@@ -1282,7 +1393,8 @@ public class Query extends AbstractQuery {
      * encodeURIComponent("[\"name\",\"address\"]")). By default, all attributes
      * specified in `searchableAttributes` settings are used to search.
      */
-    public @NonNull Query setRestrictSearchableAttributes(String... attributes) {
+    public @NonNull
+    Query setRestrictSearchableAttributes(String... attributes) {
         return set(KEY_RESTRICT_SEARCHABLE_ATTRIBUTES, buildJSONArray(attributes));
     }
 
@@ -1300,11 +1412,13 @@ public class Query extends AbstractQuery {
      *
      * @param ruleContexts one or several contexts.
      */
-    public @NonNull Query setRuleContexts(String... ruleContexts) {
+    public @NonNull
+    Query setRuleContexts(String... ruleContexts) {
         return set(KEY_RULE_CONTEXTS, buildJSONArray(ruleContexts));
     }
 
-    public @Nullable String[] getRuleContexts() {
+    public @Nullable
+    String[] getRuleContexts() {
         return parseArray(get(KEY_RULE_CONTEXTS));
     }
 
@@ -1314,11 +1428,13 @@ public class Query extends AbstractQuery {
      * Specify the string that is used as an ellipsis indicator when a snippet
      * is truncated (defaults to the empty string).
      */
-    public @NonNull Query setSnippetEllipsisText(String snippetEllipsisText) {
+    public @NonNull
+    Query setSnippetEllipsisText(String snippetEllipsisText) {
         return set(KEY_SNIPPET_ELLIPSIS_TEXT, snippetEllipsisText);
     }
 
-    public @Nullable String getSnippetEllipsisText() {
+    public @Nullable
+    String getSnippetEllipsisText() {
         return get(KEY_SNIPPET_ELLIPSIS_TEXT);
     }
 
@@ -1331,12 +1447,27 @@ public class Query extends AbstractQuery {
      * @param order supported options are `count` (sort by decreasing count) and `alpha` (sort by increasing alphabetical order)
      * @return This instance (used to chain calls).
      */
-    public @NonNull Query setSortFacetValuesBy(SortFacetValuesBy order) {
+    public @NonNull
+    Query setSortFacetValuesBy(SortFacetValuesBy order) {
         return set(KEY_SORT_FACET_VALUES_BY, order.toString());
     }
 
     public SortFacetValuesBy getSortFacetValuesBy() {
         return SortFacetValuesBy.fromString(get(KEY_SORT_FACET_VALUES_BY));
+    }
+
+    private static final String KEY_SUM_OR_FILTERS_SCORES = "sumOrFiltersScores";
+
+    /**
+     * @param enabled False means that the total score of a record is the maximum score of an individual filter. Setting it to true changes the total score by adding together the scores of each filter found. Defaults to false.
+     */
+    public @NonNull
+    Query setSumOrFiltersScores(Boolean enabled) {
+        return set(KEY_SUM_OR_FILTERS_SCORES, enabled);
+    }
+
+    public Boolean getSumOrFiltersScores() {
+        return parseBoolean(get(KEY_SUM_OR_FILTERS_SCORES));
     }
 
     private static final String KEY_SYNONYMS = "synonyms";
@@ -1345,7 +1476,8 @@ public class Query extends AbstractQuery {
      * @param enabled If set to false, this query will not use synonyms defined in
      *                configuration. Defaults to true.
      */
-    public @NonNull Query setSynonyms(Boolean enabled) {
+    public @NonNull
+    Query setSynonyms(Boolean enabled) {
         return set(KEY_SYNONYMS, enabled);
     }
 
@@ -1355,11 +1487,13 @@ public class Query extends AbstractQuery {
 
     private static final String KEY_TAG_FILTERS = "tagFilters";
 
-    public @NonNull Query setTagFilters(JSONArray tagFilters) {
+    public @NonNull
+    Query setTagFilters(JSONArray tagFilters) {
         return set(KEY_TAG_FILTERS, tagFilters);
     }
 
-    public @Nullable JSONArray getTagFilters() {
+    public @Nullable
+    JSONArray getTagFilters() {
         try {
             String value = get(KEY_TAG_FILTERS);
             if (value != null) {
@@ -1373,24 +1507,28 @@ public class Query extends AbstractQuery {
 
     private static final String KEY_TYPO_TOLERANCE = "typoTolerance";
 
-    public @NonNull Query setTypoTolerance(@Nullable TypoTolerance type) {
+    public @NonNull
+    Query setTypoTolerance(@Nullable TypoTolerance type) {
         set(KEY_TYPO_TOLERANCE, type == null ? null : type.toString());
         return this;
     }
 
-    public @Nullable TypoTolerance getTypoTolerance() {
+    public @Nullable
+    TypoTolerance getTypoTolerance() {
         String value = get(KEY_TYPO_TOLERANCE);
         return value == null ? null : TypoTolerance.fromString(value);
     }
 
     private static final String KEY_EXACT_ON_SINGLE_WORD_QUERY = "exactOnSingleWordQuery";
 
-    public @NonNull Query setExactOnSingleWordQuery(@Nullable ExactOnSingleWordQuery type) {
+    public @NonNull
+    Query setExactOnSingleWordQuery(@Nullable ExactOnSingleWordQuery type) {
         set(KEY_EXACT_ON_SINGLE_WORD_QUERY, type == null ? null : type.toString());
         return this;
     }
 
-    public @Nullable ExactOnSingleWordQuery getExactOnSingleWordQuery() {
+    public @Nullable
+    ExactOnSingleWordQuery getExactOnSingleWordQuery() {
         String value = get(KEY_EXACT_ON_SINGLE_WORD_QUERY);
         return value == null ? null : ExactOnSingleWordQuery.fromString(value);
     }
@@ -1401,7 +1539,8 @@ public class Query extends AbstractQuery {
      * @param enabled If set to false, rules processing is disabled: no rule will match the query.
      *                Defaults to true.
      */
-    public @NonNull Query setEnableRules(Boolean enabled) {
+    public @NonNull
+    Query setEnableRules(Boolean enabled) {
         return set(KEY_ENABLE_RULES, enabled);
     }
 
@@ -1412,7 +1551,8 @@ public class Query extends AbstractQuery {
 
     private static final String KEY_ALTERNATIVES_AS_EXACT = "alternativesAsExact";
 
-    public @NonNull Query setAlternativesAsExact(@Nullable AlternativesAsExact[] types) {
+    public @NonNull
+    Query setAlternativesAsExact(@Nullable AlternativesAsExact[] types) {
         if (types == null) {
             set(KEY_ALTERNATIVES_AS_EXACT, null);
         } else {
@@ -1425,7 +1565,8 @@ public class Query extends AbstractQuery {
         return this;
     }
 
-    public @Nullable AlternativesAsExact[] getAlternativesAsExact() {
+    public @Nullable
+    AlternativesAsExact[] getAlternativesAsExact() {
         String alternativesStr = get(KEY_ALTERNATIVES_AS_EXACT);
         if (alternativesStr == null) {
             return null;
@@ -1447,7 +1588,8 @@ public class Query extends AbstractQuery {
      * <p>
      * By default, all fields are returned. If this parameter is specified, only the fields explicitly listed will be returned, unless * is used, in which case all fields are returned. Specifying an empty list or unknown field names is an error.
      */
-    public @NonNull Query setResponseFields(String... attributes) {
+    public @NonNull
+    Query setResponseFields(String... attributes) {
         return set(KEY_RESPONSE_FIELDS, buildJSONArray(attributes));
     }
 
@@ -1467,7 +1609,8 @@ public class Query extends AbstractQuery {
      * @param queryParameters URL query parameter string.
      * @return The parsed query object.
      */
-    protected static @NonNull Query parse(@NonNull String queryParameters) {
+    protected static @NonNull
+    Query parse(@NonNull String queryParameters) {
         Query query = new Query();
         query.parseFrom(queryParameters);
         return query;
@@ -1487,7 +1630,8 @@ public class Query extends AbstractQuery {
      * @return This instance (used to chain calls).
      */
     @Override
-    public @NonNull Query set(@NonNull String name, @Nullable Object value) {
+    public @NonNull
+    Query set(@NonNull String name, @Nullable Object value) {
         return (Query) super.set(name, value);
     }
 }

@@ -50,7 +50,9 @@ public class QueryTest extends RobolectricTestCase {
     // Build & parse
     // ----------------------------------------------------------------------
 
-    /** Test serializing a query into a URL query string. */
+    /**
+     * Test serializing a query into a URL query string.
+     */
     @Test
     public void build() {
         Query query = new Query();
@@ -61,7 +63,9 @@ public class QueryTest extends RobolectricTestCase {
         assertEquals("a=A&b=B&c=C", queryString);
     }
 
-    /** Test parsing a query from a URL query string. */
+    /**
+     * Test parsing a query from a URL query string.
+     */
     @Test
     public void parse() {
         // Build the URL for a query.
@@ -74,7 +78,9 @@ public class QueryTest extends RobolectricTestCase {
         assertEquals(query, Query.parse(queryString));
     }
 
-    /** Test that non-ASCII and special characters are escaped. */
+    /**
+     * Test that non-ASCII and special characters are escaped.
+     */
     @Test
     public void escape() {
         Query query = new Query();
@@ -91,7 +97,9 @@ public class QueryTest extends RobolectricTestCase {
     // Low-level
     // ----------------------------------------------------------------------
 
-    /** Test low-level accessors. */
+    /**
+     * Test low-level accessors.
+     */
     @Test
     public void getSet() {
         Query query = new Query();
@@ -304,16 +312,26 @@ public class QueryTest extends RobolectricTestCase {
     }
 
     @Test
+    public void sumOrFiltersScores() {
+        Query query = new Query();
+        assertNull(query.getSumOrFiltersScores());
+        query.setSumOrFiltersScores(true);
+        assertEquals(Boolean.TRUE, query.getSumOrFiltersScores());
+        assertEquals("true", query.get("sumOrFiltersScores"));
+        assertEquals(query.getSumOrFiltersScores(), Query.parse(query.build()).getSumOrFiltersScores());
+    }
+
+    @Test
     public void attributesToHighlight() {
         Query query = new Query();
         assertNull(query.getAttributesToHighlight());
         query.setAttributesToHighlight("foo", "bar");
-        assertArrayEquals(new String[]{ "foo", "bar" }, query.getAttributesToHighlight());
+        assertArrayEquals(new String[]{"foo", "bar"}, query.getAttributesToHighlight());
         assertEquals("[\"foo\",\"bar\"]", query.get("attributesToHighlight"));
         assertArrayEquals(query.getAttributesToHighlight(), Query.parse(query.build()).getAttributesToHighlight());
 
         query.setAttributesToHighlight(Arrays.asList("foo", "bar"));
-        assertArrayEquals(new String[]{ "foo", "bar" }, query.getAttributesToHighlight());
+        assertArrayEquals(new String[]{"foo", "bar"}, query.getAttributesToHighlight());
         assertEquals("[\"foo\",\"bar\"]", query.get("attributesToHighlight"));
         assertArrayEquals(query.getAttributesToHighlight(), Query.parse(query.build()).getAttributesToHighlight());
     }
@@ -323,12 +341,12 @@ public class QueryTest extends RobolectricTestCase {
         Query query = new Query();
         assertNull(query.getAttributesToRetrieve());
         query.setAttributesToRetrieve("foo", "bar");
-        assertArrayEquals(new String[]{ "foo", "bar" }, query.getAttributesToRetrieve());
+        assertArrayEquals(new String[]{"foo", "bar"}, query.getAttributesToRetrieve());
         assertEquals("[\"foo\",\"bar\"]", query.get("attributesToRetrieve"));
         assertArrayEquals(query.getAttributesToRetrieve(), Query.parse(query.build()).getAttributesToRetrieve());
 
         query.setAttributesToRetrieve(Arrays.asList("foo", "bar"));
-        assertArrayEquals(new String[]{ "foo", "bar" }, query.getAttributesToRetrieve());
+        assertArrayEquals(new String[]{"foo", "bar"}, query.getAttributesToRetrieve());
         assertEquals("[\"foo\",\"bar\"]", query.get("attributesToRetrieve"));
         assertArrayEquals(query.getAttributesToRetrieve(), Query.parse(query.build()).getAttributesToRetrieve());
     }
@@ -338,7 +356,7 @@ public class QueryTest extends RobolectricTestCase {
         Query query = new Query();
         assertNull(query.getAttributesToSnippet());
         query.setAttributesToSnippet("foo:3", "bar:7");
-        assertArrayEquals(new String[]{ "foo:3", "bar:7" }, query.getAttributesToSnippet());
+        assertArrayEquals(new String[]{"foo:3", "bar:7"}, query.getAttributesToSnippet());
         assertEquals("[\"foo:3\",\"bar:7\"]", query.get("attributesToSnippet"));
         assertArrayEquals(query.getAttributesToSnippet(), Query.parse(query.build()).getAttributesToSnippet());
     }
@@ -446,7 +464,7 @@ public class QueryTest extends RobolectricTestCase {
         Query query = new Query();
         assertNull(query.getFacets());
         query.setFacets("foo", "bar");
-        assertArrayEquals(new String[]{ "foo", "bar" }, query.getFacets());
+        assertArrayEquals(new String[]{"foo", "bar"}, query.getFacets());
         assertEquals("[\"foo\",\"bar\"]", query.get("facets"));
         Query query2 = Query.parse(query.build());
         assertArrayEquals(query.getFacets(), query2.getFacets());
@@ -468,9 +486,19 @@ public class QueryTest extends RobolectricTestCase {
         Query query = new Query();
         assertNull(query.getOptionalWords());
         query.setOptionalWords("foo", "bar");
-        assertArrayEquals(new String[]{ "foo", "bar" }, query.getOptionalWords());
+        assertArrayEquals(new String[]{"foo", "bar"}, query.getOptionalWords());
         assertEquals("[\"foo\",\"bar\"]", query.get("optionalWords"));
         assertArrayEquals(query.getOptionalWords(), Query.parse(query.build()).getOptionalWords());
+    }
+
+    @Test
+    public void optionalFilters() {
+        Query query = new Query();
+        assertNull(query.getOptionalFilters());
+        query.setOptionalFilters("foo", "bar");
+        assertArrayEquals(new String[]{"foo", "bar"}, query.getOptionalFilters());
+        assertEquals("[\"foo\",\"bar\"]", query.get("optionalFilters"));
+        assertArrayEquals(query.getOptionalFilters(), Query.parse(query.build()).getOptionalFilters());
     }
 
     @Test
@@ -498,7 +526,7 @@ public class QueryTest extends RobolectricTestCase {
         Query query = new Query();
         assertNull(query.getRestrictSearchableAttributes());
         query.setRestrictSearchableAttributes("foo", "bar");
-        assertArrayEquals(new String[]{ "foo", "bar" }, query.getRestrictSearchableAttributes());
+        assertArrayEquals(new String[]{"foo", "bar"}, query.getRestrictSearchableAttributes());
         assertEquals("[\"foo\",\"bar\"]", query.get("restrictSearchableAttributes"));
         assertArrayEquals(query.getRestrictSearchableAttributes(), Query.parse(query.build()).getRestrictSearchableAttributes());
     }
@@ -539,7 +567,7 @@ public class QueryTest extends RobolectricTestCase {
         Query query = new Query();
         assertNull(query.getAnalyticsTags());
         query.setAnalyticsTags("foo", "bar");
-        assertArrayEquals(new String[]{ "foo", "bar" }, query.getAnalyticsTags());
+        assertArrayEquals(new String[]{"foo", "bar"}, query.getAnalyticsTags());
         assertEquals("[\"foo\",\"bar\"]", query.get("analyticsTags"));
         Query query2 = Query.parse(query.build());
         assertArrayEquals(query.getAnalyticsTags(), query2.getAnalyticsTags());
@@ -550,7 +578,7 @@ public class QueryTest extends RobolectricTestCase {
         Query query = new Query();
         assertNull(query.getDisableExactOnAttributes());
         query.setDisableExactOnAttributes("foo", "bar");
-        assertArrayEquals(new String[]{ "foo", "bar" }, query.getDisableExactOnAttributes());
+        assertArrayEquals(new String[]{"foo", "bar"}, query.getDisableExactOnAttributes());
         assertEquals("[\"foo\",\"bar\"]", query.get("disableExactOnAttributes"));
         Query query2 = Query.parse(query.build());
         assertArrayEquals(query.getDisableExactOnAttributes(), query2.getDisableExactOnAttributes());
@@ -561,7 +589,7 @@ public class QueryTest extends RobolectricTestCase {
         Query query = new Query();
         assertNull(query.getDisableTypoToleranceOnAttributes());
         query.setDisableTypoToleranceOnAttributes("foo", "bar");
-        assertArrayEquals(new String[]{ "foo", "bar" }, query.getDisableTypoToleranceOnAttributes());
+        assertArrayEquals(new String[]{"foo", "bar"}, query.getDisableTypoToleranceOnAttributes());
         assertEquals("[\"foo\",\"bar\"]", query.get("disableTypoToleranceOnAttributes"));
         Query query2 = Query.parse(query.build());
         assertArrayEquals(query.getDisableTypoToleranceOnAttributes(), query2.getDisableTypoToleranceOnAttributes());
@@ -615,12 +643,12 @@ public class QueryTest extends RobolectricTestCase {
         assertNull(query.getInsideBoundingBox());
         final Query.GeoRect box1 = new Query.GeoRect(new Query.LatLng(11.111111, 22.222222), new Query.LatLng(33.333333, 44.444444));
         query.setInsideBoundingBox(box1);
-        assertArrayEquals(new Query.GeoRect[]{ box1 }, query.getInsideBoundingBox());
+        assertArrayEquals(new Query.GeoRect[]{box1}, query.getInsideBoundingBox());
         assertEquals("11.111111,22.222222,33.333333,44.444444", query.get("insideBoundingBox"));
         assertArrayEquals(query.getInsideBoundingBox(), Query.parse(query.build()).getInsideBoundingBox());
 
         final Query.GeoRect box2 = new Query.GeoRect(new Query.LatLng(-55.555555, -66.666666), new Query.LatLng(-77.777777, -88.888888));
-        final Query.GeoRect[] boxes = { box1, box2 };
+        final Query.GeoRect[] boxes = {box1, box2};
         query.setInsideBoundingBox(boxes);
         assertArrayEquals(boxes, query.getInsideBoundingBox());
         assertEquals("11.111111,22.222222,33.333333,44.444444,-55.555555,-66.666666,-77.777777,-88.888888", query.get("insideBoundingBox"));
@@ -857,7 +885,7 @@ public class QueryTest extends RobolectricTestCase {
         Query query = new Query();
         assertNull(query.getRuleContexts());
         query.setRuleContexts("foo", "bar");
-        assertArrayEquals(new String[]{ "foo", "bar" }, query.getRuleContexts());
+        assertArrayEquals(new String[]{"foo", "bar"}, query.getRuleContexts());
         assertEquals("[\"foo\",\"bar\"]", query.get("ruleContexts"));
         assertArrayEquals(query.getRuleContexts(), Query.parse(query.build()).getRuleContexts());
     }
