@@ -1140,6 +1140,22 @@ public class Query extends AbstractQuery {
         return parseArray(get(KEY_OPTIONAL_WORDS));
     }
 
+    private static final String KEY_OPTIONAL_FILTERS = "optionalFilters";
+
+    /**
+     * Set a list of filters for ranking purposes, to rank higher records that contain the filter(s).
+     *
+     * @param filters The list of optional filters.
+     */
+    public @NonNull
+    Query setOptionalFilters(String... filters) {
+        return set(KEY_OPTIONAL_FILTERS, buildJSONArray(filters));
+    }
+
+    public String[] getOptionalFilters() {
+        return parseArray(get(KEY_OPTIONAL_FILTERS));
+    }
+
     private static final String KEY_PAGE = "page";
 
     /**
@@ -1337,6 +1353,20 @@ public class Query extends AbstractQuery {
 
     public SortFacetValuesBy getSortFacetValuesBy() {
         return SortFacetValuesBy.fromString(get(KEY_SORT_FACET_VALUES_BY));
+    }
+
+    private static final String KEY_SUM_OR_FILTERS_SCORES = "sumOrFiltersScores";
+
+    /**
+     * @param enabled False means that the total score of a record is the maximum score of an individual filter. Setting it to true changes the total score by adding together the scores of each filter found. Defaults to false.
+     */
+    public @NonNull
+    Query setSumOrFiltersScores(Boolean enabled) {
+        return set(KEY_SUM_OR_FILTERS_SCORES, enabled);
+    }
+
+    public Boolean getSumOrFiltersScores() {
+        return parseBoolean(get(KEY_SUM_OR_FILTERS_SCORES));
     }
 
     private static final String KEY_SYNONYMS = "synonyms";

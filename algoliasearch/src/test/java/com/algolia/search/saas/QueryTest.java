@@ -302,6 +302,16 @@ public class QueryTest extends RobolectricTestCase {
         assertEquals("true", query.get("synonyms"));
         assertEquals(query.getSynonyms(), Query.parse(query.build()).getSynonyms());
     }
+    
+    @Test
+    public void sumOrFiltersScores() {
+        Query query = new Query();
+        assertNull(query.getSumOrFiltersScores());
+        query.setSumOrFiltersScores(true);
+        assertEquals(Boolean.TRUE, query.getSumOrFiltersScores());
+        assertEquals("true", query.get("sumOrFiltersScores"));
+        assertEquals(query.getSumOrFiltersScores(), Query.parse(query.build()).getSumOrFiltersScores());
+    }
 
     @Test
     public void attributesToHighlight() {
@@ -471,6 +481,16 @@ public class QueryTest extends RobolectricTestCase {
         assertArrayEquals(new String[]{ "foo", "bar" }, query.getOptionalWords());
         assertEquals("[\"foo\",\"bar\"]", query.get("optionalWords"));
         assertArrayEquals(query.getOptionalWords(), Query.parse(query.build()).getOptionalWords());
+    }
+
+    @Test
+    public void optionalFilters() {
+        Query query = new Query();
+        assertNull(query.getOptionalFilters());
+        query.setOptionalFilters("foo", "bar");
+        assertArrayEquals(new String[]{ "foo", "bar" }, query.getOptionalFilters());
+        assertEquals("[\"foo\",\"bar\"]", query.get("optionalFilters"));
+        assertArrayEquals(query.getOptionalFilters(), Query.parse(query.build()).getOptionalFilters());
     }
 
     @Test
