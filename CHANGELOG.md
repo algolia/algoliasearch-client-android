@@ -1,5 +1,8 @@
 # Changelog
 
+## 3.22.13
+* **Query:** Implement optionalFilters/sumOrFiltersScores ([#546](https://github.com/algolia/algoliasearch-client-android/issues/546)) ([0d7f16f](https://github.com/algolia/algoliasearch-client-android/commit/0d7f16f)), closes [algolia/algoliasearch-client-swift#557](https://github.com/algolia/algoliasearch-client-swift/issues/557)
+
 ## 3.21.13
 
 ## 3.21.12
