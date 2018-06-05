@@ -1127,10 +1127,10 @@ public class Query extends AbstractQuery {
     private static final String KEY_OPTIONAL_WORDS = "optionalWords";
 
     /**
-     * Set the list of words that should be considered as optional when found in
+     * Set a list of words that should be considered as optional when found in
      * the query.
      *
-     * @param words The list of optional words, comma separated.
+     * @param words The list of optional words.
      */
     public @NonNull Query setOptionalWords(String... words) {
         return set(KEY_OPTIONAL_WORDS, buildJSONArray(words));
