@@ -29,9 +29,6 @@ This project is open-source under the [MIT License](https://github.com/algolia/a
 You can find the full reference on [Algolia's website](https://www.algolia.com/doc/api-client/android/).
 
 
-## Table of Contents
-
-
 
 1. **[Contributing](#contributing)**
 
@@ -164,8 +161,6 @@ index.searchAsync(new Query("jimmie paint"), completionHandler);
 
 
 
-
-
 ### Search
 
 - [Search an index](https://algolia.com/doc/api-reference/api-methods/search/?language=android)
@@ -176,18 +171,15 @@ index.searchAsync(new Query("jimmie paint"), completionHandler);
 
 
 
-
 ### Indexing
 
 - [Add objects](https://algolia.com/doc/api-reference/api-methods/add-objects/?language=android)
 - [Update objects](https://algolia.com/doc/api-reference/api-methods/update-objects/?language=android)
 - [Partial update objects](https://algolia.com/doc/api-reference/api-methods/partial-update-objects/?language=android)
 - [Delete objects](https://algolia.com/doc/api-reference/api-methods/delete-objects/?language=android)
-- [Delete by query](https://algolia.com/doc/api-reference/api-methods/delete-by-query/?language=android)
+- [Delete by](https://algolia.com/doc/api-reference/api-methods/delete-by/?language=android)
 - [Get objects](https://algolia.com/doc/api-reference/api-methods/get-objects/?language=android)
 - [Custom batch](https://algolia.com/doc/api-reference/api-methods/batch/?language=android)
-- [Wait for operations](https://algolia.com/doc/api-reference/api-methods/wait-task/?language=android)
-
 
 
 
@@ -196,7 +188,6 @@ index.searchAsync(new Query("jimmie paint"), completionHandler);
 
 - [Get settings](https://algolia.com/doc/api-reference/api-methods/get-settings/?language=android)
 - [Set settings](https://algolia.com/doc/api-reference/api-methods/set-settings/?language=android)
-
 
 
 
@@ -212,17 +203,63 @@ index.searchAsync(new Query("jimmie paint"), completionHandler);
 
 
 
+### API Keys
+
+- [Create secured API Key](https://algolia.com/doc/api-reference/api-methods/generate-secured-api-key/?language=android)
+- [Add API Key](https://algolia.com/doc/api-reference/api-methods/add-api-key/?language=android)
+- [Update API Key](https://algolia.com/doc/api-reference/api-methods/update-api-key/?language=android)
+- [Delete API Key](https://algolia.com/doc/api-reference/api-methods/delete-api-key/?language=android)
+- [Get API Key permissions](https://algolia.com/doc/api-reference/api-methods/get-api-key/?language=android)
+- [List API Keys](https://algolia.com/doc/api-reference/api-methods/list-api-keys/?language=android)
 
 
 
 
+### Synonyms
+
+- [Save synonym](https://algolia.com/doc/api-reference/api-methods/save-synonym/?language=android)
+- [Batch synonyms](https://algolia.com/doc/api-reference/api-methods/batch-synonyms/?language=android)
+- [Delete synonym](https://algolia.com/doc/api-reference/api-methods/delete-synonym/?language=android)
+- [Clear all synonyms](https://algolia.com/doc/api-reference/api-methods/clear-synonyms/?language=android)
+- [Get synonym](https://algolia.com/doc/api-reference/api-methods/get-synonym/?language=android)
+- [Search synonyms](https://algolia.com/doc/api-reference/api-methods/search-synonyms/?language=android)
+- [Export Synonyms](https://algolia.com/doc/api-reference/api-methods/export-synonyms/?language=android)
 
 
 
 
+### Query rules
+
+- [Save a single rule](https://algolia.com/doc/api-reference/api-methods/rules-save/?language=android)
+- [Batch save multiple rules](https://algolia.com/doc/api-reference/api-methods/rules-save-batch/?language=android)
+- [Get a rule](https://algolia.com/doc/api-reference/api-methods/rules-get/?language=android)
+- [Delete a single rule](https://algolia.com/doc/api-reference/api-methods/rules-delete/?language=android)
+- [Clear all rules](https://algolia.com/doc/api-reference/api-methods/rules-clear/?language=android)
+- [Search for rules](https://algolia.com/doc/api-reference/api-methods/rules-search/?language=android)
+- [Export rules](https://algolia.com/doc/api-reference/api-methods/rules-export/?language=android)
 
 
 
+
+### MultiClusters
+
+- [Assign or Move userID](https://algolia.com/doc/api-reference/api-methods/assign-user-id/?language=android)
+- [Get top userID](https://algolia.com/doc/api-reference/api-methods/get-top-user-id/?language=android)
+- [Get userID](https://algolia.com/doc/api-reference/api-methods/get-user-id/?language=android)
+- [List clusters](https://algolia.com/doc/api-reference/api-methods/list-clusters/?language=android)
+- [List userIDs](https://algolia.com/doc/api-reference/api-methods/list-user-id/?language=android)
+- [Remove userID](https://algolia.com/doc/api-reference/api-methods/remove-user-id/?language=android)
+- [Search userID](https://algolia.com/doc/api-reference/api-methods/search-user-id/?language=android)
+
+
+
+
+### Advanced
+
+- [Get logs](https://algolia.com/doc/api-reference/api-methods/get-logs/?language=android)
+- [Configuring timeouts](https://algolia.com/doc/api-reference/api-methods/configuring-timeouts/?language=android)
+- [Set extra header](https://algolia.com/doc/api-reference/api-methods/set-extra-header/?language=android)
+- [Wait for operations](https://algolia.com/doc/api-reference/api-methods/wait-task/?language=android)
 
 
 
