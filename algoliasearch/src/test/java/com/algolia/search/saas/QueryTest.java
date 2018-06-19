@@ -286,6 +286,16 @@ public class QueryTest extends RobolectricTestCase {
         assertEquals(query.getAnalytics(), Query.parse(query.build()).getAnalytics());
     }
 
+    @Test
+    public void clickAnalytics() {
+        Query query = new Query();
+        assertNull(query.getClickAnalytics());
+        query.setClickAnalytics(true);
+        assertEquals(Boolean.TRUE, query.getClickAnalytics());
+        assertEquals("true", query.get("clickAnalytics"));
+        assertEquals(query.getClickAnalytics(), Query.parse(query.build()).getClickAnalytics());
+    }
+
 
     @Test
     public void sortFacetValuesBy() {

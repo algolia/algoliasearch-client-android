@@ -312,6 +312,20 @@ public class Query extends AbstractQuery {
         return parseBoolean(get(KEY_ALLOW_TYPOS_ON_NUMERIC_TOKENS));
     }
 
+    private static final String KEY_CLICK_ANALYTICS = "clickAnalytics";
+
+    /**
+     * @param enabled If set to true, the results will return queryID which is needed for sending click | conversion events. Defaults to false.
+     */
+    public @NonNull
+    Query setClickAnalytics(Boolean enabled) {
+        return set(KEY_CLICK_ANALYTICS, enabled);
+    }
+
+    public Boolean getClickAnalytics() {
+        return parseBoolean(get(KEY_CLICK_ANALYTICS));
+    }
+
     private static final String KEY_ANALYTICS = "analytics";
 
     /**
