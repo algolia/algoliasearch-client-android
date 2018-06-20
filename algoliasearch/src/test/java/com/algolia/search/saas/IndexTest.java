@@ -1299,6 +1299,30 @@ public class IndexTest extends RobolectricTestCase {
         });
     }
 
+    @Test
+    public void searchWithClickTrackingAsync() {
+        final long begin = System.nanoTime();
+        Query query = new Query("Francisco");
+        query.setClickAnalytics(true);
+
+        index.searchAsync(query, new AssertCompletionHandler() {
+            @Override
+            public void doRequestCompleted(JSONObject content, AlgoliaException error) {
+                if (error == null) {
+                    assertNotNull(content.optInt("queryID"));
+                } else {
+                    fail(error.getMessage());
+                }
+            }
+        });
+
+        final long elapsedMillis = (System.nanoTime() - begin) / 1000000;
+        final int waitTimeoutMillis = Helpers.wait * 1000;
+        assertTrue("The test took longer than given timeout (" + elapsedMillis + " > " + waitTimeoutMillis + ").", elapsedMillis <= waitTimeoutMillis);
+    }
+
+
+
     private String getRandomString() {
         return UUID.randomUUID().toString();
     }
