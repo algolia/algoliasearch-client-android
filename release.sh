@@ -53,11 +53,11 @@ PATTERN="$1"
 FILENAME="$2"
 
 # Mac needs a space between sed's inplace flag and extension
-if [ "$(uname)" == "Darwin" ]; then
-    sed -E -i '' "$PATTERN" "$FILENAME"
-else
+# if [ "$(uname)" == "Darwin" ]; then
+#     sed -E -i '' "$PATTERN" "$FILENAME"
+# else
     sed -E -i "$PATTERN" "$FILENAME"
-fi
+# fi
 }
 
 echo "Updating version number to $VERSION_CODE..."
