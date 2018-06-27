@@ -163,10 +163,10 @@ index.searchAsync(new Query("jimmie paint"), completionHandler);
 
 ### Search
 
-- [Search an index](https://algolia.com/doc/api-reference/api-methods/search/?language=android)
+- [Search index](https://algolia.com/doc/api-reference/api-methods/search/?language=android)
 - [Search for facet values](https://algolia.com/doc/api-reference/api-methods/search-for-facet-values/?language=android)
 - [Search multiple indexes](https://algolia.com/doc/api-reference/api-methods/multiple-queries/?language=android)
-- [Browse an index](https://algolia.com/doc/api-reference/api-methods/browse/?language=android)
+- [Browse index](https://algolia.com/doc/api-reference/api-methods/browse/?language=android)
 
 
 
@@ -230,13 +230,24 @@ index.searchAsync(new Query("jimmie paint"), completionHandler);
 
 ### Query rules
 
-- [Save a single rule](https://algolia.com/doc/api-reference/api-methods/rules-save/?language=android)
-- [Batch save multiple rules](https://algolia.com/doc/api-reference/api-methods/rules-save-batch/?language=android)
-- [Get a rule](https://algolia.com/doc/api-reference/api-methods/rules-get/?language=android)
-- [Delete a single rule](https://algolia.com/doc/api-reference/api-methods/rules-delete/?language=android)
-- [Clear all rules](https://algolia.com/doc/api-reference/api-methods/rules-clear/?language=android)
-- [Search for rules](https://algolia.com/doc/api-reference/api-methods/rules-search/?language=android)
+- [Save rule](https://algolia.com/doc/api-reference/api-methods/rules-save/?language=android)
+- [Batch rules](https://algolia.com/doc/api-reference/api-methods/rules-save-batch/?language=android)
+- [Get rule](https://algolia.com/doc/api-reference/api-methods/rules-get/?language=android)
+- [Delete rule](https://algolia.com/doc/api-reference/api-methods/rules-delete/?language=android)
+- [Clear rules](https://algolia.com/doc/api-reference/api-methods/rules-clear/?language=android)
+- [Search rules](https://algolia.com/doc/api-reference/api-methods/rules-search/?language=android)
 - [Export rules](https://algolia.com/doc/api-reference/api-methods/rules-export/?language=android)
+
+
+
+
+### A/B Test
+
+- [Add A/B test](https://algolia.com/doc/api-reference/api-methods/add-ab-test/?language=android)
+- [Get A/B test](https://algolia.com/doc/api-reference/api-methods/get-ab-test/?language=android)
+- [List A/B tests](https://algolia.com/doc/api-reference/api-methods/get-ab-tests/?language=android)
+- [Stop A/B test](https://algolia.com/doc/api-reference/api-methods/stop-ab-test/?language=android)
+- [Delete A/B test](https://algolia.com/doc/api-reference/api-methods/delete-ab-test/?language=android)
 
 
 
