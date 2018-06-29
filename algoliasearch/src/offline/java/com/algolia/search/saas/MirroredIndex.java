@@ -298,7 +298,7 @@ public class MirroredIndex extends Index
      * @param unit The unit in which <code>duration</code> is expressed.
      */
     public void setDelayBetweenSyncs(long duration, @NonNull TimeUnit unit) {
-        this.setDelayBetweenSyncs(unit.convert(duration, TimeUnit.MILLISECONDS));
+        this.setDelayBetweenSyncs(TimeUnit.MILLISECONDS.convert(duration, unit));
     }
 
     /**
@@ -812,7 +812,7 @@ public class MirroredIndex extends Index
     }
 
     public void setOfflineFallbackTimeout(long offlineFallbackTimeout, TimeUnit unit) {
-        this.offlineFallbackTimeout = unit.convert(offlineFallbackTimeout, TimeUnit.MILLISECONDS);
+        this.offlineFallbackTimeout = TimeUnit.MILLISECONDS.convert(offlineFallbackTimeout, unit);
     }
 
     /**
