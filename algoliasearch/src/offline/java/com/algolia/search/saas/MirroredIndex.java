@@ -812,7 +812,7 @@ public class MirroredIndex extends Index
     }
 
     public void setOfflineFallbackTimeout(long offlineFallbackTimeout, TimeUnit unit) {
-        this.offlineFallbackTimeout = unit.convert(offlineFallbackTimeout, TimeUnit.MILLISECONDS);
+        this.offlineFallbackTimeout = TimeUnit.MILLISECONDS.convert(offlineFallbackTimeout, unit);
     }
 
     /**
