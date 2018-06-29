@@ -298,7 +298,7 @@ public class MirroredIndex extends Index
      * @param unit The unit in which <code>duration</code> is expressed.
      */
     public void setDelayBetweenSyncs(long duration, @NonNull TimeUnit unit) {
-        this.setDelayBetweenSyncs(TimeUnit.MILLISECONDS.convert(duration, unit));
+        this.setDelayBetweenSyncs(unit.convert(duration, TimeUnit.MILLISECONDS));
     }
 
     /**
