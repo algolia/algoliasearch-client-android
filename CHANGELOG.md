@@ -1,5 +1,13 @@
 # Changelog
 
+## 3.22.14
+* **fastlane:** Fix the gitcheckout on Gemfile.lock ([d5ea5eb](https://github.com/algolia/algoliasearch-client-android/commit/d5ea5eb))
+* **fastlane:** Git checkout Gemfile.lock ([5ae5e52](https://github.com/algolia/algoliasearch-client-android/commit/5ae5e52))
+* **MirroredIndex:** fix the timeout conversion ([#550](https://github.com/algolia/algoliasearch-client-android/issues/550)) ([e13e3ff](https://github.com/algolia/algoliasearch-client-android/commit/e13e3ff))
+* **release.sh:** New MacOS sed is working as expected ([524938a](https://github.com/algolia/algoliasearch-client-android/commit/524938a))
+### Features
+* **clickAnalytics:** Add clickAnalytics feature. Used to return the queryID for analytics ([#548](https://github.com/algolia/algoliasearch-client-android/issues/548)) ([78e4b73](https://github.com/algolia/algoliasearch-client-android/commit/78e4b73))
+
 ## 3.22.13
 * **Query:** Implement optionalFilters/sumOrFiltersScores ([#546](https://github.com/algolia/algoliasearch-client-android/issues/546)) ([0d7f16f](https://github.com/algolia/algoliasearch-client-android/commit/0d7f16f)), closes [algolia/algoliasearch-client-swift#557](https://github.com/algolia/algoliasearch-client-swift/issues/557)
 
