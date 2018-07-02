@@ -24,11 +24,13 @@
 package com.algolia.search.saas.places;
 
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
 import com.algolia.search.saas.AbstractClient;
 import com.algolia.search.saas.AlgoliaException;
 import com.algolia.search.saas.CompletionHandler;
 import com.algolia.search.saas.Request;
+import com.algolia.search.saas.RequestOptions;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -118,6 +120,16 @@ public class PlacesClient extends AbstractClient {
      * @param params Search parameters.
      */
     protected JSONObject search(@NonNull PlacesQuery params) throws AlgoliaException {
+        return search(params, null);
+    }
+
+    /**
+     * Search for places, specifying request options.
+     *
+     * @param params         Search parameters.
+     * @param requestOptions Request-specific options.
+     */
+    protected JSONObject search(@NonNull PlacesQuery params, @Nullable RequestOptions requestOptions) throws AlgoliaException {
         try {
             JSONObject body = new JSONObject()
                 .put("params", params.build());
