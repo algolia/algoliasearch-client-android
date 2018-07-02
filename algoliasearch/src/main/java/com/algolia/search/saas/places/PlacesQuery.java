@@ -87,6 +87,18 @@ public class PlacesQuery extends AbstractQuery {
      * Force to *first* search around a specific latitude/longitude.
      * The default is to search around the location of the user determined via his IP address (geoip).
      *
+     * @param latitude The latitude to start the search at.
+     * @param longitude The longitude to start the search at.
+     */
+    public @NonNull
+    PlacesQuery setAroundLatLng(double latitude, double longitude) {
+        return setAroundLatLng(new LatLng(latitude, longitude));
+    }
+
+    /**
+     * Force to *first* search around a specific latitude/longitude.
+     * The default is to search around the location of the user determined via his IP address (geoip).
+     *
      * @param location The location to start the search at, or `null` to use the default.
      */
     public @NonNull

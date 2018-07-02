@@ -345,6 +345,19 @@ public class Query extends AbstractQuery {
 
     /**
      * Search for entries around a given latitude/longitude.
+     *
+     * @param latitude  The latitude to start the search at.
+     * @param longitude The longitude to start the search at.
+     */
+    public @NonNull
+    Query setAroundLatLng(double latitude, double longitude) {
+        return setAroundLatLng(new LatLng(latitude, longitude));
+    }
+
+    /**
+     * Search for entries around a given latitude/longitude.
+     *
+     * @param location The location to start the search at, or `null` to use the default.
      */
     public @NonNull
     Query setAroundLatLng(@Nullable LatLng location) {
