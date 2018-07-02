@@ -5,6 +5,7 @@ import android.support.annotation.Nullable;
 
 import com.algolia.search.saas.AbstractQuery;
 import com.algolia.search.saas.CompletionHandler;
+import com.algolia.search.saas.Query;
 
 /*
  * Copyright (c) 2015 Algolia
@@ -61,6 +62,23 @@ public class PlacesQuery extends AbstractQuery {
      */
     public PlacesQuery(@NonNull PlacesQuery other) {
         super(other);
+    }
+
+    /**
+     * Clone an existing regular query.
+     *
+     * @param other The query to be cloned.
+     */
+    public PlacesQuery(@Nullable Query other) {
+        if (other != null) {
+            setAroundLatLng(other.getAroundLatLng());
+            setAroundLatLngViaIP(other.getAroundLatLngViaIP());
+            setAroundRadius(other.getAroundRadius());
+            setHighlightPostTag(other.getHighlightPostTag());
+            setHighlightPreTag(other.getHighlightPreTag());
+            setHitsPerPage(other.getHitsPerPage());
+            setQuery(other.getQuery());
+        }
     }
 
     // ----------------------------------------------------------------------
