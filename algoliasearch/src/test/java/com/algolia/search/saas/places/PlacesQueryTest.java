@@ -23,6 +23,7 @@
 
 package com.algolia.search.saas.places;
 
+import com.algolia.search.saas.Query;
 import com.algolia.search.saas.RobolectricTestCase;
 
 import org.junit.Test;
@@ -35,11 +36,39 @@ import static org.junit.Assert.assertTrue;
 /**
  * Unit tests for the `PlacesQuery` class.
  */
-public class PlacesQueryTest extends RobolectricTestCase  {
+public class PlacesQueryTest extends RobolectricTestCase {
 
     // ----------------------------------------------------------------------
     // High-level
     // ----------------------------------------------------------------------
+
+    @Test
+    public void constructors() {
+        PlacesQuery query = new PlacesQuery("foo");
+        assertEquals("The query's query should be set", "foo", query.getQuery());
+
+        PlacesQuery query1 = new PlacesQuery();
+        query1.setQuery("test").setHitsPerPage(42).setAroundRadius(42).setAroundLatLngViaIP(true).setAroundLatLng(42, -42);
+        PlacesQuery query2 = new PlacesQuery(query1);
+        assertEquals("The new PlacesQuery's query should be the first PlacesQuery's.", "test", query2.getQuery());
+        assertEquals("The new PlacesQuery's aroundLatLng should be the first PlacesQuery's.", query1.getAroundLatLng(), query2.getAroundLatLng());
+        assertEquals("The new PlacesQuery's aroundLatLngViaIP should be the first PlacesQuery's.", query1.getAroundLatLngViaIP(), query1.getAroundLatLngViaIP());
+        assertEquals("The new PlacesQuery's aroundRadius should be the first PlacesQuery's.", query1.getAroundRadius(), query2.getAroundRadius());
+        assertEquals("The new PlacesQuery's highlightPreTag should be the first PlacesQuery's.", query1.getHighlightPreTag(), query2.getHighlightPreTag());
+        assertEquals("The new PlacesQuery's highlightPostTag should be the first PlacesQuery's.", query1.getHighlightPostTag(), query2.getHighlightPostTag());
+        assertEquals("The new PlacesQuery's hitsPerPage should be the first PlacesQuery's.", query1.getHitsPerPage(), query2.getHitsPerPage());
+
+        Query query3 = new Query();
+        query3.setQuery("test").setHitsPerPage(42).setAroundRadius(42).setAroundLatLngViaIP(true).setAroundLatLng(42, -42);
+        PlacesQuery query4 = new PlacesQuery(query3);
+        assertEquals("The new PlacesQuery's query should be the first PlacesQuery's.", "test", query4.getQuery());
+        assertEquals("The new PlacesQuery's aroundLatLng should be the first PlacesQuery's.", query3.getAroundLatLng(), query4.getAroundLatLng());
+        assertEquals("The new PlacesQuery's aroundLatLngViaIP should be the first PlacesQuery's.", query3.getAroundLatLngViaIP(), query3.getAroundLatLngViaIP());
+        assertEquals("The new PlacesQuery's aroundRadius should be the first PlacesQuery's.", query3.getAroundRadius(), query4.getAroundRadius());
+        assertEquals("The new PlacesQuery's highlightPreTag should be the first PlacesQuery's.", query3.getHighlightPreTag(), query4.getHighlightPreTag());
+        assertEquals("The new PlacesQuery's highlightPostTag should be the first PlacesQuery's.", query3.getHighlightPostTag(), query4.getHighlightPostTag());
+        assertEquals("The new PlacesQuery's hitsPerPage should be the first PlacesQuery's.", query3.getHitsPerPage(), query4.getHitsPerPage());
+    }
 
     @Test
     public void hitsPerPage() {
@@ -126,8 +155,11 @@ public class PlacesQueryTest extends RobolectricTestCase  {
         assertNull(query.getAroundLatLng());
         query.setAroundLatLng(new PlacesQuery.LatLng(89.76, -123.45));
         assertEquals(new PlacesQuery.LatLng(89.76, -123.45), query.getAroundLatLng());
+        query.setAroundLatLng(89.76, -123.45);
+        assertEquals(new PlacesQuery.LatLng(89.76, -123.45), query.getAroundLatLng());
         assertEquals("89.76,-123.45", query.get("aroundLatLng"));
         assertEquals(query.getAroundLatLng(), PlacesQuery.parse(query.build()).getAroundLatLng());
+
     }
 
     @Test
@@ -145,7 +177,7 @@ public class PlacesQueryTest extends RobolectricTestCase  {
         PlacesQuery query = new PlacesQuery();
         assertNull(query.getCountries());
         query.setCountries("de", "fr", "us");
-        assertArrayEquals(query.getCountries(), new String[]{ "de", "fr", "us" });
+        assertArrayEquals(query.getCountries(), new String[]{"de", "fr", "us"});
         assertEquals(query.get("countries"), "[\"de\",\"fr\",\"us\"]");
         assertArrayEquals(PlacesQuery.parse(query.build()).getCountries(), query.getCountries());
     }
