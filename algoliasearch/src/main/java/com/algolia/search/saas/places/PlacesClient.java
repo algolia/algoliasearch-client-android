@@ -52,7 +52,7 @@ public class PlacesClient extends AbstractClient {
      * Create a new authenticated Algolia Places client.
      *
      * @param applicationID The application ID (available in your Algolia Dashboard).
-     * @param apiKey A valid API key for the service.
+     * @param apiKey        A valid API key for the service.
      */
     public PlacesClient(@NonNull String applicationID, @NonNull String apiKey) {
         super(applicationID, apiKey, null, null);
@@ -61,7 +61,7 @@ public class PlacesClient extends AbstractClient {
 
     /**
      * Create a new unauthenticated Algolia Places client.
-     *
+     * <p>
      * NOTE: The rate limit for the unauthenticated API is significantly lower than for the authenticated API.
      */
     public PlacesClient() {
@@ -96,7 +96,7 @@ public class PlacesClient extends AbstractClient {
     /**
      * Search for places.
      *
-     * @param params Search parameters.
+     * @param params            Search parameters.
      * @param completionHandler The listener that will be notified of the request's outcome.
      * @return A cancellable request.
      */
@@ -104,7 +104,8 @@ public class PlacesClient extends AbstractClient {
         final PlacesQuery paramsCopy = new PlacesQuery(params);
         return new AsyncTaskRequest(completionHandler) {
             @Override
-            protected @NonNull JSONObject run() throws AlgoliaException {
+            protected @NonNull
+            JSONObject run() throws AlgoliaException {
                 return search(paramsCopy);
             }
         }.start();
@@ -132,21 +133,21 @@ public class PlacesClient extends AbstractClient {
     protected JSONObject search(@NonNull PlacesQuery params, @Nullable RequestOptions requestOptions) throws AlgoliaException {
         try {
             JSONObject body = new JSONObject()
-                .put("params", params.build());
-            return postRequest("/1/places/query", /* urlParameters: */ null, body.toString(), true /* readOperation */, /* requestOptions: */ null);
-        }
-        catch (JSONException e) {
+                    .put("params", params.build());
+            return postRequest("/1/places/query", null, body.toString(), true, requestOptions);
+        } catch (JSONException e) {
             throw new RuntimeException(e); // should never happen
         }
     }
 
     /**
      * Get a place by its objectID.
+     *
      * @param objectID the record's identifier.
      * @return the corresponding record.
      * @throws AlgoliaException when the given objectID does not exist.
      */
     public JSONObject getByObjectID(@NonNull String objectID) throws AlgoliaException {
-        return getRequest("/1/places/" + objectID, /* urlParameters: */ null, false, /* requestOptions: */ null)    ;
+        return getRequest("/1/places/" + objectID, /* urlParameters: */ null, false, /* requestOptions: */ null);
     }
 }

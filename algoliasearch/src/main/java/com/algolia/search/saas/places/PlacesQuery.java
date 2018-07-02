@@ -87,7 +87,7 @@ public class PlacesQuery extends AbstractQuery {
      * Force to *first* search around a specific latitude/longitude.
      * The default is to search around the location of the user determined via his IP address (geoip).
      *
-     * @param latitude The latitude to start the search at.
+     * @param latitude  The latitude to start the search at.
      * @param longitude The longitude to start the search at.
      */
     public @NonNull
@@ -201,19 +201,33 @@ public class PlacesQuery extends AbstractQuery {
      * Types of places that can be searched for.
      */
     public static enum Type {
-        /** City. */
+        /**
+         * City.
+         */
         CITY,
-        /** Country. */
+        /**
+         * Country.
+         */
         COUNTRY,
-        /** Address. */
+        /**
+         * Address.
+         */
         ADDRESS,
-        /** Bus stop. */
+        /**
+         * Bus stop.
+         */
         BUS_STOP,
-        /** Train station. */
+        /**
+         * Train station.
+         */
         TRAIN_STATION,
-        /** Town hall. */
+        /**
+         * Town hall.
+         */
         TOWN_HALL,
-        /** Airport. */
+        /**
+         * Airport.
+         */
         AIRPORT
     }
 
@@ -224,7 +238,8 @@ public class PlacesQuery extends AbstractQuery {
      *
      * @param type Type of place to search for.
      */
-    public @NonNull PlacesQuery setType(Type type) {
+    public @NonNull
+    PlacesQuery setType(Type type) {
         if (type == null) {
             set(KEY_TYPE, null);
         } else {
@@ -287,7 +302,8 @@ public class PlacesQuery extends AbstractQuery {
      * @param language The language used to return the results, or `null` to use all available languages.
      * @return This query.
      */
-    public @NonNull PlacesQuery setLanguage(String language) {
+    public @NonNull
+    PlacesQuery setLanguage(String language) {
         return set(KEY_LANGUAGE, language);
     }
 
@@ -306,7 +322,8 @@ public class PlacesQuery extends AbstractQuery {
      * @param countries The countries to restrict the search to, or `null` to search on the whole planet.
      * @return This query.
      */
-    public @NonNull PlacesQuery setCountries(String... countries) {
+    public @NonNull
+    PlacesQuery setCountries(String... countries) {
         return set(KEY_COUNTRIES, buildJSONArray(countries));
     }
 
