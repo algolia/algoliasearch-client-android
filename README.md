@@ -68,7 +68,7 @@ Add the following dependency to your `Gradle` build file:
 ```gradle
 dependencies {
     // [...]
-    compile 'com.algolia:algoliasearch-android:3.+'
+    compile 'com.algolia:instantsearch-android-client:3.+'
     // This will automatically update to the latest v3 release when you build your project.
 }
 ```

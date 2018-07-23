@@ -73,9 +73,9 @@ do
     echo "-------------------- Publishing locally --------------------"
     $SELF_ROOT/gradlew testUploadArchives
     if [[ $flavor = "online" ]]; then
-        module_name="algoliasearch-android"
+        module_name="instantsearch-android-client"
     elif [[ $flavor = "offline" ]]; then
-        module_name="algoliasearch-offline-android"
+        module_name="instantsearch-android-client-offline"
     fi
     # Dump the contents that has been published, just for the sake of manual checking.
     $SELF_ROOT/tools/dump-local-mvnrep.sh $module_name

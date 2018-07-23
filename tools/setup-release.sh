@@ -53,7 +53,7 @@ drop_open_repo() {
     cat > pom.xml << EOF
 <project>
     <groupId>com.algolia</groupId>
-    <artifactId>algoliasearch-android</artifactId>
+    <artifactId>instantsearch-android-client</artifactId>
     <version>0.0.0</version>
     <modelVersion>4.0.0</modelVersion>
     <build>

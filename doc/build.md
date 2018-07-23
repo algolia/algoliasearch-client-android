@@ -7,9 +7,9 @@ Title: Build Process
 
 The client exists in two different flavors:
 
-- The **online** flavor, which is the regular API client. Its source code is located under the `algoliasearch/src/main` directory. It gets published to Maven Central as `algoliasearch-android`.
+- The **online** flavor, which is the regular API client. Its source code is located under the `algoliasearch/src/main` directory. It gets published to Maven Central as `instantsearch-android-client`.
 
-- The **offline** flavor, which is a superset of the online flavor. In addition to the main source code, it adds the `algoliasearch/src/offline` directory. It gets published to Maven Central as `algoliasearch-offline-android`. This flavor has a dependency on the Algolia Search Offline Core module (`algoliasearch-offline-core-android` in Maven).
+- The **offline** flavor, which is a superset of the online flavor. In addition to the main source code, it adds the `algoliasearch/src/offline` directory. It gets published to Maven Central as `instantsearch-android-client-offline`. This flavor has a dependency on the Algolia Search Offline Core module (`algoliasearch-offline-core-android` in Maven).
 
 
 ## Problem

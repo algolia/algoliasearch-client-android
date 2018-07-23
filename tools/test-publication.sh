@@ -37,7 +37,7 @@ cd "$DEMO_DIR"
 
 # Patch the version.
 echo "Targeting $MODULE_NAME $VERSION_NO"
-sed -E -i '' "s/compile 'com\.algolia:algoliasearch-android:[0-9.]+@aar'/compile 'com.algolia:${MODULE_NAME}:${VERSION_NO}@aar'/g" "app/build.gradle"
+sed -E -i '' "s/compile 'com\.algolia:instantsearch-android-client:[0-9.]+@aar'/compile 'com.algolia:${MODULE_NAME}:${VERSION_NO}@aar'/g" "app/build.gradle"
 
 # Use the local repo.
 MVNREP_DIR="$PROJECT_ROOT/algoliasearch/build/mvnrep"
