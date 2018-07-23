@@ -28,6 +28,8 @@ import org.json.JSONException;
 import org.junit.Test;
 
 import java.io.UnsupportedEncodingException;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -35,10 +37,10 @@ import java.util.List;
 
 import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertNotNull;
+import static junit.framework.Assert.assertTrue;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 /**
@@ -112,7 +114,79 @@ public class QueryTest extends RobolectricTestCase {
 
     // endregion
     // region High-level
+    // region Boolean attributes
+    @Test
+    public void advancedSyntax() {
+        testBooleanAttribute("advancedSyntax");
+    }
 
+    @Test
+    public void aroundLatLngViaIP() {
+        testBooleanAttribute("aroundLatLngViaIP");
+    }
+
+    @Test
+    public void allowTyposOnNumericTokens() {
+        testBooleanAttribute("allowTyposOnNumericTokens");
+    }
+
+    @Test
+    public void analytics() {
+        testBooleanAttribute("analytics");
+    }
+
+    @Test
+    public void clickAnalytics() {
+        testBooleanAttribute("clickAnalytics");
+    }
+
+    @Test
+    public void enableRules() {
+        testBooleanAttribute("enableRules");
+    }
+
+    @Test
+    public void facetingAfterDistinct() {
+        testBooleanAttribute("facetingAfterDistinct");
+    }
+
+    @Test
+    public void getRankingInfo() {
+        testBooleanAttribute("getRankingInfo");
+    }
+
+    @Test
+    public void percentileComputation() {
+        testBooleanAttribute("percentileComputation");
+    }
+
+    @Test
+    public void replaceSynonymsInHighlight() {
+        testBooleanAttribute("replaceSynonymsInHighlight");
+    }
+
+    @Test
+    public void restrictHighlightAndSnippetArrays() {
+        testBooleanAttribute("restrictHighlightAndSnippetArrays");
+    }
+
+    @Test
+    public void sumOrFiltersScores() {
+        testBooleanAttribute("sumOrFiltersScores");
+    }
+
+    @Test
+    public void synonyms() {
+        testBooleanAttribute("synonyms");
+    }
+
+    // endregion
+    // region Integer attributes
+    // endregion
+    // region Typed attributes
+    // endregion
+    // region Uncategorized attributes
+    // TODO: Either categorise or restructure tests differently
     @Test
     public void minWordSizefor1Typo() {
         Query query = new Query();
@@ -141,21 +215,6 @@ public class QueryTest extends RobolectricTestCase {
         assertEquals(Integer.valueOf(999), query.getMinProximity());
         assertEquals("999", query.get("minProximity"));
         assertEquals(query.getMinProximity(), Query.parse(query.build()).getMinProximity());
-    }
-
-    @Test
-    public void getRankingInfo() {
-        Query query = new Query();
-        assertNull(query.getGetRankingInfo());
-        query.setGetRankingInfo(true);
-        assertEquals(Boolean.TRUE, query.getGetRankingInfo());
-        assertEquals("true", query.get("getRankingInfo"));
-        assertEquals(query.getGetRankingInfo(), Query.parse(query.build()).getGetRankingInfo());
-
-        query.setGetRankingInfo(false);
-        assertEquals(Boolean.FALSE, query.getGetRankingInfo());
-        assertEquals("false", query.get("getRankingInfo"));
-        assertEquals(query.getGetRankingInfo(), Query.parse(query.build()).getGetRankingInfo());
     }
 
     @Test
@@ -241,16 +300,6 @@ public class QueryTest extends RobolectricTestCase {
     }
 
     @Test
-    public void percentileCalculation() {
-        Query query = new Query();
-        assertNull(query.getPercentileComputation());
-        query.setPercentileComputation(true);
-        assertEquals(Boolean.TRUE, query.getPercentileComputation());
-        assertEquals("true", query.get("percentileComputation"));
-        assertEquals(query.getPercentileComputation(), Query.parse(query.build()).getPercentileComputation());
-    }
-
-    @Test
     public void hitsPerPage() {
         Query query = new Query();
         assertNull(query.getHitsPerPage());
@@ -259,42 +308,6 @@ public class QueryTest extends RobolectricTestCase {
         assertEquals("50", query.get("hitsPerPage"));
         assertEquals(query.getHitsPerPage(), Query.parse(query.build()).getHitsPerPage());
     }
-
-    @Test
-    public void allowTyposOnNumericTokens() {
-        Query query = new Query();
-        assertNull(query.getAllowTyposOnNumericTokens());
-        query.setAllowTyposOnNumericTokens(true);
-        assertEquals(Boolean.TRUE, query.getAllowTyposOnNumericTokens());
-        assertEquals("true", query.get("allowTyposOnNumericTokens"));
-        assertEquals(query.getAllowTyposOnNumericTokens(), Query.parse(query.build()).getAllowTyposOnNumericTokens());
-
-        query.setAllowTyposOnNumericTokens(false);
-        assertEquals(Boolean.FALSE, query.getAllowTyposOnNumericTokens());
-        assertEquals("false", query.get("allowTyposOnNumericTokens"));
-        assertEquals(query.getAllowTyposOnNumericTokens(), Query.parse(query.build()).getAllowTyposOnNumericTokens());
-    }
-
-    @Test
-    public void analytics() {
-        Query query = new Query();
-        assertNull(query.getAnalytics());
-        query.setAnalytics(true);
-        assertEquals(Boolean.TRUE, query.getAnalytics());
-        assertEquals("true", query.get("analytics"));
-        assertEquals(query.getAnalytics(), Query.parse(query.build()).getAnalytics());
-    }
-
-    @Test
-    public void clickAnalytics() {
-        Query query = new Query();
-        assertNull(query.getClickAnalytics());
-        query.setClickAnalytics(true);
-        assertEquals(Boolean.TRUE, query.getClickAnalytics());
-        assertEquals("true", query.get("clickAnalytics"));
-        assertEquals(query.getClickAnalytics(), Query.parse(query.build()).getClickAnalytics());
-    }
-
 
     @Test
     public void sortFacetValuesBy() {
@@ -310,25 +323,6 @@ public class QueryTest extends RobolectricTestCase {
         assertEquals(query.getSortFacetValuesBy(), query2.getSortFacetValuesBy());
     }
 
-    @Test
-    public void synonyms() {
-        Query query = new Query();
-        assertNull(query.getSynonyms());
-        query.setSynonyms(true);
-        assertEquals(Boolean.TRUE, query.getSynonyms());
-        assertEquals("true", query.get("synonyms"));
-        assertEquals(query.getSynonyms(), Query.parse(query.build()).getSynonyms());
-    }
-
-    @Test
-    public void sumOrFiltersScores() {
-        Query query = new Query();
-        assertNull(query.getSumOrFiltersScores());
-        query.setSumOrFiltersScores(true);
-        assertEquals(Boolean.TRUE, query.getSumOrFiltersScores());
-        assertEquals("true", query.get("sumOrFiltersScores"));
-        assertEquals(query.getSumOrFiltersScores(), Query.parse(query.build()).getSumOrFiltersScores());
-    }
 
     @Test
     public void attributesToHighlight() {
@@ -511,26 +505,6 @@ public class QueryTest extends RobolectricTestCase {
     }
 
     @Test
-    public void replaceSynonymsInHighlight() {
-        Query query = new Query();
-        assertNull(query.getReplaceSynonymsInHighlight());
-        query.setReplaceSynonymsInHighlight(true);
-        assertEquals(true, query.getReplaceSynonymsInHighlight());
-        assertEquals("true", query.get("replaceSynonymsInHighlight"));
-        assertEquals(query.getReplaceSynonymsInHighlight(), Query.parse(query.build()).getReplaceSynonymsInHighlight());
-    }
-
-    @Test
-    public void restrictHighlightAndSnippetArrays() {
-        Query query = new Query();
-        assertNull(query.getRestrictHighlightAndSnippetArrays());
-        query.setRestrictHighlightAndSnippetArrays(true);
-        assertEquals(true, query.getRestrictHighlightAndSnippetArrays());
-        assertEquals("true", query.get("restrictHighlightAndSnippetArrays"));
-        assertEquals(query.getRestrictHighlightAndSnippetArrays(), Query.parse(query.build()).getRestrictHighlightAndSnippetArrays());
-    }
-
-    @Test
     public void restrictSearchableAttributes() {
         Query query = new Query();
         assertNull(query.getRestrictSearchableAttributes());
@@ -627,16 +601,6 @@ public class QueryTest extends RobolectricTestCase {
     }
 
     @Test
-    public void aroundLatLngViaIP() {
-        Query query = new Query();
-        assertNull(query.getAroundLatLngViaIP());
-        query.setAroundLatLngViaIP(true);
-        assertEquals(Boolean.TRUE, query.getAroundLatLngViaIP());
-        assertEquals("true", query.get("aroundLatLngViaIP"));
-        assertEquals(query.getAroundLatLngViaIP(), Query.parse(query.build()).getAroundLatLngViaIP());
-    }
-
-    @Test
     public void aroundLatLng() {
         Query query = new Query();
         assertNull(query.getAroundLatLng());
@@ -703,16 +667,6 @@ public class QueryTest extends RobolectricTestCase {
         assertEquals(VALUE, query.getFacetFilters());
         assertEquals("[[\"category:Book\",\"category:Movie\"],\"author:John Doe\"]", query.get("facetFilters"));
         assertEquals(query.getFacetFilters(), Query.parse(query.build()).getFacetFilters());
-    }
-
-    @Test
-    public void advancedSyntax() {
-        Query query = new Query();
-        assertNull(query.getAdvancedSyntax());
-        query.setAdvancedSyntax(true);
-        assertEquals(Boolean.TRUE, query.getAdvancedSyntax());
-        assertEquals("true", query.get("advancedSyntax"));
-        assertEquals(query.getAdvancedSyntax(), Query.parse(query.build()).getAdvancedSyntax());
     }
 
     @Test
@@ -899,24 +853,51 @@ public class QueryTest extends RobolectricTestCase {
         assertArrayEquals(query.getRuleContexts(), Query.parse(query.build()).getRuleContexts());
     }
 
-    @Test
-    public void enableRules() {
+    // endregion
+    // endregion
+    //region Test Helpers
+    public void testBooleanAttribute(String name) {
+        // Get getter and setter
+        final String nameUpper = name.substring(0, 1).toUpperCase() + name.substring(1);
         Query query = new Query();
-        assertNull(query.getEnableRules());
-        query.setEnableRules(true);
-        assertEquals(Boolean.TRUE, query.getEnableRules());
-        assertEquals("true", query.get("enableRules"));
-        assertEquals(query.getEnableRules(), Query.parse(query.build()).getEnableRules());
-    }
+        Method getter = null;
+        Method setter = null;
+        try {
+            getter = query.getClass().getMethod("get" + nameUpper);
+        } catch (NoSuchMethodException e) {
+            fail("Missing getter: " + e.getLocalizedMessage());
+        }
+        try {
+            setter = query.getClass().getMethod("set" + nameUpper, Boolean.class);
+        } catch (NoSuchMethodException e) {
+            fail("Missing setter: " + e.getLocalizedMessage());
+        }
 
+        try {
+            // Default value
+            assertNull("By default, " + name + " should be null.", getter.invoke(query));
 
-    @Test
-    public void facetingAfterDistinct() {
-        Query query = new Query();
-        assertNull(query.getFacetingAfterDistinct());
-        query.setFacetingAfterDistinct(true);
-        assertEquals(Boolean.TRUE, query.getFacetingAfterDistinct());
-        assertEquals("true", query.get("facetingAfterDistinct"));
-        assertEquals(query.getFacetingAfterDistinct(), Query.parse(query.build()).getFacetingAfterDistinct());
+            // Boolean values
+            setter.invoke(query, true);
+            assertEquals("A true boolean should enable " + name, Boolean.TRUE, getter.invoke(query));
+            assertEquals("A true boolean should be in " + name, "true", query.get(name));
+            assertEquals("A true boolean should be built and parsed correctly", getter.invoke(query), getter.invoke(Query.parse(query.build())));
+
+            setter.invoke(query, false);
+            assertEquals("A false boolean should enable " + name, Boolean.FALSE, getter.invoke(query));
+            assertEquals("A false boolean should be in " + name, "false", query.get(name));
+            assertEquals("A false boolean should be built and parsed correctly", getter.invoke(query), getter.invoke(Query.parse(query.build())));
+
+            setter.invoke(query, (Boolean) null);
+            assertEquals("A null boolean should disable " + name, null, getter.invoke(query));
+            assertEquals("A null boolean should be in " + name, null, query.get(name));
+            assertEquals("A null boolean should be built and parsed correctly", getter.invoke(query), getter.invoke(Query.parse(query.build())));
+        } catch (IllegalAccessException e) {
+            fail(e.getLocalizedMessage());
+            e.printStackTrace();
+        } catch (InvocationTargetException e) {
+            fail(e.getLocalizedMessage());
+        }
     }
+    //endregion
 }
