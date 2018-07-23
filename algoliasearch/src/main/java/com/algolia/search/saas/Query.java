@@ -820,7 +820,7 @@ public class Query extends AbstractQuery {
      * car/cars will be considered as equals). Defaults to false.
      */
     public @NonNull
-    Query setIgnorePlurals(boolean enabled) {
+    Query setIgnorePlurals(Boolean enabled) {
         return set(KEY_IGNORE_PLURALS, enabled);
     }
 
@@ -1277,7 +1277,7 @@ public class Query extends AbstractQuery {
      *                Algolia dashboard. When `false`, the search query is excluded from percentile computation.
      */
     public @NonNull
-    Query setPercentileComputation(boolean enabled) {
+    Query setPercentileComputation(Boolean enabled) {
         return set(KEY_PERCENTILE_COMPUTATION, enabled);
     }
 
@@ -1389,7 +1389,7 @@ public class Query extends AbstractQuery {
      *                 only array items that matched at least partially are highlighted/snippeted.
      */
     public @NonNull
-    Query setRestrictHighlightAndSnippetArrays(boolean restrict) {
+    Query setRestrictHighlightAndSnippetArrays(Boolean restrict) {
         return set(KEY_RESTRICT_HIGHLIGHT_AND_SNIPPET, restrict);
     }
 
