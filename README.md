@@ -245,7 +245,7 @@ index.searchAsync(new Query("jimmie paint"), completionHandler);
 
 - [Add A/B test](https://algolia.com/doc/api-reference/api-methods/add-ab-test/?language=android)
 - [Get A/B test](https://algolia.com/doc/api-reference/api-methods/get-ab-test/?language=android)
-- [List A/B tests](https://algolia.com/doc/api-reference/api-methods/get-ab-tests/?language=android)
+- [List A/B tests](https://algolia.com/doc/api-reference/api-methods/list-ab-tests/?language=android)
 - [Stop A/B test](https://algolia.com/doc/api-reference/api-methods/stop-ab-test/?language=android)
 - [Delete A/B test](https://algolia.com/doc/api-reference/api-methods/delete-ab-test/?language=android)
 
