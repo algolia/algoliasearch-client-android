@@ -45,10 +45,7 @@ import static org.junit.Assert.fail;
  * Unit tests for the `Query` class.
  */
 public class QueryTest extends RobolectricTestCase {
-
-    // ----------------------------------------------------------------------
-    // Build & parse
-    // ----------------------------------------------------------------------
+    // region Build & parse
 
     /**
      * Test serializing a query into a URL query string.
@@ -92,10 +89,8 @@ public class QueryTest extends RobolectricTestCase {
         // Test parsing of escaped characters.
         assertEquals(query, Query.parse(queryString));
     }
-
-    // ----------------------------------------------------------------------
-    // Low-level
-    // ----------------------------------------------------------------------
+    // endregion
+    // region Low-level
 
     /**
      * Test low-level accessors.
@@ -115,9 +110,8 @@ public class QueryTest extends RobolectricTestCase {
         assertNull(query.get("b"));
     }
 
-    // ----------------------------------------------------------------------
-    // High-level
-    // ----------------------------------------------------------------------
+    // endregion
+    // region High-level
 
     @Test
     public void minWordSizefor1Typo() {
