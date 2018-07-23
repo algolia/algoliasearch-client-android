@@ -175,6 +175,11 @@ public class QueryTest extends RobolectricTestCase {
         assertEquals("A false boolean should should be in ignorePlurals.", "false", query.get("ignorePlurals"));
         assertEquals("A false boolean should be built and parsed successfully.", query.getIgnorePlurals(), Query.parse(query.build()).getIgnorePlurals());
 
+        query.setIgnorePlurals((Boolean) null);
+        assertEquals("A null boolean should disable ignorePlurals.", Boolean.FALSE, query.getIgnorePlurals().enabled);
+        assertEquals("A null boolean should be in ignorePlurals.", null, query.get("ignorePlurals"));
+        assertEquals("A null boolean should be built and parsed successfully.", query.getIgnorePlurals(), Query.parse(query.build()).getIgnorePlurals());
+
         // List values
         query.setIgnorePlurals((List<String>) null);
         assertFalse("A null list value should disable ignorePlurals.", query.getIgnorePlurals().enabled);
