@@ -40,11 +40,11 @@ rm -rf "$DST_DIR"/*
 # Online flavor -> root directory.
 echo "# Generating online flavor"
 "$PROJECT_ROOT/select-flavor.sh" online
-gradle javadoc
+./gradlew javadoc
 # Offline flavor -> `offline` subdirectory.
 echo "# Generating offline flavor"
 "$PROJECT_ROOT/select-flavor.sh" offline
-gradle javadoc
+./gradlew javadoc
 
 # Copy license.
 LICENSE_FILE_NAME="LICENSE.txt"
