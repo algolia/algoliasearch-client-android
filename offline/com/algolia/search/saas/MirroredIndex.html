@@ -17,7 +17,7 @@
     catch(err) {
     }
 //-->
-var methods = {"i0":10,"i1":10,"i2":10,"i3":10,"i4":10,"i5":10,"i6":10,"i7":10,"i8":10,"i9":10,"i10":10,"i11":10,"i12":10,"i13":10,"i14":10,"i15":10,"i16":10,"i17":10,"i18":10,"i19":10,"i20":10,"i21":10,"i22":10,"i23":10,"i24":10,"i25":10,"i26":10,"i27":10,"i28":10,"i29":10,"i30":10,"i31":10,"i32":10,"i33":10,"i34":10,"i35":10,"i36":10,"i37":10,"i38":10,"i39":10,"i40":10,"i41":10,"i42":10,"i43":10,"i44":10,"i45":10,"i46":10};
+var methods = {"i0":10,"i1":10,"i2":10,"i3":10,"i4":10,"i5":10,"i6":10,"i7":10,"i8":10,"i9":10,"i10":10,"i11":10,"i12":10,"i13":10,"i14":10,"i15":10,"i16":10,"i17":10,"i18":10,"i19":10,"i20":10,"i21":10,"i22":10,"i23":10,"i24":10,"i25":10,"i26":10,"i27":10,"i28":10,"i29":10,"i30":10,"i31":10,"i32":10,"i33":10,"i34":10,"i35":10,"i36":10,"i37":10,"i38":10,"i39":10,"i40":10,"i41":10,"i42":10,"i43":10,"i44":10,"i45":10,"i46":10,"i47":10,"i48":10,"i49":10,"i50":10,"i51":10};
 var tabs = {65535:["t0","All Methods"],2:["t2","Instance Methods"],8:["t4","Concrete Methods"]};
 var altColor = "altColor";
 var rowColor = "rowColor";
@@ -98,10 +98,15 @@ var activeTableTab = "activeTableTab";
 <li>Object</li>
 <li>
 <ul class="inheritance">
+<li><a href="../../../../com/algolia/search/saas/Searchable.html" title="class in com.algolia.search.saas">com.algolia.search.saas.Searchable</a></li>
+<li>
+<ul class="inheritance">
 <li><a href="../../../../com/algolia/search/saas/Index.html" title="class in com.algolia.search.saas">com.algolia.search.saas.Index</a></li>
 <li>
 <ul class="inheritance">
 <li>com.algolia.search.saas.MirroredIndex</li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>
@@ -114,66 +119,117 @@ var activeTableTab = "activeTableTab";
 <br>
 <pre>public class <span class="typeNameLabel">MirroredIndex</span>
 extends <a href="../../../../com/algolia/search/saas/Index.html" title="class in com.algolia.search.saas">Index</a></pre>
-<div class="block"><p>An online index that can also be mirrored locally.</p>
-<p><strong>Note:</strong> You cannot construct this class directly. Please use <a href="../../../../com/algolia/search/saas/OfflineClient.html#getIndex-java.lang.String-"><code>OfflineClient.getIndex(String)</code></a> to obtain an instance.</p>
-<p><strong>Note:</strong> Requires Algolia Offline Core. <a href="../../../../com/algolia/search/saas/OfflineClient.html#enableOfflineMode-java.lang.String-"><code>OfflineClient.enableOfflineMode(String)</code></a> must be called with a valid license key prior to calling any offline-related method.</p>
-<p>When created, an instance of this class has its <code>mirrored</code> flag set to false, and behaves like a normal, online <a href="../../../../com/algolia/search/saas/Index.html" title="class in com.algolia.search.saas"><code>Index</code></a>. When the <code>mirrored</code> flag is set to true, the index becomes capable of acting upon local data.</p>
-<p><strong>Warning:</strong> It is a programming error to call methods acting on the local data when <code>mirrored</code> is false. Doing so will result in an assertion exception being thrown.</p>
-<h2>Request strategy</h2>
-<p>When the index is mirrored and the device is online, it becomes possible to transparently switch between online and offline requests. There is no single best strategy for that, because it depends on the use case and the current network conditions. You can choose the strategy via <a href="../../../../com/algolia/search/saas/MirroredIndex.html#setRequestStrategy-com.algolia.search.saas.MirroredIndex.Strategy-"><code>setRequestStrategy</code></a>. The default is <a href="../../../../com/algolia/search/saas/MirroredIndex.Strategy.html#FALLBACK_ON_FAILURE"><code>FALLBACK_ON_FAILURE</code></a>, which will always target the online API first, then fallback to the offline mirror in case of failure (including network unavailability).</p>
-<p><strong>Note:</strong> If you want to explicitly target either the online API or the offline mirror, doing so is always possible using the <a href="../../../../com/algolia/search/saas/MirroredIndex.html#searchOnlineAsync-com.algolia.search.saas.Query-com.algolia.search.saas.CompletionHandler-"><code>searchOnlineAsync</code></a> or <a href="../../../../com/algolia/search/saas/MirroredIndex.html#searchOfflineAsync-com.algolia.search.saas.Query-com.algolia.search.saas.CompletionHandler-"><code>searchOfflineAsync</code></a> methods.</p>
-<p><strong>Note:</strong> The strategy applies to:</p>
-<ul>
-  <li><code>searchAsync</code></li>
-  <li><code>searchDisjunctiveFacetingAsync</code></li>
-  <li><code>multipleQueriesAsync</code></li>
-  <li><code>getObjectAsync</code></li>
-  <li><code>getObjectsAsync</code></li>
-</ul>
-<h2>Bootstrapping</h2>
-<p>Before the first sync has successfully completed, a mirrored index is not available offline, because it has simply no data to search in yet. In most cases, this is not a problem: the app will sync as soon as instructed, so unless the device is offline when the app is started for the first time, or unless search is required right after the first launch, the user should not notice anything.</p>
-<p>However, in some cases, you might need to have offline data available as soon as possible. To achieve that, <code>MirroredIndex</code> provides a <strong>manual build</strong> feature.</p>
-<h3>Manual build</h3>
-<p>Manual building consists in specifying the source data for your index from local files, instead of downloading it from the API. Namely, you need:</p>
-<ul>
-  <li>the <strong>index settings</strong> (one JSON file); and</li>
-  <li>the <strong>objects</strong> (as many JSON files as needed, each containing an array of objects).</li>
-</ul>
-<p>Those files are typically embedded in the application as resources, although any other origin works too.</p>
-<h3>Conditional bootstrapping</h3>
-<p>To avoid replacing the local mirror every time the app is started (and potentially overwriting more recent data synced from the API), you should test whether the index already has offline data using <a href="../../../../com/algolia/search/saas/MirroredIndex.html#hasOfflineData--"><code>hasOfflineData()</code></a>.</p>
-<h4>Discussion</h4>
-<p><strong>Warning:</strong> We strongly advise against prepackaging index files. While it may work in some cases, Algolia Offline makes no guarantee whatsoever that the index file format will remain backward-compatible forever, nor that it is independent of the hardware architecture (e.g. 32 bits vs 64 bits, or Little Endian vs Big Endian). Instead, always use the manual build feature.</p>
-<p>While a manual build involves computing the offline index on the device, and therefore incurs a small delay before the mirror is actually usable, using plain JSON offers several advantages compared to prepackaging the index file itself:</p>
-<ul>
-  <li>
-  <p>You only need to ship the raw object data, which is smaller than shipping an entire index file, which contains  both the raw data <em>and</em> indexing metadata.</p></li>
-  <li>
-  <p>Plain JSON compresses well with standard compression techniques like GZip, whereas an index file uses a binary  format which doesn&rsquo;t compress very efficiently.</p></li>
-  <li>
-  <p>Build automation is facilitated: you can easily extract the required data from your back-end, whereas building  an index would involve running the app on each mobile platform as part of your build process and capturing the  filesystem.</p></li>
-</ul>
-<p>Also, the build process is purposedly single-threaded across all indices, which means that on most modern devices with multi-core CPUs, the impact of manual building on the app&rsquo;s performance will be very moderate, especially regarding UI responsiveness.</p>
-<h2>Limitations</h2>
-<p>Algolia&rsquo;s core features are fully supported offline, including (but not limited to): <strong>ranking</strong>, <strong>typo tolerance</strong>, <strong>filtering</strong>, <strong>faceting</strong>, <strong>highlighting/snippeting</strong>&hellip;</p>
-<p>However, and partly due to tight memory, CPU and disk space constraints, some features are disabled:</p>
-<ul>
-  <li>
-    <p><strong>Synonyms</strong> are only partially supported:</p>
-    <ul>
-      <li>Multi-way (&ldquo;regular&rdquo;) synonyms are fully supported.</li>
-      <li>One-way synonyms are not supported.</li>
-      <li>Alternative corrections are limited to one alternative (compared to multiple alternatives with online indices).</li>
-      <li>Placeholders are fully supported.</li>
-    </ul>
-  </li>
-  <li>
-  <p>Dictionary-based <strong>plurals</strong> are not supported. (&ldquo;Simple&rdquo; plurals with a final S are supported.)</p></li>
-  <li>
-  <p><strong>IP geolocation</strong> (see <a href="../../../../com/algolia/search/saas/Query.html#setAroundLatLngViaIP-java.lang.Boolean-"><code>Query.setAroundLatLngViaIP(Boolean)</code></a>) is not supported.</p></li>
-  <li>
-  <p><strong>CJK segmentation</strong> is not supported.</p></li>
-</ul></div>
+<div class="block">An online index that can also be mirrored locally.
+
+ **Note:** You cannot construct this class directly. Please use <a href="../../../../com/algolia/search/saas/OfflineClient.html#getIndex-java.lang.String-"><code>OfflineClient.getIndex(String)</code></a> to obtain an
+ instance.
+
+ **Note:** Requires Algolia Offline Core. <a href="../../../../com/algolia/search/saas/OfflineClient.html#enableOfflineMode-java.lang.String-"><code>OfflineClient.enableOfflineMode(String)</code></a> must be called with a
+ valid license key prior to calling any offline-related method.
+
+ When created, an instance of this class has its `mirrored` flag set to false, and behaves like a normal,
+ online <a href="../../../../com/algolia/search/saas/Index.html" title="class in com.algolia.search.saas"><code>Index</code></a>. When the `mirrored` flag is set to true, the index becomes capable of acting upon local data.
+
+ **Warning:** It is a programming error to call methods acting on the local data when `mirrored` is false. Doing so
+ will result in an assertion exception being thrown.
+
+
+ ## Request strategy
+
+ When the index is mirrored and the device is online, it becomes possible to transparently switch between online and
+ offline requests. There is no single best strategy for that, because it depends on the use case and the current
+ network conditions. You can choose the strategy via <a href="../../../../com/algolia/search/saas/MirroredIndex.html#setRequestStrategy-com.algolia.search.saas.MirroredIndex.Strategy-"><code>setRequestStrategy</code></a>. The
+ default is <a href="../../../../com/algolia/search/saas/MirroredIndex.Strategy.html#FALLBACK_ON_FAILURE"><code>FALLBACK_ON_FAILURE</code></a>, which will always target the online API first,
+ then fallback to the offline mirror in case of failure (including network unavailability).
+
+ **Note:** If you want to explicitly target either the online API or the offline mirror, doing so is always possible
+ using the <a href="../../../../com/algolia/search/saas/MirroredIndex.html#searchOnlineAsync-com.algolia.search.saas.Query-com.algolia.search.saas.CompletionHandler-"><code>searchOnlineAsync</code></a> or <a href="../../../../com/algolia/search/saas/MirroredIndex.html#searchOfflineAsync-com.algolia.search.saas.Query-com.algolia.search.saas.CompletionHandler-"><code>searchOfflineAsync</code></a> methods.
+
+ **Note:** The strategy applies to:
+
+ - `searchAsync`
+ - `searchDisjunctiveFacetingAsync`
+ - `multipleQueriesAsync`
+ - `getObjectAsync`
+ - `getObjectsAsync`
+
+
+ ## Bootstrapping
+
+ Before the first sync has successfully completed, a mirrored index is not available offline, because it has simply
+ no data to search in yet. In most cases, this is not a problem: the app will sync as soon as instructed, so unless
+ the device is offline when the app is started for the first time, or unless search is required right after the
+ first launch, the user should not notice anything.
+
+ However, in some cases, you might need to have offline data available as soon as possible. To achieve that,
+ `MirroredIndex` provides a **manual build** feature.
+
+ ### Manual build
+
+ Manual building consists in specifying the source data for your index from local files, instead of downloading it
+ from the API. Namely, you need:
+
+ - the **index settings** (one JSON file); and
+ - the **objects** (as many JSON files as needed, each containing an array of objects).
+
+ Those files are typically embedded in the application as resources, although any other origin works too.
+
+ ### Conditional bootstrapping
+
+ To avoid replacing the local mirror every time the app is started (and potentially overwriting more recent data
+ synced from the API), you should test whether the index already has offline data using <a href="../../../../com/algolia/search/saas/MirroredIndex.html#hasOfflineData--"><code>hasOfflineData()</code></a>.
+
+ #### Discussion
+
+ **Warning:** We strongly advise against prepackaging index files. While it may work in some cases, Algolia Offline
+ makes no guarantee whatsoever that the index file format will remain backward-compatible forever, nor that it
+ is independent of the hardware architecture (e.g. 32 bits vs 64 bits, or Little Endian vs Big Endian). Instead,
+ always use the manual build feature.
+
+ While a manual build involves computing the offline index on the device, and therefore incurs a small delay before
+ the mirror is actually usable, using plain JSON offers several advantages compared to prepackaging the index file
+ itself:
+
+ - You only need to ship the raw object data, which is smaller than shipping an entire index file, which contains
+   both the raw data *and* indexing metadata.
+
+ - Plain JSON compresses well with standard compression techniques like GZip, whereas an index file uses a binary
+   format which doesn't compress very efficiently.
+
+ - Build automation is facilitated: you can easily extract the required data from your back-end, whereas building
+   an index would involve running the app on each mobile platform as part of your build process and capturing the
+   filesystem.
+
+ Also, the build process is purposedly single-threaded across all indices, which means that on most modern devices
+ with multi-core CPUs, the impact of manual building on the app's performance will be very moderate, especially
+ regarding UI responsiveness.
+
+
+ ## Listeners
+
+ You may register a <a href="../../../../com/algolia/search/saas/SyncListener.html" title="interface in com.algolia.search.saas"><code>SyncListener</code></a> to listen for sync-related events. The listener methods will be called using
+ the client's completion executor (which is, by default, the main thread).
+
+
+ ## Limitations
+
+ Algolia's core features are fully supported offline, including (but not limited to): **ranking**,
+ **typo tolerance**, **filtering**, **faceting**, **highlighting/snippeting**...
+
+ However, and partly due to tight memory, CPU and disk space constraints, some features are disabled:
+
+ - **Synonyms** are only partially supported:
+
+     - Multi-way ("regular") synonyms are fully supported.
+     - One-way synonyms are not supported.
+     - Alternative corrections are limited to one alternative (compared to multiple alternatives with online indices).
+     - Placeholders are fully supported.
+
+ - Dictionary-based **plurals** are not supported. ("Simple" plurals with a final S are supported.)
+
+ - **IP geolocation** (see <a href="../../../../com/algolia/search/saas/Query.html#setAroundLatLngViaIP-java.lang.Boolean-"><code>Query.setAroundLatLngViaIP(Boolean)</code></a>) is not supported.
+
+ - **CJK segmentation** is not supported.</div>
 </li>
 </ul>
 </div>
@@ -246,16 +302,23 @@ extends <a href="../../../../com/algolia/search/saas/Index.html" title="class in
 <tr class="rowColor">
 <td class="colFirst"><code>static String</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/algolia/search/saas/MirroredIndex.html#JSON_VALUE_ORIGIN_LOCAL">JSON_VALUE_ORIGIN_LOCAL</a></span></code>
-<div class="block">Value for <code>JSON_KEY_ORIGIN</code> indicating that the results come from the local mirror.</div>
+<div class="block">Value for `JSON_KEY_ORIGIN` indicating that the results come from the local mirror.</div>
 </td>
 </tr>
 <tr class="altColor">
 <td class="colFirst"><code>static String</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/algolia/search/saas/MirroredIndex.html#JSON_VALUE_ORIGIN_REMOTE">JSON_VALUE_ORIGIN_REMOTE</a></span></code>
-<div class="block">Value for <code>JSON_KEY_ORIGIN</code> indicating that the results come from the online API.</div>
+<div class="block">Value for `JSON_KEY_ORIGIN` indicating that the results come from the online API.</div>
 </td>
 </tr>
 </table>
+<ul class="blockList">
+<li class="blockList"><a name="fields.inherited.from.class.com.algolia.search.saas.Index">
+<!--   -->
+</a>
+<h3>Fields inherited from class&nbsp;com.algolia.search.saas.<a href="../../../../com/algolia/search/saas/Index.html" title="class in com.algolia.search.saas">Index</a></h3>
+<code><a href="../../../../com/algolia/search/saas/Index.html#DEFAULT_SETTINGS_VERSION">DEFAULT_SETTINGS_VERSION</a></code></li>
+</ul>
 </li>
 </ul>
 <!-- ========== METHOD SUMMARY =========== -->
@@ -350,8 +413,9 @@ extends <a href="../../../../com/algolia/search/saas/Index.html" title="class in
 </tr>
 <tr id="i13" class="rowColor">
 <td class="colFirst"><code><a href="../../../../com/algolia/search/saas/Request.html" title="interface in com.algolia.search.saas">Request</a></code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/algolia/search/saas/MirroredIndex.html#getObjectAsync-java.lang.String-java.util.List-com.algolia.search.saas.CompletionHandler-">getObjectAsync</a></span>(String&nbsp;objectID,
-              List&lt;String&gt;&nbsp;attributesToRetrieve,
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/algolia/search/saas/MirroredIndex.html#getObjectAsync-java.lang.String-java.util.Collection-com.algolia.search.saas.RequestOptions-com.algolia.search.saas.CompletionHandler-">getObjectAsync</a></span>(String&nbsp;objectID,
+              Collection&lt;String&gt;&nbsp;attributesToRetrieve,
+              <a href="../../../../com/algolia/search/saas/RequestOptions.html" title="class in com.algolia.search.saas">RequestOptions</a>&nbsp;requestOptions,
               <a href="../../../../com/algolia/search/saas/CompletionHandler.html" title="interface in com.algolia.search.saas">CompletionHandler</a>&nbsp;completionHandler)</code>
 <div class="block">Get an individual object from the online API, falling back to the local mirror in case of error (when enabled).</div>
 </td>
@@ -388,20 +452,30 @@ extends <a href="../../../../com/algolia/search/saas/Index.html" title="class in
 </tr>
 <tr id="i18" class="altColor">
 <td class="colFirst"><code><a href="../../../../com/algolia/search/saas/Request.html" title="interface in com.algolia.search.saas">Request</a></code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/algolia/search/saas/MirroredIndex.html#getObjectsAsync-java.util.List-java.util.List-com.algolia.search.saas.CompletionHandler-">getObjectsAsync</a></span>(List&lt;String&gt;&nbsp;objectIDs,
-               List&lt;String&gt;&nbsp;attributesToRetrieve,
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/algolia/search/saas/MirroredIndex.html#getObjectOnlineAsync-java.lang.String-java.util.List-com.algolia.search.saas.RequestOptions-com.algolia.search.saas.CompletionHandler-">getObjectOnlineAsync</a></span>(String&nbsp;objectID,
+                    List&lt;String&gt;&nbsp;attributesToRetrieve,
+                    <a href="../../../../com/algolia/search/saas/RequestOptions.html" title="class in com.algolia.search.saas">RequestOptions</a>&nbsp;requestOptions,
+                    <a href="../../../../com/algolia/search/saas/CompletionHandler.html" title="interface in com.algolia.search.saas">CompletionHandler</a>&nbsp;completionHandler)</code>
+<div class="block">Get an individual object, explicitly targeting the online API, not the offline mirror.</div>
+</td>
+</tr>
+<tr id="i19" class="rowColor">
+<td class="colFirst"><code><a href="../../../../com/algolia/search/saas/Request.html" title="interface in com.algolia.search.saas">Request</a></code></td>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/algolia/search/saas/MirroredIndex.html#getObjectsAsync-java.util.Collection-java.util.Collection-com.algolia.search.saas.RequestOptions-com.algolia.search.saas.CompletionHandler-">getObjectsAsync</a></span>(Collection&lt;String&gt;&nbsp;objectIDs,
+               Collection&lt;String&gt;&nbsp;attributesToRetrieve,
+               <a href="../../../../com/algolia/search/saas/RequestOptions.html" title="class in com.algolia.search.saas">RequestOptions</a>&nbsp;requestOptions,
                <a href="../../../../com/algolia/search/saas/CompletionHandler.html" title="interface in com.algolia.search.saas">CompletionHandler</a>&nbsp;completionHandler)</code>
 <div class="block">Get individual objects from the online API, falling back to the local mirror in case of error (when enabled).</div>
 </td>
 </tr>
-<tr id="i19" class="rowColor">
+<tr id="i20" class="altColor">
 <td class="colFirst"><code><a href="../../../../com/algolia/search/saas/Request.html" title="interface in com.algolia.search.saas">Request</a></code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/algolia/search/saas/MirroredIndex.html#getObjectsOfflineAsync-java.util.List-com.algolia.search.saas.CompletionHandler-">getObjectsOfflineAsync</a></span>(List&lt;String&gt;&nbsp;objectIDs,
                       <a href="../../../../com/algolia/search/saas/CompletionHandler.html" title="interface in com.algolia.search.saas">CompletionHandler</a>&nbsp;completionHandler)</code>
 <div class="block">Get individual objects, explicitly targeting the offline mirror, not the online API.</div>
 </td>
 </tr>
-<tr id="i20" class="altColor">
+<tr id="i21" class="rowColor">
 <td class="colFirst"><code><a href="../../../../com/algolia/search/saas/Request.html" title="interface in com.algolia.search.saas">Request</a></code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/algolia/search/saas/MirroredIndex.html#getObjectsOfflineAsync-java.util.List-java.util.List-com.algolia.search.saas.CompletionHandler-">getObjectsOfflineAsync</a></span>(List&lt;String&gt;&nbsp;objectIDs,
                       List&lt;String&gt;&nbsp;attributesToRetrieve,
@@ -409,14 +483,14 @@ extends <a href="../../../../com/algolia/search/saas/Index.html" title="class in
 <div class="block">Get individual objects, explicitly targeting the offline mirror, not the online API.</div>
 </td>
 </tr>
-<tr id="i21" class="rowColor">
+<tr id="i22" class="altColor">
 <td class="colFirst"><code><a href="../../../../com/algolia/search/saas/Request.html" title="interface in com.algolia.search.saas">Request</a></code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/algolia/search/saas/MirroredIndex.html#getObjectsOnlineAsync-java.util.List-com.algolia.search.saas.CompletionHandler-">getObjectsOnlineAsync</a></span>(List&lt;String&gt;&nbsp;objectIDs,
                      <a href="../../../../com/algolia/search/saas/CompletionHandler.html" title="interface in com.algolia.search.saas">CompletionHandler</a>&nbsp;completionHandler)</code>
 <div class="block">Get individual objects, explicitly targeting the online API, not the offline mirror.</div>
 </td>
 </tr>
-<tr id="i22" class="altColor">
+<tr id="i23" class="rowColor">
 <td class="colFirst"><code><a href="../../../../com/algolia/search/saas/Request.html" title="interface in com.algolia.search.saas">Request</a></code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/algolia/search/saas/MirroredIndex.html#getObjectsOnlineAsync-java.util.List-java.util.List-com.algolia.search.saas.CompletionHandler-">getObjectsOnlineAsync</a></span>(List&lt;String&gt;&nbsp;objectIDs,
                      List&lt;String&gt;&nbsp;attributesToRetrieve,
@@ -424,33 +498,43 @@ extends <a href="../../../../com/algolia/search/saas/Index.html" title="class in
 <div class="block">Get individual objects, explicitly targeting the online API, not the offline mirror.</div>
 </td>
 </tr>
-<tr id="i23" class="rowColor">
+<tr id="i24" class="altColor">
+<td class="colFirst"><code><a href="../../../../com/algolia/search/saas/Request.html" title="interface in com.algolia.search.saas">Request</a></code></td>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/algolia/search/saas/MirroredIndex.html#getObjectsOnlineAsync-java.util.List-java.util.List-com.algolia.search.saas.RequestOptions-com.algolia.search.saas.CompletionHandler-">getObjectsOnlineAsync</a></span>(List&lt;String&gt;&nbsp;objectIDs,
+                     List&lt;String&gt;&nbsp;attributesToRetrieve,
+                     <a href="../../../../com/algolia/search/saas/RequestOptions.html" title="class in com.algolia.search.saas">RequestOptions</a>&nbsp;requestOptions,
+                     <a href="../../../../com/algolia/search/saas/CompletionHandler.html" title="interface in com.algolia.search.saas">CompletionHandler</a>&nbsp;completionHandler)</code>
+<div class="block">Get individual objects, explicitly targeting the online API, not the offline mirror.</div>
+</td>
+</tr>
+<tr id="i25" class="rowColor">
 <td class="colFirst"><code>long</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/algolia/search/saas/MirroredIndex.html#getOfflineFallbackTimeout--">getOfflineFallbackTimeout</a></span>()</code>&nbsp;</td>
 </tr>
-<tr id="i24" class="altColor">
+<tr id="i26" class="altColor">
 <td class="colFirst"><code><a href="../../../../com/algolia/search/saas/MirroredIndex.Strategy.html" title="enum in com.algolia.search.saas">MirroredIndex.Strategy</a></code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/algolia/search/saas/MirroredIndex.html#getRequestStrategy--">getRequestStrategy</a></span>()</code>&nbsp;</td>
 </tr>
-<tr id="i25" class="rowColor">
+<tr id="i27" class="rowColor">
 <td class="colFirst"><code>boolean</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/algolia/search/saas/MirroredIndex.html#hasOfflineData--">hasOfflineData</a></span>()</code>
 <div class="block">Test if this index has offline data on disk.</div>
 </td>
 </tr>
-<tr id="i26" class="altColor">
+<tr id="i28" class="altColor">
 <td class="colFirst"><code>boolean</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/algolia/search/saas/MirroredIndex.html#isMirrored--">isMirrored</a></span>()</code>&nbsp;</td>
 </tr>
-<tr id="i27" class="rowColor">
+<tr id="i29" class="rowColor">
 <td class="colFirst"><code><a href="../../../../com/algolia/search/saas/Request.html" title="interface in com.algolia.search.saas">Request</a></code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/algolia/search/saas/MirroredIndex.html#multipleQueriesAsync-java.util.List-com.algolia.search.saas.Client.MultipleQueriesStrategy-com.algolia.search.saas.CompletionHandler-">multipleQueriesAsync</a></span>(List&lt;<a href="../../../../com/algolia/search/saas/Query.html" title="class in com.algolia.search.saas">Query</a>&gt;&nbsp;queries,
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/algolia/search/saas/MirroredIndex.html#multipleQueriesAsync-java.util.Collection-com.algolia.search.saas.Client.MultipleQueriesStrategy-com.algolia.search.saas.RequestOptions-com.algolia.search.saas.CompletionHandler-">multipleQueriesAsync</a></span>(Collection&lt;<a href="../../../../com/algolia/search/saas/Query.html" title="class in com.algolia.search.saas">Query</a>&gt;&nbsp;queries,
                     <a href="../../../../com/algolia/search/saas/Client.MultipleQueriesStrategy.html" title="enum in com.algolia.search.saas">Client.MultipleQueriesStrategy</a>&nbsp;strategy,
+                    <a href="../../../../com/algolia/search/saas/RequestOptions.html" title="class in com.algolia.search.saas">RequestOptions</a>&nbsp;requestOptions,
                     <a href="../../../../com/algolia/search/saas/CompletionHandler.html" title="interface in com.algolia.search.saas">CompletionHandler</a>&nbsp;completionHandler)</code>
 <div class="block">Run multiple queries on this index with one API call.</div>
 </td>
 </tr>
-<tr id="i28" class="altColor">
+<tr id="i30" class="altColor">
 <td class="colFirst"><code><a href="../../../../com/algolia/search/saas/Request.html" title="interface in com.algolia.search.saas">Request</a></code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/algolia/search/saas/MirroredIndex.html#multipleQueriesOfflineAsync-java.util.List-com.algolia.search.saas.Client.MultipleQueriesStrategy-com.algolia.search.saas.CompletionHandler-">multipleQueriesOfflineAsync</a></span>(List&lt;<a href="../../../../com/algolia/search/saas/Query.html" title="class in com.algolia.search.saas">Query</a>&gt;&nbsp;queries,
                            <a href="../../../../com/algolia/search/saas/Client.MultipleQueriesStrategy.html" title="enum in com.algolia.search.saas">Client.MultipleQueriesStrategy</a>&nbsp;strategy,
@@ -458,7 +542,7 @@ extends <a href="../../../../com/algolia/search/saas/Index.html" title="class in
 <div class="block">Run multiple queries on this index, explicitly targeting the offline mirror.</div>
 </td>
 </tr>
-<tr id="i29" class="rowColor">
+<tr id="i31" class="rowColor">
 <td class="colFirst"><code><a href="../../../../com/algolia/search/saas/Request.html" title="interface in com.algolia.search.saas">Request</a></code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/algolia/search/saas/MirroredIndex.html#multipleQueriesOnlineAsync-java.util.List-com.algolia.search.saas.Client.MultipleQueriesStrategy-com.algolia.search.saas.CompletionHandler-">multipleQueriesOnlineAsync</a></span>(List&lt;<a href="../../../../com/algolia/search/saas/Query.html" title="class in com.algolia.search.saas">Query</a>&gt;&nbsp;queries,
                           <a href="../../../../com/algolia/search/saas/Client.MultipleQueriesStrategy.html" title="enum in com.algolia.search.saas">Client.MultipleQueriesStrategy</a>&nbsp;strategy,
@@ -466,35 +550,46 @@ extends <a href="../../../../com/algolia/search/saas/Index.html" title="class in
 <div class="block">Run multiple queries on this index, explicitly targeting the online API.</div>
 </td>
 </tr>
-<tr id="i30" class="altColor">
+<tr id="i32" class="altColor">
+<td class="colFirst"><code><a href="../../../../com/algolia/search/saas/Request.html" title="interface in com.algolia.search.saas">Request</a></code></td>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/algolia/search/saas/MirroredIndex.html#multipleQueriesOnlineAsync-java.util.List-com.algolia.search.saas.Client.MultipleQueriesStrategy-com.algolia.search.saas.RequestOptions-com.algolia.search.saas.CompletionHandler-">multipleQueriesOnlineAsync</a></span>(List&lt;<a href="../../../../com/algolia/search/saas/Query.html" title="class in com.algolia.search.saas">Query</a>&gt;&nbsp;queries,
+                          <a href="../../../../com/algolia/search/saas/Client.MultipleQueriesStrategy.html" title="enum in com.algolia.search.saas">Client.MultipleQueriesStrategy</a>&nbsp;strategy,
+                          <a href="../../../../com/algolia/search/saas/RequestOptions.html" title="class in com.algolia.search.saas">RequestOptions</a>&nbsp;requestOptions,
+                          <a href="../../../../com/algolia/search/saas/CompletionHandler.html" title="interface in com.algolia.search.saas">CompletionHandler</a>&nbsp;completionHandler)</code>
+<div class="block">Run multiple queries on this index, explicitly targeting the online API.</div>
+</td>
+</tr>
+<tr id="i33" class="rowColor">
 <td class="colFirst"><code>void</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/algolia/search/saas/MirroredIndex.html#removeBuildListener-com.algolia.search.saas.BuildListener-">removeBuildListener</a></span>(<a href="../../../../com/algolia/search/saas/BuildListener.html" title="interface in com.algolia.search.saas">BuildListener</a>&nbsp;listener)</code>
 <div class="block">Remove a listener for build events.</div>
 </td>
 </tr>
-<tr id="i31" class="rowColor">
+<tr id="i34" class="altColor">
 <td class="colFirst"><code>void</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/algolia/search/saas/MirroredIndex.html#removeSyncListener-com.algolia.search.saas.SyncListener-">removeSyncListener</a></span>(<a href="../../../../com/algolia/search/saas/SyncListener.html" title="interface in com.algolia.search.saas">SyncListener</a>&nbsp;listener)</code>
 <div class="block">Remove a listener for sync events.</div>
 </td>
 </tr>
-<tr id="i32" class="altColor">
+<tr id="i35" class="rowColor">
 <td class="colFirst"><code><a href="../../../../com/algolia/search/saas/Request.html" title="interface in com.algolia.search.saas">Request</a></code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/algolia/search/saas/MirroredIndex.html#searchAsync-com.algolia.search.saas.Query-com.algolia.search.saas.CompletionHandler-">searchAsync</a></span>(<a href="../../../../com/algolia/search/saas/Query.html" title="class in com.algolia.search.saas">Query</a>&nbsp;query,
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/algolia/search/saas/MirroredIndex.html#searchAsync-com.algolia.search.saas.Query-com.algolia.search.saas.RequestOptions-com.algolia.search.saas.CompletionHandler-">searchAsync</a></span>(<a href="../../../../com/algolia/search/saas/Query.html" title="class in com.algolia.search.saas">Query</a>&nbsp;query,
+           <a href="../../../../com/algolia/search/saas/RequestOptions.html" title="class in com.algolia.search.saas">RequestOptions</a>&nbsp;requestOptions,
            <a href="../../../../com/algolia/search/saas/CompletionHandler.html" title="interface in com.algolia.search.saas">CompletionHandler</a>&nbsp;completionHandler)</code>
 <div class="block">Search the online API, falling back to the local mirror if enabled in case of error.</div>
 </td>
 </tr>
-<tr id="i33" class="rowColor">
+<tr id="i36" class="altColor">
 <td class="colFirst"><code><a href="../../../../com/algolia/search/saas/Request.html" title="interface in com.algolia.search.saas">Request</a></code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/algolia/search/saas/MirroredIndex.html#searchForFacetValues-java.lang.String-java.lang.String-com.algolia.search.saas.Query-com.algolia.search.saas.CompletionHandler-">searchForFacetValues</a></span>(String&nbsp;facetName,
-                    String&nbsp;text,
-                    <a href="../../../../com/algolia/search/saas/Query.html" title="class in com.algolia.search.saas">Query</a>&nbsp;query,
-                    <a href="../../../../com/algolia/search/saas/CompletionHandler.html" title="interface in com.algolia.search.saas">CompletionHandler</a>&nbsp;completionHandler)</code>
-<div class="block">Search (asynchronously) for some text in a facet values, optionally restricting the returned values to those contained in objects matching other (regular) search criteria.</div>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/algolia/search/saas/MirroredIndex.html#searchForFacetValuesAsync-java.lang.String-java.lang.String-com.algolia.search.saas.Query-com.algolia.search.saas.RequestOptions-com.algolia.search.saas.CompletionHandler-">searchForFacetValuesAsync</a></span>(String&nbsp;facetName,
+                         String&nbsp;text,
+                         <a href="../../../../com/algolia/search/saas/Query.html" title="class in com.algolia.search.saas">Query</a>&nbsp;query,
+                         <a href="../../../../com/algolia/search/saas/RequestOptions.html" title="class in com.algolia.search.saas">RequestOptions</a>&nbsp;requestOptions,
+                         <a href="../../../../com/algolia/search/saas/CompletionHandler.html" title="interface in com.algolia.search.saas">CompletionHandler</a>&nbsp;completionHandler)</code>
+<div class="block">Searches for some text in a facet values, optionally restricting the returned values to those contained in objects matching other (regular) search criteria.</div>
 </td>
 </tr>
-<tr id="i34" class="altColor">
+<tr id="i37" class="rowColor">
 <td class="colFirst"><code><a href="../../../../com/algolia/search/saas/Request.html" title="interface in com.algolia.search.saas">Request</a></code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/algolia/search/saas/MirroredIndex.html#searchForFacetValuesOffline-java.lang.String-java.lang.String-com.algolia.search.saas.Query-com.algolia.search.saas.CompletionHandler-">searchForFacetValuesOffline</a></span>(String&nbsp;facetName,
                            String&nbsp;text,
@@ -503,7 +598,7 @@ extends <a href="../../../../com/algolia/search/saas/Index.html" title="class in
 <div class="block">Search for facet values, explicitly targeting the offline mirror, not the online API.</div>
 </td>
 </tr>
-<tr id="i35" class="rowColor">
+<tr id="i38" class="altColor">
 <td class="colFirst"><code><a href="../../../../com/algolia/search/saas/Request.html" title="interface in com.algolia.search.saas">Request</a></code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/algolia/search/saas/MirroredIndex.html#searchForFacetValuesOnline-java.lang.String-java.lang.String-com.algolia.search.saas.Query-com.algolia.search.saas.CompletionHandler-">searchForFacetValuesOnline</a></span>(String&nbsp;facetName,
                           String&nbsp;text,
@@ -512,63 +607,81 @@ extends <a href="../../../../com/algolia/search/saas/Index.html" title="class in
 <div class="block">Search for facet values, explicitly targeting the online API, not the offline mirror.</div>
 </td>
 </tr>
-<tr id="i36" class="altColor">
+<tr id="i39" class="rowColor">
+<td class="colFirst"><code><a href="../../../../com/algolia/search/saas/Request.html" title="interface in com.algolia.search.saas">Request</a></code></td>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/algolia/search/saas/MirroredIndex.html#searchForFacetValuesOnline-java.lang.String-java.lang.String-com.algolia.search.saas.Query-com.algolia.search.saas.RequestOptions-com.algolia.search.saas.CompletionHandler-">searchForFacetValuesOnline</a></span>(String&nbsp;facetName,
+                          String&nbsp;text,
+                          <a href="../../../../com/algolia/search/saas/Query.html" title="class in com.algolia.search.saas">Query</a>&nbsp;query,
+                          <a href="../../../../com/algolia/search/saas/RequestOptions.html" title="class in com.algolia.search.saas">RequestOptions</a>&nbsp;requestOptions,
+                          <a href="../../../../com/algolia/search/saas/CompletionHandler.html" title="interface in com.algolia.search.saas">CompletionHandler</a>&nbsp;completionHandler)</code>
+<div class="block">Search for facet values, explicitly targeting the online API, not the offline mirror.</div>
+</td>
+</tr>
+<tr id="i40" class="altColor">
 <td class="colFirst"><code><a href="../../../../com/algolia/search/saas/Request.html" title="interface in com.algolia.search.saas">Request</a></code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/algolia/search/saas/MirroredIndex.html#searchOfflineAsync-com.algolia.search.saas.Query-com.algolia.search.saas.CompletionHandler-">searchOfflineAsync</a></span>(<a href="../../../../com/algolia/search/saas/Query.html" title="class in com.algolia.search.saas">Query</a>&nbsp;query,
                   <a href="../../../../com/algolia/search/saas/CompletionHandler.html" title="interface in com.algolia.search.saas">CompletionHandler</a>&nbsp;completionHandler)</code>
 <div class="block">Search the local mirror.</div>
 </td>
 </tr>
-<tr id="i37" class="rowColor">
+<tr id="i41" class="rowColor">
 <td class="colFirst"><code><a href="../../../../com/algolia/search/saas/Request.html" title="interface in com.algolia.search.saas">Request</a></code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/algolia/search/saas/MirroredIndex.html#searchOnlineAsync-com.algolia.search.saas.Query-com.algolia.search.saas.CompletionHandler-">searchOnlineAsync</a></span>(<a href="../../../../com/algolia/search/saas/Query.html" title="class in com.algolia.search.saas">Query</a>&nbsp;query,
                  <a href="../../../../com/algolia/search/saas/CompletionHandler.html" title="interface in com.algolia.search.saas">CompletionHandler</a>&nbsp;completionHandler)</code>
 <div class="block">Search the online API.</div>
 </td>
 </tr>
-<tr id="i38" class="altColor">
+<tr id="i42" class="altColor">
+<td class="colFirst"><code><a href="../../../../com/algolia/search/saas/Request.html" title="interface in com.algolia.search.saas">Request</a></code></td>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/algolia/search/saas/MirroredIndex.html#searchOnlineAsync-com.algolia.search.saas.Query-com.algolia.search.saas.RequestOptions-com.algolia.search.saas.CompletionHandler-">searchOnlineAsync</a></span>(<a href="../../../../com/algolia/search/saas/Query.html" title="class in com.algolia.search.saas">Query</a>&nbsp;query,
+                 <a href="../../../../com/algolia/search/saas/RequestOptions.html" title="class in com.algolia.search.saas">RequestOptions</a>&nbsp;requestOptions,
+                 <a href="../../../../com/algolia/search/saas/CompletionHandler.html" title="interface in com.algolia.search.saas">CompletionHandler</a>&nbsp;completionHandler)</code>
+<div class="block">Search the online API.</div>
+</td>
+</tr>
+<tr id="i43" class="rowColor">
 <td class="colFirst"><code>void</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/algolia/search/saas/MirroredIndex.html#setDataSelectionQueries-com.algolia.search.saas.MirroredIndex.DataSelectionQuery...-">setDataSelectionQueries</a></span>(<a href="../../../../com/algolia/search/saas/MirroredIndex.DataSelectionQuery.html" title="class in com.algolia.search.saas">MirroredIndex.DataSelectionQuery</a>...&nbsp;queries)</code>
 <div class="block">Replace all data selection queries associated to this index.</div>
 </td>
 </tr>
-<tr id="i39" class="rowColor">
+<tr id="i44" class="altColor">
 <td class="colFirst"><code>void</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/algolia/search/saas/MirroredIndex.html#setDelayBetweenSyncs-long-">setDelayBetweenSyncs</a></span>(long&nbsp;delayBetweenSyncs)</code>
 <div class="block">Set the delay after which data is considered to be obsolete.</div>
 </td>
 </tr>
-<tr id="i40" class="altColor">
+<tr id="i45" class="rowColor">
 <td class="colFirst"><code>void</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/algolia/search/saas/MirroredIndex.html#setDelayBetweenSyncs-long-java.util.concurrent.TimeUnit-">setDelayBetweenSyncs</a></span>(long&nbsp;duration,
                     java.util.concurrent.TimeUnit&nbsp;unit)</code>
 <div class="block">Set the delay after which data is considered to be obsolete.</div>
 </td>
 </tr>
-<tr id="i41" class="rowColor">
+<tr id="i46" class="altColor">
 <td class="colFirst"><code>void</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/algolia/search/saas/MirroredIndex.html#setMirrored-boolean-">setMirrored</a></span>(boolean&nbsp;mirrored)</code>&nbsp;</td>
 </tr>
-<tr id="i42" class="altColor">
+<tr id="i47" class="rowColor">
 <td class="colFirst"><code>void</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/algolia/search/saas/MirroredIndex.html#setOfflineFallbackTimeout-long-">setOfflineFallbackTimeout</a></span>(long&nbsp;offlineFallbackTimeout)</code>&nbsp;</td>
 </tr>
-<tr id="i43" class="rowColor">
+<tr id="i48" class="altColor">
 <td class="colFirst"><code>void</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/algolia/search/saas/MirroredIndex.html#setOfflineFallbackTimeout-long-java.util.concurrent.TimeUnit-">setOfflineFallbackTimeout</a></span>(long&nbsp;offlineFallbackTimeout,
                          java.util.concurrent.TimeUnit&nbsp;unit)</code>&nbsp;</td>
 </tr>
-<tr id="i44" class="altColor">
+<tr id="i49" class="rowColor">
 <td class="colFirst"><code>void</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/algolia/search/saas/MirroredIndex.html#setRequestStrategy-com.algolia.search.saas.MirroredIndex.Strategy-">setRequestStrategy</a></span>(<a href="../../../../com/algolia/search/saas/MirroredIndex.Strategy.html" title="enum in com.algolia.search.saas">MirroredIndex.Strategy</a>&nbsp;requestStrategy)</code>&nbsp;</td>
 </tr>
-<tr id="i45" class="rowColor">
+<tr id="i50" class="altColor">
 <td class="colFirst"><code>void</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/algolia/search/saas/MirroredIndex.html#sync--">sync</a></span>()</code>
 <div class="block">Launch a sync.</div>
 </td>
 </tr>
-<tr id="i46" class="altColor">
+<tr id="i51" class="rowColor">
 <td class="colFirst"><code>void</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/algolia/search/saas/MirroredIndex.html#syncIfNeeded--">syncIfNeeded</a></span>()</code>
 <div class="block">Launch a sync only if the data is obsolete.</div>
@@ -580,7 +693,14 @@ extends <a href="../../../../com/algolia/search/saas/Index.html" title="class in
 <!--   -->
 </a>
 <h3>Methods inherited from class&nbsp;com.algolia.search.saas.<a href="../../../../com/algolia/search/saas/Index.html" title="class in com.algolia.search.saas">Index</a></h3>
-<code><a href="../../../../com/algolia/search/saas/Index.html#addObjectAsync-org.json.JSONObject-com.algolia.search.saas.CompletionHandler-">addObjectAsync</a>, <a href="../../../../com/algolia/search/saas/Index.html#addObjectAsync-org.json.JSONObject-java.lang.String-com.algolia.search.saas.CompletionHandler-">addObjectAsync</a>, <a href="../../../../com/algolia/search/saas/Index.html#addObjectsAsync-org.json.JSONArray-com.algolia.search.saas.CompletionHandler-">addObjectsAsync</a>, <a href="../../../../com/algolia/search/saas/Index.html#browseAsync-com.algolia.search.saas.Query-com.algolia.search.saas.CompletionHandler-">browseAsync</a>, <a href="../../../../com/algolia/search/saas/Index.html#browseFromAsync-java.lang.String-com.algolia.search.saas.CompletionHandler-">browseFromAsync</a>, <a href="../../../../com/algolia/search/saas/Index.html#clearIndexAsync-com.algolia.search.saas.CompletionHandler-">clearIndexAsync</a>, <a href="../../../../com/algolia/search/saas/Index.html#clearSearchCache--">clearSearchCache</a>, <a href="../../../../com/algolia/search/saas/Index.html#deleteByQueryAsync-com.algolia.search.saas.Query-com.algolia.search.saas.CompletionHandler-">deleteByQueryAsync</a>, <a href="../../../../com/algolia/search/saas/Index.html#deleteObjectAsync-java.lang.String-com.algolia.search.saas.CompletionHandler-">deleteObjectAsync</a>, <a href="../../../../com/algolia/search/saas/Index.html#deleteObjectsAsync-java.util.List-com.algolia.search.saas.CompletionHandler-">deleteObjectsAsync</a>, <a href="../../../../com/algolia/search/saas/Index.html#disableSearchCache--">disableSearchCache</a>, <a href="../../../../com/algolia/search/saas/Index.html#enableSearchCache--">enableSearchCache</a>, <a href="../../../../com/algolia/search/saas/Index.html#enableSearchCache-int-int-">enableSearchCache</a>, <a href="../../../../com/algolia/search/saas/Index.html#getIndexName--">getIndexName</a>, <a href="../../../../com/algolia/search/saas/Index.html#getObjectAsync-java.lang.String-com.algolia.search.saas.CompletionHandler-">getObjectAsync</a>, <a href="../../../../com/algolia/search/saas/Index.html#getObjectsAsync-java.util.List-com.algolia.search.saas.CompletionHandler-">getObjectsAsync</a>, <a href="../../../../com/algolia/search/saas/Index.html#getSettingsAsync-com.algolia.search.saas.CompletionHandler-">getSettingsAsync</a>, <a href="../../../../com/algolia/search/saas/Index.html#partialUpdateObjectAsync-org.json.JSONObject-java.lang.String-boolean-com.algolia.search.saas.CompletionHandler-">partialUpdateObjectAsync</a>, <a href="../../../../com/algolia/search/saas/Index.html#partialUpdateObjectAsync-org.json.JSONObject-java.lang.String-com.algolia.search.saas.CompletionHandler-">partialUpdateObjectAsync</a>, <a href="../../../../com/algolia/search/saas/Index.html#partialUpdateObjectsAsync-org.json.JSONArray-boolean-com.algolia.search.saas.CompletionHandler-">partialUpdateObjectsAsync</a>, <a href="../../../../com/algolia/search/saas/Index.html#partialUpdateObjectsAsync-org.json.JSONArray-com.algolia.search.saas.CompletionHandler-">partialUpdateObjectsAsync</a>, <a href="../../../../com/algolia/search/saas/Index.html#saveObjectAsync-org.json.JSONObject-java.lang.String-com.algolia.search.saas.CompletionHandler-">saveObjectAsync</a>, <a href="../../../../com/algolia/search/saas/Index.html#saveObjectsAsync-org.json.JSONArray-com.algolia.search.saas.CompletionHandler-">saveObjectsAsync</a>, <a href="../../../../com/algolia/search/saas/Index.html#searchDisjunctiveFacetingAsync-com.algolia.search.saas.Query-java.util.List-java.util.Map-com.algolia.search.saas.CompletionHandler-">searchDisjunctiveFacetingAsync</a>, <a href="../../../../com/algolia/search/saas/Index.html#searchForFacetValues-java.lang.String-java.lang.String-com.algolia.search.saas.CompletionHandler-">searchForFacetValues</a>, <a href="../../../../com/algolia/search/saas/Index.html#searchForFacetValuesAsync-java.lang.String-java.lang.String-com.algolia.search.saas.CompletionHandler-">searchForFacetValuesAsync</a>, <a href="../../../../com/algolia/search/saas/Index.html#searchForFacetValuesAsync-java.lang.String-java.lang.String-com.algolia.search.saas.Query-com.algolia.search.saas.CompletionHandler-">searchForFacetValuesAsync</a>, <a href="../../../../com/algolia/search/saas/Index.html#searchSync-com.algolia.search.saas.Query-">searchSync</a>, <a href="../../../../com/algolia/search/saas/Index.html#setSettingsAsync-org.json.JSONObject-com.algolia.search.saas.CompletionHandler-">setSettingsAsync</a>, <a href="../../../../com/algolia/search/saas/Index.html#toString--">toString</a>, <a href="../../../../com/algolia/search/saas/Index.html#waitTaskAsync-java.lang.String-com.algolia.search.saas.CompletionHandler-">waitTaskAsync</a></code></li>
+<code><a href="../../../../com/algolia/search/saas/Index.html#addObject-org.json.JSONObject-com.algolia.search.saas.RequestOptions-">addObject</a>, <a href="../../../../com/algolia/search/saas/Index.html#addObject-org.json.JSONObject-java.lang.String-com.algolia.search.saas.RequestOptions-">addObject</a>, <a href="../../../../com/algolia/search/saas/Index.html#addObjectAsync-org.json.JSONObject-com.algolia.search.saas.CompletionHandler-">addObjectAsync</a>, <a href="../../../../com/algolia/search/saas/Index.html#addObjectAsync-org.json.JSONObject-java.lang.String-com.algolia.search.saas.CompletionHandler-">addObjectAsync</a>, <a href="../../../../com/algolia/search/saas/Index.html#addObjectAsync-org.json.JSONObject-java.lang.String-com.algolia.search.saas.RequestOptions-com.algolia.search.saas.CompletionHandler-">addObjectAsync</a>, <a href="../../../../com/algolia/search/saas/Index.html#addObjects-org.json.JSONArray-com.algolia.search.saas.RequestOptions-">addObjects</a>, <a href="../../../../com/algolia/search/saas/Index.html#addObjectsAsync-org.json.JSONArray-com.algolia.search.saas.CompletionHandler-">addObjectsAsync</a>, <a href="../../../../com/algolia/search/saas/Index.html#addObjectsAsync-org.json.JSONArray-com.algolia.search.saas.RequestOptions-com.algolia.search.saas.CompletionHandler-">addObjectsAsync</a>, <a href="../../../../com/algolia/search/saas/Index.html#browseAsync-com.algolia.search.saas.Query-com.algolia.search.saas.CompletionHandler-">browseAsync</a>, <a href="../../../../com/algolia/search/saas/Index.html#browseAsync-com.algolia.search.saas.Query-com.algolia.search.saas.RequestOptions-com.algolia.search.saas.CompletionHandler-">browseAsync</a>, <a href="../../../../com/algolia/search/saas/Index.html#browseFromAsync-java.lang.String-com.algolia.search.saas.CompletionHandler-">browseFromAsync</a>, <a href="../../../../com/algolia/search/saas/Index.html#browseFromAsync-java.lang.String-com.algolia.search.saas.RequestOptions-com.algolia.search.saas.CompletionHandler-">browseFromAsync</a>, <a href="../../../../com/algolia/search/saas/Index.html#clearIndex-com.algolia.search.saas.RequestOptions-">clearIndex</a>, <a href="../../../../com/algolia/search/saas/Index.html#clearIndexAsync-com.algolia.search.saas.CompletionHandler-">clearIndexAsync</a>, <a href="../../../../com/algolia/search/saas/Index.html#clearIndexAsync-com.algolia.search.saas.RequestOptions-com.algolia.search.saas.CompletionHandler-">clearIndexAsync</a>, <a href="../../../../com/algolia/search/saas/Index.html#clearSearchCache--">clearSearchCache</a>, <a href="../../../../com/algolia/search/saas/Index.html#deleteBy-com.algolia.search.saas.Query-">deleteBy</a>, <a href="../../../../com/algolia/search/saas/Index.html#deleteBy-com.algolia.search.saas.Query-com.algolia.search.saas.RequestOptions-">deleteBy</a>, <a href="../../../../com/algolia/search/saas/Index.html#deleteByAsync-com.algolia.search.saas.Query-com.algolia.search.saas.CompletionHandler-">deleteByAsync</a>, <a href="../../../../com/algolia/search/saas/Index.html#deleteByAsync-com.algolia.search.saas.Query-com.algolia.search.saas.RequestOptions-com.algolia.search.saas.CompletionHandler-">deleteByAsync</a>, <a href="../../../../com/algolia/search/saas/Index.html#deleteByQuery-com.algolia.search.saas.Query-com.algolia.search.saas.RequestOptions-">deleteByQuery</a>, <a href="../../../../com/algolia/search/saas/Index.html#deleteByQueryAsync-com.algolia.search.saas.Query-com.algolia.search.saas.CompletionHandler-">deleteByQueryAsync</a>, <a href="../../../../com/algolia/search/saas/Index.html#deleteByQueryAsync-com.algolia.search.saas.Query-com.algolia.search.saas.RequestOptions-com.algolia.search.saas.CompletionHandler-">deleteByQueryAsync</a>, <a href="../../../../com/algolia/search/saas/Index.html#deleteObject-java.lang.String-com.algolia.search.saas.RequestOptions-">deleteObject</a>, <a href="../../../../com/algolia/search/saas/Index.html#deleteObjectAsync-java.lang.String-com.algolia.search.saas.CompletionHandler-">deleteObjectAsync</a>, <a href="../../../../com/algolia/search/saas/Index.html#deleteObjectAsync-java.lang.String-com.algolia.search.saas.RequestOptions-com.algolia.search.saas.CompletionHandler-">deleteObjectAsync</a>, <a href="../../../../com/algolia/search/saas/Index.html#deleteObjects-java.util.Collection-com.algolia.search.saas.RequestOptions-">deleteObjects</a>, <a href="../../../../com/algolia/search/saas/Index.html#deleteObjectsAsync-java.util.Collection-com.algolia.search.saas.CompletionHandler-">deleteObjectsAsync</a>, <a href="../../../../com/algolia/search/saas/Index.html#deleteObjectsAsync-java.util.Collection-com.algolia.search.saas.RequestOptions-com.algolia.search.saas.CompletionHandler-">deleteObjectsAsync</a>, <a href="../../../../com/algolia/search/saas/Index.html#disableSearchCache--">disableSearchCache</a>, <a href="../../../../com/algolia/search/saas/Index.html#enableSearchCache--">enableSearchCache</a>, <a href="../../../../com/algolia/search/saas/Index.html#enableSearchCache-int-int-">enableSearchCache</a>, <a href="../../../../com/algolia/search/saas/Index.html#getObject-java.lang.String-java.util.Collection-com.algolia.search.saas.RequestOptions-">getObject</a>, <a href="../../../../com/algolia/search/saas/Index.html#getObject-java.lang.String-com.algolia.search.saas.RequestOptions-">getObject</a>, <a href="../../../../com/algolia/search/saas/Index.html#getObjectAsync-java.lang.String-java.util.Collection-com.algolia.search.saas.CompletionHandler-">getObjectAsync</a>, <a href="../../../../com/algolia/search/saas/Index.html#getObjectAsync-java.lang.String-com.algolia.search.saas.CompletionHandler-">getObjectAsync</a>, <a href="../../../../com/algolia/search/saas/Index.html#getObjects-java.util.Collection-">getObjects</a>, <a href="../../../../com/algolia/search/saas/Index.html#getObjects-java.util.Collection-java.util.Collection-com.algolia.search.saas.RequestOptions-">getObjects</a>, <a href="../../../../com/algolia/search/saas/Index.html#getObjectsAsync-java.util.Collection-com.algolia.search.saas.CompletionHandler-">getObjectsAsync</a>, <a href="../../../../com/algolia/search/saas/Index.html#getObjectsAsync-java.util.Collection-java.util.List-com.algolia.search.saas.CompletionHandler-">getObjectsAsync</a>, <a href="../../../../com/algolia/search/saas/Index.html#getObjectsAsync-java.util.Collection-com.algolia.search.saas.RequestOptions-com.algolia.search.saas.CompletionHandler-">getObjectsAsync</a>, <a href="../../../../com/algolia/search/saas/Index.html#getRawIndexName--">getRawIndexName</a>, <a href="../../../../com/algolia/search/saas/Index.html#getSettings-int-com.algolia.search.saas.RequestOptions-">getSettings</a>, <a href="../../../../com/algolia/search/saas/Index.html#getSettings-com.algolia.search.saas.RequestOptions-">getSettings</a>, <a href="../../../../com/algolia/search/saas/Index.html#getSettingsAsync-com.algolia.search.saas.CompletionHandler-">getSettingsAsync</a>, <a href="../../../../com/algolia/search/saas/Index.html#getSettingsAsync-com.algolia.search.saas.RequestOptions-com.algolia.search.saas.CompletionHandler-">getSettingsAsync</a>, <a href="../../../../com/algolia/search/saas/Index.html#multipleQueriesAsync-java.util.Collection-com.algolia.search.saas.Client.MultipleQueriesStrategy-com.algolia.search.saas.CompletionHandler-">multipleQueriesAsync</a>, <a href="../../../../com/algolia/search/saas/Index.html#partialUpdateObject-org.json.JSONObject-java.lang.String-java.lang.Boolean-com.algolia.search.saas.RequestOptions-">partialUpdateObject</a>, <a href="../../../../com/algolia/search/saas/Index.html#partialUpdateObjectAsync-org.json.JSONObject-java.lang.String-boolean-com.algolia.search.saas.CompletionHandler-">partialUpdateObjectAsync</a>, <a href="../../../../com/algolia/search/saas/Index.html#partialUpdateObjectAsync-org.json.JSONObject-java.lang.String-boolean-com.algolia.search.saas.RequestOptions-com.algolia.search.saas.CompletionHandler-">partialUpdateObjectAsync</a>, <a href="../../../../com/algolia/search/saas/Index.html#partialUpdateObjectAsync-org.json.JSONObject-java.lang.String-com.algolia.search.saas.CompletionHandler-">partialUpdateObjectAsync</a>, <a href="../../../../com/algolia/search/saas/Index.html#partialUpdateObjects-org.json.JSONArray-boolean-com.algolia.search.saas.RequestOptions-">partialUpdateObjects</a>, <a href="../../../../com/algolia/search/saas/Index.html#partialUpdateObjectsAsync-org.json.JSONArray-boolean-com.algolia.search.saas.CompletionHandler-">partialUpdateObjectsAsync</a>, <a href="../../../../com/algolia/search/saas/Index.html#partialUpdateObjectsAsync-org.json.JSONArray-boolean-com.algolia.search.saas.RequestOptions-com.algolia.search.saas.CompletionHandler-">partialUpdateObjectsAsync</a>, <a href="../../../../com/algolia/search/saas/Index.html#partialUpdateObjectsAsync-org.json.JSONArray-com.algolia.search.saas.CompletionHandler-">partialUpdateObjectsAsync</a>, <a href="../../../../com/algolia/search/saas/Index.html#saveObject-org.json.JSONObject-java.lang.String-com.algolia.search.saas.RequestOptions-">saveObject</a>, <a href="../../../../com/algolia/search/saas/Index.html#saveObjectAsync-org.json.JSONObject-java.lang.String-com.algolia.search.saas.CompletionHandler-">saveObjectAsync</a>, <a href="../../../../com/algolia/search/saas/Index.html#saveObjectAsync-org.json.JSONObject-java.lang.String-com.algolia.search.saas.RequestOptions-com.algolia.search.saas.CompletionHandler-">saveObjectAsync</a>, <a href="../../../../com/algolia/search/saas/Index.html#saveObjects-org.json.JSONArray-com.algolia.search.saas.RequestOptions-">saveObjects</a>, <a href="../../../../com/algolia/search/saas/Index.html#saveObjectsAsync-org.json.JSONArray-com.algolia.search.saas.CompletionHandler-">saveObjectsAsync</a>, <a href="../../../../com/algolia/search/saas/Index.html#saveObjectsAsync-org.json.JSONArray-com.algolia.search.saas.RequestOptions-com.algolia.search.saas.CompletionHandler-">saveObjectsAsync</a>, <a href="../../../../com/algolia/search/saas/Index.html#search-com.algolia.search.saas.Query-com.algolia.search.saas.RequestOptions-">search</a>, <a href="../../../../com/algolia/search/saas/Index.html#searchDisjunctiveFacetingAsync-com.algolia.search.saas.Query-java.util.Collection-java.util.Map-com.algolia.search.saas.CompletionHandler-">searchDisjunctiveFacetingAsync</a>, <a href="../../../../com/algolia/search/saas/Index.html#searchDisjunctiveFacetingAsync-com.algolia.search.saas.Query-java.util.Collection-java.util.Map-com.algolia.search.saas.RequestOptions-com.algolia.search.saas.CompletionHandler-">searchDisjunctiveFacetingAsync</a>, <a href="../../../../com/algolia/search/saas/Index.html#searchForFacetValues-java.lang.String-java.lang.String-com.algolia.search.saas.CompletionHandler-">searchForFacetValues</a>, <a href="../../../../com/algolia/search/saas/Index.html#searchForFacetValues-java.lang.String-java.lang.String-com.algolia.search.saas.Query-com.algolia.search.saas.CompletionHandler-">searchForFacetValues</a>, <a href="../../../../com/algolia/search/saas/Index.html#searchForFacetValuesAsync-java.lang.String-java.lang.String-com.algolia.search.saas.CompletionHandler-">searchForFacetValuesAsync</a>, <a href="../../../../com/algolia/search/saas/Index.html#searchForFacetValuesAsync-java.lang.String-java.lang.String-com.algolia.search.saas.Query-com.algolia.search.saas.CompletionHandler-">searchForFacetValuesAsync</a>, <a href="../../../../com/algolia/search/saas/Index.html#searchSync-com.algolia.search.saas.Query-">searchSync</a>, <a href="../../../../com/algolia/search/saas/Index.html#searchSync-com.algolia.search.saas.Query-com.algolia.search.saas.RequestOptions-">searchSync</a>, <a href="../../../../com/algolia/search/saas/Index.html#setSettings-org.json.JSONObject-boolean-com.algolia.search.saas.RequestOptions-">setSettings</a>, <a href="../../../../com/algolia/search/saas/Index.html#setSettingsAsync-org.json.JSONObject-boolean-com.algolia.search.saas.RequestOptions-com.algolia.search.saas.CompletionHandler-">setSettingsAsync</a>, <a href="../../../../com/algolia/search/saas/Index.html#setSettingsAsync-org.json.JSONObject-com.algolia.search.saas.CompletionHandler-">setSettingsAsync</a>, <a href="../../../../com/algolia/search/saas/Index.html#toString--">toString</a>, <a href="../../../../com/algolia/search/saas/Index.html#waitTask-java.lang.String-">waitTask</a>, <a href="../../../../com/algolia/search/saas/Index.html#waitTask-java.lang.String-long-">waitTask</a>, <a href="../../../../com/algolia/search/saas/Index.html#waitTaskAsync-long-com.algolia.search.saas.CompletionHandler-">waitTaskAsync</a>, <a href="../../../../com/algolia/search/saas/Index.html#waitTaskAsync-java.lang.String-com.algolia.search.saas.CompletionHandler-">waitTaskAsync</a></code></li>
+</ul>
+<ul class="blockList">
+<li class="blockList"><a name="methods.inherited.from.class.com.algolia.search.saas.Searchable">
+<!--   -->
+</a>
+<h3>Methods inherited from class&nbsp;com.algolia.search.saas.<a href="../../../../com/algolia/search/saas/Searchable.html" title="class in com.algolia.search.saas">Searchable</a></h3>
+<code><a href="../../../../com/algolia/search/saas/Searchable.html#searchAsync-com.algolia.search.saas.Query-com.algolia.search.saas.CompletionHandler-">searchAsync</a></code></li>
 </ul>
 <ul class="blockList">
 <li class="blockList"><a name="methods.inherited.from.class.Object">
@@ -610,7 +730,7 @@ extends <a href="../../../../com/algolia/search/saas/Index.html" title="class in
 <li class="blockList">
 <h4>JSON_KEY_ORIGIN</h4>
 <pre>public static final&nbsp;String JSON_KEY_ORIGIN</pre>
-<div class="block"><p>Key used to indicate the origin of results in the returned JSON.</p></div>
+<div class="block">Key used to indicate the origin of results in the returned JSON.</div>
 <dl>
 <dt><span class="seeLabel">See Also:</span></dt>
 <dd><a href="../../../../constant-values.html#com.algolia.search.saas.MirroredIndex.JSON_KEY_ORIGIN">Constant Field Values</a></dd>
@@ -624,7 +744,7 @@ extends <a href="../../../../com/algolia/search/saas/Index.html" title="class in
 <li class="blockList">
 <h4>JSON_VALUE_ORIGIN_LOCAL</h4>
 <pre>public static final&nbsp;String JSON_VALUE_ORIGIN_LOCAL</pre>
-<div class="block"><p>Value for <code>JSON_KEY_ORIGIN</code> indicating that the results come from the local mirror.</p></div>
+<div class="block">Value for `JSON_KEY_ORIGIN` indicating that the results come from the local mirror.</div>
 <dl>
 <dt><span class="seeLabel">See Also:</span></dt>
 <dd><a href="../../../../constant-values.html#com.algolia.search.saas.MirroredIndex.JSON_VALUE_ORIGIN_LOCAL">Constant Field Values</a></dd>
@@ -638,7 +758,7 @@ extends <a href="../../../../com/algolia/search/saas/Index.html" title="class in
 <li class="blockList">
 <h4>JSON_VALUE_ORIGIN_REMOTE</h4>
 <pre>public static final&nbsp;String JSON_VALUE_ORIGIN_REMOTE</pre>
-<div class="block"><p>Value for <code>JSON_KEY_ORIGIN</code> indicating that the results come from the online API.</p></div>
+<div class="block">Value for `JSON_KEY_ORIGIN` indicating that the results come from the online API.</div>
 <dl>
 <dt><span class="seeLabel">See Also:</span></dt>
 <dd><a href="../../../../constant-values.html#com.algolia.search.saas.MirroredIndex.JSON_VALUE_ORIGIN_REMOTE">Constant Field Values</a></dd>
@@ -652,7 +772,7 @@ extends <a href="../../../../com/algolia/search/saas/Index.html" title="class in
 <li class="blockList">
 <h4>DEFAULT_DELAY_BETWEEN_SYNCS</h4>
 <pre>public static final&nbsp;long DEFAULT_DELAY_BETWEEN_SYNCS</pre>
-<div class="block"><p>Default minimum delay between two syncs (in milliseconds).</p></div>
+<div class="block">Default minimum delay between two syncs (in milliseconds).</div>
 <dl>
 <dt><span class="seeLabel">See Also:</span></dt>
 <dd><a href="../../../../constant-values.html#com.algolia.search.saas.MirroredIndex.DEFAULT_DELAY_BETWEEN_SYNCS">Constant Field Values</a></dd>
@@ -666,7 +786,7 @@ extends <a href="../../../../com/algolia/search/saas/Index.html" title="class in
 <li class="blockList">
 <h4>DEFAULT_OFFLINE_FALLBACK_TIMEOUT</h4>
 <pre>public static final&nbsp;long DEFAULT_OFFLINE_FALLBACK_TIMEOUT</pre>
-<div class="block"><p>Default delay before launching an offline request (in milliseconds).</p></div>
+<div class="block">Default delay before launching an offline request (in milliseconds).</div>
 <dl>
 <dt><span class="seeLabel">See Also:</span></dt>
 <dd><a href="../../../../constant-values.html#com.algolia.search.saas.MirroredIndex.DEFAULT_OFFLINE_FALLBACK_TIMEOUT">Constant Field Values</a></dd>
@@ -720,7 +840,8 @@ extends <a href="../../../../com/algolia/search/saas/Index.html" title="class in
 <h4>addDataSelectionQuery</h4>
 <pre>public&nbsp;void&nbsp;addDataSelectionQuery(@NonNull
                                   <a href="../../../../com/algolia/search/saas/MirroredIndex.DataSelectionQuery.html" title="class in com.algolia.search.saas">MirroredIndex.DataSelectionQuery</a>&nbsp;query)</pre>
-<div class="block"><p>Add a data selection query to this index. NOTE: All queries are implicitly browse queries (and not search queries).</p></div>
+<div class="block">Add a data selection query to this index.
+ NOTE: All queries are implicitly browse queries (and not search queries).</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>query</code> - The data selection query to add.</dd>
@@ -735,7 +856,7 @@ extends <a href="../../../../com/algolia/search/saas/Index.html" title="class in
 <h4>setDataSelectionQueries</h4>
 <pre>public&nbsp;void&nbsp;setDataSelectionQueries(@NonNull
                                     <a href="../../../../com/algolia/search/saas/MirroredIndex.DataSelectionQuery.html" title="class in com.algolia.search.saas">MirroredIndex.DataSelectionQuery</a>...&nbsp;queries)</pre>
-<div class="block"><p>Replace all data selection queries associated to this index.</p></div>
+<div class="block">Replace all data selection queries associated to this index.</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>queries</code> - The new data selection queries. (May be empty, although this will actually empty your mirror!)</dd>
@@ -768,7 +889,7 @@ public&nbsp;<a href="../../../../com/algolia/search/saas/MirroredIndex.DataSelec
 <li class="blockList">
 <h4>setDelayBetweenSyncs</h4>
 <pre>public&nbsp;void&nbsp;setDelayBetweenSyncs(long&nbsp;delayBetweenSyncs)</pre>
-<div class="block"><p>Set the delay after which data is considered to be obsolete.</p></div>
+<div class="block">Set the delay after which data is considered to be obsolete.</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>delayBetweenSyncs</code> - The delay between syncs, in milliseconds.</dd>
@@ -783,7 +904,7 @@ public&nbsp;<a href="../../../../com/algolia/search/saas/MirroredIndex.DataSelec
 <h4>getDelayBetweenSyncs</h4>
 <pre>public&nbsp;long&nbsp;getDelayBetweenSyncs(@NonNull
                                  java.util.concurrent.TimeUnit&nbsp;unit)</pre>
-<div class="block"><p>Get the delay between two syncs.</p></div>
+<div class="block">Get the delay between two syncs.</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>unit</code> - The unit in which the result will be expressed.</dd>
@@ -801,7 +922,7 @@ public&nbsp;<a href="../../../../com/algolia/search/saas/MirroredIndex.DataSelec
 <pre>public&nbsp;void&nbsp;setDelayBetweenSyncs(long&nbsp;duration,
                                  @NonNull
                                  java.util.concurrent.TimeUnit&nbsp;unit)</pre>
-<div class="block"><p>Set the delay after which data is considered to be obsolete.</p></div>
+<div class="block">Set the delay after which data is considered to be obsolete.</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>duration</code> - The delay between syncs, expressed in <code>unit</code>.</dd>
@@ -816,8 +937,10 @@ public&nbsp;<a href="../../../../com/algolia/search/saas/MirroredIndex.DataSelec
 <li class="blockList">
 <h4>sync</h4>
 <pre>public&nbsp;void&nbsp;sync()</pre>
-<div class="block"><p>Launch a sync. If a sync is already running, this call is ignored. Otherwise, the sync is enqueued and runs in the background.</p>
-<p>NOTE: All index syncs are sequential: no two syncs can run at the same time.</p></div>
+<div class="block">Launch a sync.
+ If a sync is already running, this call is ignored. Otherwise, the sync is enqueued and runs in the background.
+
+ NOTE: All index syncs are sequential: no two syncs can run at the same time.</div>
 <dl>
 <dt><span class="throwsLabel">Throws:</span></dt>
 <dd><code>IllegalStateException</code> - If no data selection queries were set.</dd>
@@ -831,7 +954,9 @@ public&nbsp;<a href="../../../../com/algolia/search/saas/MirroredIndex.DataSelec
 <li class="blockList">
 <h4>syncIfNeeded</h4>
 <pre>public&nbsp;void&nbsp;syncIfNeeded()</pre>
-<div class="block"><p>Launch a sync only if the data is obsolete. The data is obsolete if the last successful sync is older than the delay between syncs, or if the data selection queries have been changed in the meantime.</p></div>
+<div class="block">Launch a sync only if the data is obsolete.
+ The data is obsolete if the last successful sync is older than the delay between syncs, or if the data selection
+ queries have been changed in the meantime.</div>
 <dl>
 <dt><span class="throwsLabel">Throws:</span></dt>
 <dd><code>IllegalStateException</code> - If no data selection queries were set.</dd>
@@ -845,11 +970,12 @@ public&nbsp;<a href="../../../../com/algolia/search/saas/MirroredIndex.DataSelec
 <li class="blockList">
 <h4>hasOfflineData</h4>
 <pre>public&nbsp;boolean&nbsp;hasOfflineData()</pre>
-<div class="block"><p>Test if this index has offline data on disk.</p>
-<p><strong>Warning:</strong> This method is synchronous! It will block until completion.</p></div>
+<div class="block">Test if this index has offline data on disk.
+
+ **Warning:** This method is synchronous! It will block until completion.</div>
 <dl>
 <dt><span class="returnLabel">Returns:</span></dt>
-<dd><code>true</code> if data exists on disk for this index, <code>false</code> otherwise.</dd>
+<dd>`true` if data exists on disk for this index, `false` otherwise.</dd>
 </dl>
 </li>
 </ul>
@@ -865,15 +991,18 @@ public&nbsp;<a href="../../../../com/algolia/search/saas/MirroredIndex.DataSelec
                                      File[]&nbsp;objectFiles,
                                      @Nullable
                                      <a href="../../../../com/algolia/search/saas/CompletionHandler.html" title="interface in com.algolia.search.saas">CompletionHandler</a>&nbsp;completionHandler)</pre>
-<div class="block"><p>Replace the local mirror with local data stored on the filesystem.</p></div>
+<div class="block">Replace the local mirror with local data stored on the filesystem.</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>settingsFile</code> - Absolute path to the file containing the index settings, in JSON format.</dd>
-<dd><code>objectFiles</code> - Absolute path(s) to the file(s) containing the objects. Each file must contain an array of  objects, in JSON format.</dd>
-<dd><code>completionHandler</code> - Optional completion handler to be notified of the build&rsquo;s outcome.</dd>
+<dd><code>objectFiles</code> - Absolute path(s) to the file(s) containing the objects. Each file must contain an array of
+                    objects, in JSON format.</dd>
+<dd><code>completionHandler</code> - Optional completion handler to be notified of the build's outcome.</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
-<dd>A cancellable request.</p>
-<p><strong>Note:</strong> Cancelling the request does <em>not</em> cancel the build; it merely prevents the completion handler from being called.</dd>
+<dd>A cancellable request.
+
+ **Note:** Cancelling the request does *not* cancel the build; it merely prevents the completion handler from
+ being called.</dd>
 </dl>
 </li>
 </ul>
@@ -903,16 +1032,19 @@ public&nbsp;<a href="../../../../com/algolia/search/saas/MirroredIndex.DataSelec
                                             int[]&nbsp;objectsResIds,
                                             @Nullable
                                             <a href="../../../../com/algolia/search/saas/CompletionHandler.html" title="interface in com.algolia.search.saas">CompletionHandler</a>&nbsp;completionHandler)</pre>
-<div class="block"><p>Replace the local mirror with local data stored in raw resources.</p></div>
+<div class="block">Replace the local mirror with local data stored in raw resources.</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>resources</code> - A <code>Resources</code> instance to read resources from.</dd>
 <dd><code>settingsResId</code> - Resource identifier of the index settings, in JSON format.</dd>
-<dd><code>objectsResIds</code> - Resource identifiers of the various objects files. Each file must contain an array of  objects, in JSON format.</dd>
-<dd><code>completionHandler</code> - Optional completion handler to be notified of the build&rsquo;s outcome.</dd>
+<dd><code>objectsResIds</code> - Resource identifiers of the various objects files. Each file must contain an array of
+                    objects, in JSON format.</dd>
+<dd><code>completionHandler</code> - Optional completion handler to be notified of the build's outcome.</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
-<dd>A cancellable request.</p>
-<p><strong>Note:</strong> Cancelling the request does <em>not</em> cancel the build; it merely prevents the completion handler from being called.</dd>
+<dd>A cancellable request.
+
+ **Note:** Cancelling the request does *not* cancel the build; it merely prevents the completion handler from
+ being called.</dd>
 </dl>
 </li>
 </ul>
@@ -976,7 +1108,7 @@ public&nbsp;<a href="../../../../com/algolia/search/saas/MirroredIndex.DataSelec
                                       java.util.concurrent.TimeUnit&nbsp;unit)</pre>
 </li>
 </ul>
-<a name="searchAsync-com.algolia.search.saas.Query-com.algolia.search.saas.CompletionHandler-">
+<a name="searchAsync-com.algolia.search.saas.Query-com.algolia.search.saas.RequestOptions-com.algolia.search.saas.CompletionHandler-">
 <!--   -->
 </a>
 <ul class="blockList">
@@ -984,15 +1116,18 @@ public&nbsp;<a href="../../../../com/algolia/search/saas/MirroredIndex.DataSelec
 <h4>searchAsync</h4>
 <pre>public&nbsp;<a href="../../../../com/algolia/search/saas/Request.html" title="interface in com.algolia.search.saas">Request</a>&nbsp;searchAsync(@NonNull
                            <a href="../../../../com/algolia/search/saas/Query.html" title="class in com.algolia.search.saas">Query</a>&nbsp;query,
+                           @Nullable
+                           <a href="../../../../com/algolia/search/saas/RequestOptions.html" title="class in com.algolia.search.saas">RequestOptions</a>&nbsp;requestOptions,
                            @NonNull
                            <a href="../../../../com/algolia/search/saas/CompletionHandler.html" title="interface in com.algolia.search.saas">CompletionHandler</a>&nbsp;completionHandler)</pre>
-<div class="block"><p>Search the online API, falling back to the local mirror if enabled in case of error.</p></div>
+<div class="block">Search the online API, falling back to the local mirror if enabled in case of error.</div>
 <dl>
 <dt><span class="overrideSpecifyLabel">Overrides:</span></dt>
-<dd><code><a href="../../../../com/algolia/search/saas/Index.html#searchAsync-com.algolia.search.saas.Query-com.algolia.search.saas.CompletionHandler-">searchAsync</a></code>&nbsp;in class&nbsp;<code><a href="../../../../com/algolia/search/saas/Index.html" title="class in com.algolia.search.saas">Index</a></code></dd>
+<dd><code><a href="../../../../com/algolia/search/saas/Index.html#searchAsync-com.algolia.search.saas.Query-com.algolia.search.saas.RequestOptions-com.algolia.search.saas.CompletionHandler-">searchAsync</a></code>&nbsp;in class&nbsp;<code><a href="../../../../com/algolia/search/saas/Index.html" title="class in com.algolia.search.saas">Index</a></code></dd>
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>query</code> - Search query.</dd>
-<dd><code>completionHandler</code> - The listener that will be notified of the request&rsquo;s outcome.</dd>
+<dd><code>requestOptions</code> - Request-specific options.</dd>
+<dd><code>completionHandler</code> - The listener that will be notified of the request's outcome.</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>A cancellable request.</dd>
 </dl>
@@ -1008,11 +1143,34 @@ public&nbsp;<a href="../../../../com/algolia/search/saas/MirroredIndex.DataSelec
                                  <a href="../../../../com/algolia/search/saas/Query.html" title="class in com.algolia.search.saas">Query</a>&nbsp;query,
                                  @NonNull
                                  <a href="../../../../com/algolia/search/saas/CompletionHandler.html" title="interface in com.algolia.search.saas">CompletionHandler</a>&nbsp;completionHandler)</pre>
-<div class="block"><p>Search the online API.</p></div>
+<div class="block">Search the online API.</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>query</code> - Search query.</dd>
-<dd><code>completionHandler</code> - The listener that will be notified of the request&rsquo;s outcome.</dd>
+<dd><code>completionHandler</code> - The listener that will be notified of the request's outcome.</dd>
+<dt><span class="returnLabel">Returns:</span></dt>
+<dd>A cancellable request.</dd>
+</dl>
+</li>
+</ul>
+<a name="searchOnlineAsync-com.algolia.search.saas.Query-com.algolia.search.saas.RequestOptions-com.algolia.search.saas.CompletionHandler-">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>searchOnlineAsync</h4>
+<pre>public&nbsp;<a href="../../../../com/algolia/search/saas/Request.html" title="interface in com.algolia.search.saas">Request</a>&nbsp;searchOnlineAsync(@NonNull
+                                 <a href="../../../../com/algolia/search/saas/Query.html" title="class in com.algolia.search.saas">Query</a>&nbsp;query,
+                                 @Nullable
+                                 <a href="../../../../com/algolia/search/saas/RequestOptions.html" title="class in com.algolia.search.saas">RequestOptions</a>&nbsp;requestOptions,
+                                 @NonNull
+                                 <a href="../../../../com/algolia/search/saas/CompletionHandler.html" title="interface in com.algolia.search.saas">CompletionHandler</a>&nbsp;completionHandler)</pre>
+<div class="block">Search the online API.</div>
+<dl>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>query</code> - Search query.</dd>
+<dd><code>requestOptions</code> - Request-specific options.</dd>
+<dd><code>completionHandler</code> - The listener that will be notified of the request's outcome.</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>A cancellable request.</dd>
 </dl>
@@ -1028,11 +1186,11 @@ public&nbsp;<a href="../../../../com/algolia/search/saas/MirroredIndex.DataSelec
                                   <a href="../../../../com/algolia/search/saas/Query.html" title="class in com.algolia.search.saas">Query</a>&nbsp;query,
                                   @NonNull
                                   <a href="../../../../com/algolia/search/saas/CompletionHandler.html" title="interface in com.algolia.search.saas">CompletionHandler</a>&nbsp;completionHandler)</pre>
-<div class="block"><p>Search the local mirror.</p></div>
+<div class="block">Search the local mirror.</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>query</code> - Search query.</dd>
-<dd><code>completionHandler</code> - The listener that will be notified of the request&rsquo;s outcome.</dd>
+<dd><code>completionHandler</code> - The listener that will be notified of the request's outcome.</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>A cancellable request.</dd>
 <dt><span class="throwsLabel">Throws:</span></dt>
@@ -1040,26 +1198,31 @@ public&nbsp;<a href="../../../../com/algolia/search/saas/MirroredIndex.DataSelec
 </dl>
 </li>
 </ul>
-<a name="multipleQueriesAsync-java.util.List-com.algolia.search.saas.Client.MultipleQueriesStrategy-com.algolia.search.saas.CompletionHandler-">
+<a name="multipleQueriesAsync-java.util.Collection-com.algolia.search.saas.Client.MultipleQueriesStrategy-com.algolia.search.saas.RequestOptions-com.algolia.search.saas.CompletionHandler-">
 <!--   -->
 </a>
 <ul class="blockList">
 <li class="blockList">
 <h4>multipleQueriesAsync</h4>
 <pre>public&nbsp;<a href="../../../../com/algolia/search/saas/Request.html" title="interface in com.algolia.search.saas">Request</a>&nbsp;multipleQueriesAsync(@NonNull
-                                    List&lt;<a href="../../../../com/algolia/search/saas/Query.html" title="class in com.algolia.search.saas">Query</a>&gt;&nbsp;queries,
+                                    Collection&lt;<a href="../../../../com/algolia/search/saas/Query.html" title="class in com.algolia.search.saas">Query</a>&gt;&nbsp;queries,
                                     <a href="../../../../com/algolia/search/saas/Client.MultipleQueriesStrategy.html" title="enum in com.algolia.search.saas">Client.MultipleQueriesStrategy</a>&nbsp;strategy,
+                                    @Nullable
+                                    <a href="../../../../com/algolia/search/saas/RequestOptions.html" title="class in com.algolia.search.saas">RequestOptions</a>&nbsp;requestOptions,
                                     @NonNull
                                     <a href="../../../../com/algolia/search/saas/CompletionHandler.html" title="interface in com.algolia.search.saas">CompletionHandler</a>&nbsp;completionHandler)</pre>
-<div class="block"><span class="descfrmTypeLabel">Description copied from class:&nbsp;<code><a href="../../../../com/algolia/search/saas/Index.html#multipleQueriesAsync-java.util.List-com.algolia.search.saas.Client.MultipleQueriesStrategy-com.algolia.search.saas.CompletionHandler-">Index</a></code></span></div>
-<div class="block"><p>Run multiple queries on this index with one API call. A variant of <a href="../../../../com/algolia/search/saas/Client.html#multipleQueriesAsync-java.util.List-com.algolia.search.saas.Client.MultipleQueriesStrategy-com.algolia.search.saas.CompletionHandler-"><code>Client.multipleQueriesAsync(List, Client.MultipleQueriesStrategy, CompletionHandler)</code></a> where the targeted index is always the receiver.</p></div>
+<div class="block"><span class="descfrmTypeLabel">Description copied from class:&nbsp;<code><a href="../../../../com/algolia/search/saas/Index.html#multipleQueriesAsync-java.util.Collection-com.algolia.search.saas.Client.MultipleQueriesStrategy-com.algolia.search.saas.RequestOptions-com.algolia.search.saas.CompletionHandler-">Index</a></code></span></div>
+<div class="block">Run multiple queries on this index with one API call.
+ A variant of <a href="../../../../com/algolia/search/saas/Client.html#multipleQueriesAsync-java.util.List-com.algolia.search.saas.Client.MultipleQueriesStrategy-com.algolia.search.saas.CompletionHandler-"><code>Client.multipleQueriesAsync(List, Client.MultipleQueriesStrategy, CompletionHandler)</code></a>
+ where the targeted index is always the receiver.</div>
 <dl>
 <dt><span class="overrideSpecifyLabel">Overrides:</span></dt>
-<dd><code><a href="../../../../com/algolia/search/saas/Index.html#multipleQueriesAsync-java.util.List-com.algolia.search.saas.Client.MultipleQueriesStrategy-com.algolia.search.saas.CompletionHandler-">multipleQueriesAsync</a></code>&nbsp;in class&nbsp;<code><a href="../../../../com/algolia/search/saas/Index.html" title="class in com.algolia.search.saas">Index</a></code></dd>
+<dd><code><a href="../../../../com/algolia/search/saas/Index.html#multipleQueriesAsync-java.util.Collection-com.algolia.search.saas.Client.MultipleQueriesStrategy-com.algolia.search.saas.RequestOptions-com.algolia.search.saas.CompletionHandler-">multipleQueriesAsync</a></code>&nbsp;in class&nbsp;<code><a href="../../../../com/algolia/search/saas/Index.html" title="class in com.algolia.search.saas">Index</a></code></dd>
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>queries</code> - The queries to run.</dd>
 <dd><code>strategy</code> - The strategy to use.</dd>
-<dd><code>completionHandler</code> - The listener that will be notified of the request&rsquo;s outcome.</dd>
+<dd><code>requestOptions</code> - Request-specific options.</dd>
+<dd><code>completionHandler</code> - The listener that will be notified of the request's outcome.</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>A cancellable request.</dd>
 </dl>
@@ -1076,12 +1239,37 @@ public&nbsp;<a href="../../../../com/algolia/search/saas/MirroredIndex.DataSelec
                                           <a href="../../../../com/algolia/search/saas/Client.MultipleQueriesStrategy.html" title="enum in com.algolia.search.saas">Client.MultipleQueriesStrategy</a>&nbsp;strategy,
                                           @NonNull
                                           <a href="../../../../com/algolia/search/saas/CompletionHandler.html" title="interface in com.algolia.search.saas">CompletionHandler</a>&nbsp;completionHandler)</pre>
-<div class="block"><p>Run multiple queries on this index, explicitly targeting the online API.</p></div>
+<div class="block">Run multiple queries on this index, explicitly targeting the online API.</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>queries</code> - Queries to run.</dd>
 <dd><code>strategy</code> - Strategy to use.</dd>
-<dd><code>completionHandler</code> - The listener that will be notified of the request&rsquo;s outcome.</dd>
+<dd><code>completionHandler</code> - The listener that will be notified of the request's outcome.</dd>
+<dt><span class="returnLabel">Returns:</span></dt>
+<dd>A cancellable request.</dd>
+</dl>
+</li>
+</ul>
+<a name="multipleQueriesOnlineAsync-java.util.List-com.algolia.search.saas.Client.MultipleQueriesStrategy-com.algolia.search.saas.RequestOptions-com.algolia.search.saas.CompletionHandler-">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>multipleQueriesOnlineAsync</h4>
+<pre>public&nbsp;<a href="../../../../com/algolia/search/saas/Request.html" title="interface in com.algolia.search.saas">Request</a>&nbsp;multipleQueriesOnlineAsync(@NonNull
+                                          List&lt;<a href="../../../../com/algolia/search/saas/Query.html" title="class in com.algolia.search.saas">Query</a>&gt;&nbsp;queries,
+                                          <a href="../../../../com/algolia/search/saas/Client.MultipleQueriesStrategy.html" title="enum in com.algolia.search.saas">Client.MultipleQueriesStrategy</a>&nbsp;strategy,
+                                          @Nullable
+                                          <a href="../../../../com/algolia/search/saas/RequestOptions.html" title="class in com.algolia.search.saas">RequestOptions</a>&nbsp;requestOptions,
+                                          @NonNull
+                                          <a href="../../../../com/algolia/search/saas/CompletionHandler.html" title="interface in com.algolia.search.saas">CompletionHandler</a>&nbsp;completionHandler)</pre>
+<div class="block">Run multiple queries on this index, explicitly targeting the online API.</div>
+<dl>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>queries</code> - Queries to run.</dd>
+<dd><code>strategy</code> - Strategy to use.</dd>
+<dd><code>requestOptions</code> - Request-specific options.</dd>
+<dd><code>completionHandler</code> - The listener that will be notified of the request's outcome.</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>A cancellable request.</dd>
 </dl>
@@ -1098,12 +1286,12 @@ public&nbsp;<a href="../../../../com/algolia/search/saas/MirroredIndex.DataSelec
                                            <a href="../../../../com/algolia/search/saas/Client.MultipleQueriesStrategy.html" title="enum in com.algolia.search.saas">Client.MultipleQueriesStrategy</a>&nbsp;strategy,
                                            @NonNull
                                            <a href="../../../../com/algolia/search/saas/CompletionHandler.html" title="interface in com.algolia.search.saas">CompletionHandler</a>&nbsp;completionHandler)</pre>
-<div class="block"><p>Run multiple queries on this index, explicitly targeting the offline mirror.</p></div>
+<div class="block">Run multiple queries on this index, explicitly targeting the offline mirror.</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>queries</code> - Queries to run.</dd>
 <dd><code>strategy</code> - Strategy to use.</dd>
-<dd><code>completionHandler</code> - The listener that will be notified of the request&rsquo;s outcome.</dd>
+<dd><code>completionHandler</code> - The listener that will be notified of the request's outcome.</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>A cancellable request.</dd>
 <dt><span class="throwsLabel">Throws:</span></dt>
@@ -1121,11 +1309,12 @@ public&nbsp;<a href="../../../../com/algolia/search/saas/MirroredIndex.DataSelec
                                  <a href="../../../../com/algolia/search/saas/Query.html" title="class in com.algolia.search.saas">Query</a>&nbsp;query,
                                  @NonNull
                                  <a href="../../../../com/algolia/search/saas/CompletionHandler.html" title="interface in com.algolia.search.saas">CompletionHandler</a>&nbsp;completionHandler)</pre>
-<div class="block"><p>Browse the local mirror (initial call). Same semantics as <a href="../../../../com/algolia/search/saas/Index.html#browseAsync-com.algolia.search.saas.Query-com.algolia.search.saas.CompletionHandler-"><code>Index.browseAsync(com.algolia.search.saas.Query, com.algolia.search.saas.CompletionHandler)</code></a>.</p></div>
+<div class="block">Browse the local mirror (initial call).
+ Same semantics as <a href="../../../../com/algolia/search/saas/Index.html#browseAsync-com.algolia.search.saas.Query-com.algolia.search.saas.CompletionHandler-"><code>Index.browseAsync(com.algolia.search.saas.Query, com.algolia.search.saas.CompletionHandler)</code></a>.</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>query</code> - Browse query. Same restrictions as the online API.</dd>
-<dd><code>completionHandler</code> - The listener that will be notified of the request&rsquo;s outcome.</dd>
+<dd><code>completionHandler</code> - The listener that will be notified of the request's outcome.</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>A cancellable request.</dd>
 <dt><span class="throwsLabel">Throws:</span></dt>
@@ -1143,11 +1332,12 @@ public&nbsp;<a href="../../../../com/algolia/search/saas/MirroredIndex.DataSelec
                                      String&nbsp;cursor,
                                      @NonNull
                                      <a href="../../../../com/algolia/search/saas/CompletionHandler.html" title="interface in com.algolia.search.saas">CompletionHandler</a>&nbsp;completionHandler)</pre>
-<div class="block"><p>Browse the local mirror (subsequent calls). Same semantics as <a href="../../../../com/algolia/search/saas/Index.html#browseFromAsync-java.lang.String-com.algolia.search.saas.CompletionHandler-"><code>Index.browseFromAsync(java.lang.String, com.algolia.search.saas.CompletionHandler)</code></a>.</p></div>
+<div class="block">Browse the local mirror (subsequent calls).
+ Same semantics as <a href="../../../../com/algolia/search/saas/Index.html#browseFromAsync-java.lang.String-com.algolia.search.saas.CompletionHandler-"><code>Index.browseFromAsync(java.lang.String, com.algolia.search.saas.CompletionHandler)</code></a>.</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>cursor</code> - Cursor to browse from.</dd>
-<dd><code>completionHandler</code> - The listener that will be notified of the request&rsquo;s outcome.</dd>
+<dd><code>completionHandler</code> - The listener that will be notified of the request's outcome.</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>A cancellable request.</dd>
 <dt><span class="throwsLabel">Throws:</span></dt>
@@ -1155,7 +1345,7 @@ public&nbsp;<a href="../../../../com/algolia/search/saas/MirroredIndex.DataSelec
 </dl>
 </li>
 </ul>
-<a name="getObjectAsync-java.lang.String-java.util.List-com.algolia.search.saas.CompletionHandler-">
+<a name="getObjectAsync-java.lang.String-java.util.Collection-com.algolia.search.saas.RequestOptions-com.algolia.search.saas.CompletionHandler-">
 <!--   -->
 </a>
 <ul class="blockList">
@@ -1164,17 +1354,21 @@ public&nbsp;<a href="../../../../com/algolia/search/saas/MirroredIndex.DataSelec
 <pre>public&nbsp;<a href="../../../../com/algolia/search/saas/Request.html" title="interface in com.algolia.search.saas">Request</a>&nbsp;getObjectAsync(@NonNull
                               String&nbsp;objectID,
                               @Nullable
-                              List&lt;String&gt;&nbsp;attributesToRetrieve,
+                              Collection&lt;String&gt;&nbsp;attributesToRetrieve,
+                              @Nullable
+                              <a href="../../../../com/algolia/search/saas/RequestOptions.html" title="class in com.algolia.search.saas">RequestOptions</a>&nbsp;requestOptions,
                               @NonNull
                               <a href="../../../../com/algolia/search/saas/CompletionHandler.html" title="interface in com.algolia.search.saas">CompletionHandler</a>&nbsp;completionHandler)</pre>
-<div class="block"><p>Get an individual object from the online API, falling back to the local mirror in case of error (when enabled).</p></div>
+<div class="block">Get an individual object from the online API, falling back to the local mirror in case of error (when enabled).</div>
 <dl>
 <dt><span class="overrideSpecifyLabel">Overrides:</span></dt>
-<dd><code><a href="../../../../com/algolia/search/saas/Index.html#getObjectAsync-java.lang.String-java.util.List-com.algolia.search.saas.CompletionHandler-">getObjectAsync</a></code>&nbsp;in class&nbsp;<code><a href="../../../../com/algolia/search/saas/Index.html" title="class in com.algolia.search.saas">Index</a></code></dd>
+<dd><code><a href="../../../../com/algolia/search/saas/Index.html#getObjectAsync-java.lang.String-java.util.Collection-com.algolia.search.saas.RequestOptions-com.algolia.search.saas.CompletionHandler-">getObjectAsync</a></code>&nbsp;in class&nbsp;<code><a href="../../../../com/algolia/search/saas/Index.html" title="class in com.algolia.search.saas">Index</a></code></dd>
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>objectID</code> - Identifier of the object to retrieve.</dd>
-<dd><code>attributesToRetrieve</code> - Attributes to retrieve. If <code>null</code> or if at least one item is <code>*</code>, all retrievable  attributes will be retrieved.</dd>
-<dd><code>completionHandler</code> - The listener that will be notified of the request&rsquo;s outcome.</dd>
+<dd><code>attributesToRetrieve</code> - Attributes to retrieve. If `null` or if at least one item is `*`, all retrievable
+                             attributes will be retrieved.</dd>
+<dd><code>requestOptions</code> - Request-specific options.</dd>
+<dd><code>completionHandler</code> - The listener that will be notified of the request's outcome.</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>A cancellable request.</dd>
 </dl>
@@ -1192,12 +1386,40 @@ public&nbsp;<a href="../../../../com/algolia/search/saas/MirroredIndex.DataSelec
                                     List&lt;String&gt;&nbsp;attributesToRetrieve,
                                     @NonNull
                                     <a href="../../../../com/algolia/search/saas/CompletionHandler.html" title="interface in com.algolia.search.saas">CompletionHandler</a>&nbsp;completionHandler)</pre>
-<div class="block"><p>Get an individual object, explicitly targeting the online API, not the offline mirror.</p></div>
+<div class="block">Get an individual object, explicitly targeting the online API, not the offline mirror.</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>objectID</code> - Identifier of the object to retrieve.</dd>
-<dd><code>attributesToRetrieve</code> - Attributes to retrieve. If <code>null</code> or if at least one item is <code>*</code>, all retrievable  attributes will be retrieved.</dd>
-<dd><code>completionHandler</code> - The listener that will be notified of the request&rsquo;s outcome.</dd>
+<dd><code>attributesToRetrieve</code> - Attributes to retrieve. If `null` or if at least one item is `*`, all retrievable
+                             attributes will be retrieved.</dd>
+<dd><code>completionHandler</code> - The listener that will be notified of the request's outcome.</dd>
+<dt><span class="returnLabel">Returns:</span></dt>
+<dd>A cancellable request.</dd>
+</dl>
+</li>
+</ul>
+<a name="getObjectOnlineAsync-java.lang.String-java.util.List-com.algolia.search.saas.RequestOptions-com.algolia.search.saas.CompletionHandler-">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>getObjectOnlineAsync</h4>
+<pre>public&nbsp;<a href="../../../../com/algolia/search/saas/Request.html" title="interface in com.algolia.search.saas">Request</a>&nbsp;getObjectOnlineAsync(@NonNull
+                                    String&nbsp;objectID,
+                                    @Nullable
+                                    List&lt;String&gt;&nbsp;attributesToRetrieve,
+                                    @Nullable
+                                    <a href="../../../../com/algolia/search/saas/RequestOptions.html" title="class in com.algolia.search.saas">RequestOptions</a>&nbsp;requestOptions,
+                                    @NonNull
+                                    <a href="../../../../com/algolia/search/saas/CompletionHandler.html" title="interface in com.algolia.search.saas">CompletionHandler</a>&nbsp;completionHandler)</pre>
+<div class="block">Get an individual object, explicitly targeting the online API, not the offline mirror.</div>
+<dl>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>objectID</code> - Identifier of the object to retrieve.</dd>
+<dd><code>attributesToRetrieve</code> - Attributes to retrieve. If `null` or if at least one item is `*`, all retrievable
+                             attributes will be retrieved.</dd>
+<dd><code>requestOptions</code> - Request-specific options.</dd>
+<dd><code>completionHandler</code> - The listener that will be notified of the request's outcome.</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>A cancellable request.</dd>
 </dl>
@@ -1213,11 +1435,11 @@ public&nbsp;<a href="../../../../com/algolia/search/saas/MirroredIndex.DataSelec
                                     String&nbsp;objectID,
                                     @NonNull
                                     <a href="../../../../com/algolia/search/saas/CompletionHandler.html" title="interface in com.algolia.search.saas">CompletionHandler</a>&nbsp;completionHandler)</pre>
-<div class="block"><p>Get an individual object, explicitly targeting the online API, not the offline mirror.</p></div>
+<div class="block">Get an individual object, explicitly targeting the online API, not the offline mirror.</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>objectID</code> - Identifier of the object to retrieve.</dd>
-<dd><code>completionHandler</code> - The listener that will be notified of the request&rsquo;s outcome.</dd>
+<dd><code>completionHandler</code> - The listener that will be notified of the request's outcome.</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>A cancellable request.</dd>
 </dl>
@@ -1235,12 +1457,13 @@ public&nbsp;<a href="../../../../com/algolia/search/saas/MirroredIndex.DataSelec
                                      List&lt;String&gt;&nbsp;attributesToRetrieve,
                                      @NonNull
                                      <a href="../../../../com/algolia/search/saas/CompletionHandler.html" title="interface in com.algolia.search.saas">CompletionHandler</a>&nbsp;completionHandler)</pre>
-<div class="block"><p>Get an individual object, explicitly targeting the offline mirror, not the online API.</p></div>
+<div class="block">Get an individual object, explicitly targeting the offline mirror, not the online API.</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>objectID</code> - Identifier of the object to retrieve.</dd>
-<dd><code>attributesToRetrieve</code> - Attributes to retrieve. If <code>null</code> or if at least one item is <code>*</code>, all retrievable  attributes will be retrieved.</dd>
-<dd><code>completionHandler</code> - The listener that will be notified of the request&rsquo;s outcome.</dd>
+<dd><code>attributesToRetrieve</code> - Attributes to retrieve. If `null` or if at least one item is `*`, all retrievable
+                             attributes will be retrieved.</dd>
+<dd><code>completionHandler</code> - The listener that will be notified of the request's outcome.</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>A cancellable request.</dd>
 <dt><span class="throwsLabel">Throws:</span></dt>
@@ -1258,11 +1481,11 @@ public&nbsp;<a href="../../../../com/algolia/search/saas/MirroredIndex.DataSelec
                                      String&nbsp;objectID,
                                      @NonNull
                                      <a href="../../../../com/algolia/search/saas/CompletionHandler.html" title="interface in com.algolia.search.saas">CompletionHandler</a>&nbsp;completionHandler)</pre>
-<div class="block"><p>Get an individual object, explicitly targeting the offline mirror, not the online API.</p></div>
+<div class="block">Get an individual object, explicitly targeting the offline mirror, not the online API.</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>objectID</code> - Identifier of the object to retrieve.</dd>
-<dd><code>completionHandler</code> - The listener that will be notified of the request&rsquo;s outcome.</dd>
+<dd><code>completionHandler</code> - The listener that will be notified of the request's outcome.</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>A cancellable request.</dd>
 <dt><span class="throwsLabel">Throws:</span></dt>
@@ -1270,26 +1493,30 @@ public&nbsp;<a href="../../../../com/algolia/search/saas/MirroredIndex.DataSelec
 </dl>
 </li>
 </ul>
-<a name="getObjectsAsync-java.util.List-java.util.List-com.algolia.search.saas.CompletionHandler-">
+<a name="getObjectsAsync-java.util.Collection-java.util.Collection-com.algolia.search.saas.RequestOptions-com.algolia.search.saas.CompletionHandler-">
 <!--   -->
 </a>
 <ul class="blockList">
 <li class="blockList">
 <h4>getObjectsAsync</h4>
 <pre>public&nbsp;<a href="../../../../com/algolia/search/saas/Request.html" title="interface in com.algolia.search.saas">Request</a>&nbsp;getObjectsAsync(@NonNull
-                               List&lt;String&gt;&nbsp;objectIDs,
+                               Collection&lt;String&gt;&nbsp;objectIDs,
                                @Nullable
-                               List&lt;String&gt;&nbsp;attributesToRetrieve,
+                               Collection&lt;String&gt;&nbsp;attributesToRetrieve,
+                               @Nullable
+                               <a href="../../../../com/algolia/search/saas/RequestOptions.html" title="class in com.algolia.search.saas">RequestOptions</a>&nbsp;requestOptions,
                                @NonNull
                                <a href="../../../../com/algolia/search/saas/CompletionHandler.html" title="interface in com.algolia.search.saas">CompletionHandler</a>&nbsp;completionHandler)</pre>
-<div class="block"><p>Get individual objects from the online API, falling back to the local mirror in case of error (when enabled).</p></div>
+<div class="block">Get individual objects from the online API, falling back to the local mirror in case of error (when enabled).</div>
 <dl>
 <dt><span class="overrideSpecifyLabel">Overrides:</span></dt>
-<dd><code><a href="../../../../com/algolia/search/saas/Index.html#getObjectsAsync-java.util.List-java.util.List-com.algolia.search.saas.CompletionHandler-">getObjectsAsync</a></code>&nbsp;in class&nbsp;<code><a href="../../../../com/algolia/search/saas/Index.html" title="class in com.algolia.search.saas">Index</a></code></dd>
+<dd><code><a href="../../../../com/algolia/search/saas/Index.html#getObjectsAsync-java.util.Collection-java.util.Collection-com.algolia.search.saas.RequestOptions-com.algolia.search.saas.CompletionHandler-">getObjectsAsync</a></code>&nbsp;in class&nbsp;<code><a href="../../../../com/algolia/search/saas/Index.html" title="class in com.algolia.search.saas">Index</a></code></dd>
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>objectIDs</code> - Identifiers of objects to retrieve.</dd>
-<dd><code>attributesToRetrieve</code> - Attributes to retrieve. If <code>null</code> or if at least one item is <code>*</code>, all retrievable  attributes will be retrieved.</dd>
-<dd><code>completionHandler</code> - The listener that will be notified of the request&rsquo;s outcome.</dd>
+<dd><code>attributesToRetrieve</code> - Attributes to retrieve. If `null` or if at least one item is `*`, all retrievable
+                             attributes will be retrieved.</dd>
+<dd><code>requestOptions</code> - Request-specific options.</dd>
+<dd><code>completionHandler</code> - The listener that will be notified of the request's outcome.</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>A cancellable request.</dd>
 </dl>
@@ -1307,12 +1534,40 @@ public&nbsp;<a href="../../../../com/algolia/search/saas/MirroredIndex.DataSelec
                                      List&lt;String&gt;&nbsp;attributesToRetrieve,
                                      @NonNull
                                      <a href="../../../../com/algolia/search/saas/CompletionHandler.html" title="interface in com.algolia.search.saas">CompletionHandler</a>&nbsp;completionHandler)</pre>
-<div class="block"><p>Get individual objects, explicitly targeting the online API, not the offline mirror.</p></div>
+<div class="block">Get individual objects, explicitly targeting the online API, not the offline mirror.</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>objectIDs</code> - Identifiers of objects to retrieve.</dd>
-<dd><code>attributesToRetrieve</code> - Attributes to retrieve. If <code>null</code> or if at least one item is <code>*</code>, all retrievable  attributes will be retrieved.</dd>
-<dd><code>completionHandler</code> - The listener that will be notified of the request&rsquo;s outcome.</dd>
+<dd><code>attributesToRetrieve</code> - Attributes to retrieve. If `null` or if at least one item is `*`, all retrievable
+                             attributes will be retrieved.</dd>
+<dd><code>completionHandler</code> - The listener that will be notified of the request's outcome.</dd>
+<dt><span class="returnLabel">Returns:</span></dt>
+<dd>A cancellable request.</dd>
+</dl>
+</li>
+</ul>
+<a name="getObjectsOnlineAsync-java.util.List-java.util.List-com.algolia.search.saas.RequestOptions-com.algolia.search.saas.CompletionHandler-">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>getObjectsOnlineAsync</h4>
+<pre>public&nbsp;<a href="../../../../com/algolia/search/saas/Request.html" title="interface in com.algolia.search.saas">Request</a>&nbsp;getObjectsOnlineAsync(@NonNull
+                                     List&lt;String&gt;&nbsp;objectIDs,
+                                     @Nullable
+                                     List&lt;String&gt;&nbsp;attributesToRetrieve,
+                                     @Nullable
+                                     <a href="../../../../com/algolia/search/saas/RequestOptions.html" title="class in com.algolia.search.saas">RequestOptions</a>&nbsp;requestOptions,
+                                     @NonNull
+                                     <a href="../../../../com/algolia/search/saas/CompletionHandler.html" title="interface in com.algolia.search.saas">CompletionHandler</a>&nbsp;completionHandler)</pre>
+<div class="block">Get individual objects, explicitly targeting the online API, not the offline mirror.</div>
+<dl>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>objectIDs</code> - Identifiers of objects to retrieve.</dd>
+<dd><code>attributesToRetrieve</code> - Attributes to retrieve. If `null` or if at least one item is `*`, all retrievable
+                             attributes will be retrieved.</dd>
+<dd><code>requestOptions</code> - Request-specific options.</dd>
+<dd><code>completionHandler</code> - The listener that will be notified of the request's outcome.</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>A cancellable request.</dd>
 </dl>
@@ -1328,11 +1583,11 @@ public&nbsp;<a href="../../../../com/algolia/search/saas/MirroredIndex.DataSelec
                                      List&lt;String&gt;&nbsp;objectIDs,
                                      @NonNull
                                      <a href="../../../../com/algolia/search/saas/CompletionHandler.html" title="interface in com.algolia.search.saas">CompletionHandler</a>&nbsp;completionHandler)</pre>
-<div class="block"><p>Get individual objects, explicitly targeting the online API, not the offline mirror.</p></div>
+<div class="block">Get individual objects, explicitly targeting the online API, not the offline mirror.</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>objectIDs</code> - Identifiers of objects to retrieve.</dd>
-<dd><code>completionHandler</code> - The listener that will be notified of the request&rsquo;s outcome.</dd>
+<dd><code>completionHandler</code> - The listener that will be notified of the request's outcome.</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>A cancellable request.</dd>
 </dl>
@@ -1350,12 +1605,13 @@ public&nbsp;<a href="../../../../com/algolia/search/saas/MirroredIndex.DataSelec
                                       List&lt;String&gt;&nbsp;attributesToRetrieve,
                                       @NonNull
                                       <a href="../../../../com/algolia/search/saas/CompletionHandler.html" title="interface in com.algolia.search.saas">CompletionHandler</a>&nbsp;completionHandler)</pre>
-<div class="block"><p>Get individual objects, explicitly targeting the offline mirror, not the online API.</p></div>
+<div class="block">Get individual objects, explicitly targeting the offline mirror, not the online API.</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>objectIDs</code> - Identifiers of objects to retrieve.</dd>
-<dd><code>attributesToRetrieve</code> - Attributes to retrieve. If <code>null</code> or if at least one item is <code>*</code>, all retrievable  attributes will be retrieved.</dd>
-<dd><code>completionHandler</code> - The listener that will be notified of the request&rsquo;s outcome.</dd>
+<dd><code>attributesToRetrieve</code> - Attributes to retrieve. If `null` or if at least one item is `*`, all retrievable
+                             attributes will be retrieved.</dd>
+<dd><code>completionHandler</code> - The listener that will be notified of the request's outcome.</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>A cancellable request.</dd>
 <dt><span class="throwsLabel">Throws:</span></dt>
@@ -1373,11 +1629,11 @@ public&nbsp;<a href="../../../../com/algolia/search/saas/MirroredIndex.DataSelec
                                       List&lt;String&gt;&nbsp;objectIDs,
                                       @NonNull
                                       <a href="../../../../com/algolia/search/saas/CompletionHandler.html" title="interface in com.algolia.search.saas">CompletionHandler</a>&nbsp;completionHandler)</pre>
-<div class="block"><p>Get individual objects, explicitly targeting the offline mirror, not the online API.</p></div>
+<div class="block">Get individual objects, explicitly targeting the offline mirror, not the online API.</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>objectIDs</code> - Identifiers of objects to retrieve.</dd>
-<dd><code>completionHandler</code> - The listener that will be notified of the request&rsquo;s outcome.</dd>
+<dd><code>completionHandler</code> - The listener that will be notified of the request's outcome.</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>A cancellable request.</dd>
 <dt><span class="throwsLabel">Throws:</span></dt>
@@ -1385,30 +1641,33 @@ public&nbsp;<a href="../../../../com/algolia/search/saas/MirroredIndex.DataSelec
 </dl>
 </li>
 </ul>
-<a name="searchForFacetValues-java.lang.String-java.lang.String-com.algolia.search.saas.Query-com.algolia.search.saas.CompletionHandler-">
+<a name="searchForFacetValuesAsync-java.lang.String-java.lang.String-com.algolia.search.saas.Query-com.algolia.search.saas.RequestOptions-com.algolia.search.saas.CompletionHandler-">
 <!--   -->
 </a>
 <ul class="blockList">
 <li class="blockList">
-<h4>searchForFacetValues</h4>
-<pre>public&nbsp;<a href="../../../../com/algolia/search/saas/Request.html" title="interface in com.algolia.search.saas">Request</a>&nbsp;searchForFacetValues(@NonNull
-                                    String&nbsp;facetName,
-                                    @NonNull
-                                    String&nbsp;text,
-                                    @Nullable
-                                    <a href="../../../../com/algolia/search/saas/Query.html" title="class in com.algolia.search.saas">Query</a>&nbsp;query,
-                                    @NonNull
-                                    <a href="../../../../com/algolia/search/saas/CompletionHandler.html" title="interface in com.algolia.search.saas">CompletionHandler</a>&nbsp;completionHandler)</pre>
-<div class="block"><span class="descfrmTypeLabel">Description copied from class:&nbsp;<code><a href="../../../../com/algolia/search/saas/Index.html#searchForFacetValues-java.lang.String-java.lang.String-com.algolia.search.saas.Query-com.algolia.search.saas.CompletionHandler-">Index</a></code></span></div>
-<div class="block"><p>Search (asynchronously) for some text in a facet values, optionally restricting the returned values to those contained in objects matching other (regular) search criteria.</p></div>
+<h4>searchForFacetValuesAsync</h4>
+<pre>public&nbsp;<a href="../../../../com/algolia/search/saas/Request.html" title="interface in com.algolia.search.saas">Request</a>&nbsp;searchForFacetValuesAsync(@NonNull
+                                         String&nbsp;facetName,
+                                         @NonNull
+                                         String&nbsp;text,
+                                         @Nullable
+                                         <a href="../../../../com/algolia/search/saas/Query.html" title="class in com.algolia.search.saas">Query</a>&nbsp;query,
+                                         @Nullable
+                                         <a href="../../../../com/algolia/search/saas/RequestOptions.html" title="class in com.algolia.search.saas">RequestOptions</a>&nbsp;requestOptions,
+                                         @NonNull
+                                         <a href="../../../../com/algolia/search/saas/CompletionHandler.html" title="interface in com.algolia.search.saas">CompletionHandler</a>&nbsp;completionHandler)</pre>
+<div class="block"><span class="descfrmTypeLabel">Description copied from class:&nbsp;<code><a href="../../../../com/algolia/search/saas/Index.html#searchForFacetValuesAsync-java.lang.String-java.lang.String-com.algolia.search.saas.Query-com.algolia.search.saas.RequestOptions-com.algolia.search.saas.CompletionHandler-">Index</a></code></span></div>
+<div class="block">Searches for some text in a facet values, optionally restricting the returned values to those contained in objects matching other (regular) search criteria.</div>
 <dl>
 <dt><span class="overrideSpecifyLabel">Overrides:</span></dt>
-<dd><code><a href="../../../../com/algolia/search/saas/Index.html#searchForFacetValues-java.lang.String-java.lang.String-com.algolia.search.saas.Query-com.algolia.search.saas.CompletionHandler-">searchForFacetValues</a></code>&nbsp;in class&nbsp;<code><a href="../../../../com/algolia/search/saas/Index.html" title="class in com.algolia.search.saas">Index</a></code></dd>
+<dd><code><a href="../../../../com/algolia/search/saas/Index.html#searchForFacetValuesAsync-java.lang.String-java.lang.String-com.algolia.search.saas.Query-com.algolia.search.saas.RequestOptions-com.algolia.search.saas.CompletionHandler-">searchForFacetValuesAsync</a></code>&nbsp;in class&nbsp;<code><a href="../../../../com/algolia/search/saas/Index.html" title="class in com.algolia.search.saas">Index</a></code></dd>
 <dt><span class="paramLabel">Parameters:</span></dt>
-<dd><code>facetName</code> - The name of the facet to search. It must have been declared in the index&rsquo;s <code>attributesForFaceting</code> setting with the <code>searchable()</code> modifier.</dd>
-<dd><code>text</code> - The text to search for in the facet&rsquo;s values.</dd>
+<dd><code>facetName</code> - The name of the facet to search. It must have been declared in the index's `attributesForFaceting` setting with the `searchable()` modifier.</dd>
+<dd><code>text</code> - The text to search for in the facet's values.</dd>
 <dd><code>query</code> - An optional query to take extra search parameters into account. There parameters apply to index objects like in a regular search query. Only facet values contained in the matched objects will be returned</dd>
-<dd><code>completionHandler</code> - A Completion handler that will be notified of the request&rsquo;s outcome.</dd>
+<dd><code>requestOptions</code> - Request-specific options.</dd>
+<dd><code>completionHandler</code> - A Completion handler that will be notified of the request's outcome.</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>A cancellable request.</dd>
 </dl>
@@ -1428,7 +1687,28 @@ public&nbsp;<a href="../../../../com/algolia/search/saas/MirroredIndex.DataSelec
                                           <a href="../../../../com/algolia/search/saas/Query.html" title="class in com.algolia.search.saas">Query</a>&nbsp;query,
                                           @NonNull
                                           <a href="../../../../com/algolia/search/saas/CompletionHandler.html" title="interface in com.algolia.search.saas">CompletionHandler</a>&nbsp;completionHandler)</pre>
-<div class="block"><p>Search for facet values, explicitly targeting the online API, not the offline mirror. Same parameters as <a href="../../../../com/algolia/search/saas/Index.html#searchForFacetValues-java.lang.String-java.lang.String-com.algolia.search.saas.Query-com.algolia.search.saas.CompletionHandler-"><code>Index.searchForFacetValues(String, String, Query, CompletionHandler)</code></a>.</p></div>
+<div class="block">Search for facet values, explicitly targeting the online API, not the offline mirror.
+ Same parameters as <a href="../../../../com/algolia/search/saas/Index.html#searchForFacetValues-java.lang.String-java.lang.String-com.algolia.search.saas.Query-com.algolia.search.saas.CompletionHandler-"><code>Index.searchForFacetValues(String, String, Query, CompletionHandler)</code></a>.</div>
+</li>
+</ul>
+<a name="searchForFacetValuesOnline-java.lang.String-java.lang.String-com.algolia.search.saas.Query-com.algolia.search.saas.RequestOptions-com.algolia.search.saas.CompletionHandler-">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>searchForFacetValuesOnline</h4>
+<pre>public&nbsp;<a href="../../../../com/algolia/search/saas/Request.html" title="interface in com.algolia.search.saas">Request</a>&nbsp;searchForFacetValuesOnline(@NonNull
+                                          String&nbsp;facetName,
+                                          @NonNull
+                                          String&nbsp;text,
+                                          @Nullable
+                                          <a href="../../../../com/algolia/search/saas/Query.html" title="class in com.algolia.search.saas">Query</a>&nbsp;query,
+                                          @Nullable
+                                          <a href="../../../../com/algolia/search/saas/RequestOptions.html" title="class in com.algolia.search.saas">RequestOptions</a>&nbsp;requestOptions,
+                                          @NonNull
+                                          <a href="../../../../com/algolia/search/saas/CompletionHandler.html" title="interface in com.algolia.search.saas">CompletionHandler</a>&nbsp;completionHandler)</pre>
+<div class="block">Search for facet values, explicitly targeting the online API, not the offline mirror.
+ Same parameters as <a href="../../../../com/algolia/search/saas/Index.html#searchForFacetValues-java.lang.String-java.lang.String-com.algolia.search.saas.Query-com.algolia.search.saas.CompletionHandler-"><code>Index.searchForFacetValues(String, String, Query, CompletionHandler)</code></a>.</div>
 </li>
 </ul>
 <a name="searchForFacetValuesOffline-java.lang.String-java.lang.String-com.algolia.search.saas.Query-com.algolia.search.saas.CompletionHandler-">
@@ -1445,7 +1725,7 @@ public&nbsp;<a href="../../../../com/algolia/search/saas/MirroredIndex.DataSelec
                                            <a href="../../../../com/algolia/search/saas/Query.html" title="class in com.algolia.search.saas">Query</a>&nbsp;query,
                                            @NonNull
                                            <a href="../../../../com/algolia/search/saas/CompletionHandler.html" title="interface in com.algolia.search.saas">CompletionHandler</a>&nbsp;completionHandler)</pre>
-<div class="block"><p>Search for facet values, explicitly targeting the offline mirror, not the online API.</p></div>
+<div class="block">Search for facet values, explicitly targeting the offline mirror, not the online API.</div>
 </li>
 </ul>
 <a name="addSyncListener-com.algolia.search.saas.SyncListener-">
@@ -1456,7 +1736,7 @@ public&nbsp;<a href="../../../../com/algolia/search/saas/MirroredIndex.DataSelec
 <h4>addSyncListener</h4>
 <pre>public&nbsp;void&nbsp;addSyncListener(@NonNull
                             <a href="../../../../com/algolia/search/saas/SyncListener.html" title="interface in com.algolia.search.saas">SyncListener</a>&nbsp;listener)</pre>
-<div class="block"><p>Add a listener for sync events.</p></div>
+<div class="block">Add a listener for sync events.</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>listener</code> - The listener to add.</dd>
@@ -1471,7 +1751,7 @@ public&nbsp;<a href="../../../../com/algolia/search/saas/MirroredIndex.DataSelec
 <h4>removeSyncListener</h4>
 <pre>public&nbsp;void&nbsp;removeSyncListener(@NonNull
                                <a href="../../../../com/algolia/search/saas/SyncListener.html" title="interface in com.algolia.search.saas">SyncListener</a>&nbsp;listener)</pre>
-<div class="block"><p>Remove a listener for sync events.</p></div>
+<div class="block">Remove a listener for sync events.</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>listener</code> - The listener to remove.</dd>
@@ -1486,7 +1766,7 @@ public&nbsp;<a href="../../../../com/algolia/search/saas/MirroredIndex.DataSelec
 <h4>addBuildListener</h4>
 <pre>public&nbsp;void&nbsp;addBuildListener(@NonNull
                              <a href="../../../../com/algolia/search/saas/BuildListener.html" title="interface in com.algolia.search.saas">BuildListener</a>&nbsp;listener)</pre>
-<div class="block"><p>Add a listener for build events.</p></div>
+<div class="block">Add a listener for build events.</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>listener</code> - The listener to add.</dd>
@@ -1501,7 +1781,7 @@ public&nbsp;<a href="../../../../com/algolia/search/saas/MirroredIndex.DataSelec
 <h4>removeBuildListener</h4>
 <pre>public&nbsp;void&nbsp;removeBuildListener(@NonNull
                                 <a href="../../../../com/algolia/search/saas/BuildListener.html" title="interface in com.algolia.search.saas">BuildListener</a>&nbsp;listener)</pre>
-<div class="block"><p>Remove a listener for build events.</p></div>
+<div class="block">Remove a listener for build events.</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>listener</code> - The listener to remove.</dd>
@@ -1532,10 +1812,6 @@ public&nbsp;<a href="../../../../com/algolia/search/saas/MirroredIndex.DataSelec
 <li><a href="../../../../index-all.html">Index</a></li>
 <li><a href="../../../../help-doc.html">Help</a></li>
 </ul>
-<div class="aboutLanguage"><script type="text/javascript" src="../../../../highlight.pack.js"></script>
-<script type="text/javascript"><!--
-hljs.initHighlightingOnLoad();
-//--></script></div>
 </div>
 <div class="subNav">
 <ul class="navList">

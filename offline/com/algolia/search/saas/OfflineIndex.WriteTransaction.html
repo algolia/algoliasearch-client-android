@@ -113,13 +113,15 @@ var activeTableTab = "activeTableTab";
 <br>
 <pre>public class <span class="typeNameLabel">OfflineIndex.WriteTransaction</span>
 extends Object</pre>
-<div class="block"><p>A transaction to update the index.</p>
-<p>A transaction gathers all the operations that will be performed when the transaction is committed. Its purpose is twofold:</p>
-<ol>
-  <li>Avoid rebuilding the index for every individual operation, which would be astonishingly costly.</li>
-  <li>Avoid keeping all the necessary data in memory, e.g. by flushing added objects to temporary files on disk.</li>
-</ol>
-<p>A transaction can be created by calling <a href="../../../../com/algolia/search/saas/OfflineIndex.html#newTransaction--"><code>OfflineIndex.newTransaction()</code></a>.</p></div>
+<div class="block">A transaction to update the index.
+
+ A transaction gathers all the operations that will be performed when the transaction is committed.
+ Its purpose is twofold:
+
+ 1. Avoid rebuilding the index for every individual operation, which would be astonishingly costly.
+ 2. Avoid keeping all the necessary data in memory, e.g. by flushing added objects to temporary files on disk.
+
+ A transaction can be created by calling <a href="../../../../com/algolia/search/saas/OfflineIndex.html#newTransaction--"><code>OfflineIndex.newTransaction()</code></a>.</div>
 </li>
 </ul>
 </div>
@@ -212,7 +214,7 @@ extends Object</pre>
 <tr id="i9" class="rowColor">
 <td class="colFirst"><code>int</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/algolia/search/saas/OfflineIndex.WriteTransaction.html#getId--">getId</a></span>()</code>
-<div class="block">Get this transaction&rsquo;s ID.</div>
+<div class="block">Get this transaction's ID.</div>
 </td>
 </tr>
 <tr id="i10" class="altColor">
@@ -349,10 +351,10 @@ public&nbsp;String&nbsp;toString()</pre>
 <li class="blockList">
 <h4>getId</h4>
 <pre>public&nbsp;int&nbsp;getId()</pre>
-<div class="block"><p>Get this transaction&rsquo;s ID.</p></div>
+<div class="block">Get this transaction's ID.</div>
 <dl>
 <dt><span class="returnLabel">Returns:</span></dt>
-<dd>This transaction&rsquo;s ID.</dd>
+<dd>This transaction's ID.</dd>
 </dl>
 </li>
 </ul>
@@ -363,7 +365,7 @@ public&nbsp;String&nbsp;toString()</pre>
 <li class="blockList">
 <h4>isFinished</h4>
 <pre>public&nbsp;boolean&nbsp;isFinished()</pre>
-<div class="block"><p>Test whether this transaction is finished.</p></div>
+<div class="block">Test whether this transaction is finished.</div>
 <dl>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>Whether this transaction is finished.</dd>
@@ -379,11 +381,11 @@ public&nbsp;String&nbsp;toString()</pre>
 <pre>public&nbsp;<a href="../../../../com/algolia/search/saas/Request.html" title="interface in com.algolia.search.saas">Request</a>&nbsp;saveObjectAsync(@NonNull
                                JSONObject&nbsp;object,
                                <a href="../../../../com/algolia/search/saas/CompletionHandler.html" title="interface in com.algolia.search.saas">CompletionHandler</a>&nbsp;completionHandler)</pre>
-<div class="block"><p>Save an object.</p></div>
+<div class="block">Save an object.</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
-<dd><code>object</code> - Object to save. Must contain an <code>objectID</code> attribute.</dd>
-<dd><code>completionHandler</code> - Completion handler to be notified of the request&rsquo;s outcome.</dd>
+<dd><code>object</code> - Object to save. Must contain an `objectID` attribute.</dd>
+<dd><code>completionHandler</code> - Completion handler to be notified of the request's outcome.</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>A cancellable operation.</dd>
 </dl>
@@ -398,10 +400,10 @@ public&nbsp;String&nbsp;toString()</pre>
 <pre>public&nbsp;void&nbsp;saveObjectSync(@NonNull
                            JSONObject&nbsp;object)
                     throws <a href="../../../../com/algolia/search/saas/AlgoliaException.html" title="class in com.algolia.search.saas">AlgoliaException</a></pre>
-<div class="block"><p>Save an object (synchronously).</p></div>
+<div class="block">Save an object (synchronously).</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
-<dd><code>object</code> - Object to save. Must contain an <code>objectID</code> attribute.</dd>
+<dd><code>object</code> - Object to save. Must contain an `objectID` attribute.</dd>
 <dt><span class="throwsLabel">Throws:</span></dt>
 <dd><code><a href="../../../../com/algolia/search/saas/AlgoliaException.html" title="class in com.algolia.search.saas">AlgoliaException</a></code></dd>
 </dl>
@@ -416,11 +418,11 @@ public&nbsp;String&nbsp;toString()</pre>
 <pre>public&nbsp;<a href="../../../../com/algolia/search/saas/Request.html" title="interface in com.algolia.search.saas">Request</a>&nbsp;saveObjectsAsync(@NonNull
                                 JSONArray&nbsp;objects,
                                 <a href="../../../../com/algolia/search/saas/CompletionHandler.html" title="interface in com.algolia.search.saas">CompletionHandler</a>&nbsp;completionHandler)</pre>
-<div class="block"><p>Save multiple objects.</p></div>
+<div class="block">Save multiple objects.</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
-<dd><code>objects</code> - Objects to save. Each one must contain an <code>objectID</code> attribute.</dd>
-<dd><code>completionHandler</code> - Completion handler to be notified of the request&rsquo;s outcome.</dd>
+<dd><code>objects</code> - Objects to save. Each one must contain an `objectID` attribute.</dd>
+<dd><code>completionHandler</code> - Completion handler to be notified of the request's outcome.</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>A cancellable operation.</dd>
 </dl>
@@ -435,10 +437,10 @@ public&nbsp;String&nbsp;toString()</pre>
 <pre>public&nbsp;void&nbsp;saveObjectsSync(@NonNull
                             JSONArray&nbsp;objects)
                      throws <a href="../../../../com/algolia/search/saas/AlgoliaException.html" title="class in com.algolia.search.saas">AlgoliaException</a></pre>
-<div class="block"><p>Save multiple objects (synchronously).</p></div>
+<div class="block">Save multiple objects (synchronously).</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
-<dd><code>objects</code> - Objects to save. Each one must contain an <code>objectID</code> attribute.</dd>
+<dd><code>objects</code> - Objects to save. Each one must contain an `objectID` attribute.</dd>
 <dt><span class="throwsLabel">Throws:</span></dt>
 <dd><code><a href="../../../../com/algolia/search/saas/AlgoliaException.html" title="class in com.algolia.search.saas">AlgoliaException</a></code></dd>
 </dl>
@@ -453,11 +455,11 @@ public&nbsp;String&nbsp;toString()</pre>
 <pre>public&nbsp;<a href="../../../../com/algolia/search/saas/Request.html" title="interface in com.algolia.search.saas">Request</a>&nbsp;deleteObjectAsync(@NonNull
                                  String&nbsp;objectID,
                                  <a href="../../../../com/algolia/search/saas/CompletionHandler.html" title="interface in com.algolia.search.saas">CompletionHandler</a>&nbsp;completionHandler)</pre>
-<div class="block"><p>Delete an object.</p></div>
+<div class="block">Delete an object.</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>objectID</code> - Identifier of object to delete.</dd>
-<dd><code>completionHandler</code> - Completion handler to be notified of the request&rsquo;s outcome.</dd>
+<dd><code>completionHandler</code> - Completion handler to be notified of the request's outcome.</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>A cancellable operation.</dd>
 </dl>
@@ -472,7 +474,7 @@ public&nbsp;String&nbsp;toString()</pre>
 <pre>public&nbsp;void&nbsp;deleteObjectSync(@NonNull
                              String&nbsp;objectID)
                       throws <a href="../../../../com/algolia/search/saas/AlgoliaException.html" title="class in com.algolia.search.saas">AlgoliaException</a></pre>
-<div class="block"><p>Delete an object (synchronously).</p></div>
+<div class="block">Delete an object (synchronously).</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>objectID</code> - Identifier of the object to delete.</dd>
@@ -489,11 +491,11 @@ public&nbsp;String&nbsp;toString()</pre>
 <h4>deleteObjectsAsync</h4>
 <pre>public&nbsp;<a href="../../../../com/algolia/search/saas/Request.html" title="interface in com.algolia.search.saas">Request</a>&nbsp;deleteObjectsAsync(Collection&lt;String&gt;&nbsp;objectIDs,
                                   <a href="../../../../com/algolia/search/saas/CompletionHandler.html" title="interface in com.algolia.search.saas">CompletionHandler</a>&nbsp;completionHandler)</pre>
-<div class="block"><p>Delete multiple objects.</p></div>
+<div class="block">Delete multiple objects.</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>objectIDs</code> - Identifiers of objects to delete.</dd>
-<dd><code>completionHandler</code> - Completion handler to be notified of the request&rsquo;s outcome.</dd>
+<dd><code>completionHandler</code> - Completion handler to be notified of the request's outcome.</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>A cancellable operation.</dd>
 </dl>
@@ -508,7 +510,7 @@ public&nbsp;String&nbsp;toString()</pre>
 <pre>public&nbsp;void&nbsp;deleteObjectsSync(@NonNull
                               Collection&lt;String&gt;&nbsp;objectIDs)
                        throws <a href="../../../../com/algolia/search/saas/AlgoliaException.html" title="class in com.algolia.search.saas">AlgoliaException</a></pre>
-<div class="block"><p>Delete multiple objects (synchronously).</p></div>
+<div class="block">Delete multiple objects (synchronously).</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>objectIDs</code> - Identifiers of the objects to delete.</dd>
@@ -526,12 +528,14 @@ public&nbsp;String&nbsp;toString()</pre>
 <pre>public&nbsp;<a href="../../../../com/algolia/search/saas/Request.html" title="interface in com.algolia.search.saas">Request</a>&nbsp;setSettingsAsync(@NonNull
                                 JSONObject&nbsp;settings,
                                 <a href="../../../../com/algolia/search/saas/CompletionHandler.html" title="interface in com.algolia.search.saas">CompletionHandler</a>&nbsp;completionHandler)</pre>
-<div class="block"><p>Set the index settings.</p>
-<p>Please refer to our <a href="https://www.algolia.com/doc/swift#index-settings">API documentation</a> for the list of supported settings.</p></div>
+<div class="block">Set the index settings.
+
+ Please refer to our [API documentation](https://www.algolia.com/doc/swift#index-settings) for the list of
+ supported settings.</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>settings</code> - New settings.</dd>
-<dd><code>completionHandler</code> - Completion handler to be notified of the request&rsquo;s outcome.</dd>
+<dd><code>completionHandler</code> - Completion handler to be notified of the request's outcome.</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>A cancellable operation.</dd>
 </dl>
@@ -546,8 +550,10 @@ public&nbsp;String&nbsp;toString()</pre>
 <pre>public&nbsp;void&nbsp;setSettingsSync(@NonNull
                             JSONObject&nbsp;settings)
                      throws <a href="../../../../com/algolia/search/saas/AlgoliaException.html" title="class in com.algolia.search.saas">AlgoliaException</a></pre>
-<div class="block"><p>Set the index settings (synchronously).</p>
-<p>Please refer to our <a href="https://www.algolia.com/doc/swift#index-settings">API documentation</a> for the list of supported settings.</p></div>
+<div class="block">Set the index settings (synchronously).
+
+ Please refer to our [API documentation](https://www.algolia.com/doc/swift#index-settings) for the list of
+ supported settings.</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>settings</code> - New settings.</dd>
@@ -563,10 +569,10 @@ public&nbsp;String&nbsp;toString()</pre>
 <li class="blockList">
 <h4>clearIndexAsync</h4>
 <pre>public&nbsp;<a href="../../../../com/algolia/search/saas/Request.html" title="interface in com.algolia.search.saas">Request</a>&nbsp;clearIndexAsync(<a href="../../../../com/algolia/search/saas/CompletionHandler.html" title="interface in com.algolia.search.saas">CompletionHandler</a>&nbsp;completionHandler)</pre>
-<div class="block"><p>Delete the index content without removing settings.</p></div>
+<div class="block">Delete the index content without removing settings.</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
-<dd><code>completionHandler</code> - Completion handler to be notified of the request&rsquo;s outcome.</dd>
+<dd><code>completionHandler</code> - Completion handler to be notified of the request's outcome.</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>A cancellable operation.</dd>
 </dl>
@@ -580,7 +586,7 @@ public&nbsp;String&nbsp;toString()</pre>
 <h4>clearIndexSync</h4>
 <pre>public&nbsp;void&nbsp;clearIndexSync()
                     throws <a href="../../../../com/algolia/search/saas/AlgoliaException.html" title="class in com.algolia.search.saas">AlgoliaException</a></pre>
-<div class="block"><p>Delete the index content without removing settings.</p></div>
+<div class="block">Delete the index content without removing settings.</div>
 <dl>
 <dt><span class="throwsLabel">Throws:</span></dt>
 <dd><code><a href="../../../../com/algolia/search/saas/AlgoliaException.html" title="class in com.algolia.search.saas">AlgoliaException</a></code></dd>
@@ -595,11 +601,13 @@ public&nbsp;String&nbsp;toString()</pre>
 <h4>commitAsync</h4>
 <pre>public&nbsp;<a href="../../../../com/algolia/search/saas/Request.html" title="interface in com.algolia.search.saas">Request</a>&nbsp;commitAsync(@NonNull
                            <a href="../../../../com/algolia/search/saas/CompletionHandler.html" title="interface in com.algolia.search.saas">CompletionHandler</a>&nbsp;completionHandler)</pre>
-<div class="block"><p>Commit the transaction.</p>
-<p><strong>Warning:</strong> Cancelling the returned operation does <strong>not</strong> roll back the transaction. The operation is returned  for lifetime management purposes only.</p></div>
+<div class="block">Commit the transaction.
+
+ **Warning:** Cancelling the returned operation does **not** roll back the transaction. The operation is returned
+   for lifetime management purposes only.</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
-<dd><code>completionHandler</code> - Completion handler to be notified of the transaction&rsquo;s outcome.</dd>
+<dd><code>completionHandler</code> - Completion handler to be notified of the transaction's outcome.</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>A cancellable operation (see warning for important caveat).</dd>
 </dl>
@@ -613,7 +621,7 @@ public&nbsp;String&nbsp;toString()</pre>
 <h4>commitSync</h4>
 <pre>public&nbsp;void&nbsp;commitSync()
                 throws <a href="../../../../com/algolia/search/saas/AlgoliaException.html" title="class in com.algolia.search.saas">AlgoliaException</a></pre>
-<div class="block"><p>Commit the transaction (synchronously).</p></div>
+<div class="block">Commit the transaction (synchronously).</div>
 <dl>
 <dt><span class="throwsLabel">Throws:</span></dt>
 <dd><code><a href="../../../../com/algolia/search/saas/AlgoliaException.html" title="class in com.algolia.search.saas">AlgoliaException</a></code></dd>
@@ -627,11 +635,13 @@ public&nbsp;String&nbsp;toString()</pre>
 <li class="blockList">
 <h4>rollbackAsync</h4>
 <pre>public&nbsp;<a href="../../../../com/algolia/search/saas/Request.html" title="interface in com.algolia.search.saas">Request</a>&nbsp;rollbackAsync(<a href="../../../../com/algolia/search/saas/CompletionHandler.html" title="interface in com.algolia.search.saas">CompletionHandler</a>&nbsp;completionHandler)</pre>
-<div class="block"><p>Roll back the current write transaction.</p>
-<p><strong>Warning:</strong> Cancelling the returned operation does <strong>not</strong> cancel the rollback. The operation is returned  for lifetime management purposes only.</p></div>
+<div class="block">Roll back the current write transaction.
+
+  **Warning:** Cancelling the returned operation does **not** cancel the rollback. The operation is returned
+   for lifetime management purposes only.</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
-<dd><code>completionHandler</code> - Completion handler to be notified of the transaction&rsquo;s outcome.</dd>
+<dd><code>completionHandler</code> - Completion handler to be notified of the transaction's outcome.</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>A cancellable operation (see warning for important caveat).</dd>
 </dl>
@@ -644,7 +654,8 @@ public&nbsp;String&nbsp;toString()</pre>
 <li class="blockList">
 <h4>rollbackSync</h4>
 <pre>public&nbsp;void&nbsp;rollbackSync()</pre>
-<div class="block"><p>Rollback the transaction. The index will be left untouched.</p></div>
+<div class="block">Rollback the transaction.
+ The index will be left untouched.</div>
 </li>
 </ul>
 </li>
@@ -671,10 +682,6 @@ public&nbsp;String&nbsp;toString()</pre>
 <li><a href="../../../../index-all.html">Index</a></li>
 <li><a href="../../../../help-doc.html">Help</a></li>
 </ul>
-<div class="aboutLanguage"><script type="text/javascript" src="../../../../highlight.pack.js"></script>
-<script type="text/javascript"><!--
-hljs.initHighlightingOnLoad();
-//--></script></div>
 </div>
 <div class="subNav">
 <ul class="navList">

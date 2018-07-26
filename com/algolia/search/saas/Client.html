@@ -17,7 +17,7 @@
     catch(err) {
     }
 //-->
-var methods = {"i0":10,"i1":10,"i2":10,"i3":10,"i4":10,"i5":42,"i6":10,"i7":10,"i8":10};
+var methods = {"i0":10,"i1":10,"i2":10,"i3":10,"i4":10,"i5":10,"i6":10,"i7":10,"i8":42,"i9":10,"i10":10,"i11":10,"i12":10,"i13":10,"i14":10};
 var tabs = {65535:["t0","All Methods"],2:["t2","Instance Methods"],8:["t4","Concrete Methods"],32:["t6","Deprecated Methods"]};
 var altColor = "altColor";
 var rowColor = "rowColor";
@@ -114,7 +114,13 @@ var activeTableTab = "activeTableTab";
 <br>
 <pre>public class <span class="typeNameLabel">Client</span>
 extends <a href="../../../../com/algolia/search/saas/AbstractClient.html" title="class in com.algolia.search.saas">AbstractClient</a></pre>
-<div class="block"><p>Entry point to the Android API. You must instantiate a <code>Client</code> object with your application ID and API key to start using Algolia Search API. <p> WARNING: For performance reasons, arguments to asynchronous methods are not cloned. Therefore, you should not modify mutable arguments after they have been passed (unless explicitly noted). </p></p></div>
+<div class="block">Entry point to the Android API.
+ You must instantiate a <code>Client</code> object with your application ID and API key to start using Algolia Search
+ API.
+ <p>
+ WARNING: For performance reasons, arguments to asynchronous methods are not cloned. Therefore, you should not
+ modify mutable arguments after they have been passed (unless explicitly noted).
+ </p></div>
 </li>
 </ul>
 </div>
@@ -197,30 +203,55 @@ extends <a href="../../../../com/algolia/search/saas/AbstractClient.html" title=
 </tr>
 <tr id="i1" class="rowColor">
 <td class="colFirst"><code><a href="../../../../com/algolia/search/saas/Request.html" title="interface in com.algolia.search.saas">Request</a></code></td>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/algolia/search/saas/Client.html#batchAsync-org.json.JSONArray-com.algolia.search.saas.RequestOptions-com.algolia.search.saas.CompletionHandler-">batchAsync</a></span>(JSONArray&nbsp;operations,
+          <a href="../../../../com/algolia/search/saas/RequestOptions.html" title="class in com.algolia.search.saas">RequestOptions</a>&nbsp;requestOptions,
+          <a href="../../../../com/algolia/search/saas/CompletionHandler.html" title="interface in com.algolia.search.saas">CompletionHandler</a>&nbsp;completionHandler)</code>
+<div class="block">Batch operations.</div>
+</td>
+</tr>
+<tr id="i2" class="altColor">
+<td class="colFirst"><code><a href="../../../../com/algolia/search/saas/Request.html" title="interface in com.algolia.search.saas">Request</a></code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/algolia/search/saas/Client.html#copyIndexAsync-java.lang.String-java.lang.String-com.algolia.search.saas.CompletionHandler-">copyIndexAsync</a></span>(String&nbsp;srcIndexName,
               String&nbsp;dstIndexName,
               <a href="../../../../com/algolia/search/saas/CompletionHandler.html" title="interface in com.algolia.search.saas">CompletionHandler</a>&nbsp;completionHandler)</code>
 <div class="block">Copy an existing index.</div>
 </td>
 </tr>
-<tr id="i2" class="altColor">
+<tr id="i3" class="rowColor">
+<td class="colFirst"><code><a href="../../../../com/algolia/search/saas/Request.html" title="interface in com.algolia.search.saas">Request</a></code></td>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/algolia/search/saas/Client.html#copyIndexAsync-java.lang.String-java.lang.String-com.algolia.search.saas.RequestOptions-com.algolia.search.saas.CompletionHandler-">copyIndexAsync</a></span>(String&nbsp;srcIndexName,
+              String&nbsp;dstIndexName,
+              <a href="../../../../com/algolia/search/saas/RequestOptions.html" title="class in com.algolia.search.saas">RequestOptions</a>&nbsp;requestOptions,
+              <a href="../../../../com/algolia/search/saas/CompletionHandler.html" title="interface in com.algolia.search.saas">CompletionHandler</a>&nbsp;completionHandler)</code>
+<div class="block">Copy an existing index.</div>
+</td>
+</tr>
+<tr id="i4" class="altColor">
 <td class="colFirst"><code><a href="../../../../com/algolia/search/saas/Request.html" title="interface in com.algolia.search.saas">Request</a></code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/algolia/search/saas/Client.html#deleteIndexAsync-java.lang.String-com.algolia.search.saas.CompletionHandler-">deleteIndexAsync</a></span>(String&nbsp;indexName,
                 <a href="../../../../com/algolia/search/saas/CompletionHandler.html" title="interface in com.algolia.search.saas">CompletionHandler</a>&nbsp;completionHandler)</code>
 <div class="block">Delete an index.</div>
 </td>
 </tr>
-<tr id="i3" class="rowColor">
+<tr id="i5" class="rowColor">
+<td class="colFirst"><code><a href="../../../../com/algolia/search/saas/Request.html" title="interface in com.algolia.search.saas">Request</a></code></td>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/algolia/search/saas/Client.html#deleteIndexAsync-java.lang.String-com.algolia.search.saas.RequestOptions-com.algolia.search.saas.CompletionHandler-">deleteIndexAsync</a></span>(String&nbsp;indexName,
+                <a href="../../../../com/algolia/search/saas/RequestOptions.html" title="class in com.algolia.search.saas">RequestOptions</a>&nbsp;requestOptions,
+                <a href="../../../../com/algolia/search/saas/CompletionHandler.html" title="interface in com.algolia.search.saas">CompletionHandler</a>&nbsp;completionHandler)</code>
+<div class="block">Delete an index.</div>
+</td>
+</tr>
+<tr id="i6" class="altColor">
 <td class="colFirst"><code>String</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/algolia/search/saas/Client.html#getApplicationID--">getApplicationID</a></span>()</code>&nbsp;</td>
 </tr>
-<tr id="i4" class="altColor">
+<tr id="i7" class="rowColor">
 <td class="colFirst"><code><a href="../../../../com/algolia/search/saas/Index.html" title="class in com.algolia.search.saas">Index</a></code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/algolia/search/saas/Client.html#getIndex-java.lang.String-">getIndex</a></span>(String&nbsp;indexName)</code>
 <div class="block">Obtain a proxy to an Algolia index (no server call required by this method).</div>
 </td>
 </tr>
-<tr id="i5" class="rowColor">
+<tr id="i8" class="altColor">
 <td class="colFirst"><code><a href="../../../../com/algolia/search/saas/Index.html" title="class in com.algolia.search.saas">Index</a></code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/algolia/search/saas/Client.html#initIndex-java.lang.String-">initIndex</a></span>(String&nbsp;indexName)</code>
 <div class="block"><span class="deprecatedLabel">Deprecated.</span>&nbsp;
@@ -228,13 +259,20 @@ extends <a href="../../../../com/algolia/search/saas/AbstractClient.html" title=
 </div>
 </td>
 </tr>
-<tr id="i6" class="altColor">
+<tr id="i9" class="rowColor">
 <td class="colFirst"><code><a href="../../../../com/algolia/search/saas/Request.html" title="interface in com.algolia.search.saas">Request</a></code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/algolia/search/saas/Client.html#listIndexesAsync-com.algolia.search.saas.CompletionHandler-">listIndexesAsync</a></span>(<a href="../../../../com/algolia/search/saas/CompletionHandler.html" title="interface in com.algolia.search.saas">CompletionHandler</a>&nbsp;completionHandler)</code>
 <div class="block">List existing indexes.</div>
 </td>
 </tr>
-<tr id="i7" class="rowColor">
+<tr id="i10" class="altColor">
+<td class="colFirst"><code><a href="../../../../com/algolia/search/saas/Request.html" title="interface in com.algolia.search.saas">Request</a></code></td>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/algolia/search/saas/Client.html#listIndexesAsync-com.algolia.search.saas.RequestOptions-com.algolia.search.saas.CompletionHandler-">listIndexesAsync</a></span>(<a href="../../../../com/algolia/search/saas/RequestOptions.html" title="class in com.algolia.search.saas">RequestOptions</a>&nbsp;requestOptions,
+                <a href="../../../../com/algolia/search/saas/CompletionHandler.html" title="interface in com.algolia.search.saas">CompletionHandler</a>&nbsp;completionHandler)</code>
+<div class="block">List existing indexes.</div>
+</td>
+</tr>
+<tr id="i11" class="rowColor">
 <td class="colFirst"><code><a href="../../../../com/algolia/search/saas/Request.html" title="interface in com.algolia.search.saas">Request</a></code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/algolia/search/saas/Client.html#moveIndexAsync-java.lang.String-java.lang.String-com.algolia.search.saas.CompletionHandler-">moveIndexAsync</a></span>(String&nbsp;srcIndexName,
               String&nbsp;dstIndexName,
@@ -242,10 +280,28 @@ extends <a href="../../../../com/algolia/search/saas/AbstractClient.html" title=
 <div class="block">Move an existing index.</div>
 </td>
 </tr>
-<tr id="i8" class="altColor">
+<tr id="i12" class="altColor">
+<td class="colFirst"><code><a href="../../../../com/algolia/search/saas/Request.html" title="interface in com.algolia.search.saas">Request</a></code></td>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/algolia/search/saas/Client.html#moveIndexAsync-java.lang.String-java.lang.String-com.algolia.search.saas.RequestOptions-com.algolia.search.saas.CompletionHandler-">moveIndexAsync</a></span>(String&nbsp;srcIndexName,
+              String&nbsp;dstIndexName,
+              <a href="../../../../com/algolia/search/saas/RequestOptions.html" title="class in com.algolia.search.saas">RequestOptions</a>&nbsp;requestOptions,
+              <a href="../../../../com/algolia/search/saas/CompletionHandler.html" title="interface in com.algolia.search.saas">CompletionHandler</a>&nbsp;completionHandler)</code>
+<div class="block">Move an existing index.</div>
+</td>
+</tr>
+<tr id="i13" class="rowColor">
 <td class="colFirst"><code><a href="../../../../com/algolia/search/saas/Request.html" title="interface in com.algolia.search.saas">Request</a></code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/algolia/search/saas/Client.html#multipleQueriesAsync-java.util.List-com.algolia.search.saas.Client.MultipleQueriesStrategy-com.algolia.search.saas.CompletionHandler-">multipleQueriesAsync</a></span>(List&lt;<a href="../../../../com/algolia/search/saas/IndexQuery.html" title="class in com.algolia.search.saas">IndexQuery</a>&gt;&nbsp;queries,
                     <a href="../../../../com/algolia/search/saas/Client.MultipleQueriesStrategy.html" title="enum in com.algolia.search.saas">Client.MultipleQueriesStrategy</a>&nbsp;strategy,
+                    <a href="../../../../com/algolia/search/saas/CompletionHandler.html" title="interface in com.algolia.search.saas">CompletionHandler</a>&nbsp;completionHandler)</code>
+<div class="block">Run multiple queries, potentially targeting multiple indexes, with one API call.</div>
+</td>
+</tr>
+<tr id="i14" class="altColor">
+<td class="colFirst"><code><a href="../../../../com/algolia/search/saas/Request.html" title="interface in com.algolia.search.saas">Request</a></code></td>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/algolia/search/saas/Client.html#multipleQueriesAsync-java.util.List-com.algolia.search.saas.Client.MultipleQueriesStrategy-com.algolia.search.saas.RequestOptions-com.algolia.search.saas.CompletionHandler-">multipleQueriesAsync</a></span>(List&lt;<a href="../../../../com/algolia/search/saas/IndexQuery.html" title="class in com.algolia.search.saas">IndexQuery</a>&gt;&nbsp;queries,
+                    <a href="../../../../com/algolia/search/saas/Client.MultipleQueriesStrategy.html" title="enum in com.algolia.search.saas">Client.MultipleQueriesStrategy</a>&nbsp;strategy,
+                    <a href="../../../../com/algolia/search/saas/RequestOptions.html" title="class in com.algolia.search.saas">RequestOptions</a>&nbsp;requestOptions,
                     <a href="../../../../com/algolia/search/saas/CompletionHandler.html" title="interface in com.algolia.search.saas">CompletionHandler</a>&nbsp;completionHandler)</code>
 <div class="block">Run multiple queries, potentially targeting multiple indexes, with one API call.</div>
 </td>
@@ -256,7 +312,7 @@ extends <a href="../../../../com/algolia/search/saas/AbstractClient.html" title=
 <!--   -->
 </a>
 <h3>Methods inherited from class&nbsp;com.algolia.search.saas.<a href="../../../../com/algolia/search/saas/AbstractClient.html" title="class in com.algolia.search.saas">AbstractClient</a></h3>
-<code><a href="../../../../com/algolia/search/saas/AbstractClient.html#addUserAgent-com.algolia.search.saas.AbstractClient.LibraryVersion-">addUserAgent</a>, <a href="../../../../com/algolia/search/saas/AbstractClient.html#getConnectTimeout--">getConnectTimeout</a>, <a href="../../../../com/algolia/search/saas/AbstractClient.html#getHeader-java.lang.String-">getHeader</a>, <a href="../../../../com/algolia/search/saas/AbstractClient.html#getHostDownDelay--">getHostDownDelay</a>, <a href="../../../../com/algolia/search/saas/AbstractClient.html#getReadHosts--">getReadHosts</a>, <a href="../../../../com/algolia/search/saas/AbstractClient.html#getReadTimeout--">getReadTimeout</a>, <a href="../../../../com/algolia/search/saas/AbstractClient.html#getSearchTimeout--">getSearchTimeout</a>, <a href="../../../../com/algolia/search/saas/AbstractClient.html#getUserAgents--">getUserAgents</a>, <a href="../../../../com/algolia/search/saas/AbstractClient.html#getWriteHosts--">getWriteHosts</a>, <a href="../../../../com/algolia/search/saas/AbstractClient.html#hasUserAgent-com.algolia.search.saas.AbstractClient.LibraryVersion-">hasUserAgent</a>, <a href="../../../../com/algolia/search/saas/AbstractClient.html#removeUserAgent-com.algolia.search.saas.AbstractClient.LibraryVersion-">removeUserAgent</a>, <a href="../../../../com/algolia/search/saas/AbstractClient.html#setConnectTimeout-int-">setConnectTimeout</a>, <a href="../../../../com/algolia/search/saas/AbstractClient.html#setHeader-java.lang.String-java.lang.String-">setHeader</a>, <a href="../../../../com/algolia/search/saas/AbstractClient.html#setHostDownDelay-int-">setHostDownDelay</a>, <a href="../../../../com/algolia/search/saas/AbstractClient.html#setHosts-java.lang.String...-">setHosts</a>, <a href="../../../../com/algolia/search/saas/AbstractClient.html#setReadHosts-java.lang.String...-">setReadHosts</a>, <a href="../../../../com/algolia/search/saas/AbstractClient.html#setReadTimeout-int-">setReadTimeout</a>, <a href="../../../../com/algolia/search/saas/AbstractClient.html#setSearchTimeout-int-">setSearchTimeout</a>, <a href="../../../../com/algolia/search/saas/AbstractClient.html#setWriteHosts-java.lang.String...-">setWriteHosts</a></code></li>
+<code><a href="../../../../com/algolia/search/saas/AbstractClient.html#addUserAgent-com.algolia.search.saas.AbstractClient.LibraryVersion-">addUserAgent</a>, <a href="../../../../com/algolia/search/saas/AbstractClient.html#getConnectTimeout--">getConnectTimeout</a>, <a href="../../../../com/algolia/search/saas/AbstractClient.html#getHeader-java.lang.String-">getHeader</a>, <a href="../../../../com/algolia/search/saas/AbstractClient.html#getHostDownDelay--">getHostDownDelay</a>, <a href="../../../../com/algolia/search/saas/AbstractClient.html#getReadHosts--">getReadHosts</a>, <a href="../../../../com/algolia/search/saas/AbstractClient.html#getReadTimeout--">getReadTimeout</a>, <a href="../../../../com/algolia/search/saas/AbstractClient.html#getSearchTimeout--">getSearchTimeout</a>, <a href="../../../../com/algolia/search/saas/AbstractClient.html#getUserAgents--">getUserAgents</a>, <a href="../../../../com/algolia/search/saas/AbstractClient.html#getWriteHosts--">getWriteHosts</a>, <a href="../../../../com/algolia/search/saas/AbstractClient.html#hasUserAgent-com.algolia.search.saas.AbstractClient.LibraryVersion-">hasUserAgent</a>, <a href="../../../../com/algolia/search/saas/AbstractClient.html#removeUserAgent-com.algolia.search.saas.AbstractClient.LibraryVersion-">removeUserAgent</a>, <a href="../../../../com/algolia/search/saas/AbstractClient.html#setCompletionExecutor-java.util.concurrent.Executor-">setCompletionExecutor</a>, <a href="../../../../com/algolia/search/saas/AbstractClient.html#setConnectTimeout-int-">setConnectTimeout</a>, <a href="../../../../com/algolia/search/saas/AbstractClient.html#setHeader-java.lang.String-java.lang.String-">setHeader</a>, <a href="../../../../com/algolia/search/saas/AbstractClient.html#setHostDownDelay-int-">setHostDownDelay</a>, <a href="../../../../com/algolia/search/saas/AbstractClient.html#setHosts-java.lang.String...-">setHosts</a>, <a href="../../../../com/algolia/search/saas/AbstractClient.html#setReadHosts-java.lang.String...-">setReadHosts</a>, <a href="../../../../com/algolia/search/saas/AbstractClient.html#setReadTimeout-int-">setReadTimeout</a>, <a href="../../../../com/algolia/search/saas/AbstractClient.html#setSearchTimeout-int-">setSearchTimeout</a>, <a href="../../../../com/algolia/search/saas/AbstractClient.html#setWriteHosts-java.lang.String...-">setWriteHosts</a></code></li>
 </ul>
 <ul class="blockList">
 <li class="blockList"><a name="methods.inherited.from.class.Object">
@@ -289,8 +345,9 @@ extends <a href="../../../../com/algolia/search/saas/AbstractClient.html" title=
               String&nbsp;applicationID,
               @NonNull
               String&nbsp;apiKey)</pre>
-<div class="block"><p>Create a new Algolia Search client targeting the default hosts.</p>
-<p>NOTE: This is the recommended way to initialize a client is most use cases.</p></div>
+<div class="block">Create a new Algolia Search client targeting the default hosts.
+ <p>
+ NOTE: This is the recommended way to initialize a client is most use cases.</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>applicationID</code> - The application ID (available in your Algolia Dashboard).</dd>
@@ -310,8 +367,9 @@ extends <a href="../../../../com/algolia/search/saas/AbstractClient.html" title=
               String&nbsp;apiKey,
               @Nullable
               String[]&nbsp;hosts)</pre>
-<div class="block"><p>Create a new Algolia Search client with explicit hosts to target.</p>
-<p>NOTE: In most use cases, you should the default hosts. See <a href="../../../../com/algolia/search/saas/Client.html#Client-java.lang.String-java.lang.String-"><code>Client(String, String)</code></a>.</p></div>
+<div class="block">Create a new Algolia Search client with explicit hosts to target.
+ <p>
+ NOTE: In most use cases, you should the default hosts. See <a href="../../../../com/algolia/search/saas/Client.html#Client-java.lang.String-java.lang.String-"><code>Client(String, String)</code></a>.</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>applicationID</code> - The application ID (available in your Algolia Dashboard).</dd>
@@ -351,7 +409,7 @@ public&nbsp;String&nbsp;getApplicationID()</pre>
 <pre>public&nbsp;<a href="../../../../com/algolia/search/saas/Index.html" title="class in com.algolia.search.saas">Index</a>&nbsp;initIndex(@NonNull
                        String&nbsp;indexName)</pre>
 <div class="block"><span class="deprecatedLabel">Deprecated.</span>&nbsp;<span class="deprecationComment">You should now use <a href="../../../../com/algolia/search/saas/Client.html#getIndex-java.lang.String-"><code>getIndex(String)</code></a>, which re-uses instances with the same name.</span></div>
-<div class="block"><p>Create a proxy to an Algolia index (no server call required by this method).</p></div>
+<div class="block">Create a proxy to an Algolia index (no server call required by this method).</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>indexName</code> - The name of the index.</dd>
@@ -369,12 +427,32 @@ public&nbsp;String&nbsp;getApplicationID()</pre>
 <pre>@NonNull
 public&nbsp;<a href="../../../../com/algolia/search/saas/Index.html" title="class in com.algolia.search.saas">Index</a>&nbsp;getIndex(@NonNull
                                String&nbsp;indexName)</pre>
-<div class="block"><p>Obtain a proxy to an Algolia index (no server call required by this method).</p></div>
+<div class="block">Obtain a proxy to an Algolia index (no server call required by this method).</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>indexName</code> - The name of the index.</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>A proxy to the specified index.</dd>
+</dl>
+</li>
+</ul>
+<a name="listIndexesAsync-com.algolia.search.saas.RequestOptions-com.algolia.search.saas.CompletionHandler-">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>listIndexesAsync</h4>
+<pre>public&nbsp;<a href="../../../../com/algolia/search/saas/Request.html" title="interface in com.algolia.search.saas">Request</a>&nbsp;listIndexesAsync(@Nullable
+                                <a href="../../../../com/algolia/search/saas/RequestOptions.html" title="class in com.algolia.search.saas">RequestOptions</a>&nbsp;requestOptions,
+                                @NonNull
+                                <a href="../../../../com/algolia/search/saas/CompletionHandler.html" title="interface in com.algolia.search.saas">CompletionHandler</a>&nbsp;completionHandler)</pre>
+<div class="block">List existing indexes.</div>
+<dl>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>requestOptions</code> - Request-specific options.</dd>
+<dd><code>completionHandler</code> - The listener that will be notified of the request's outcome.</dd>
+<dt><span class="returnLabel">Returns:</span></dt>
+<dd>A cancellable request.</dd>
 </dl>
 </li>
 </ul>
@@ -386,10 +464,32 @@ public&nbsp;<a href="../../../../com/algolia/search/saas/Index.html" title="clas
 <h4>listIndexesAsync</h4>
 <pre>public&nbsp;<a href="../../../../com/algolia/search/saas/Request.html" title="interface in com.algolia.search.saas">Request</a>&nbsp;listIndexesAsync(@NonNull
                                 <a href="../../../../com/algolia/search/saas/CompletionHandler.html" title="interface in com.algolia.search.saas">CompletionHandler</a>&nbsp;completionHandler)</pre>
-<div class="block"><p>List existing indexes.</p></div>
+<div class="block">List existing indexes.</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
-<dd><code>completionHandler</code> - The listener that will be notified of the request&rsquo;s outcome.</dd>
+<dd><code>completionHandler</code> - The listener that will be notified of the request's outcome.</dd>
+<dt><span class="returnLabel">Returns:</span></dt>
+<dd>A cancellable request.</dd>
+</dl>
+</li>
+</ul>
+<a name="deleteIndexAsync-java.lang.String-com.algolia.search.saas.RequestOptions-com.algolia.search.saas.CompletionHandler-">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>deleteIndexAsync</h4>
+<pre>public&nbsp;<a href="../../../../com/algolia/search/saas/Request.html" title="interface in com.algolia.search.saas">Request</a>&nbsp;deleteIndexAsync(@NonNull
+                                String&nbsp;indexName,
+                                @Nullable
+                                <a href="../../../../com/algolia/search/saas/RequestOptions.html" title="class in com.algolia.search.saas">RequestOptions</a>&nbsp;requestOptions,
+                                <a href="../../../../com/algolia/search/saas/CompletionHandler.html" title="interface in com.algolia.search.saas">CompletionHandler</a>&nbsp;completionHandler)</pre>
+<div class="block">Delete an index.</div>
+<dl>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>indexName</code> - Name of index to delete.</dd>
+<dd><code>requestOptions</code> - Request-specific options.</dd>
+<dd><code>completionHandler</code> - The listener that will be notified of the request's outcome.</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>A cancellable request.</dd>
 </dl>
@@ -404,11 +504,38 @@ public&nbsp;<a href="../../../../com/algolia/search/saas/Index.html" title="clas
 <pre>public&nbsp;<a href="../../../../com/algolia/search/saas/Request.html" title="interface in com.algolia.search.saas">Request</a>&nbsp;deleteIndexAsync(@NonNull
                                 String&nbsp;indexName,
                                 <a href="../../../../com/algolia/search/saas/CompletionHandler.html" title="interface in com.algolia.search.saas">CompletionHandler</a>&nbsp;completionHandler)</pre>
-<div class="block"><p>Delete an index.</p></div>
+<div class="block">Delete an index.</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>indexName</code> - Name of index to delete.</dd>
-<dd><code>completionHandler</code> - The listener that will be notified of the request&rsquo;s outcome.</dd>
+<dd><code>completionHandler</code> - The listener that will be notified of the request's outcome.</dd>
+<dt><span class="returnLabel">Returns:</span></dt>
+<dd>A cancellable request.</dd>
+</dl>
+</li>
+</ul>
+<a name="moveIndexAsync-java.lang.String-java.lang.String-com.algolia.search.saas.RequestOptions-com.algolia.search.saas.CompletionHandler-">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>moveIndexAsync</h4>
+<pre>public&nbsp;<a href="../../../../com/algolia/search/saas/Request.html" title="interface in com.algolia.search.saas">Request</a>&nbsp;moveIndexAsync(@NonNull
+                              String&nbsp;srcIndexName,
+                              @NonNull
+                              String&nbsp;dstIndexName,
+                              @Nullable
+                              <a href="../../../../com/algolia/search/saas/RequestOptions.html" title="class in com.algolia.search.saas">RequestOptions</a>&nbsp;requestOptions,
+                              <a href="../../../../com/algolia/search/saas/CompletionHandler.html" title="interface in com.algolia.search.saas">CompletionHandler</a>&nbsp;completionHandler)</pre>
+<div class="block">Move an existing index.
+ If the destination index already exists, its specific API keys will be preserved and the source index specific
+ API keys will be added.</div>
+<dl>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>srcIndexName</code> - Name of index to move.</dd>
+<dd><code>dstIndexName</code> - The new index name.</dd>
+<dd><code>requestOptions</code> - Request-specific options.</dd>
+<dd><code>completionHandler</code> - The listener that will be notified of the request's outcome.</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>A cancellable request.</dd>
 </dl>
@@ -425,12 +552,41 @@ public&nbsp;<a href="../../../../com/algolia/search/saas/Index.html" title="clas
                               @NonNull
                               String&nbsp;dstIndexName,
                               <a href="../../../../com/algolia/search/saas/CompletionHandler.html" title="interface in com.algolia.search.saas">CompletionHandler</a>&nbsp;completionHandler)</pre>
-<div class="block"><p>Move an existing index. If the destination index already exists, its specific API keys will be preserved and the source index specific API keys will be added.</p></div>
+<div class="block">Move an existing index.
+ If the destination index already exists, its specific API keys will be preserved and the source index specific
+ API keys will be added.</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>srcIndexName</code> - Name of index to move.</dd>
 <dd><code>dstIndexName</code> - The new index name.</dd>
-<dd><code>completionHandler</code> - The listener that will be notified of the request&rsquo;s outcome.</dd>
+<dd><code>completionHandler</code> - The listener that will be notified of the request's outcome.</dd>
+<dt><span class="returnLabel">Returns:</span></dt>
+<dd>A cancellable request.</dd>
+</dl>
+</li>
+</ul>
+<a name="copyIndexAsync-java.lang.String-java.lang.String-com.algolia.search.saas.RequestOptions-com.algolia.search.saas.CompletionHandler-">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>copyIndexAsync</h4>
+<pre>public&nbsp;<a href="../../../../com/algolia/search/saas/Request.html" title="interface in com.algolia.search.saas">Request</a>&nbsp;copyIndexAsync(@NonNull
+                              String&nbsp;srcIndexName,
+                              @NonNull
+                              String&nbsp;dstIndexName,
+                              @Nullable
+                              <a href="../../../../com/algolia/search/saas/RequestOptions.html" title="class in com.algolia.search.saas">RequestOptions</a>&nbsp;requestOptions,
+                              <a href="../../../../com/algolia/search/saas/CompletionHandler.html" title="interface in com.algolia.search.saas">CompletionHandler</a>&nbsp;completionHandler)</pre>
+<div class="block">Copy an existing index.
+ If the destination index already exists, its specific API keys will be preserved and the source index specific
+ API keys will be added.</div>
+<dl>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>srcIndexName</code> - Name of index to copy.</dd>
+<dd><code>dstIndexName</code> - The new index name.</dd>
+<dd><code>requestOptions</code> - Request-specific options.</dd>
+<dd><code>completionHandler</code> - The listener that will be notified of the request's outcome.</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>A cancellable request.</dd>
 </dl>
@@ -447,12 +603,39 @@ public&nbsp;<a href="../../../../com/algolia/search/saas/Index.html" title="clas
                               @NonNull
                               String&nbsp;dstIndexName,
                               <a href="../../../../com/algolia/search/saas/CompletionHandler.html" title="interface in com.algolia.search.saas">CompletionHandler</a>&nbsp;completionHandler)</pre>
-<div class="block"><p>Copy an existing index. If the destination index already exists, its specific API keys will be preserved and the source index specific API keys will be added.</p></div>
+<div class="block">Copy an existing index.
+ If the destination index already exists, its specific API keys will be preserved and the source index specific
+ API keys will be added.</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>srcIndexName</code> - Name of index to copy.</dd>
 <dd><code>dstIndexName</code> - The new index name.</dd>
-<dd><code>completionHandler</code> - The listener that will be notified of the request&rsquo;s outcome.</dd>
+<dd><code>completionHandler</code> - The listener that will be notified of the request's outcome.</dd>
+<dt><span class="returnLabel">Returns:</span></dt>
+<dd>A cancellable request.</dd>
+</dl>
+</li>
+</ul>
+<a name="multipleQueriesAsync-java.util.List-com.algolia.search.saas.Client.MultipleQueriesStrategy-com.algolia.search.saas.RequestOptions-com.algolia.search.saas.CompletionHandler-">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>multipleQueriesAsync</h4>
+<pre>public&nbsp;<a href="../../../../com/algolia/search/saas/Request.html" title="interface in com.algolia.search.saas">Request</a>&nbsp;multipleQueriesAsync(@NonNull
+                                    List&lt;<a href="../../../../com/algolia/search/saas/IndexQuery.html" title="class in com.algolia.search.saas">IndexQuery</a>&gt;&nbsp;queries,
+                                    <a href="../../../../com/algolia/search/saas/Client.MultipleQueriesStrategy.html" title="enum in com.algolia.search.saas">Client.MultipleQueriesStrategy</a>&nbsp;strategy,
+                                    @Nullable
+                                    <a href="../../../../com/algolia/search/saas/RequestOptions.html" title="class in com.algolia.search.saas">RequestOptions</a>&nbsp;requestOptions,
+                                    @NonNull
+                                    <a href="../../../../com/algolia/search/saas/CompletionHandler.html" title="interface in com.algolia.search.saas">CompletionHandler</a>&nbsp;completionHandler)</pre>
+<div class="block">Run multiple queries, potentially targeting multiple indexes, with one API call.</div>
+<dl>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>queries</code> - The queries to run.</dd>
+<dd><code>strategy</code> - The strategy to use.</dd>
+<dd><code>requestOptions</code> - Request-specific options.</dd>
+<dd><code>completionHandler</code> - The listener that will be notified of the request's outcome.</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>A cancellable request.</dd>
 </dl>
@@ -469,12 +652,34 @@ public&nbsp;<a href="../../../../com/algolia/search/saas/Index.html" title="clas
                                     <a href="../../../../com/algolia/search/saas/Client.MultipleQueriesStrategy.html" title="enum in com.algolia.search.saas">Client.MultipleQueriesStrategy</a>&nbsp;strategy,
                                     @NonNull
                                     <a href="../../../../com/algolia/search/saas/CompletionHandler.html" title="interface in com.algolia.search.saas">CompletionHandler</a>&nbsp;completionHandler)</pre>
-<div class="block"><p>Run multiple queries, potentially targeting multiple indexes, with one API call.</p></div>
+<div class="block">Run multiple queries, potentially targeting multiple indexes, with one API call.</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>queries</code> - The queries to run.</dd>
 <dd><code>strategy</code> - The strategy to use.</dd>
-<dd><code>completionHandler</code> - The listener that will be notified of the request&rsquo;s outcome.</dd>
+<dd><code>completionHandler</code> - The listener that will be notified of the request's outcome.</dd>
+<dt><span class="returnLabel">Returns:</span></dt>
+<dd>A cancellable request.</dd>
+</dl>
+</li>
+</ul>
+<a name="batchAsync-org.json.JSONArray-com.algolia.search.saas.RequestOptions-com.algolia.search.saas.CompletionHandler-">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>batchAsync</h4>
+<pre>public&nbsp;<a href="../../../../com/algolia/search/saas/Request.html" title="interface in com.algolia.search.saas">Request</a>&nbsp;batchAsync(@NonNull
+                          JSONArray&nbsp;operations,
+                          @Nullable
+                          <a href="../../../../com/algolia/search/saas/RequestOptions.html" title="class in com.algolia.search.saas">RequestOptions</a>&nbsp;requestOptions,
+                          <a href="../../../../com/algolia/search/saas/CompletionHandler.html" title="interface in com.algolia.search.saas">CompletionHandler</a>&nbsp;completionHandler)</pre>
+<div class="block">Batch operations.</div>
+<dl>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>operations</code> - List of operations.</dd>
+<dd><code>requestOptions</code> - Request-specific options.</dd>
+<dd><code>completionHandler</code> - The listener that will be notified of the request's outcome.</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>A cancellable request.</dd>
 </dl>
@@ -489,11 +694,11 @@ public&nbsp;<a href="../../../../com/algolia/search/saas/Index.html" title="clas
 <pre>public&nbsp;<a href="../../../../com/algolia/search/saas/Request.html" title="interface in com.algolia.search.saas">Request</a>&nbsp;batchAsync(@NonNull
                           JSONArray&nbsp;operations,
                           <a href="../../../../com/algolia/search/saas/CompletionHandler.html" title="interface in com.algolia.search.saas">CompletionHandler</a>&nbsp;completionHandler)</pre>
-<div class="block"><p>Batch operations.</p></div>
+<div class="block">Batch operations.</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>operations</code> - List of operations.</dd>
-<dd><code>completionHandler</code> - The listener that will be notified of the request&rsquo;s outcome.</dd>
+<dd><code>completionHandler</code> - The listener that will be notified of the request's outcome.</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>A cancellable request.</dd>
 </dl>
@@ -523,10 +728,6 @@ public&nbsp;<a href="../../../../com/algolia/search/saas/Index.html" title="clas
 <li><a href="../../../../index-all.html">Index</a></li>
 <li><a href="../../../../help-doc.html">Help</a></li>
 </ul>
-<div class="aboutLanguage"><script type="text/javascript" src="../../../../highlight.pack.js"></script>
-<script type="text/javascript"><!--
-hljs.initHighlightingOnLoad();
-//--></script></div>
 </div>
 <div class="subNav">
 <ul class="navList">
