@@ -51,4 +51,4 @@ LICENSE_FILE_NAME="LICENSE.txt"
 cp "$PROJECT_ROOT/LICENSE" "$DST_DIR/$LICENSE_FILE_NAME"
 cp "$PROJECT_ROOT/LICENSE" "$DST_DIR/offline/$LICENSE_FILE_NAME"
 
-echo 'Done. Git diff then add and commit.'
+echo "Done. In $DST_DIR, git diff then add commit and push."
