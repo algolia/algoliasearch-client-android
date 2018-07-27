@@ -89,7 +89,7 @@ dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
 
     testImplementation "junit:junit:4.12"
-    testImplementation "org.assertj:assertj-core:1.7.0"
+    testImplementation "org.assertj:assertj-core:3.10.0"
     testImplementation "org.robolectric:robolectric:3.7.1"
 
     // PowerMock brings in the mockito dependency
