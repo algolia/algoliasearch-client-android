@@ -21,6 +21,10 @@
  * THE SOFTWARE.
  */
 
+plugins {
+    id "com.github.ben-manes.versions" version "0.20.0" // exposes dependencyUpdates task
+}
+
 ext {
     PUBLISH_ARTIFACT_ID = "algoliasearch-android"
     PUBLISH_NAME = "Algolia Search API Client for Android"
