@@ -1,5 +1,8 @@
 # Changelog
 
+## 3.22.15
+* revert modification of build.gradle symlink ([ba0311e](https://github.com/algolia/algoliasearch-client-android/commit/ba0311e))
+
 ## 3.22.14
 * **fastlane:** Fix the gitcheckout on Gemfile.lock ([d5ea5eb](https://github.com/algolia/algoliasearch-client-android/commit/d5ea5eb))
 * **fastlane:** Git checkout Gemfile.lock ([5ae5e52](https://github.com/algolia/algoliasearch-client-android/commit/5ae5e52))
