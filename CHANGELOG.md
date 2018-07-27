@@ -1,5 +1,9 @@
 # Changelog
 
+## 3.24.0
+
+**Dummy release to fix issue of release v3.22.3 being distributed as v3.23.3 **
+
 ## 3.22.15
 * revert modification of build.gradle symlink ([ba0311e](https://github.com/algolia/algoliasearch-client-android/commit/ba0311e))
 
