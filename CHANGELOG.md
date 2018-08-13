@@ -1,5 +1,7 @@
 # Changelog
 
+## 3.25.0
+
 ## 3.24.0
 
 **Dummy release to fix issue of release v3.22.3 being distributed as v3.23.3 **
