@@ -1,5 +1,8 @@
 # Changelog
 
+## 3.26.0
+* **dependencies:** Downgrade appcompat from 28-beta01 to 27.1.1 ([#557](https://github.com/algolia/algoliasearch-client-android/issues/557)) ([001cbfc](https://github.com/algolia/algoliasearch-client-android/commit/001cbfc))
+
 ## 3.25.0
 
 ## 3.24.0
