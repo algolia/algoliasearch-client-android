@@ -289,11 +289,12 @@ public class Query extends AbstractQuery {
      * search but not engine.
      */
     public @NonNull
-    Query setAdvancedSyntax(Boolean enabled) {
+    Query setAdvancedSyntax(@Nullable Boolean enabled) {
         return set(KEY_ADVANCED_SYNTAX, enabled);
     }
 
-    public Boolean getAdvancedSyntax() {
+    public @Nullable
+    Boolean getAdvancedSyntax() {
         return parseBoolean(get(KEY_ADVANCED_SYNTAX));
     }
 
@@ -304,11 +305,12 @@ public class Query extends AbstractQuery {
      *                Defaults to true.
      */
     public @NonNull
-    Query setAllowTyposOnNumericTokens(Boolean enabled) {
+    Query setAllowTyposOnNumericTokens(@Nullable Boolean enabled) {
         return set(KEY_ALLOW_TYPOS_ON_NUMERIC_TOKENS, enabled);
     }
 
-    public Boolean getAllowTyposOnNumericTokens() {
+    public @Nullable
+    Boolean getAllowTyposOnNumericTokens() {
         return parseBoolean(get(KEY_ALLOW_TYPOS_ON_NUMERIC_TOKENS));
     }
 
@@ -318,11 +320,12 @@ public class Query extends AbstractQuery {
      * @param enabled If set to true, the results will return queryID which is needed for sending click | conversion events. Defaults to false.
      */
     public @NonNull
-    Query setClickAnalytics(Boolean enabled) {
+    Query setClickAnalytics(@Nullable Boolean enabled) {
         return set(KEY_CLICK_ANALYTICS, enabled);
     }
 
-    public Boolean getClickAnalytics() {
+    public @Nullable
+    Boolean getClickAnalytics() {
         return parseBoolean(get(KEY_CLICK_ANALYTICS));
     }
 
@@ -333,11 +336,12 @@ public class Query extends AbstractQuery {
      *                analytics feature. Defaults to true.
      */
     public @NonNull
-    Query setAnalytics(Boolean enabled) {
+    Query setAnalytics(@Nullable Boolean enabled) {
         return set(KEY_ANALYTICS, enabled);
     }
 
-    public Boolean getAnalytics() {
+    public @Nullable
+    Boolean getAnalytics() {
         return parseBoolean(get(KEY_ANALYTICS));
     }
 
@@ -381,11 +385,12 @@ public class Query extends AbstractQuery {
      * geolocation)
      */
     public @NonNull
-    Query setAroundLatLngViaIP(Boolean enabled) {
+    Query setAroundLatLngViaIP(@Nullable Boolean enabled) {
         return set(KEY_AROUND_LAT_LNG_VIA_IP, enabled);
     }
 
-    public Boolean getAroundLatLngViaIP() {
+    public @Nullable
+    Boolean getAroundLatLngViaIP() {
         return parseBoolean(get(KEY_AROUND_LAT_LNG_VIA_IP));
     }
 
@@ -611,7 +616,7 @@ public class Query extends AbstractQuery {
      * @see <a href="https://www.algolia.com/doc/api-client/android/parameters/#facetingafterdistinct">facetingAfterDistinct's documentation</a>
      */
     public @NonNull
-    Query setFacetingAfterDistinct(Boolean enabled) {
+    Query setFacetingAfterDistinct(@Nullable Boolean enabled) {
         return set(KEY_FACETING_AFTER_DISTINCT, enabled);
     }
 
@@ -648,11 +653,11 @@ public class Query extends AbstractQuery {
      * attribute.
      */
     public @NonNull
-    Query setGetRankingInfo(Boolean enabled) {
+    Query setGetRankingInfo(@Nullable Boolean enabled) {
         return set(KEY_GET_RANKING_INFO, enabled);
     }
 
-    public Boolean getGetRankingInfo() {
+    public @Nullable Boolean getGetRankingInfo() {
         return parseBoolean(get(KEY_GET_RANKING_INFO));
     }
 
@@ -820,7 +825,7 @@ public class Query extends AbstractQuery {
      * car/cars will be considered as equals). Defaults to false.
      */
     public @NonNull
-    Query setIgnorePlurals(boolean enabled) {
+    Query setIgnorePlurals(@Nullable Boolean enabled) {
         return set(KEY_IGNORE_PLURALS, enabled);
     }
 
@@ -1277,11 +1282,11 @@ public class Query extends AbstractQuery {
      *                Algolia dashboard. When `false`, the search query is excluded from percentile computation.
      */
     public @NonNull
-    Query setPercentileComputation(boolean enabled) {
+    Query setPercentileComputation(@Nullable Boolean enabled) {
         return set(KEY_PERCENTILE_COMPUTATION, enabled);
     }
 
-    public Boolean getPercentileComputation() {
+    public @Nullable Boolean getPercentileComputation() {
         return parseBoolean(get(KEY_PERCENTILE_COMPUTATION));
     }
 
@@ -1372,11 +1377,12 @@ public class Query extends AbstractQuery {
      *                to true.
      */
     public @NonNull
-    Query setReplaceSynonymsInHighlight(Boolean enabled) {
+    Query setReplaceSynonymsInHighlight(@Nullable Boolean enabled) {
         return set(KEY_REPLACE_SYNONYMS_IN_HIGHLIGHT, enabled);
     }
 
-    public Boolean getReplaceSynonymsInHighlight() {
+    public @Nullable
+    Boolean getReplaceSynonymsInHighlight() {
         return parseBoolean(get(KEY_REPLACE_SYNONYMS_IN_HIGHLIGHT));
     }
 
@@ -1389,11 +1395,12 @@ public class Query extends AbstractQuery {
      *                 only array items that matched at least partially are highlighted/snippeted.
      */
     public @NonNull
-    Query setRestrictHighlightAndSnippetArrays(boolean restrict) {
+    Query setRestrictHighlightAndSnippetArrays(@Nullable Boolean restrict) {
         return set(KEY_RESTRICT_HIGHLIGHT_AND_SNIPPET, restrict);
     }
 
-    public Boolean getRestrictHighlightAndSnippetArrays() {
+    public @Nullable
+    Boolean getRestrictHighlightAndSnippetArrays() {
         return parseBoolean(get(KEY_RESTRICT_HIGHLIGHT_AND_SNIPPET));
     }
 
@@ -1476,11 +1483,12 @@ public class Query extends AbstractQuery {
      * @param enabled False means that the total score of a record is the maximum score of an individual filter. Setting it to true changes the total score by adding together the scores of each filter found. Defaults to false.
      */
     public @NonNull
-    Query setSumOrFiltersScores(Boolean enabled) {
+    Query setSumOrFiltersScores(@Nullable Boolean enabled) {
         return set(KEY_SUM_OR_FILTERS_SCORES, enabled);
     }
 
-    public Boolean getSumOrFiltersScores() {
+    public @Nullable
+    Boolean getSumOrFiltersScores() {
         return parseBoolean(get(KEY_SUM_OR_FILTERS_SCORES));
     }
 
@@ -1491,11 +1499,12 @@ public class Query extends AbstractQuery {
      *                configuration. Defaults to true.
      */
     public @NonNull
-    Query setSynonyms(Boolean enabled) {
+    Query setSynonyms(@Nullable Boolean enabled) {
         return set(KEY_SYNONYMS, enabled);
     }
 
-    public Boolean getSynonyms() {
+    public @Nullable
+    Boolean getSynonyms() {
         return parseBoolean(get(KEY_SYNONYMS));
     }
 
@@ -1554,11 +1563,12 @@ public class Query extends AbstractQuery {
      *                Defaults to true.
      */
     public @NonNull
-    Query setEnableRules(Boolean enabled) {
+    Query setEnableRules(@Nullable Boolean enabled) {
         return set(KEY_ENABLE_RULES, enabled);
     }
 
-    public Boolean getEnableRules() {
+    public @Nullable
+    Boolean getEnableRules() {
         return parseBoolean(get(KEY_ENABLE_RULES));
     }
 

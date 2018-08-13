@@ -115,7 +115,7 @@ public class PlacesQuery extends AbstractQuery {
         return set(KEY_AROUND_LAT_LNG_VIA_IP, enabled);
     }
 
-    public Boolean getAroundLatLngViaIP() {
+    public @Nullable Boolean getAroundLatLngViaIP() {
         return parseBoolean(get(KEY_AROUND_LAT_LNG_VIA_IP));
     }
 
