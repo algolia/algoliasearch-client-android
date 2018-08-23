@@ -1,5 +1,8 @@
 # Changelog
 
+## 3.26.1
+* **core:** upgrade to offline core 1.2.2 ([c5dc4ec](https://github.com/algolia/algoliasearch-client-android/commit/c5dc4ec))
+
 ## 3.26.0
 * **dependencies:** Downgrade appcompat from 28-beta01 to 27.1.1 ([#557](https://github.com/algolia/algoliasearch-client-android/issues/557)) ([001cbfc](https://github.com/algolia/algoliasearch-client-android/commit/001cbfc))
 
