@@ -136,6 +136,7 @@ public abstract class DisjunctiveFaceting {
             }
         }
 
+        //noinspection deprecation Deprecated for end-users
         queries.add(new Query(query).setFacetFilters(facetFilters));
         // one query per disjunctive facet (use all refinements but the current one + hitsPerPage=1 + single facet
         for (String disjunctiveFacet : disjunctiveFacets) {
@@ -158,6 +159,7 @@ public abstract class DisjunctiveFaceting {
                 }
             }
             String[] facets = new String[]{disjunctiveFacet};
+            //noinspection deprecation Deprecated for end-users
             queries.add(new Query(query).setHitsPerPage(0).setAnalytics(false)
                     .setAttributesToRetrieve().setAttributesToHighlight().setAttributesToSnippet()
                     .setFacets(facets).setFacetFilters(facetFilters));
@@ -176,7 +178,7 @@ public abstract class DisjunctiveFaceting {
      * @param disjunctiveFacets List of disjunctive facets.
      * @param refinements Facet refinements.
      * @return The aggregated results.
-     * @throws AlgoliaException
+     * @throws AlgoliaException when aggregation fails due to a JSONException
      */
     static private <T extends Collection<String>> JSONObject aggregateDisjunctiveFacetingResults(@NonNull JSONObject answers, @NonNull Collection<String> disjunctiveFacets, @NonNull Map<String, T> refinements) throws AlgoliaException
     {
