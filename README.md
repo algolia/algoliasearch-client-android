@@ -12,7 +12,6 @@ _Note: If you were using **version 2.x** of our Android client, read the [migrat
 
 
 You can browse the automatically generated [reference documentation](https://community.algolia.com/algoliasearch-client-android/).
-(See also the [offline-enabled version](https://community.algolia.com/algoliasearch-client-android/offline/).)
 
 This project is open-source under the [MIT License](https://github.com/algolia/algoliasearch-client-android/blob/master/LICENSE).
 
@@ -68,7 +67,7 @@ Add the following dependency to your `Gradle` build file:
 ```gradle
 dependencies {
     // [...]
-    compile 'com.algolia:algoliasearch-android:3.+'
+    implementation 'com.algolia:algoliasearch-android:3.+'
     // This will automatically update to the latest v3 release when you build your project.
 }
 ```
