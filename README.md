@@ -62,13 +62,13 @@ You can find the full reference on [Algolia's website](https://www.algolia.com/d
 
 ## Install
 
-Add the following dependency to your `Gradle` build file:
+Install the Android client by adding the following dependency to your `Gradle` build file:
 
 ```gradle
 dependencies {
     // [...]
     implementation 'com.algolia:algoliasearch-android:3.+'
-    // This will automatically update to the latest v3 release when you build your project.
+    // This will automatically update to the latest v3 release when you build your project
 }
 ```
 
@@ -90,6 +90,10 @@ Index index = client.getIndex("your_index_name");
  You should instead consider [fetching the key from your servers](https://www.algolia.com/doc/guides/security/best-security-practices/#api-keys-in-mobile-applications)
  during the app's startup.
 
+### Kotlin support
+
+Even though the Android client is written in Java, you can still use it in a Kotlin project, as long as you don't mix Java and Kotlin code in the same file.
+
 ## Push data
 
 Without any prior configuration, you can start indexing contacts in the ```contacts``` index using the following code:
@@ -97,15 +101,15 @@ Without any prior configuration, you can start indexing contacts in the ```conta
 ```java
 Index index = client.initIndex("contacts");
 index.addObjectAsync(new JSONObject()
-      .put("firstname", "Jimmie")
-      .put("lastname", "Barninger")
-      .put("followers", 93)
-      .put("company", "California Paint"), null);
+     .put("firstname", "Jimmie")
+     .put("lastname", "Barninger")
+     .put("followers", 93)
+     .put("company", "California Paint"), null);
 index.addObjectAsync(new JSONObject()
-      .put("firstname", "Warren")
-      .put("lastname", "Speach")
-      .put("followers", 42)
-      .put("company", "Norwalk Crmc"), null);
+     .put("firstname", "Warren")
+     .put("lastname", "Speach")
+     .put("followers", 42)
+     .put("company", "Norwalk Crmc"), null);
 ```
 
 ## Configure
@@ -124,9 +128,9 @@ In this case, the order of attributes is very important to decide which hit is t
 
 ```java
 JSONObject settings = new JSONObject()
-    .append("searchableAttributes", "lastname")
-    .append("searchableAttributes", "firstname")
-    .append("searchableAttributes", "company");
+     .append("searchableAttributes", "lastname")
+     .append("searchableAttributes", "firstname")
+     .append("searchableAttributes", "company");
 index.setSettingsAsync(settings, null);
 ```
 
@@ -141,13 +145,13 @@ CompletionHandler completionHandler = new CompletionHandler() {
         // [...]
     }
 };
-// search by firstname
+// Search for a first name
 index.searchAsync(new Query("jimmie"), completionHandler);
-// search a firstname with typo
+// Search for a first name with typo
 index.searchAsync(new Query("jimie"), completionHandler);
-// search for a company
+// Search for a company
 index.searchAsync(new Query("california paint"), completionHandler);
-// search for a firstname & company
+// Search for a first name and a company
 index.searchAsync(new Query("jimmie paint"), completionHandler);
 ```
 
@@ -164,7 +168,7 @@ index.searchAsync(new Query("jimmie paint"), completionHandler);
 
 - [Search index](https://algolia.com/doc/api-reference/api-methods/search/?language=android)
 - [Search for facet values](https://algolia.com/doc/api-reference/api-methods/search-for-facet-values/?language=android)
-- [Search multiple indexes](https://algolia.com/doc/api-reference/api-methods/multiple-queries/?language=android)
+- [Search multiple indices](https://algolia.com/doc/api-reference/api-methods/multiple-queries/?language=android)
 - [Browse index](https://algolia.com/doc/api-reference/api-methods/browse/?language=android)
 
 
@@ -173,7 +177,7 @@ index.searchAsync(new Query("jimmie paint"), completionHandler);
 ### Indexing
 
 - [Add objects](https://algolia.com/doc/api-reference/api-methods/add-objects/?language=android)
-- [Update objects](https://algolia.com/doc/api-reference/api-methods/update-objects/?language=android)
+- [Update objects](https://algolia.com/doc/api-reference/api-methods/save-objects/?language=android)
 - [Partial update objects](https://algolia.com/doc/api-reference/api-methods/partial-update-objects/?language=android)
 - [Delete objects](https://algolia.com/doc/api-reference/api-methods/delete-objects/?language=android)
 - [Delete by](https://algolia.com/doc/api-reference/api-methods/delete-by/?language=android)
@@ -229,13 +233,13 @@ index.searchAsync(new Query("jimmie paint"), completionHandler);
 
 ### Query rules
 
-- [Save rule](https://algolia.com/doc/api-reference/api-methods/rules-save/?language=android)
-- [Batch rules](https://algolia.com/doc/api-reference/api-methods/rules-save-batch/?language=android)
-- [Get rule](https://algolia.com/doc/api-reference/api-methods/rules-get/?language=android)
-- [Delete rule](https://algolia.com/doc/api-reference/api-methods/rules-delete/?language=android)
-- [Clear rules](https://algolia.com/doc/api-reference/api-methods/rules-clear/?language=android)
-- [Search rules](https://algolia.com/doc/api-reference/api-methods/rules-search/?language=android)
-- [Export rules](https://algolia.com/doc/api-reference/api-methods/rules-export/?language=android)
+- [Save rule](https://algolia.com/doc/api-reference/api-methods/save-rule/?language=android)
+- [Batch rules](https://algolia.com/doc/api-reference/api-methods/batch-rules/?language=android)
+- [Get rule](https://algolia.com/doc/api-reference/api-methods/get-rule/?language=android)
+- [Delete rule](https://algolia.com/doc/api-reference/api-methods/delete-rule/?language=android)
+- [Clear rules](https://algolia.com/doc/api-reference/api-methods/clear-rules/?language=android)
+- [Search rules](https://algolia.com/doc/api-reference/api-methods/search-rules/?language=android)
+- [Export rules](https://algolia.com/doc/api-reference/api-methods/export-rules/?language=android)
 
 
 
