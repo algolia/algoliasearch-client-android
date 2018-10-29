@@ -1459,6 +1459,16 @@ public class Index extends Searchable {
     }
 
     /**
+     * Set settings for this index, forwarding to its replicas.
+     *
+     * @param settings          the settings object.
+     * @throws AlgoliaException
+     */
+    public JSONObject setSettings(JSONObject settings) throws AlgoliaException {
+        return setSettings(settings, true, null);
+    }
+
+    /**
      * Set settings for this index.
      *
      * @param settings          the settings object.
