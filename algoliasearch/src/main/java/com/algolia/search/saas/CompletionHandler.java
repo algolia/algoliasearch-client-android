@@ -23,6 +23,8 @@
 
 package com.algolia.search.saas;
 
+import android.support.annotation.Nullable;
+
 import org.json.JSONObject;
 
 /**
@@ -39,5 +41,5 @@ public interface CompletionHandler {
      * @param content Content that was returned by the API (in case of success).
      * @param error Error that was encountered (in case of failure).
      */
-    void requestCompleted(JSONObject content, AlgoliaException error);
+    void requestCompleted(@Nullable JSONObject content, @Nullable AlgoliaException error);
 }
