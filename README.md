@@ -92,7 +92,8 @@ Index index = client.getIndex("your_index_name");
 
 ### Kotlin support
 
-Even though the Android client is written in Java, you can still use it in a Kotlin project, as long as you don't mix Java and Kotlin code in the same file.
+Even though the Android client is written in Java, you can use it in a Kotlin project. Check out our [Android demo (`kotlin`
+ branch)](https://github.com/algolia/algolia-android-demo/tree/kotlin) to see an example.
 
 ## Push data
 
