@@ -508,20 +508,15 @@ public class IndexTest extends RobolectricTestCase {
     }
 
     @Test
-    public void DNSTimeout() throws Exception {
-        // On Travis, the reported run duration is not reliable.
-        if ("true".equals(System.getenv("TRAVIS"))) {
-            return;
-        }
-
+    public void DNSTimeout() throws AssertionError {
         // Given all hosts resulting in a DNS Timeout
-        String appId = (String) Whitebox.getInternalState(client, "applicationID");
         List<String> hostsArray = (List<String>) Whitebox.getInternalState(client, "readHosts");
-        final String hostName = appId + "-dsn.algolia.biz"; //TODO: Random host name to avoid system DNS cache
-        hostsArray.set(0, hostName);
-        hostsArray.set(1, hostName);
-        hostsArray.set(2, hostName);
-        hostsArray.set(3, hostName);
+        // With random hostnames to avoid any caching
+        final String hostNameSuffix = "-dsn.algolia.biz";
+        hostsArray.set(0, UUID.randomUUID().toString() + hostNameSuffix);
+        hostsArray.set(1, UUID.randomUUID().toString() + hostNameSuffix);
+        hostsArray.set(2, UUID.randomUUID().toString() + hostNameSuffix);
+        hostsArray.set(3, UUID.randomUUID().toString() + hostNameSuffix);
         Whitebox.setInternalState(client, "readHosts", hostsArray);
 
         //A connect timeout of 500 ms
@@ -538,7 +533,8 @@ public class IndexTest extends RobolectricTestCase {
             @Override public void doRequestCompleted(JSONObject content, AlgoliaException error) {
                 if (error != null) {
                     final long duration = (System.nanoTime() - startTime) / 1000000;
-                    assertTrue("We should hit 4 times the timeout before failing, but test took only " + duration + " ms.", duration > timeout * 4);
+                    assertTrue("We should hit 4 times the timeout before failing, but test took only " + duration + " ms.",
+                            duration > timeout * 4);
                 } else {
                     fail("Searching with failing hosts should result in an error.");
                 }
