@@ -535,11 +535,11 @@ public class IndexTest extends RobolectricTestCase {
             public void doRequestCompleted(JSONObject content, AlgoliaException error) {
                 if (error != null) {
                     final long duration = (System.nanoTime() - startTime) / 1000000;
-                    System.out.println(error.getMessage());
+                    System.err.println(error.getMessage());
 //                    Whitebox.getInternalState(client, "readHosts", hostsArray);
                     HashMap<String, HostStatus> hostStatuses = (HashMap<String, HostStatus>) Whitebox.getInternalState(client, "hostStatuses");
                     for (Map.Entry<String, HostStatus> entry : hostStatuses.entrySet()) {
-                        System.out.println(entry.getKey() + ": " + entry.getValue().toString());
+                        System.err.println(entry.getKey() + ": " + entry.getValue().toString());
                     }
                     assertTrue("We should hit 4 times the timeout before failing, but test took only " + duration + " ms.",
                             duration > timeout * 4);
