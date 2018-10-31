@@ -45,6 +45,7 @@ import java.io.UnsupportedEncodingException;
 import java.lang.ref.WeakReference;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -92,13 +93,19 @@ public abstract class AbstractClient {
         }
     }
 
-    private static class HostStatus {
-        boolean isUp = true;
+    static class HostStatus {
+        boolean isUp;
         long lastTryTimestamp;
 
         HostStatus(boolean isUp) {
             this.isUp = isUp;
             lastTryTimestamp = new Date().getTime();
+        }
+
+        @Override
+        public String toString() {
+            return (isUp ? "up" : "down") + " at " + new SimpleDateFormat("HH:mm:ss.SSS")
+                    .format(new Date(lastTryTimestamp));
         }
     }
 
