@@ -90,10 +90,11 @@ Index index = client.getIndex("your_index_name");
  You should instead consider [fetching the key from your servers](https://www.algolia.com/doc/guides/security/best-security-practices/#api-keys-in-mobile-applications)
  during the app's startup.
 
+  
 ### Kotlin support
 
-Even though the Android client is written in Java, you can use it in a Kotlin project. Check out our [Android demo (`kotlin`
- branch)](https://github.com/algolia/algolia-android-demo/tree/kotlin) to see an example.
+Even though the Android client is written in Java, you can use it in a Kotlin project. Check out our [Android demo (`kotlin` branch)](https://github.com/algolia/algolia-android-demo/tree/kotlin) to see an example.
+  
 
 ## Push data
 
@@ -129,9 +130,9 @@ In this case, the order of attributes is very important to decide which hit is t
 
 ```java
 JSONObject settings = new JSONObject()
-     .append("searchableAttributes", "lastname")
-     .append("searchableAttributes", "firstname")
-     .append("searchableAttributes", "company");
+      .put("searchableAttributes", "lastname")
+      .put("searchableAttributes", "firstname")
+      .put("searchableAttributes", "company");
 index.setSettingsAsync(settings, null);
 ```
 
@@ -160,6 +161,12 @@ index.searchAsync(new Query("jimmie paint"), completionHandler);
 
 
 ## List of available methods
+
+
+
+
+
+### Personalization
 
 
 
