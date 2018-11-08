@@ -3,7 +3,7 @@ fastlane_require "json"
 fastlane_require "httparty"
 
 actions_path 'actions/'
-fastlane_version "2.61.0"
+fastlane_version "2.108.0"
 default_platform :android
 
 platform :android do
