@@ -185,10 +185,12 @@ index.searchAsync(new Query("jimmie paint"), completionHandler);
 ### Indexing
 
 - [Add objects](https://algolia.com/doc/api-reference/api-methods/add-objects/?language=android)
-- [Update objects](https://algolia.com/doc/api-reference/api-methods/save-objects/?language=android)
+- [Save objects](https://algolia.com/doc/api-reference/api-methods/save-objects/?language=android)
 - [Partial update objects](https://algolia.com/doc/api-reference/api-methods/partial-update-objects/?language=android)
 - [Delete objects](https://algolia.com/doc/api-reference/api-methods/delete-objects/?language=android)
+- [Replace all objects](https://algolia.com/doc/api-reference/api-methods/replace-all-objects/?language=android)
 - [Delete by](https://algolia.com/doc/api-reference/api-methods/delete-by/?language=android)
+- [Clear objects](https://algolia.com/doc/api-reference/api-methods/clear-objects/?language=android)
 - [Get objects](https://algolia.com/doc/api-reference/api-methods/get-objects/?language=android)
 - [Custom batch](https://algolia.com/doc/api-reference/api-methods/batch/?language=android)
 
@@ -199,17 +201,17 @@ index.searchAsync(new Query("jimmie paint"), completionHandler);
 
 - [Get settings](https://algolia.com/doc/api-reference/api-methods/get-settings/?language=android)
 - [Set settings](https://algolia.com/doc/api-reference/api-methods/set-settings/?language=android)
+- [Copy settings](https://algolia.com/doc/api-reference/api-methods/copy-settings/?language=android)
 
 
 
 
 ### Manage indices
 
-- [List indexes](https://algolia.com/doc/api-reference/api-methods/list-indices/?language=android)
+- [List indices](https://algolia.com/doc/api-reference/api-methods/list-indices/?language=android)
 - [Delete index](https://algolia.com/doc/api-reference/api-methods/delete-index/?language=android)
 - [Copy index](https://algolia.com/doc/api-reference/api-methods/copy-index/?language=android)
 - [Move index](https://algolia.com/doc/api-reference/api-methods/move-index/?language=android)
-- [Clear index](https://algolia.com/doc/api-reference/api-methods/clear-index/?language=android)
 
 
 
@@ -234,6 +236,8 @@ index.searchAsync(new Query("jimmie paint"), completionHandler);
 - [Clear all synonyms](https://algolia.com/doc/api-reference/api-methods/clear-synonyms/?language=android)
 - [Get synonym](https://algolia.com/doc/api-reference/api-methods/get-synonym/?language=android)
 - [Search synonyms](https://algolia.com/doc/api-reference/api-methods/search-synonyms/?language=android)
+- [Replace all synonyms](https://algolia.com/doc/api-reference/api-methods/replace-all-synonyms/?language=android)
+- [Copy synonyms](https://algolia.com/doc/api-reference/api-methods/copy-synonyms/?language=android)
 - [Export Synonyms](https://algolia.com/doc/api-reference/api-methods/export-synonyms/?language=android)
 
 
@@ -247,6 +251,8 @@ index.searchAsync(new Query("jimmie paint"), completionHandler);
 - [Delete rule](https://algolia.com/doc/api-reference/api-methods/delete-rule/?language=android)
 - [Clear rules](https://algolia.com/doc/api-reference/api-methods/clear-rules/?language=android)
 - [Search rules](https://algolia.com/doc/api-reference/api-methods/search-rules/?language=android)
+- [Replace all rules](https://algolia.com/doc/api-reference/api-methods/replace-all-rules/?language=android)
+- [Copy rules](https://algolia.com/doc/api-reference/api-methods/copy-rules/?language=android)
 - [Export rules](https://algolia.com/doc/api-reference/api-methods/export-rules/?language=android)
 
 
