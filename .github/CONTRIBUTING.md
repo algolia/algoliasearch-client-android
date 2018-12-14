@@ -13,12 +13,12 @@ We do not use GitHub issues for general library support. We think these question
 * Before creating a new issue:
   * Make sure you are using the [latest release](https://github.com/algolia/InstantSearch/releases).
   * Check if the issue was [already reported or fixed](https://github.com/algolia/InstantSearch/issues?utf8=%E2%9C%93&q=is%3Aissue). Notice that it may not be released yet.
-  * If you found a match add a brief comment "I have the same problem" or use the action `+1`. This helps prioritize the issues addressing the most common and critical first. If possible add additional information to help us reproduce and fix the issue. Please use your best judgement.    
+  * If you found a match add a brief comment "I have the same problem" or use the action `+1`. This helps prioritize the issues addressing the most common and critical first. If possible add additional information to help us reproduce and fix the issue. Please use your best judgement.
 * Reporting issues:
   * Please include the following information to help maintainers to fix the problem faster:
-    * Xcode version you are using.
-    * iOS version you are targeting.
-    * Full Xcode console output of stack trace or code compilation error.
+    * Android Studio version you are using.
+    * Android version you are targeting.
+    * Full log console output of stack trace or code compilation error.
     * Any other additional detail you think it would be useful to understand and solve the problem.
 
 
@@ -48,8 +48,7 @@ The easiest way to start contributing is searching open issues by `help wanted` 
 
 ###### Code style and conventions
 
-We try to follow our [swift style guide](https://github.com/algolia/Swift-Style-Guide). Following it is not strictly necessary to contribute and to have a pull request accepted but project maintainers try to follow it. We would love to hear your ideas to improve our code style and conventions. Feel free to contribute.
-
+ We apply [these coding style settings](https://github.com/algolia/CodingStyle/blob/master/Android.xml) and try to follow the [Kotlin coding convention](https://kotlinlang.org/docs/reference/coding-conventions.html). Following it is not strictly necessary to contribute and to have a pull request accepted but project maintainers try to follow it.
 
 ### Feature proposal
 
