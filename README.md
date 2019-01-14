@@ -1,7 +1,6 @@
 # Algolia Search API Client for Android
 
-[Algolia Search](https://www.algolia.com) is a hosted full-text, numerical,
-and faceted search engine capable of delivering realtime results from the first keystroke.
+[Algolia Search](https://www.algolia.com) is a hosted search engine capable of delivering realtime results from the first keystroke.
 
 The **Algolia Search API Client for Android** lets
 you easily use the [Algolia Search REST API](https://www.algolia.com/doc/rest-api/search) from
@@ -78,7 +77,7 @@ In 30 seconds, this quick start tutorial will show you how to index and search o
 
 ### Initialize the client
 
-To begin, you will need to initialize the client. In order to do this you will need your **Application ID** and **API Key**.
+To start, you need to initialize the client. To do this, you need your **Application ID** and **API Key**.
 You can find both on [your Algolia account](https://www.algolia.com/api-keys).
 
 ```java
@@ -86,15 +85,9 @@ Client client = new Client("YourApplicationID", "YourAPIKey");
 Index index = client.getIndex("your_index_name");
 ```
 
-**Warning:** If you are building a native app on mobile, be sure to **not include** the search API key directly in the source code.
- You should instead consider [fetching the key from your servers](https://www.algolia.com/doc/guides/security/best-security-practices/#api-keys-in-mobile-applications)
- during the app's startup.
-
-  
-### Kotlin support
-
-Even though the Android client is written in Java, you can use it in a Kotlin project. Check out our [Android demo (`kotlin` branch)](https://github.com/algolia/algolia-android-demo/tree/kotlin) to see an example.
-  
+**Warning:** If you are building a native app on mobile, make sure **not to include the search API key directly in the source code**.
+You should instead consider [fetching the key from your servers](https://www.algolia.com/doc/guides/security/security-best-practices/#api-keys-in-mobile-applications)
+during the app's startup.
 
 ## Push data
 
@@ -116,7 +109,7 @@ index.addObjectAsync(new JSONObject()
 
 ## Configure
 
-Settings can be customized to fine tune the search behavior. For example, you can add a custom sort by number of followers to further enhance the built-in relevance:
+You can customize settings to fine tune the search behavior. For example, you can add a custom ranking by number of followers to further enhance the built-in relevance:
 
 ```java
 JSONObject settings = new JSONObject().append("customRanking", "desc(followers)");
@@ -125,8 +118,8 @@ index.setSettingsAsync(settings, null);
 
 You can also configure the list of attributes you want to index by order of importance (most important first).
 
-**Note:** The Algolia engine is designed to suggest results as you type, which means you'll generally search by prefix.
-In this case, the order of attributes is very important to decide which hit is the best:
+**Note:** Algolia is designed to suggest results as you type, which means you'll generally search by prefix.
+In this case, the order of attributes is crucial to decide which hit is the best.
 
 ```java
 JSONObject settings = new JSONObject()
@@ -138,7 +131,7 @@ index.setSettingsAsync(settings, null);
 
 ## Search
 
-You can now search for contacts using `firstname`, `lastname`, `company`, etc. (even with typos):
+You can now search for contacts by `firstname`, `lastname`, `company`, etc. (even with typos):
 
 ```java
 CompletionHandler completionHandler = new CompletionHandler() {
@@ -168,6 +161,8 @@ index.searchAsync(new Query("jimmie paint"), completionHandler);
 
 ### Personalization
 
+- [Add strategy](https://algolia.com/doc/api-reference/api-methods/add-strategy/?language=android)
+- [Get strategy](https://algolia.com/doc/api-reference/api-methods/get-strategy/?language=android)
 
 
 
@@ -265,6 +260,20 @@ index.searchAsync(new Query("jimmie paint"), completionHandler);
 - [List A/B tests](https://algolia.com/doc/api-reference/api-methods/list-ab-tests/?language=android)
 - [Stop A/B test](https://algolia.com/doc/api-reference/api-methods/stop-ab-test/?language=android)
 - [Delete A/B test](https://algolia.com/doc/api-reference/api-methods/delete-ab-test/?language=android)
+
+
+
+
+### Insights
+
+- [Clicked Object IDs After Search](https://algolia.com/doc/api-reference/api-methods/clicked-object-ids-after-search/?language=android)
+- [Clicked Object IDs](https://algolia.com/doc/api-reference/api-methods/clicked-object-ids/?language=android)
+- [Clicked Filters](https://algolia.com/doc/api-reference/api-methods/clicked-filters/?language=android)
+- [Converted Objects IDs After Search](https://algolia.com/doc/api-reference/api-methods/converted-object-ids-after-search/?language=android)
+- [Converted Object IDs](https://algolia.com/doc/api-reference/api-methods/converted-object-ids/?language=android)
+- [Converted Filters](https://algolia.com/doc/api-reference/api-methods/converted-filters/?language=android)
+- [Viewed Object IDs](https://algolia.com/doc/api-reference/api-methods/viewed-object-ids/?language=android)
+- [Viewed Filters](https://algolia.com/doc/api-reference/api-methods/viewed-filters/?language=android)
 
 
 
