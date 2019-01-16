@@ -146,6 +146,11 @@ public class QueryTest extends RobolectricTestCase {
     }
 
     @Test
+    public void enablePersonalization() {
+        testBooleanAttribute("enablePersonalization");
+    }
+
+    @Test
     public void facetingAfterDistinct() {
         testBooleanAttribute("facetingAfterDistinct");
     }
