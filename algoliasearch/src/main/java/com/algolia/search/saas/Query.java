@@ -657,7 +657,8 @@ public class Query extends AbstractQuery {
         return set(KEY_GET_RANKING_INFO, enabled);
     }
 
-    public @Nullable Boolean getGetRankingInfo() {
+    public @Nullable
+    Boolean getGetRankingInfo() {
         return parseBoolean(get(KEY_GET_RANKING_INFO));
     }
 
@@ -1554,6 +1555,22 @@ public class Query extends AbstractQuery {
     ExactOnSingleWordQuery getExactOnSingleWordQuery() {
         String value = get(KEY_EXACT_ON_SINGLE_WORD_QUERY);
         return value == null ? null : ExactOnSingleWordQuery.fromString(value);
+    }
+
+    private static final String KEY_ENABLE_PERSONALIZATION = "enablePersonalization";
+
+    /**
+     * @param enabled If set to true, user preferences are used as part of the relevance and ranking process.
+     *                Defaults to false.
+     */
+    public @NonNull
+    Query setEnablePersonalization(@Nullable Boolean enabled) {
+        return set(KEY_ENABLE_PERSONALIZATION, enabled);
+    }
+
+    public @Nullable
+    Boolean getEnablePersonalization() {
+        return parseBoolean(get(KEY_ENABLE_PERSONALIZATION));
     }
 
     private static final String KEY_ENABLE_RULES = "enableRules";
