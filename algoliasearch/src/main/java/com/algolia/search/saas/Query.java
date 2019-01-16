@@ -45,7 +45,10 @@ import java.util.List;
  * 2. Using the low-level, untyped getter (`get()`) and setter (`set()`) or the subscript operator.
  * Use this approach if the parameter you wish to set is not supported by this class.
  */
-@SuppressWarnings("WeakerAccess") // Enums & Methods are voluntarily public
+@SuppressWarnings({
+        "WeakerAccess" /* Enums & Methods are voluntarily public */,
+        "unused" /* Tests are dynamically generated, see QueryTest.java */
+})
 public class Query extends AbstractQuery {
     public enum QueryType {
         /**
