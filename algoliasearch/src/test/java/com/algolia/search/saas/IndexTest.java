@@ -45,7 +45,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-import static com.algolia.search.saas.AbstractClient.HostStatus;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
@@ -531,16 +530,9 @@ public class IndexTest extends RobolectricTestCase {
         // Expect failed search after timeout
         final long startTime = System.nanoTime();
         index.searchAsync(new Query(), new AssertCompletionHandler() {
-            @Override
-            public void doRequestCompleted(JSONObject content, AlgoliaException error) {
+            @Override public void doRequestCompleted(JSONObject content, AlgoliaException error) {
                 if (error != null) {
                     final long duration = (System.nanoTime() - startTime) / 1000000;
-                    System.err.println(error.getMessage());
-//                    Whitebox.getInternalState(client, "readHosts", hostsArray);
-                    HashMap<String, HostStatus> hostStatuses = (HashMap<String, HostStatus>) Whitebox.getInternalState(client, "hostStatuses");
-                    for (Map.Entry<String, HostStatus> entry : hostStatuses.entrySet()) {
-                        System.err.println(entry.getKey() + ": " + entry.getValue().toString());
-                    }
                     assertTrue("We should hit 4 times the timeout before failing, but test took only " + duration + " ms.",
                             duration > timeout * 4);
                 } else {
