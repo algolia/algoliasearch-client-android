@@ -1287,7 +1287,8 @@ public class Query extends AbstractQuery {
         return set(KEY_PERCENTILE_COMPUTATION, enabled);
     }
 
-    public @Nullable Boolean getPercentileComputation() {
+    public @Nullable
+    Boolean getPercentileComputation() {
         return parseBoolean(get(KEY_PERCENTILE_COMPUTATION));
     }
 
