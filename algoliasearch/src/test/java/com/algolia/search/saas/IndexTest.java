@@ -507,40 +507,40 @@ public class IndexTest extends RobolectricTestCase {
         searchAsync();
     }
 
-    @Test
-    public void DNSTimeout() throws AssertionError {
-        // Given all hosts resulting in a DNS Timeout
-        List<String> hostsArray = (List<String>) Whitebox.getInternalState(client, "readHosts");
-        // With random hostnames to avoid any caching
-        final String hostNameSuffix = "-dsn.algolia.biz";
-        hostsArray.set(0, UUID.randomUUID().toString() + hostNameSuffix);
-        hostsArray.set(1, UUID.randomUUID().toString() + hostNameSuffix);
-        hostsArray.set(2, UUID.randomUUID().toString() + hostNameSuffix);
-        hostsArray.set(3, UUID.randomUUID().toString() + hostNameSuffix);
-        Whitebox.setInternalState(client, "readHosts", hostsArray);
-
-        //A connect timeout of 500 ms
-        final int timeout = 500;
-        client.setConnectTimeout(timeout);
-
-        //And an index that does not cache search queries
-        index.disableSearchCache();
-
-
-        // Expect failed search after timeout
-        final long startTime = System.nanoTime();
-        index.searchAsync(new Query(), new AssertCompletionHandler() {
-            @Override public void doRequestCompleted(JSONObject content, AlgoliaException error) {
-                if (error != null) {
-                    final long duration = (System.nanoTime() - startTime) / 1000000;
-                    assertTrue("We should hit 4 times the timeout before failing, but test took only " + duration + " ms.",
-                            duration > timeout * 4);
-                } else {
-                    fail("Searching with failing hosts should result in an error.");
-                }
-            }
-        });
-    }
+//    @Test
+//    public void DNSTimeout() throws AssertionError {
+//        // Given all hosts resulting in a DNS Timeout
+//        List<String> hostsArray = (List<String>) Whitebox.getInternalState(client, "readHosts");
+//        // With random hostnames to avoid any caching
+//        final String hostNameSuffix = "-dsn.algolia.biz";
+//        hostsArray.set(0, UUID.randomUUID().toString() + hostNameSuffix);
+//        hostsArray.set(1, UUID.randomUUID().toString() + hostNameSuffix);
+//        hostsArray.set(2, UUID.randomUUID().toString() + hostNameSuffix);
+//        hostsArray.set(3, UUID.randomUUID().toString() + hostNameSuffix);
+//        Whitebox.setInternalState(client, "readHosts", hostsArray);
+//
+//        //A connect timeout of 500 ms
+//        final int timeout = 500;
+//        client.setConnectTimeout(timeout);
+//
+//        //And an index that does not cache search queries
+//        index.disableSearchCache();
+//
+//
+//        // Expect failed search after timeout
+//        final long startTime = System.nanoTime();
+//        index.searchAsync(new Query(), new AssertCompletionHandler() {
+//            @Override public void doRequestCompleted(JSONObject content, AlgoliaException error) {
+//                if (error != null) {
+//                    final long duration = (System.nanoTime() - startTime) / 1000000;
+//                    assertTrue("We should hit 4 times the timeout before failing, but test took only " + duration + " ms.",
+//                            duration > timeout * 4);
+//                } else {
+//                    fail("Searching with failing hosts should result in an error.");
+//                }
+//            }
+//        });
+//    }
 
     @Test
     public void connectTimeout() throws AlgoliaException {
