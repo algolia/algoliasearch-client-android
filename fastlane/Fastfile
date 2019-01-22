@@ -64,8 +64,7 @@ platform :android do
       base: "master",
       body: "Please check the files before merging in case I've overidden something accidentally."
     )
-    puts "PR opened: #{pull_request_url}"
-    ENV["PR_URL"] = pull_request_url
+    sh("envman add --key GITHUB_PR_URL --value #{pull_request_url}")
 
     # Post the changes via GitHub Release API
     post_github_release(version_number, changes)
