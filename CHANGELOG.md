@@ -1,5 +1,10 @@
 # Changelog
 
+## 3.27.0
+### Features
+* **Index:** Overload for setSettings ([a5881e5](https://github.com/algolia/algoliasearch-client-android/commit/a5881e5))
+* **Query:** enablePersonalization ([f01edc4](https://github.com/algolia/algoliasearch-client-android/commit/f01edc4))
+
 ## 3.26.1
 * **core:** upgrade to offline core 1.2.2 ([c5dc4ec](https://github.com/algolia/algoliasearch-client-android/commit/c5dc4ec))
 
