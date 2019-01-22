@@ -99,7 +99,9 @@ git checkout $SELF_ROOT/algoliasearch/build.gradle
 
 # Commit to git and push to GitHub
 git add .
+git checkout -b version-$VERSION_CODE
 git commit -m "chore(release): Version $VERSION_CODE [ci skip]"
 
-echo "Release complete! Pushing to GitHub"
+echo "Release complete! Pushing to GitHub on branch version-$VERSION_CODE"
 git push origin HEAD
+git checkout master

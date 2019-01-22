@@ -18,8 +18,8 @@ platform :android do
     branch = options[:branch] || "master"
     notest = options[:notest] || false
     type = options[:type]
-    UI.user_error!("You need to specify a type.") unless type != nil
-    UI.user_error!("Type #{type} is not a valid type (patch/minor/major") unless ["major","minor","patch"].include? type
+    type.nil? and UI.user_error!("You need to specify a type.")
+    ["major", "minor", "patch"].include? type or UI.user_error!("Type #{type} is not a valid type (patch/minor/major")
 
     # Compute next version number
     current_version = get_version_name(
@@ -31,6 +31,9 @@ platform :android do
     puts "New version: #{version_number}"
 
     # Ensure branch is master & WC clean, then pull changes
+    if sh("git rev-parse origin/master") != sh("git rev-parse HEAD")
+      raise "Error: master and HEAD hashes do not match, meaning that we are probably not on master and therefore can't deploy"
+    end
     sh("git checkout ../Gemfile.lock") # Ignore different bundle version changing Gemfile https://discuss.bitrise.io/t/5176/5
     prepare_git()
 
@@ -43,23 +46,29 @@ platform :android do
     file_edit("../CHANGELOG.md", /^(# Changelog\n+)/, "\\1\n#{changes}\n")
 
     # Tests / deployment
-    if notest == false
-        test()
-    end
-
-    masterHash = sh("git rev-parse origin/master")
-    headHash = sh("git rev-parse HEAD")
-    if masterHash != headHash
-      raise "Error: master and HEAD hashes do not match, meaning that we are probably not on master and therefore can't deploy"
-    end
+    notest == false or test
 
     # Release the new version
     sh("cd .. && ./release.sh #{version_number}")
-    # Post the changes via GitHub Release API
-    post_github_release(version_number, changes)
+
     # Remove temporary version tags
     sh("git tag --delete minor major patch | true")
     sh("git push origin :refs/tag/patch :refs/tag/minor :refs/tag/major")
+
+    # Send PR
+    pull_request_url = create_pull_request(
+      api_token: ENV["GITHUB_TOKEN"],
+      repo: "algolia/algoliasearch-client-android",
+      title: "chore(release): Version #{version_number} [ci skip]",
+      head: "version-#{version_number}",
+      base: "master",
+      body: "Please check the files before merging in case I've overidden something accidentally."
+    )
+    puts "PR opened: #{pull_request_url}"
+    ENV["PR_URL"] = pull_request_url
+
+    # Post the changes via GitHub Release API
+    post_github_release(version_number, changes)
   end
 end
 
