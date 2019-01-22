@@ -39,9 +39,9 @@ platform :android do
 
     # Generate changelog updates
     changes = sh("conventional-changelog --preset angular --output-unreleased", log:false)
-    changes_lines = changes.split(/\n+/)[2..-1] # Remove header
+    changes_lines = changes.lines[1..-1] # Remove header
     changes_lines[0] = "## #{version_number}"
-    changes = changes_lines.join("\n")
+    changes = changes_lines.join
     puts "Changes: #{changes}"
     file_edit("../CHANGELOG.md", /^(# Changelog\n+)/, "\\1\n#{changes}\n")
 
@@ -56,8 +56,9 @@ platform :android do
     sh("git push origin :refs/tag/patch :refs/tag/minor :refs/tag/major")
 
     # Send PR
+    token = ENV["GITHUB_TOKEN"]
     pull_request_url = create_pull_request(
-      api_token: ENV["GITHUB_TOKEN"],
+      api_token: token,
       repo: "algolia/algoliasearch-client-android",
       title: "chore(release): Version #{version_number} [ci skip]",
       head: "version-#{version_number}",
@@ -66,8 +67,16 @@ platform :android do
     )
     sh("envman add --key GITHUB_PR_URL --value #{pull_request_url}")
 
-    # Post the changes via GitHub Release API
-    post_github_release(version_number, changes)
+    # Post release on GitHub
+    github_release = set_github_release(
+      repository_name: "algolia/algoliasearch-client-android",
+      api_token: token,
+      name: version_number,
+      tag_name: version_number,
+      description: changes.lines[2..-1].join,
+      commitish: "master"
+    )
+    puts "Release posted: #{github_release['html_url']}."
   end
 end
 
@@ -99,18 +108,4 @@ def file_edit(filename, regexp, replacement)
     FileUtils.chmod stat.mode, tempfile.path
     FileUtils.mv tempfile.path, filename
   end
-end
-
-def post_github_release(version, changes, token=ENV['GITHUB_TOKEN'])
-  puts "Creating release on GitHub..."
-  release_changes = changes.gsub(/^## #{version} /m, "## ").gsub("\n", "\\n")
-  url = "https://api.github.com/repos/algolia/algoliasearch-client-android/releases?access_token=#{token}"
-  result = HTTParty.post(url, :body => {
-    :tag_name => version,
-    :target_commitish => "master",
-    :name => version,
-    :body => release_changes,
-    :draft => false,
-    :prerelease => false}.to_json)
-  puts "Release posted: #{result}."
 end
