@@ -211,7 +211,7 @@ index.searchAsync(new Query("jimmie paint"), completionHandler);
 
 
 
-### API Keys
+### API keys
 
 - [Create secured API Key](https://algolia.com/doc/api-reference/api-methods/generate-secured-api-key/?language=android)
 - [Add API Key](https://algolia.com/doc/api-reference/api-methods/add-api-key/?language=android)
