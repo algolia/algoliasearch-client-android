@@ -217,6 +217,7 @@ index.searchAsync(new Query("jimmie paint"), completionHandler);
 - [Add API Key](https://algolia.com/doc/api-reference/api-methods/add-api-key/?language=android)
 - [Update API Key](https://algolia.com/doc/api-reference/api-methods/update-api-key/?language=android)
 - [Delete API Key](https://algolia.com/doc/api-reference/api-methods/delete-api-key/?language=android)
+- [Restore API Key](https://algolia.com/doc/api-reference/api-methods/restore-api-key/?language=android)
 - [Get API Key permissions](https://algolia.com/doc/api-reference/api-methods/get-api-key/?language=android)
 - [List API Keys](https://algolia.com/doc/api-reference/api-methods/list-api-keys/?language=android)
 
