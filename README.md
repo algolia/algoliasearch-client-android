@@ -1,6 +1,6 @@
 # Algolia Search API Client for Android
 
-#### ⚠️ Please consider using [Kotlin API client](https://github.com/algolia/algoliasearch-client-kotlin) for the latest features of Algolia API.
+> Our Android API client is legacy, and in maintenance mode only. We recommend using our [Kotlin API client](https://github.com/algolia/algoliasearch-client-kotlin) which is better suited for Android development.
 
 [Algolia Search](https://www.algolia.com) is a hosted search engine capable of delivering realtime results from the first keystroke.
 
