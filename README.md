@@ -309,5 +309,6 @@ index.searchAsync(new Query("jimmie paint"), completionHandler);
 ## Getting Help
 
 - **Need help**? Ask a question to the [Algolia Community](https://discourse.algolia.com/) or on [Stack Overflow](http://stackoverflow.com/questions/tagged/algolia).
+- **Encountering an issue?** Before reaching out to support, we recommend heading to our [FAQ](https://www.algolia.com/doc/api-client/troubleshooting/faq/android/) where you will find answers for the most common issues and gotchas with the client.
 - **Found a bug?** You can open a [GitHub issue](https://github.com/algolia/algoliasearch-client-android/issues).
 
