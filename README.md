@@ -13,9 +13,13 @@ your Android code.
 _Note: If you were using **version 2.x** of our Android client, read the [migration guide to version 3.x](https://github.com/algolia/algoliasearch-client-android/wiki/Migration-guide-to-version-3.x)._
 
 
-You can browse the automatically generated [reference documentation](https://community.algolia.com/algoliasearch-client-android/).
+
+  ## Contributing
+
+  You can browse the automatically generated [reference documentation](https://community.algolia.com/algoliasearch-client-android/).
 
 This project is open-source under the [MIT License](https://github.com/algolia/algoliasearch-client-android/blob/master/LICENSE).
+
 
 
 
@@ -84,7 +88,7 @@ To start, you need to initialize the client. To do this, you need your **Applica
 You can find both on [your Algolia account](https://www.algolia.com/api-keys).
 
 ```java
-Client client = new Client("YourApplicationID", "YourAPIKey");
+Client client = new Client("YourApplicationID", "YourAdminAPIKey");
 Index index = client.getIndex("your_index_name");
 ```
 
@@ -115,7 +119,7 @@ index.addObjectAsync(new JSONObject()
 You can customize settings to fine tune the search behavior. For example, you can add a custom ranking by number of followers to further enhance the built-in relevance:
 
 ```java
-JSONObject settings = new JSONObject().append("customRanking", "desc(followers)");
+JSONObject settings = new JSONObject().put("customRanking", "desc(followers)");
 index.setSettingsAsync(settings, null);
 ```
 
@@ -301,6 +305,12 @@ index.searchAsync(new Query("jimmie paint"), completionHandler);
 - [Configuring timeouts](https://algolia.com/doc/api-reference/api-methods/configuring-timeouts/?language=android)
 - [Set extra header](https://algolia.com/doc/api-reference/api-methods/set-extra-header/?language=android)
 - [Wait for operations](https://algolia.com/doc/api-reference/api-methods/wait-task/?language=android)
+
+
+
+
+### Vault
+
 
 
 
