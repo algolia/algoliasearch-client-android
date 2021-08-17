@@ -53,4 +53,4 @@ before_script:
 
 script:
 - set -o pipefail
-- travis_wait bash run_test.sh
+- bash run_test.sh
